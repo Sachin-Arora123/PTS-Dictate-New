@@ -7,25 +7,39 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		180EB43528B6A15900F1A3FB /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 180EB43428B6A15900F1A3FB /* BaseViewController.swift */; };
+		180EB43928B6A87D00F1A3FB /* Extension+UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 180EB43828B6A87D00F1A3FB /* Extension+UIViewController.swift */; };
+		18CDDB0A28B7D493006AB795 /* Tabbar.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 18CDDB0928B7D493006AB795 /* Tabbar.storyboard */; };
+		18CDDB0D28B7D683006AB795 /* TabbarVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18CDDB0C28B7D683006AB795 /* TabbarVC.swift */; };
+		18CDDB0F28B7D96C006AB795 /* Storyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18CDDB0E28B7D96C006AB795 /* Storyboard.swift */; };
 		28A4F5C628B510D90035137B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5C528B510D90035137B /* AppDelegate.swift */; };
 		28A4F5C828B510D90035137B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5C728B510D90035137B /* SceneDelegate.swift */; };
-		28A4F5CA28B510D90035137B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5C928B510D90035137B /* ViewController.swift */; };
+		28A4F5CA28B510D90035137B /* LoginVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5C928B510D90035137B /* LoginVC.swift */; };
 		28A4F5CD28B510D90035137B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 28A4F5CB28B510D90035137B /* Main.storyboard */; };
 		28A4F5CF28B510DE0035137B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 28A4F5CE28B510DE0035137B /* Assets.xcassets */; };
 		28A4F5D228B510DE0035137B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 28A4F5D028B510DE0035137B /* LaunchScreen.storyboard */; };
-		28A4F5DE28B51D750035137B /* ExtendedColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5DD28B51D750035137B /* ExtendedColor.swift */; };
+		28A4F5DE28B51D750035137B /* Extension+Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5DD28B51D750035137B /* Extension+Navigation.swift */; };
+		4BFCB13CEA7E06C3217E3512 /* Pods_PTS_Dictate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7801E7DB3243DA4B1EF6CD0C /* Pods_PTS_Dictate.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		180EB43428B6A15900F1A3FB /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
+		180EB43828B6A87D00F1A3FB /* Extension+UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+UIViewController.swift"; sourceTree = "<group>"; };
+		18CDDB0928B7D493006AB795 /* Tabbar.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Tabbar.storyboard; sourceTree = "<group>"; };
+		18CDDB0C28B7D683006AB795 /* TabbarVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabbarVC.swift; sourceTree = "<group>"; };
+		18CDDB0E28B7D96C006AB795 /* Storyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storyboard.swift; sourceTree = "<group>"; };
 		28A4F5C228B510D90035137B /* PTS Dictate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PTS Dictate.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		28A4F5C528B510D90035137B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		28A4F5C728B510D90035137B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		28A4F5C928B510D90035137B /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		28A4F5C928B510D90035137B /* LoginVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginVC.swift; sourceTree = "<group>"; };
 		28A4F5CC28B510D90035137B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		28A4F5CE28B510DE0035137B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		28A4F5D128B510DE0035137B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		28A4F5D328B510DE0035137B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		28A4F5DD28B51D750035137B /* ExtendedColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtendedColor.swift; sourceTree = "<group>"; };
+		28A4F5DD28B51D750035137B /* Extension+Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+Navigation.swift"; sourceTree = "<group>"; };
+		60EFDBA9037F05EEA8612299 /* Pods-PTS Dictate.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PTS Dictate.debug.xcconfig"; path = "Target Support Files/Pods-PTS Dictate/Pods-PTS Dictate.debug.xcconfig"; sourceTree = "<group>"; };
+		7801E7DB3243DA4B1EF6CD0C /* Pods_PTS_Dictate.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PTS_Dictate.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F2DCF3613E1B667385F2C263 /* Pods-PTS Dictate.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PTS Dictate.release.xcconfig"; path = "Target Support Files/Pods-PTS Dictate/Pods-PTS Dictate.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,17 +47,62 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4BFCB13CEA7E06C3217E3512 /* Pods_PTS_Dictate.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		018EE1CAA31721738B3C8A4D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				7801E7DB3243DA4B1EF6CD0C /* Pods_PTS_Dictate.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		180EB43628B6A45000F1A3FB /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				28A4F5DD28B51D750035137B /* Extension+Navigation.swift */,
+				180EB43828B6A87D00F1A3FB /* Extension+UIViewController.swift */,
+				18CDDB0E28B7D96C006AB795 /* Storyboard.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		180EB43728B6A52200F1A3FB /* Extras */ = {
+			isa = PBXGroup;
+			children = (
+				28A4F5CE28B510DE0035137B /* Assets.xcassets */,
+			);
+			path = Extras;
+			sourceTree = "<group>";
+		};
+		18CDDB0828B7D472006AB795 /* LoginVC */ = {
+			isa = PBXGroup;
+			children = (
+				28A4F5C928B510D90035137B /* LoginVC.swift */,
+			);
+			path = LoginVC;
+			sourceTree = "<group>";
+		};
+		18CDDB0B28B7D5DA006AB795 /* TabbarVC */ = {
+			isa = PBXGroup;
+			children = (
+				18CDDB0C28B7D683006AB795 /* TabbarVC.swift */,
+			);
+			path = TabbarVC;
+			sourceTree = "<group>";
+		};
 		28A4F5B928B510D90035137B = {
 			isa = PBXGroup;
 			children = (
 				28A4F5C428B510D90035137B /* PTS Dictate */,
 				28A4F5C328B510D90035137B /* Products */,
+				97719E97C8011AC41905B41C /* Pods */,
+				018EE1CAA31721738B3C8A4D /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -58,11 +117,12 @@
 		28A4F5C428B510D90035137B /* PTS Dictate */ = {
 			isa = PBXGroup;
 			children = (
-				28A4F5DC28B51D630035137B /* Helpers */,
 				28A4F5D928B517B40035137B /* App delegate */,
+				180EB43628B6A45000F1A3FB /* Extensions */,
+				28A4F5DC28B51D630035137B /* Helpers */,
 				28A4F5DB28B517D50035137B /* View controllers */,
 				28A4F5DA28B517C10035137B /* Storyboards */,
-				28A4F5CE28B510DE0035137B /* Assets.xcassets */,
+				180EB43728B6A52200F1A3FB /* Extras */,
 				28A4F5D328B510DE0035137B /* Info.plist */,
 			);
 			path = "PTS Dictate";
@@ -81,6 +141,7 @@
 			isa = PBXGroup;
 			children = (
 				28A4F5CB28B510D90035137B /* Main.storyboard */,
+				18CDDB0928B7D493006AB795 /* Tabbar.storyboard */,
 				28A4F5D028B510DE0035137B /* LaunchScreen.storyboard */,
 			);
 			path = Storyboards;
@@ -89,7 +150,8 @@
 		28A4F5DB28B517D50035137B /* View controllers */ = {
 			isa = PBXGroup;
 			children = (
-				28A4F5C928B510D90035137B /* ViewController.swift */,
+				18CDDB0828B7D472006AB795 /* LoginVC */,
+				18CDDB0B28B7D5DA006AB795 /* TabbarVC */,
 			);
 			path = "View controllers";
 			sourceTree = "<group>";
@@ -97,9 +159,18 @@
 		28A4F5DC28B51D630035137B /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
-				28A4F5DD28B51D750035137B /* ExtendedColor.swift */,
+				180EB43428B6A15900F1A3FB /* BaseViewController.swift */,
 			);
 			path = Helpers;
+			sourceTree = "<group>";
+		};
+		97719E97C8011AC41905B41C /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				60EFDBA9037F05EEA8612299 /* Pods-PTS Dictate.debug.xcconfig */,
+				F2DCF3613E1B667385F2C263 /* Pods-PTS Dictate.release.xcconfig */,
+			);
+			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -109,9 +180,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 28A4F5D628B510DE0035137B /* Build configuration list for PBXNativeTarget "PTS Dictate" */;
 			buildPhases = (
+				3E812B9D0A100DEBD49CB0F0 /* [CP] Check Pods Manifest.lock */,
 				28A4F5BE28B510D90035137B /* Sources */,
 				28A4F5BF28B510D90035137B /* Frameworks */,
 				28A4F5C028B510D90035137B /* Resources */,
+				E5299E48A690929EFA4A5FBE /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -160,6 +233,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				18CDDB0A28B7D493006AB795 /* Tabbar.storyboard in Resources */,
 				28A4F5D228B510DE0035137B /* LaunchScreen.storyboard in Resources */,
 				28A4F5CF28B510DE0035137B /* Assets.xcassets in Resources */,
 				28A4F5CD28B510D90035137B /* Main.storyboard in Resources */,
@@ -168,14 +242,60 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		3E812B9D0A100DEBD49CB0F0 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-PTS Dictate-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E5299E48A690929EFA4A5FBE /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-PTS Dictate/Pods-PTS Dictate-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-PTS Dictate/Pods-PTS Dictate-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PTS Dictate/Pods-PTS Dictate-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		28A4F5BE28B510D90035137B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				28A4F5CA28B510D90035137B /* ViewController.swift in Sources */,
+				180EB43528B6A15900F1A3FB /* BaseViewController.swift in Sources */,
+				28A4F5CA28B510D90035137B /* LoginVC.swift in Sources */,
+				18CDDB0D28B7D683006AB795 /* TabbarVC.swift in Sources */,
+				180EB43928B6A87D00F1A3FB /* Extension+UIViewController.swift in Sources */,
+				18CDDB0F28B7D96C006AB795 /* Storyboard.swift in Sources */,
 				28A4F5C628B510D90035137B /* AppDelegate.swift in Sources */,
-				28A4F5DE28B51D750035137B /* ExtendedColor.swift in Sources */,
+				28A4F5DE28B51D750035137B /* Extension+Navigation.swift in Sources */,
 				28A4F5C828B510D90035137B /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -318,6 +438,7 @@
 		};
 		28A4F5D728B510DE0035137B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 60EFDBA9037F05EEA8612299 /* Pods-PTS Dictate.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -330,6 +451,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -345,6 +467,7 @@
 		};
 		28A4F5D828B510DE0035137B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F2DCF3613E1B667385F2C263 /* Pods-PTS Dictate.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -357,6 +480,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
