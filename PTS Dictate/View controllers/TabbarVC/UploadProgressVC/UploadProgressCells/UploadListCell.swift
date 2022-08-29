@@ -2,7 +2,7 @@
 //  UploadListCell.swift
 //  PTS Dictate
 //
-//  Created by Hero's on 27/08/22.
+//  Created by Paras Kamboj on 27/08/22.
 //
 
 import UIKit

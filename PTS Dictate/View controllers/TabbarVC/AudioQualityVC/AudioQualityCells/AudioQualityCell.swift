@@ -1,18 +1,17 @@
 //
-//  RecordingCell.swift
+//  AudioQualityCellTableViewCell.swift
 //  PTS Dictate
 //
-//  Created by Hero's on 28/08/22.
+//  Created by Paras Kamboj on 28/08/22.
 //
 
 import UIKit
 
-class RecordingCell: UITableViewCell {
+class AudioQualityCell: UITableViewCell {
 
-    // MARK: - @IBOutlets.
+    //MARK: - @IBOutlets.
     @IBOutlet weak var lblTitle: UILabel!
-    @IBOutlet weak var btnSwitch: UISwitch!
-    @IBOutlet weak var imgViewArrow: UIImageView!
+    @IBOutlet weak var imgViewTick: UIImageView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -24,5 +23,5 @@ class RecordingCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
-    
+
 }
