@@ -2,13 +2,17 @@
 //  NamingFormatCell.swift
 //  PTS Dictate
 //
-//  Created by Hero's on 30/08/22.
+//  Created by Paras Kamboj on 30/08/22.
 //
 
 import UIKit
 
 class NamingFormatCell: UITableViewCell {
 
+    // MARK: - @IBOutlets.
+    @IBOutlet weak var lblNameTitle: UILabel!
+    @IBOutlet weak var txtFldDateFormat: UITextField!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

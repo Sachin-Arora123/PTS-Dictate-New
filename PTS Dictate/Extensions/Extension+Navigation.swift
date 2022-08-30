@@ -13,7 +13,9 @@ extension UIColor {
     class var appThemeColor : UIColor {
         return UIColor(named: "AppThemeColor")!
     }
-    
+    class var blackTextColor : UIColor {
+        return UIColor(named: "BlackTextColor")!
+    }
 }
 
 extension UINavigationController {

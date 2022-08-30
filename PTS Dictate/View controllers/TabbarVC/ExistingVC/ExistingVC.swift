@@ -2,12 +2,12 @@
 //  ExistingVC.swift
 //  PTS Dictate
 //
-//  Created by Hero's on 29/08/22.
+//  Created by Paras Kamboj on 29/08/22.
 //
 
 import UIKit
 
-class ExistingVC: UIViewController {
+class ExistingVC: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -15,15 +15,9 @@ class ExistingVC: UIViewController {
         // Do any additional setup after loading the view.
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        hideLeftButton()
     }
-    */
 
 }

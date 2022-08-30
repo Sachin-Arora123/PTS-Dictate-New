@@ -9,6 +9,21 @@
 /* Begin PBXBuildFile section */
 		180EB43528B6A15900F1A3FB /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 180EB43428B6A15900F1A3FB /* BaseViewController.swift */; };
 		180EB43928B6A87D00F1A3FB /* Extension+UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 180EB43828B6A87D00F1A3FB /* Extension+UIViewController.swift */; };
+		182BE0B128BD29C000327094 /* ExistingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182BE0B028BD29C000327094 /* ExistingVC.swift */; };
+		182BE0B328BD332300327094 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 182BE0B228BD332300327094 /* Settings.storyboard */; };
+		182BE0B628BD3B6000327094 /* MicroSensitivityVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182BE0B528BD3B6000327094 /* MicroSensitivityVC.swift */; };
+		182BE0B928BD459A00327094 /* ProfileVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182BE0B828BD459A00327094 /* ProfileVC.swift */; };
+		182BE0BC28BD461E00327094 /* ProfileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182BE0BB28BD461E00327094 /* ProfileCell.swift */; };
+		182BE0BE28BD4ED000327094 /* NamingFormatVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182BE0BD28BD4ED000327094 /* NamingFormatVC.swift */; };
+		182BE0C128BD508500327094 /* NamingFormatCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182BE0C028BD508500327094 /* NamingFormatCell.swift */; };
+		1854B88928B94F690039A96E /* UploadProgressVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1854B88828B94F690039A96E /* UploadProgressVC.swift */; };
+		1854B88C28B958530039A96E /* UploadListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1854B88B28B958530039A96E /* UploadListCell.swift */; };
+		185BE70F28BBE539004484CF /* AudioQualityVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 185BE70E28BBE539004484CF /* AudioQualityVC.swift */; };
+		185BE71128BBE568004484CF /* AudioQualityCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 185BE71028BBE568004484CF /* AudioQualityCell.swift */; };
+		1868EAD428BAAAD600216D62 /* SettingsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1868EAD328BAAAD600216D62 /* SettingsVC.swift */; };
+		1868EAD628BAB2E200216D62 /* GeneralSettingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1868EAD528BAB2E200216D62 /* GeneralSettingCell.swift */; };
+		1868EAD928BAB3BB00216D62 /* RecordingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1868EAD728BAB3BB00216D62 /* RecordingCell.swift */; };
+		1868EADA28BAB3BB00216D62 /* RecordingCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1868EAD828BAB3BB00216D62 /* RecordingCell.xib */; };
 		18CDDB0A28B7D493006AB795 /* Tabbar.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 18CDDB0928B7D493006AB795 /* Tabbar.storyboard */; };
 		18CDDB0D28B7D683006AB795 /* TabbarVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18CDDB0C28B7D683006AB795 /* TabbarVC.swift */; };
 		18CDDB0F28B7D96C006AB795 /* Storyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18CDDB0E28B7D96C006AB795 /* Storyboard.swift */; };
@@ -25,6 +40,21 @@
 /* Begin PBXFileReference section */
 		180EB43428B6A15900F1A3FB /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		180EB43828B6A87D00F1A3FB /* Extension+UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+UIViewController.swift"; sourceTree = "<group>"; };
+		182BE0B028BD29C000327094 /* ExistingVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExistingVC.swift; sourceTree = "<group>"; };
+		182BE0B228BD332300327094 /* Settings.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Settings.storyboard; sourceTree = "<group>"; };
+		182BE0B528BD3B6000327094 /* MicroSensitivityVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicroSensitivityVC.swift; sourceTree = "<group>"; };
+		182BE0B828BD459A00327094 /* ProfileVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileVC.swift; sourceTree = "<group>"; };
+		182BE0BB28BD461E00327094 /* ProfileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileCell.swift; sourceTree = "<group>"; };
+		182BE0BD28BD4ED000327094 /* NamingFormatVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NamingFormatVC.swift; sourceTree = "<group>"; };
+		182BE0C028BD508500327094 /* NamingFormatCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NamingFormatCell.swift; sourceTree = "<group>"; };
+		1854B88828B94F690039A96E /* UploadProgressVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadProgressVC.swift; sourceTree = "<group>"; };
+		1854B88B28B958530039A96E /* UploadListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadListCell.swift; sourceTree = "<group>"; };
+		185BE70E28BBE539004484CF /* AudioQualityVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioQualityVC.swift; sourceTree = "<group>"; };
+		185BE71028BBE568004484CF /* AudioQualityCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioQualityCell.swift; sourceTree = "<group>"; };
+		1868EAD328BAAAD600216D62 /* SettingsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsVC.swift; sourceTree = "<group>"; };
+		1868EAD528BAB2E200216D62 /* GeneralSettingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralSettingCell.swift; sourceTree = "<group>"; };
+		1868EAD728BAB3BB00216D62 /* RecordingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingCell.swift; sourceTree = "<group>"; };
+		1868EAD828BAB3BB00216D62 /* RecordingCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RecordingCell.xib; sourceTree = "<group>"; };
 		18CDDB0928B7D493006AB795 /* Tabbar.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Tabbar.storyboard; sourceTree = "<group>"; };
 		18CDDB0C28B7D683006AB795 /* TabbarVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabbarVC.swift; sourceTree = "<group>"; };
 		18CDDB0E28B7D96C006AB795 /* Storyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storyboard.swift; sourceTree = "<group>"; };
@@ -80,6 +110,108 @@
 			path = Extras;
 			sourceTree = "<group>";
 		};
+		182BE0A928BD09CB00327094 /* UploadProgressVC */ = {
+			isa = PBXGroup;
+			children = (
+				1854B88828B94F690039A96E /* UploadProgressVC.swift */,
+				182BE0AA28BD09D700327094 /* UploadProgressCells */,
+			);
+			path = UploadProgressVC;
+			sourceTree = "<group>";
+		};
+		182BE0AA28BD09D700327094 /* UploadProgressCells */ = {
+			isa = PBXGroup;
+			children = (
+				1854B88B28B958530039A96E /* UploadListCell.swift */,
+			);
+			path = UploadProgressCells;
+			sourceTree = "<group>";
+		};
+		182BE0AB28BD09EB00327094 /* SettingVC */ = {
+			isa = PBXGroup;
+			children = (
+				1868EAD328BAAAD600216D62 /* SettingsVC.swift */,
+				182BE0AC28BD0A0700327094 /* SettingCells */,
+			);
+			path = SettingVC;
+			sourceTree = "<group>";
+		};
+		182BE0AC28BD0A0700327094 /* SettingCells */ = {
+			isa = PBXGroup;
+			children = (
+				1868EAD528BAB2E200216D62 /* GeneralSettingCell.swift */,
+			);
+			path = SettingCells;
+			sourceTree = "<group>";
+		};
+		182BE0AD28BD0A4A00327094 /* AudioQualityVC */ = {
+			isa = PBXGroup;
+			children = (
+				185BE70E28BBE539004484CF /* AudioQualityVC.swift */,
+				182BE0AE28BD0A5900327094 /* AudioQualityCells */,
+			);
+			path = AudioQualityVC;
+			sourceTree = "<group>";
+		};
+		182BE0AE28BD0A5900327094 /* AudioQualityCells */ = {
+			isa = PBXGroup;
+			children = (
+				185BE71028BBE568004484CF /* AudioQualityCell.swift */,
+			);
+			path = AudioQualityCells;
+			sourceTree = "<group>";
+		};
+		182BE0AF28BD29A100327094 /* ExistingVC */ = {
+			isa = PBXGroup;
+			children = (
+				182BE0B028BD29C000327094 /* ExistingVC.swift */,
+			);
+			path = ExistingVC;
+			sourceTree = "<group>";
+		};
+		182BE0B428BD3ACF00327094 /* MicroSensitivity */ = {
+			isa = PBXGroup;
+			children = (
+				182BE0B528BD3B6000327094 /* MicroSensitivityVC.swift */,
+			);
+			path = MicroSensitivity;
+			sourceTree = "<group>";
+		};
+		182BE0B728BD457400327094 /* ProfileVC */ = {
+			isa = PBXGroup;
+			children = (
+				182BE0B828BD459A00327094 /* ProfileVC.swift */,
+				182BE0BA28BD45EF00327094 /* ProfileCell */,
+			);
+			path = ProfileVC;
+			sourceTree = "<group>";
+		};
+		182BE0BA28BD45EF00327094 /* ProfileCell */ = {
+			isa = PBXGroup;
+			children = (
+				182BE0BB28BD461E00327094 /* ProfileCell.swift */,
+			);
+			path = ProfileCell;
+			sourceTree = "<group>";
+		};
+		182BE0BF28BD4ED900327094 /* NamingFormat */ = {
+			isa = PBXGroup;
+			children = (
+				182BE0BD28BD4ED000327094 /* NamingFormatVC.swift */,
+				182BE0C028BD508500327094 /* NamingFormatCell.swift */,
+			);
+			path = NamingFormat;
+			sourceTree = "<group>";
+		};
+		1854B88A28B957F50039A96E /* TableViewXIB */ = {
+			isa = PBXGroup;
+			children = (
+				1868EAD728BAB3BB00216D62 /* RecordingCell.swift */,
+				1868EAD828BAB3BB00216D62 /* RecordingCell.xib */,
+			);
+			path = TableViewXIB;
+			sourceTree = "<group>";
+		};
 		18CDDB0828B7D472006AB795 /* LoginVC */ = {
 			isa = PBXGroup;
 			children = (
@@ -92,6 +224,13 @@
 			isa = PBXGroup;
 			children = (
 				18CDDB0C28B7D683006AB795 /* TabbarVC.swift */,
+				182BE0AF28BD29A100327094 /* ExistingVC */,
+				182BE0A928BD09CB00327094 /* UploadProgressVC */,
+				182BE0AB28BD09EB00327094 /* SettingVC */,
+				182BE0AD28BD0A4A00327094 /* AudioQualityVC */,
+				182BE0B728BD457400327094 /* ProfileVC */,
+				182BE0BF28BD4ED900327094 /* NamingFormat */,
+				182BE0B428BD3ACF00327094 /* MicroSensitivity */,
 			);
 			path = TabbarVC;
 			sourceTree = "<group>";
@@ -121,6 +260,7 @@
 				180EB43628B6A45000F1A3FB /* Extensions */,
 				28A4F5DC28B51D630035137B /* Helpers */,
 				28A4F5DB28B517D50035137B /* View controllers */,
+				1854B88A28B957F50039A96E /* TableViewXIB */,
 				28A4F5DA28B517C10035137B /* Storyboards */,
 				180EB43728B6A52200F1A3FB /* Extras */,
 				28A4F5D328B510DE0035137B /* Info.plist */,
@@ -143,6 +283,7 @@
 				28A4F5CB28B510D90035137B /* Main.storyboard */,
 				18CDDB0928B7D493006AB795 /* Tabbar.storyboard */,
 				28A4F5D028B510DE0035137B /* LaunchScreen.storyboard */,
+				182BE0B228BD332300327094 /* Settings.storyboard */,
 			);
 			path = Storyboards;
 			sourceTree = "<group>";
@@ -236,7 +377,9 @@
 				18CDDB0A28B7D493006AB795 /* Tabbar.storyboard in Resources */,
 				28A4F5D228B510DE0035137B /* LaunchScreen.storyboard in Resources */,
 				28A4F5CF28B510DE0035137B /* Assets.xcassets in Resources */,
+				182BE0B328BD332300327094 /* Settings.storyboard in Resources */,
 				28A4F5CD28B510D90035137B /* Main.storyboard in Resources */,
+				1868EADA28BAB3BB00216D62 /* RecordingCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -289,14 +432,27 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1868EAD428BAAAD600216D62 /* SettingsVC.swift in Sources */,
 				180EB43528B6A15900F1A3FB /* BaseViewController.swift in Sources */,
 				28A4F5CA28B510D90035137B /* LoginVC.swift in Sources */,
+				1868EAD628BAB2E200216D62 /* GeneralSettingCell.swift in Sources */,
+				1854B88928B94F690039A96E /* UploadProgressVC.swift in Sources */,
+				185BE70F28BBE539004484CF /* AudioQualityVC.swift in Sources */,
 				18CDDB0D28B7D683006AB795 /* TabbarVC.swift in Sources */,
+				182BE0BE28BD4ED000327094 /* NamingFormatVC.swift in Sources */,
 				180EB43928B6A87D00F1A3FB /* Extension+UIViewController.swift in Sources */,
 				18CDDB0F28B7D96C006AB795 /* Storyboard.swift in Sources */,
+				1854B88C28B958530039A96E /* UploadListCell.swift in Sources */,
 				28A4F5C628B510D90035137B /* AppDelegate.swift in Sources */,
+				182BE0B628BD3B6000327094 /* MicroSensitivityVC.swift in Sources */,
+				182BE0B928BD459A00327094 /* ProfileVC.swift in Sources */,
 				28A4F5DE28B51D750035137B /* Extension+Navigation.swift in Sources */,
+				185BE71128BBE568004484CF /* AudioQualityCell.swift in Sources */,
+				182BE0BC28BD461E00327094 /* ProfileCell.swift in Sources */,
 				28A4F5C828B510D90035137B /* SceneDelegate.swift in Sources */,
+				1868EAD928BAB3BB00216D62 /* RecordingCell.swift in Sources */,
+				182BE0B128BD29C000327094 /* ExistingVC.swift in Sources */,
+				182BE0C128BD508500327094 /* NamingFormatCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

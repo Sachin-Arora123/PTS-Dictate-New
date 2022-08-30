@@ -2,28 +2,29 @@
 //  MicroSensitivityVC.swift
 //  PTS Dictate
 //
-//  Created by Hero's on 29/08/22.
+//  Created by Paras Kamboj on 29/08/22.
 //
 
 import UIKit
 
-class MicroSensitivityVC: UIViewController {
-
+class MicroSensitivityVC: BaseViewController {
+   
+    // MARK: - @IBOutlets.
+    @IBOutlet weak var slider: UISlider!
+    @IBOutlet weak var lblInfoTitle: UILabel!
+    
+    // MARK: - View Life-Cycle.
     override func viewDidLoad() {
         super.viewDidLoad()
-
         // Do any additional setup after loading the view.
+        setUpUI()
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    // MARK: - UISetup
+    func setUpUI(){
+        hideLeftButton()
+        setTitleWithoutImage("Microphone Sensitivity")
     }
-    */
+
 
 }

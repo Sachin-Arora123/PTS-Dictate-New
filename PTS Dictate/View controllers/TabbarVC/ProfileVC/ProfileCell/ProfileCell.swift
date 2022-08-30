@@ -2,12 +2,16 @@
 //  ProfileCell.swift
 //  PTS Dictate
 //
-//  Created by Hero's on 30/08/22.
+//  Created by Paras Kamboj on 30/08/22.
 //
 
 import UIKit
 
 class ProfileCell: UITableViewCell {
+
+    // MARK: - @IBOutlets.
+    @IBOutlet weak var lblTitleName: UILabel!
+    @IBOutlet weak var lblTitleValue: UILabel!
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -19,5 +23,6 @@ class ProfileCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
+    
 
 }

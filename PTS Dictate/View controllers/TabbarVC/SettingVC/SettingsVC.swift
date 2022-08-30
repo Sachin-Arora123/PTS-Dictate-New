@@ -23,17 +23,20 @@ class SettingsVC: BaseViewController {
                       "Upload via WiFi only",
                       "Sleep Mode Override","About","Logout"]
     let iconArray = ["settings_profile","settings_edit","settings_upload","settings_wifi","settings_standby","settings_info","settings_logout"]
+    
+    
     // MARK: - View Life-Cycle.
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.tabBarController?.navigationItem.hidesBackButton = true
+        setUI()
+        self.tabBarController?.navigationItem.leftBarButtonItem = nil
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        setUI()
     }
+    
     // setUI
     func setUI(){
         tableView.delegate = self
@@ -113,12 +116,23 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
                 let vc = AudioQualityVC.instantiateFromAppStoryboard(appStoryboard: .Main)
                 self.navigationController?.pushViewController(vc, animated: true)
             case 1:
+                let vc = MicroSensitivityVC.instantiateFromAppStoryboard(appStoryboard: .Settings)
+                self.navigationController?.pushViewController(vc, animated: true)
                 break
             default:
                 break
             }
         case 1:
-            break
+            switch indexPath.row{
+            case 0:
+                let vc = ProfileVC.instantiateFromAppStoryboard(appStoryboard: .Settings)
+                self.navigationController?.pushViewController(vc, animated: true)
+            case 1:
+                let vc = NamingFormatVC.instantiateFromAppStoryboard(appStoryboard: .Settings)
+                self.navigationController?.pushViewController(vc, animated: true)
+            default:
+                break
+            }
         default:
             break
         }
