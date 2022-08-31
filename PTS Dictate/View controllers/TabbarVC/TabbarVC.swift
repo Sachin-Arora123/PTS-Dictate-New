@@ -56,4 +56,22 @@ class TabbarVC: UITabBarController, UITabBarControllerDelegate {
               break
           }
       }
+    
+    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        if viewController.title == "logout"{
+            print("logout")
+            CommonFunctions.showAlert(view: viewController, title: "PTS Dictate", message: "Are you sure you want to Logout?", completion: {
+                (result) in
+                if result{
+                    print("Tapped Yes")
+                    CoreData.shared.deleteProfile()
+                    AppDelegate.sharedInstance().moveToLoginVC()
+                }else{
+                    print("Tapped No")
+                }
+            })
+            return false
+        }
+        return true
+    }
 }

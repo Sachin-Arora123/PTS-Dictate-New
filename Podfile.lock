@@ -1,16 +1,32 @@
 PODS:
+  - Alamofire (5.6.2)
   - IQKeyboardManagerSwift (6.5.10)
+  - SwiftEntryKit (2.0.0)
+  - SwiftyJSON (5.0.1)
+  - Toaster (2.3.0)
 
 DEPENDENCIES:
+  - Alamofire
   - IQKeyboardManagerSwift
+  - SwiftEntryKit
+  - SwiftyJSON
+  - Toaster
 
 SPEC REPOS:
   trunk:
+    - Alamofire
     - IQKeyboardManagerSwift
+    - SwiftEntryKit
+    - SwiftyJSON
+    - Toaster
 
 SPEC CHECKSUMS:
+  Alamofire: d368e1ff8a298e6dde360e35a3e68e6c610e7204
   IQKeyboardManagerSwift: 52962c76ab33532f15ad9f3ff4e5715eda5335bb
+  SwiftEntryKit: 61b5fa36f34a97dd8013e48a7345bc4c4720be9a
+  SwiftyJSON: 2f33a42c6fbc52764d96f13368585094bfd8aa5e
+  Toaster: c3473963c78e8cabbf6ea6f11ad0fdaae6f54987
 
-PODFILE CHECKSUM: 94e9abe2e22b0edd1de1fab38bf9b6e2b953be66
+PODFILE CHECKSUM: 43610135912cebf6922a0c93cdc5cb05a9341cd0
 
 COCOAPODS: 1.11.3

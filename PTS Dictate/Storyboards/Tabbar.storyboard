@@ -185,7 +185,6 @@
         <!--SettingsVC-->
         <scene sceneID="LEu-2f-n1y">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="qM3-y2-Ioa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <viewController storyboardIdentifier="SettingsVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Rzn-9T-ECL" customClass="SettingsVC" customModule="PTS_Dictate" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="csM-RO-Bd2">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
@@ -282,13 +281,14 @@
                         <outlet property="tableView" destination="NV3-Ww-im7" id="jFT-dT-RHZ"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="qM3-y2-Ioa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1571.0144927536232" y="908.70535714285711"/>
         </scene>
-        <!--Item-->
+        <!--logout-->
         <scene sceneID="Ov5-az-OpD">
             <objects>
-                <viewController id="yAW-ZS-92l" sceneMemberID="viewController">
+                <viewController title="logout" id="yAW-ZS-92l" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="MKN-Nv-jWV">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

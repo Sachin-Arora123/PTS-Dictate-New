@@ -17,6 +17,8 @@ class LoginViewModel {
         return singleTon.instance
     }
     
+    var loginViewController : LoginVC?
+    
     func LoginApiHit(userName : String, password: String){
         let params : [String : AnyObject] = [
             
@@ -24,9 +26,23 @@ class LoginViewModel {
             "Password" : password as AnyObject,
         ]
 //        CommonFunctions.showLoader()
-        ApiHandler.callApiWithParameters(url: ApiPath.login.rawValue, withParameters: params as [String: AnyObject], ofType: LoginAPI.self, onSuccess: { (LoginAPI) in
+        ApiHandler.callApiWithParameters(url: "\(ApiPath.login.rawValue)", withParameters: params as [String : AnyObject], ofType: LoginAPI.self, onSuccess: { (LoginAPI) in
 //            CommonFunctions.hideLoader()
-            print(LoginAPI.token ?? "")
+            print(LoginAPI)
+            if LoginAPI.email != nil{
+                let vc = TabbarVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
+                    UIView.animate(withDuration: 0.50, animations: {() -> Void in
+                    UIView.setAnimationCurve(.easeInOut)
+                        self.loginViewController?.navigationController?.pushViewController(vc, animated: true)
+                        UIView.setAnimationTransition(.flipFromRight, for: (self.loginViewController?.navigationController?.view)!, cache: false)
+                })
+                CoreData.shared.isRemeberMe = self.loginViewController?.isRemember ?? false
+                CoreData.shared.userName = userName
+                CoreData.shared.password = password
+                CoreData.shared.addData(loginData: LoginAPI)
+            }else{
+                CommonFunctions.toster("Please enter valid username & password")
+            }
             
         }, onFailure: { (reload, error) in
 //            CommonFunctions.hideLoader()
