@@ -8,4 +8,9 @@ target 'PTS Dictate' do
   # Pods for PTS Dictate
   
   pod 'IQKeyboardManagerSwift'
+  pod 'Alamofire'
+  pod 'SwiftyJSON'
+  pod 'Toaster'
+  pod 'SwiftEntryKit'
+
 end

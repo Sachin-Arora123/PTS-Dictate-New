@@ -13,6 +13,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        
+        CoreData.shared.getdata()
+        
+        if CoreData.shared.email != ""{
+            let vc = TabbarVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
+            let navigationController = UINavigationController(rootViewController: vc)
+            self.window?.rootViewController = navigationController
+//            navigationController.setNavigationBarHidden(true, animated: false)
+        }
+        
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
