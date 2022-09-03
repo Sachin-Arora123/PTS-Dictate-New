@@ -12,5 +12,5 @@ target 'PTS Dictate' do
   pod 'SwiftyJSON'
   pod 'Toaster'
   pod 'SwiftEntryKit'
-
+  pod 'iProgressHUD', '~> 1.1.1'
 end

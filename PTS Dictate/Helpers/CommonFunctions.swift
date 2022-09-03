@@ -8,6 +8,8 @@
 import Foundation
 import Toaster
 import SwiftEntryKit
+import iProgressHUD
+import UIKit
 
 
 class EntryAttributeWrapper {
@@ -17,26 +19,26 @@ class EntryAttributeWrapper {
     }
 }
 
-class CommonFunctions {
-    static func toster(_ txt : String){
+class CommonFunctions: iProgressHUDDelegete {
+    static func toster(_ title : String, titleDesc: String){
         let attributesWrapper: EntryAttributeWrapper = {
             var attributes = EKAttributes()
             attributes.positionConstraints = .fullWidth
             attributes.hapticFeedbackType = .success
             attributes.positionConstraints.safeArea = .empty(fillSafeArea: false)
 //            attributes.entryBackground = .visualEffect(style: .dark)
-            attributes.entryBackground = .gradient(gradient: .init(colors: [EKColor.init(red: 143, green: 37, blue: 27), EKColor.init(red: 143, green: 37, blue: 27)], startPoint: CGPoint(x: 0, y: 0.5), endPoint: CGPoint(x: 0, y: 0.5)))
+            attributes.entryBackground = .gradient(gradient: .init(colors: [EKColor.init(red: 153, green: 37, blue: 27), EKColor.init(red: 200, green: 69, blue: 49)], startPoint: CGPoint(x: 0, y: 0.5), endPoint: CGPoint(x: 0, y: 0.5)))
             return EntryAttributeWrapper(with: attributes)
         }()
         let title = EKProperty.LabelContent(
-            text: txt,
-            style: EKProperty.LabelStyle(font: UIFont.boldSystemFont(ofSize: 16), color: EKColor.white, alignment: NSTextAlignment.center, displayMode: .light, numberOfLines: 0)
+            text: title,
+            style: EKProperty.LabelStyle(font: UIFont.boldSystemFont(ofSize: 20), color: EKColor.white, alignment: NSTextAlignment.left, displayMode: .light, numberOfLines: 0)
         )
         let description = EKProperty.LabelContent(
-            text: "",
+            text: titleDesc,
             style: EKProperty.LabelStyle(
-                font: UIFont.systemFont(ofSize: 1, weight: .light),
-                color: .black
+                font: UIFont.systemFont(ofSize: 18, weight: .light),
+                color: .white,alignment: NSTextAlignment.left,displayMode: .light,numberOfLines: 0
             )
         )
         let simpleMessage = EKSimpleMessage(
@@ -72,4 +74,40 @@ class CommonFunctions {
             completion(true)
         }))
       }
+    static func getTopMostViewController() -> UIViewController?{
+        if var topController = UIApplication.shared.keyWindow?.rootViewController {
+            while let presentedViewController = topController.presentedViewController {
+                topController = presentedViewController
+            }
+            return topController
+            // topController should now be your topmost view controller
+        }
+        return nil
+    }
+    static func showLoader(title: String) {
+        let view = CommonFunctions.getTopMostViewController()?.view
+        let iProgress = iProgressHUD()
+        iProgress.isShowModal = true
+        iProgress.isShowCaption = true
+        iProgress.isTouchDismiss = false
+        iProgress.indicatorSize = 37
+        iProgress.indicatorStyle = .ballScaleMultiple
+        iProgress.alphaModal = 1
+        iProgress.alphaBox = 0.5
+        iProgress.boxCorner = 8
+        iProgress.captionDistance = 5
+        iProgress.modalColor = .clear
+        iProgress.boxSize = 40
+        iProgress.boxColor = .black
+        iProgress.indicatorColor = #colorLiteral(red: 0.5807225108, green: 0.066734083, blue: 0, alpha: 1)
+        iProgress.delegete = view.self as? iProgressHUDDelegete
+        iProgress.attachProgress(toViews: view!, title: title)
+        view!.showProgress()
+    }
+    
+    static func hideLoader() {
+        let view = CommonFunctions.getTopMostViewController()?.view
+        view!.dismissProgress()
+    }
+        
 }

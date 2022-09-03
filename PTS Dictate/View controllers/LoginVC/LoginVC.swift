@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import iProgressHUD
 
 class LoginVC: UIViewController {
     
@@ -51,10 +52,10 @@ class LoginVC: UIViewController {
         let userName = tfUserName.text ?? ""
         let tfPassword = tfPassword.text ?? ""
         if userName.trimmingCharacters(in: .whitespacesAndNewlines) == "" {
-            CommonFunctions.toster("User name should not be empty")
+            CommonFunctions.toster("PTS Dictate", titleDesc: "User name should not be empty")
             tfUserName.shake()
         }else if tfPassword.trimmingCharacters(in: .whitespacesAndNewlines) == ""{
-            CommonFunctions.toster("Password should not be empty")
+            CommonFunctions.toster("PTS Dictate", titleDesc: "Password should not be empty")
             self.tfPassword.shake()
         }else {
             loginViewModel.LoginApiHit(userName: userName, password: tfPassword)
@@ -78,8 +79,17 @@ extension LoginVC{
             self.tfPassword.text = CoreData.shared.password
             self.tfUserName.text = CoreData.shared.userName
         }
-//        self.tfPassword.setRightViewIcon(icon: UIImage(named: "multiply.circle.fill") ?? UIImage())
-//        self.tfUserName.setRightViewIcon(icon: UIImage.init(systemName: "multiply.circle.fill") ?? UIImage())
+            
+        self.setCrossBtn(tfs: [self.tfPassword, self.tfUserName])
+
+    }
+    
+    func setCrossBtn(tfs : [UITextField]){
+        for tf in tfs{
+            if let clearButton = tf.value(forKeyPath: "_clearButton") as? UIButton {
+                clearButton.setImage(UIImage(named:"multiply.circle.fill")?.withRenderingMode(.alwaysOriginal), for: .normal)
+            }
+        }
     }
     
     func setUpUI(){
@@ -121,14 +131,16 @@ extension LoginVC: UITextFieldDelegate{
         }
         return true
     }
-}
-
-extension UITextField {
-    func setRightViewIcon(icon: UIImage) {
-        let btnView = UIButton(frame: CGRect(x: 0, y: 0, width: ((self.frame.height) * 0.70), height: ((self.frame.height) * 0.70)))
-        btnView.setImage(icon, for: .normal)
-        btnView.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 3)
-        self.rightViewMode = .always
-        self.rightView = btnView
+    
+    func textFieldShouldClear(_ textField: UITextField) -> Bool {
+        switch textField{
+        case tfPassword:
+            self.tfPassword.text = ""
+        case tfUserName:
+            self.tfUserName.text = ""
+        default:
+            break
+        }
+        return true
     }
 }

@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import iProgressHUD
 
 class LoginViewModel {
     
@@ -25,9 +26,9 @@ class LoginViewModel {
             "Login_Name" : userName as AnyObject,
             "Password" : password as AnyObject,
         ]
-//        CommonFunctions.showLoader()
+        CommonFunctions.showLoader(title: "Logging In...")
         ApiHandler.callApiWithParameters(url: "\(ApiPath.login.rawValue)", withParameters: params as [String : AnyObject], ofType: LoginAPI.self, onSuccess: { (LoginAPI) in
-//            CommonFunctions.hideLoader()
+            CommonFunctions.hideLoader()
             print(LoginAPI)
             if LoginAPI.email != nil{
                 let vc = TabbarVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
@@ -41,7 +42,7 @@ class LoginViewModel {
                 CoreData.shared.password = password
                 CoreData.shared.addData(loginData: LoginAPI)
             }else{
-                CommonFunctions.toster("Please enter valid username & password")
+                CommonFunctions.toster("PTS Dictate",titleDesc: "Please enter valid username & password")
             }
             
         }, onFailure: { (reload, error) in
