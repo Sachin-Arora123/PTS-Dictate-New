@@ -14,7 +14,7 @@ class AudioQualityVC: BaseViewController {
     
     // MARK: - data var
     let titleArray = ["11 kHz","22 kHz","44.1kHz"]
-    var selectedData = "AAC"
+    var selectedData = "11 kHz"
     
     
     // MARK: - View Life-Cycle.
@@ -63,7 +63,8 @@ extension AudioQualityVC: UITableViewDelegate,UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section{
         case 0:
-            self.selectedData = "AAC"
+//            self.selectedData = "AAC"
+            break
         case 1:
             self.selectedData = titleArray[indexPath.row]
         default:
@@ -79,7 +80,10 @@ extension AudioQualityVC: UITableViewDelegate,UITableViewDataSource {
         case 0:
             cell.lblTitle.text = "AAC"
             self.tableView.separatorStyle = .none
+            cell.isUserInteractionEnabled = false
+            cell.imgViewTick.isHidden = true
         case 1:
+            cell.isUserInteractionEnabled = true
             self.tableView.separatorStyle = .singleLine
             cell.lblTitle.text = titleArray[indexPath.row]
         default:
