@@ -14,16 +14,16 @@ class SettingsVC: BaseViewController {
     
     // data var
     let sectionTitle = ["RECORDING","GENERAL"]
-    let dataTitle1 = ["Audio Quality","Microphone Sensitivity",
+    var dataTitle1 = ["Audio Quality","Microphone Sensitivity",
                      "Voice Activation Auto Pause",
                      "Disable Email Notification","Comments Screen",
-                     "Indexing","Disable Editing Help Screens"]
+                     "   Comments Screen - Mandatory","Indexing","Disable Editing Help Screens"]
     let dataTitle2 = ["Profile","File Naming Date Format",
                       "Archive file after upload",
                       "Upload via WiFi only",
                       "Sleep Mode Override","About","Logout"]
     let iconArray = ["settings_profile","settings_edit","settings_upload","settings_wifi","settings_standby","settings_info","settings_logout"]
-    
+    var switchState = true
     
     // MARK: - View Life-Cycle.
     override func viewWillAppear(_ animated: Bool) {
@@ -43,6 +43,19 @@ class SettingsVC: BaseViewController {
         tableView.dataSource = self
         setTitleWithImage("Settings", andImage: UIImage(named: "tabbar_settings_highlighted") ?? UIImage())
         tableView.register(UINib(nibName: "RecordingCell", bundle: nil), forCellReuseIdentifier: "RecordingCell")
+    }
+    // LogOut
+    func logOutAlert(){
+        CommonFunctions.showAlert(view: self, title: "PTS Dictate", message: "Are you sure you want to Logout?", completion: {
+            (result) in
+            if result{
+                print("Tapped Yes")
+                CoreData.shared.deleteProfile()
+                AppDelegate.sharedInstance().moveToLoginVC()
+            }else{
+                print("Tapped No")
+            }
+        })
     }
 }
 
@@ -65,11 +78,21 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
         case 0:
             let cell = tableView.dequeueReusableCell(withIdentifier: "RecordingCell", for: indexPath) as!
             RecordingCell
+            cell.btnSwitch.tag = indexPath.row
             cell.lblTitle.text = dataTitle1[indexPath.row]
+            cell.btnSwitch.addTarget(self, action: #selector(switchValueDidChange(_:)), for: .valueChanged)
             switch indexPath.row{
             case 0,1:
                 cell.btnSwitch.isHidden = true
-            
+            case 5:
+                cell.imgViewArrow.isHidden = true
+                if switchState{
+                    
+                }else{
+                    cell.lblTitle.text = ""
+                    cell.btnSwitch.isHidden = true
+                    cell.imgViewArrow.isHidden = true
+                }
             default:
                 cell.imgViewArrow.isHidden = true
                 break
@@ -130,6 +153,11 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
             case 1:
                 let vc = NamingFormatVC.instantiateFromAppStoryboard(appStoryboard: .Settings)
                 self.navigationController?.pushViewController(vc, animated: true)
+            case 5:
+                let vc = AboutVC.instantiateFromAppStoryboard(appStoryboard: .Settings)
+                self.navigationController?.pushViewController(vc, animated: true)
+            case 6:
+                self.logOutAlert()
             default:
                 break
             }
@@ -143,7 +171,43 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        switch indexPath.section {
+        case 0:
+            switch indexPath.row {
+            case 5 :
+                if switchState{
+                    return UITableView.automaticDimension
+                }else{
+                    return 0
+                }
+            default:
+                break
+            }
+        case 1:
+            break
+        default:
+            break
+        }
         return UITableView.automaticDimension
+    }
+    
+    @objc func switchValueDidChange(_ sender: UISwitch){
+        switch sender.tag {
+        case 4:
+            if sender.isOn {
+                switchState = true
+                let indexPath = IndexPath(row: 5, section: 0)
+                self.tableView.reloadRows(at: [indexPath], with: UITableView.RowAnimation.bottom)
+            }else{
+                switchState = false
+                let indexPath = IndexPath(row: 5, section: 0)
+                self.tableView.reloadRows(at: [indexPath], with: UITableView.RowAnimation.top)
+            }
+        case 5:
+            break
+        default:
+            break
+        }
     }
 }
 

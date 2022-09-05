@@ -73,10 +73,11 @@ class BaseViewController: UIViewController {
     
     func addRightButton(selector: Selector) {
         let rightBarButtonItem = UIBarButtonItem(title: "Done", style: UIBarButtonItem.Style.done, target: self, action: selector)
-        self.navigationItem.rightBarButtonItem = rightBarButtonItem
         UIBarButtonItem.appearance()
-            .setTitleTextAttributes([NSAttributedString.Key.font: UIFont.systemFont(ofSize: 22)], for: .normal)
-        
+            .setTitleTextAttributes([NSAttributedString.Key.font: UIFont.systemFont(ofSize: 22, weight: .heavy)], for: .normal)
+        rightBarButtonItem.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.appThemeColor], for: .normal)
+        self.tabBarController?.navigationItem.rightBarButtonItem = rightBarButtonItem
+
     }
     
     @objc func btnBackAction() {

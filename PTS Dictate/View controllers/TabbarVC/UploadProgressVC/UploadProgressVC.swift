@@ -11,6 +11,7 @@ class UploadProgressVC: BaseViewController {
     
     // MARK: - @IBOutlets.
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var viewNoUpload: UIView!
     
     // MARK: - View Life-Cycle.
     override func viewDidLoad() {
@@ -19,6 +20,7 @@ class UploadProgressVC: BaseViewController {
         tableView.delegate = self
         tableView.dataSource = self
         setTitleWithImage("Uploads", andImage: UIImage(named: "settings_upload.png") ?? UIImage())
+        self.viewNoUpload.isHidden = true
     }
     
     override func viewWillAppear(_ animated: Bool) {

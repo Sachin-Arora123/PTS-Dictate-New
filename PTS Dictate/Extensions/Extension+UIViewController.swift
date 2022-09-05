@@ -18,4 +18,12 @@ extension UIViewController {
     @objc func dismissKeyboard() {
         view.endEditing(true)
     }
+    
+    func setPushTransitionAnimation(_ viewController: UIViewController?) {
+        let transition = CATransition()
+        transition.duration = 0.9
+        transition.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+        transition.type = .fade
+        viewController?.navigationController?.view.layer.add(transition, forKey: nil)
+    }
 }

@@ -22,6 +22,7 @@ class TabbarVC: UITabBarController, UITabBarControllerDelegate {
         let thirdItemView = self.tabBar.subviews[2]
         self.thirdTabbarItemImageView = thirdItemView.subviews.first as? UIImageView
         self.thirdTabbarItemImageView.contentMode = .center
+        self.navigationController?.addCustomBottomLine(color: .black, height: 2.0)
     }
     
     override func viewWillLayoutSubviews() {
