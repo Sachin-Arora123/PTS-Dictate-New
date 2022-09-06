@@ -20,12 +20,13 @@ class AudioQualityVC: BaseViewController {
     // MARK: - View Life-Cycle.
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.setUpUI()
+        
         // Do any additional setup after loading the view.
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.setUpUI()
     }
     
     @objc func btncActBack(_ sender : UIButton){
