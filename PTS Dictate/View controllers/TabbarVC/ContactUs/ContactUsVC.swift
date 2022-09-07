@@ -20,18 +20,23 @@ class ContactUsVC: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        setUpUI()
+//        setUpUI()
     }
-   
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-
+        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setUpUI()
     }
     
     // MARK: - UISetup
     func setUpUI(){
         hideLeftButton()
-//        setTitleWithoutImage("Contact Us")
+        setTitleWithoutImage("Contact Us")
         tableView.delegate = self
         tableView.dataSource = self
         tableView.contentInset =  UIEdgeInsets(top: -12, left: 0, bottom: 0, right: 0)

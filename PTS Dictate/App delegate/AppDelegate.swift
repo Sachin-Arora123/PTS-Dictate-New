@@ -24,10 +24,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         CoreData.shared.getdata()
         if CoreData.shared.email != "" {
-            let mainVC = TabbarVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
-            let navigationController = UINavigationController(rootViewController: mainVC)
-            window?.rootViewController = navigationController
-//            navigationController.setNavigationBarHidden(true, animated: false)
+            let vc = TabbarVC.instantiateFromAppStoryboard(appStoryboard: AppStoryboard.Tabbar)
+            let navigationController = UINavigationController(rootViewController: vc)
+            if UIApplication.shared.windows.count > 0 {
+                UIApplication.shared.windows[0].rootViewController = navigationController
+                navigationController.setNavigationBarHidden(true, animated: false)
+            }
         }
         
         
@@ -104,6 +106,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //        nav.setNavigationBarHidden(true, animated: false)
         changeRootViewController(nav)
     }
+    
     func changeRootViewController(_ vc: UIViewController, animated: Bool = true) {
         guard let window = self.window else {
             return

@@ -17,6 +17,7 @@
 		182BE0BE28BD4ED000327094 /* NamingFormatVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182BE0BD28BD4ED000327094 /* NamingFormatVC.swift */; };
 		182BE0C128BD508500327094 /* NamingFormatCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182BE0C028BD508500327094 /* NamingFormatCell.swift */; };
 		184C5FED28C5239E005A52EB /* RecordVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184C5FEC28C5239E005A52EB /* RecordVC.swift */; };
+		184C964628C7C715004639B3 /* CommonElements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184C964528C7C715004639B3 /* CommonElements.swift */; };
 		1854B88928B94F690039A96E /* UploadProgressVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1854B88828B94F690039A96E /* UploadProgressVC.swift */; };
 		1854B88C28B958530039A96E /* UploadListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1854B88B28B958530039A96E /* UploadListCell.swift */; };
 		1855435628C36474008AFBC2 /* AboutVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1855435528C36474008AFBC2 /* AboutVC.swift */; };
@@ -65,6 +66,7 @@
 		182BE0BD28BD4ED000327094 /* NamingFormatVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NamingFormatVC.swift; sourceTree = "<group>"; };
 		182BE0C028BD508500327094 /* NamingFormatCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NamingFormatCell.swift; sourceTree = "<group>"; };
 		184C5FEC28C5239E005A52EB /* RecordVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordVC.swift; sourceTree = "<group>"; };
+		184C964528C7C715004639B3 /* CommonElements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonElements.swift; sourceTree = "<group>"; };
 		1854B88828B94F690039A96E /* UploadProgressVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadProgressVC.swift; sourceTree = "<group>"; };
 		1854B88B28B958530039A96E /* UploadListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadListCell.swift; sourceTree = "<group>"; };
 		1855435528C36474008AFBC2 /* AboutVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutVC.swift; sourceTree = "<group>"; };
@@ -247,6 +249,14 @@
 			path = RecordVC;
 			sourceTree = "<group>";
 		};
+		184C964428C7C707004639B3 /* CommonFunctions */ = {
+			isa = PBXGroup;
+			children = (
+				184C964528C7C715004639B3 /* CommonElements.swift */,
+			);
+			path = CommonFunctions;
+			sourceTree = "<group>";
+		};
 		1854B88A28B957F50039A96E /* TableViewXIB */ = {
 			isa = PBXGroup;
 			children = (
@@ -366,6 +376,7 @@
 		28A4F5C428B510D90035137B /* PTS Dictate */ = {
 			isa = PBXGroup;
 			children = (
+				184C964428C7C707004639B3 /* CommonFunctions */,
 				18DF4BD828BE7D4F002FC063 /* CoreData */,
 				18DF4BCA28BE7B5D002FC063 /* APIHandler */,
 				28A4F5D928B517B40035137B /* App delegate */,
@@ -583,6 +594,7 @@
 				182BE0BC28BD461E00327094 /* ProfileCell.swift in Sources */,
 				28A4F5C828B510D90035137B /* SceneDelegate.swift in Sources */,
 				1868EAD928BAB3BB00216D62 /* RecordingCell.swift in Sources */,
+				184C964628C7C715004639B3 /* CommonElements.swift in Sources */,
 				182BE0B128BD29C000327094 /* ExistingVC.swift in Sources */,
 				182BE0C128BD508500327094 /* NamingFormatCell.swift in Sources */,
 			);
@@ -737,8 +749,10 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -766,8 +780,10 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

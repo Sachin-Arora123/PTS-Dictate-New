@@ -19,13 +19,14 @@ class UploadProgressVC: BaseViewController {
         // Do any additional setup after loading the view.
         tableView.delegate = self
         tableView.dataSource = self
-        setTitleWithImage("Uploads", andImage: UIImage(named: "settings_upload.png") ?? UIImage())
         self.viewNoUpload.isHidden = true
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.tabBarController?.navigationItem.hidesBackButton = true
+//        self.tabBarController?.navigationItem.hidesBackButton = true
+        self.tabBarController?.navigationItem.leftBarButtonItem = nil
+        setTitleWithImage("Uploads", andImage: UIImage(named: "settings_upload.png") ?? UIImage())
     }
 }
 
