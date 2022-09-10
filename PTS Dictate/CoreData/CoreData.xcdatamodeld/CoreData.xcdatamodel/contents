@@ -4,11 +4,12 @@
         <attribute name="accessToken" optional="YES" attributeType="String"/>
         <attribute name="email" optional="YES" attributeType="String"/>
         <attribute name="isRemeberMe" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="noteSoundUrl" optional="YES" attributeType="String"/>
         <attribute name="password" optional="YES" attributeType="String"/>
         <attribute name="privilege" optional="YES" attributeType="String"/>
         <attribute name="userName" optional="YES" attributeType="String"/>
     </entity>
     <elements>
-        <element name="Login" positionX="-63" positionY="-18" width="128" height="119"/>
+        <element name="Login" positionX="-63" positionY="-18" width="128" height="134"/>
     </elements>
 </model>

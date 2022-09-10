@@ -1,5 +1,6 @@
 PODS:
   - Alamofire (5.6.2)
+  - FDWaveformView (5.0.1)
   - iProgressHUD (1.1.1)
   - IQKeyboardManagerSwift (6.5.10)
   - SwiftEntryKit (2.0.0)
@@ -8,6 +9,7 @@ PODS:
 
 DEPENDENCIES:
   - Alamofire
+  - FDWaveformView
   - iProgressHUD (~> 1.1.1)
   - IQKeyboardManagerSwift
   - SwiftEntryKit
@@ -17,6 +19,7 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - Alamofire
+    - FDWaveformView
     - iProgressHUD
     - IQKeyboardManagerSwift
     - SwiftEntryKit
@@ -25,12 +28,13 @@ SPEC REPOS:
 
 SPEC CHECKSUMS:
   Alamofire: d368e1ff8a298e6dde360e35a3e68e6c610e7204
+  FDWaveformView: c188be613947273cc83d6f0056505f60e6c4b9ac
   iProgressHUD: caa742128253c97f2c2e1ec59e2bbe6cf689df6a
   IQKeyboardManagerSwift: 52962c76ab33532f15ad9f3ff4e5715eda5335bb
   SwiftEntryKit: 61b5fa36f34a97dd8013e48a7345bc4c4720be9a
   SwiftyJSON: 2f33a42c6fbc52764d96f13368585094bfd8aa5e
   Toaster: c3473963c78e8cabbf6ea6f11ad0fdaae6f54987
 
-PODFILE CHECKSUM: 528726d7c5cb593d64c9f15ec0e48ff695cd0c32
+PODFILE CHECKSUM: 557c393433b8a44e84141d8dde297070ddca9fbb
 
 COCOAPODS: 1.11.3
