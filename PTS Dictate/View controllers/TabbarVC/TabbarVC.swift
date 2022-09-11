@@ -11,6 +11,7 @@ import UIKit
 class TabbarVC: UITabBarController, UITabBarControllerDelegate {
     
     var thirdTabbarItemImageView: UIImageView!
+    var viewControllerToSelect: UIViewController?
     
     let tabbarNames : [String] = ["Existing\rDictations","Uploads\rin progress","Record","Settings","Logout"]
     

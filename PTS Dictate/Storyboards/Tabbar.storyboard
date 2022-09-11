@@ -226,9 +226,9 @@
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BoE-Bi-mfV">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BoE-Bi-mfV" customClass="FDWaveformView" customModule="FDWaveformView">
                                         <rect key="frame" x="10" y="45.5" width="394" height="50"/>
-                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="50" id="hct-47-aGk"/>
                                         </constraints>
@@ -617,8 +617,14 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00:00" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8du-Pf-dUx">
-                                <rect key="frame" x="95" y="160.5" width="224" height="37"/>
+                                <rect key="frame" x="95" y="150.5" width="224" height="37"/>
                                 <fontDescription key="fontDescription" name="Arial-BoldMT" family="Arial" pointSize="33"/>
+                                <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Stopped" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0dl-dH-n19">
+                                <rect key="frame" x="95" y="189.5" width="224" height="16"/>
+                                <fontDescription key="fontDescription" name="Arial-BoldMT" family="Arial" pointSize="14"/>
                                 <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -667,7 +673,7 @@
                                             <constraint firstAttribute="width" constant="65" id="WpU-Q5-Jbn"/>
                                         </constraints>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                        <state key="normal" backgroundImage="existing_controls_play_btn_normal"/>
+                                        <state key="normal" backgroundImage="existing_controls_play_btn_diable"/>
                                         <connections>
                                             <action selector="onTapPlay:" destination="7Dt-rL-rdk" eventType="touchUpInside" id="daL-nY-8Op"/>
                                         </connections>
@@ -679,7 +685,7 @@
                                             <constraint firstAttribute="height" constant="40" id="giE-hm-BwM"/>
                                         </constraints>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                        <state key="normal" backgroundImage="existing_forward_fast_normal"/>
+                                        <state key="normal" backgroundImage="existing_forward_fast_disable"/>
                                         <connections>
                                             <action selector="onTapForwardTrimEnd:" destination="7Dt-rL-rdk" eventType="touchUpInside" id="hbF-vM-gMD"/>
                                         </connections>
@@ -691,7 +697,7 @@
                                             <constraint firstAttribute="height" constant="40" id="bC0-et-Wa5"/>
                                         </constraints>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                        <state key="normal" backgroundImage="existing_forward_normal"/>
+                                        <state key="normal" backgroundImage="existing_forward_disable"/>
                                         <connections>
                                             <action selector="onTapForwardTrim:" destination="7Dt-rL-rdk" eventType="touchUpInside" id="Evp-HR-dHO"/>
                                         </connections>
@@ -816,6 +822,7 @@
                             <constraint firstItem="yo8-jP-fyy" firstAttribute="trailing" secondItem="WHC-EH-Ct0" secondAttribute="trailing" constant="15" id="2Ah-zx-eex"/>
                             <constraint firstItem="o8d-Qa-DU6" firstAttribute="leading" secondItem="yo8-jP-fyy" secondAttribute="leading" constant="20" id="2fr-LO-0ui"/>
                             <constraint firstItem="yo8-jP-fyy" firstAttribute="trailing" secondItem="GVr-qK-lEL" secondAttribute="trailing" id="2lq-22-PHf"/>
+                            <constraint firstItem="0dl-dH-n19" firstAttribute="leading" secondItem="8du-Pf-dUx" secondAttribute="leading" id="4nW-et-uxo"/>
                             <constraint firstItem="bmD-0y-Xqp" firstAttribute="top" secondItem="EO8-So-pyD" secondAttribute="bottom" constant="10" id="5pb-GF-6QN"/>
                             <constraint firstItem="uzQ-gQ-Tw4" firstAttribute="top" secondItem="J8T-nC-uAX" secondAttribute="bottom" constant="25" id="6NA-0z-cKG"/>
                             <constraint firstItem="lDn-VJ-Xdc" firstAttribute="bottom" secondItem="bmD-0y-Xqp" secondAttribute="bottom" id="7Ef-FQ-Cgh"/>
@@ -823,15 +830,17 @@
                             <constraint firstItem="J8T-nC-uAX" firstAttribute="top" secondItem="o8d-Qa-DU6" secondAttribute="top" id="Dtw-rT-zdg"/>
                             <constraint firstItem="lDn-VJ-Xdc" firstAttribute="leading" secondItem="bmD-0y-Xqp" secondAttribute="trailing" constant="5" id="EDK-f5-a78"/>
                             <constraint firstItem="IFu-Ny-Pj0" firstAttribute="top" secondItem="yo8-jP-fyy" secondAttribute="top" constant="15" id="HA7-40-gKq"/>
-                            <constraint firstItem="8du-Pf-dUx" firstAttribute="centerY" secondItem="o8d-Qa-DU6" secondAttribute="centerY" id="HFb-Vb-ky9"/>
+                            <constraint firstItem="8du-Pf-dUx" firstAttribute="centerY" secondItem="o8d-Qa-DU6" secondAttribute="centerY" constant="-10" id="HFb-Vb-ky9"/>
                             <constraint firstItem="WHC-EH-Ct0" firstAttribute="bottom" secondItem="u5k-jG-Lb8" secondAttribute="bottom" id="Ivu-Vy-0VY"/>
                             <constraint firstItem="EO8-So-pyD" firstAttribute="top" secondItem="u5k-jG-Lb8" secondAttribute="bottom" constant="10" id="MiV-Sj-n48"/>
                             <constraint firstItem="J8T-nC-uAX" firstAttribute="leading" secondItem="8du-Pf-dUx" secondAttribute="trailing" constant="5" id="MrT-K0-MEc"/>
                             <constraint firstItem="GVr-qK-lEL" firstAttribute="bottom" secondItem="yo8-jP-fyy" secondAttribute="bottom" id="RDM-gf-y8v"/>
+                            <constraint firstItem="0dl-dH-n19" firstAttribute="top" secondItem="8du-Pf-dUx" secondAttribute="bottom" constant="2" id="S5d-Rh-sZx"/>
                             <constraint firstItem="WHC-EH-Ct0" firstAttribute="leading" secondItem="u5k-jG-Lb8" secondAttribute="trailing" constant="5" id="Uej-yw-iVf"/>
                             <constraint firstItem="u5k-jG-Lb8" firstAttribute="leading" secondItem="yo8-jP-fyy" secondAttribute="leading" constant="15" id="bCQ-0Q-Wtm"/>
                             <constraint firstItem="liF-96-KCv" firstAttribute="trailing" secondItem="WHC-EH-Ct0" secondAttribute="trailing" id="cGJ-Mg-46t"/>
                             <constraint firstItem="uzQ-gQ-Tw4" firstAttribute="trailing" secondItem="J8T-nC-uAX" secondAttribute="trailing" id="cyW-4S-6uO"/>
+                            <constraint firstItem="0dl-dH-n19" firstAttribute="trailing" secondItem="8du-Pf-dUx" secondAttribute="trailing" id="dmp-PY-M3z"/>
                             <constraint firstItem="8du-Pf-dUx" firstAttribute="leading" secondItem="o8d-Qa-DU6" secondAttribute="trailing" constant="5" id="edQ-dn-fnR"/>
                             <constraint firstItem="lDn-VJ-Xdc" firstAttribute="trailing" secondItem="WHC-EH-Ct0" secondAttribute="trailing" id="ejO-Ln-Q9U"/>
                             <constraint firstItem="liF-96-KCv" firstAttribute="bottom" secondItem="EO8-So-pyD" secondAttribute="bottom" id="hv6-Fg-TSZ"/>
@@ -864,6 +873,7 @@
                         <outlet property="lblFSizeValue" destination="liF-96-KCv" id="WhT-ym-brf"/>
                         <outlet property="lblMaxFSize" destination="bmD-0y-Xqp" id="nFl-oc-qmd"/>
                         <outlet property="lblMaxFSizeValue" destination="lDn-VJ-Xdc" id="dSQ-cF-2Ye"/>
+                        <outlet property="lblPlayerStatus" destination="0dl-dH-n19" id="tl9-Xe-eyo"/>
                         <outlet property="lblTime" destination="8du-Pf-dUx" id="0Ny-4J-Vip"/>
                         <outlet property="viewBottomButton" destination="GVr-qK-lEL" id="qnr-Yb-O04"/>
                         <outlet property="viewProgress" destination="IFu-Ny-Pj0" id="2fY-US-KVG"/>
@@ -1040,7 +1050,10 @@
         <image name="delete_btn_normal" width="120" height="40"/>
         <image name="discard_btn_normal" width="120" height="40"/>
         <image name="existing_backward_fast_disable" width="100" height="100"/>
+        <image name="existing_controls_play_btn_diable" width="100" height="100"/>
         <image name="existing_controls_play_btn_normal" width="100" height="100"/>
+        <image name="existing_forward_disable" width="256" height="256"/>
+        <image name="existing_forward_fast_disable" width="100" height="100"/>
         <image name="existing_forward_fast_normal" width="100" height="100"/>
         <image name="existing_forward_normal" width="256" height="256"/>
         <image name="existing_play_btn" width="256" height="256"/>
