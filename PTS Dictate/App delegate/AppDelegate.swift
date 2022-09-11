@@ -107,7 +107,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         changeRootViewController(nav)
     }
     
-    func changeRootViewController(_ vc: UIViewController, animated: Bool = true) {
+    func changeRootViewController(_ vc: UIViewController, options: UIView.AnimationOptions = .transitionFlipFromLeft ,animated: Bool = true) {
         guard let window = self.window else {
             return
         }
@@ -117,7 +117,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // add animation
         UIView.transition(with: window,
                           duration: 0.5,
-                          options: [.transitionFlipFromLeft],
+                          options: options,
                           animations: nil,
                           completion: nil)
 

@@ -42,23 +42,25 @@ class RecordVC: BaseViewController {
     var audioPlayer:AVAudioPlayer?
     var recordTimer:Timer!
     var audioFileName: String = ""
+    var dataListArray = [AnyObject]()
     
     // MARK: - View Life-Cycle.
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        self.recorderSetUp()
-        NotificationCenter.default.addObserver(self, selector: #selector(self.onDiscardRecorderSetUp), name: Notification.Name("refreshRecorder"), object: nil)
+//        self.recorderSetUp()
+//        NotificationCenter.default.addObserver(self, selector: #selector(self.onDiscardRecorderSetUp), name: Notification.Name("refreshRecorder"), object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setUpUI()
+        self.recorderSetUp()
     }
     
-    deinit {
-      NotificationCenter.default.removeObserver(self, name: Notification.Name("refreshRecorder"), object: nil)
-    }
+//    deinit {
+//      NotificationCenter.default.removeObserver(self, name: Notification.Name("refreshRecorder"), object: nil)
+//    }
     
     // MARK: - UISetup
     func setUpUI(){
@@ -244,24 +246,31 @@ class RecordVC: BaseViewController {
         return matches
     }
     
-    func saveRecordedAudio() {
+    func saveRecordedAudio(completion: @escaping(_ result: Bool) -> Void) {
         let url = getDocumentsDirectory().appendingPathComponent(".m4a")
          do {
              try self.audioFileName.write(to: url, atomically: true, encoding: .utf8)
              let input = try String(contentsOf: url)
-         NotificationCenter.default.post(name: Notification.Name("FileSaved"), object: nil)
-             print(input)
+             let dataDict:[String: String] = ["file": input]
+             NotificationCenter.default.post(name: Notification.Name("FileSaved"), object: nil, userInfo: dataDict)
+             print("Saved File--->>",input)
+             completion(true)
          } catch {
              print("Saving error-->>",error.localizedDescription)
          }
     }
+    
     @IBAction func onTapSave(_ sender: UIButton) {
         print("Saved")
         CommonFunctions.showAlert(view: self, title: "PTS Dictate", message: "Do you want to save the current Recording ?", completion: {
             (success) in
             if success{
-                self.saveRecordedAudio()
-                NotificationCenter.default.post(name: Notification.Name("refreshRecorder"), object: nil)
+                self.saveRecordedAudio() { (success) in
+                    if success{
+                        self.onDiscardRecorderSetUp()
+                    }
+                }
+//                NotificationCenter.default.post(name: Notification.Name("refreshRecorder"), object: nil)
                 DispatchQueue.main.async {
                     let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
                     self.setPushTransitionAnimation(VC)
@@ -283,14 +292,16 @@ class RecordVC: BaseViewController {
         CommonFunctions.showAlert(view: self, title: "PTS Dictate", message: "Do you want to discard the current Recording?", completion: {
             (success) in
             if success{
+                self.removeDiscardAudio(itemName: self.audioFileName, fileExtension: "m4a")
                 self.onDiscardRecorderSetUp()
+//                self.recorderSetUp()
             }
         })
         print("Discard")
     }
     
    @objc func onDiscardRecorderSetUp(){
-        self.recorderSetUp()
+//        self.recorderSetUp()
         self.recordTimer.invalidate()
         self.lblTime.text = "00:00:00"
         self.btnRecord.isUserInteractionEnabled = true
@@ -299,6 +310,53 @@ class RecordVC: BaseViewController {
         self.btnBackwardTrim.setBackgroundImage(UIImage(named: "existing_rewind_disable"), for: .normal)
         self.btnBackwardTrimEnd.setBackgroundImage(UIImage(named: "existing_backward_fast_disable"), for: .normal)
         self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
+    }
+    
+     func removeDiscardAudio(itemName: String, fileExtension: String) {
+//      let fileManager = NSFileManager.defaultManager()
+//      let nsDocumentDirectory = NSSearchPathDirectory.DocumentDirectory
+//      let nsUserDomainMask = NSSearchPathDomainMask.UserDomainMask
+//      let paths = NSSearchPathForDirectoriesInDomains(nsDocumentDirectory, nsUserDomainMask, true)
+//      guard let dirPath = paths.first else {
+//        return
+//      }
+//         let filePath = "\(self.getDocumentsDirectory())/\(itemName)"
+//      do {
+//          try fileManager.removeItem(atPath: filePath)
+//      } catch let error as NSError {
+//        print("Error on removing---->>>",error.localizedDescription)
+//      }
+         // Fine documents directory on device
+         var filePath = ""
+          let dirs : [String] = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.allDomainsMask, true)
+
+         if dirs.count > 0 {
+             let dir = dirs[0] //documents directory
+             filePath = dir.appendingFormat("/" + itemName)
+             print("Local path = \(filePath)")
+          
+         } else {
+             print("Could not find local directory to store file")
+             return
+         }
+
+
+         do {
+              let fileManager = FileManager.default
+             
+             // Check if file exists
+             if fileManager.fileExists(atPath: filePath) {
+                 // Delete file
+                 try fileManager.removeItem(atPath: filePath)
+                 print("Discard File Success")
+             } else {
+                 print("File does not exist")
+             }
+          
+         }
+         catch let error as NSError {
+             print("An error took place: \(error)")
+         }
     }
     // Upadte Timer method.
    @objc func updateAudioMeter(timer: Timer) {
@@ -385,7 +443,7 @@ class RecordVC: BaseViewController {
     func getDocumentsDirectory() -> URL
     {
         let paths = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
-        let documentsDirectory = paths[0]
+        let  documentsDirectory = paths[0]
         return documentsDirectory
     }
     private func createURLForNewRecord() -> URL {
