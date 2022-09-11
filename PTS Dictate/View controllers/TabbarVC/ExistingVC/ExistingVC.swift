@@ -50,7 +50,6 @@ class ExistingVC: BaseViewController {
             self.tableView.reloadData()
         }
         NotificationCenter.default.addObserver(self, selector: #selector(self.newFileSaved(notification:)), name: Notification.Name("FileSaved"), object: nil)
-
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -92,6 +91,7 @@ class ExistingVC: BaseViewController {
     @objc func play(_ sender: UIButton){
             do {
                 let index = sender.tag
+                
                 self.lblFileName.text = (self.totalFiles[index] as! String)
 //                let file = Bundle.main.url(forResource: "file_name", withExtension: "mp3")!
                 let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
@@ -116,7 +116,7 @@ class ExistingVC: BaseViewController {
                     sender.setBackgroundImage(UIImage(named: "existing_pause_btn"), for: .normal)
                     self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
                 }
-               
+
             } catch _ {
                 print("catch")
             }
