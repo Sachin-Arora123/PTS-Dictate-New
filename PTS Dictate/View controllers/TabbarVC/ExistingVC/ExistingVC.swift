@@ -10,7 +10,7 @@ import AVFoundation
 import FDWaveformView
 
 class ExistingVC: BaseViewController {
-
+    
     // MARK: - @IBOutlets.
     @IBOutlet weak var viewNoRecordedFile: UIView!
     @IBOutlet weak var viewBottomPlayer: UIView!
@@ -31,24 +31,21 @@ class ExistingVC: BaseViewController {
     var audioRecorder:AVAudioRecorder?
     var audioPlayer = AVAudioPlayer()
     var totalFiles = [Any]()
-     // wave form var
-      fileprivate var startRendering = Date()
-       fileprivate var endRendering = Date()
-       fileprivate var startLoading = Date()
-       fileprivate var endLoading = Date()
-       fileprivate var profileResult = ""
+    var playingCellIndex = -1
+    // wave form var
+    fileprivate var startRendering = Date()
+    fileprivate var endRendering = Date()
+    fileprivate var startLoading = Date()
+    fileprivate var endLoading = Date()
+    fileprivate var profileResult = ""
     // MARK: - View Life-Cycle.
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.delegate = self
-        tableView.dataSource = self
         mediaProgressView.delegate = self
         mediaProgressView.progressColor = #colorLiteral(red: 0.2274509804, green: 0.2274509804, blue: 0.937254902, alpha: 1)
         mediaProgressView.backgroundColor = #colorLiteral(red: 0.6509803922, green: 0.8235294118, blue: 0.9529411765, alpha: 1)
         // Do any additional setup after loading the view.
-        DispatchQueue.main.async {
-            self.tableView.reloadData()
-        }
         NotificationCenter.default.addObserver(self, selector: #selector(self.newFileSaved(notification:)), name: Notification.Name("FileSaved"), object: nil)
     }
     
@@ -60,20 +57,25 @@ class ExistingVC: BaseViewController {
     deinit{
         NotificationCenter.default.removeObserver(self, name: Notification.Name("FileSaved"), object: nil)
     }
+    
     // MARK: - UISetup
     func setUpUI(){
-        self.viewNoRecordedFile.isHidden = true
+        tableView.delegate = nil
+        tableView.dataSource = nil
+        tableView.delegate = self
+        tableView.dataSource = self
         hideLeftButton()
         setTitleWithImage("Existing Dictations", andImage: UIImage(named: "tabbar_existing_dictations_highlighted.png") ?? UIImage())
         tableView.contentInset =  UIEdgeInsets(top: 0, left: 0, bottom: 25, right: 0)
         totalFiles = self.findFilesWith(fileExtension: "m4a")
+        self.tableView.reloadData()
     }
     
     @objc func newFileSaved(notification: Notification) {
         totalFiles = self.findFilesWith(fileExtension: "m4a")
         self.tableView.reloadData()
     }
-
+    
     func findFilesWith(fileExtension: String) -> [AnyObject]
     {
         var matches = [AnyObject]()
@@ -87,41 +89,41 @@ class ExistingVC: BaseViewController {
         }
         return matches
     }
-    
     @objc func play(_ sender: UIButton){
-            do {
-                let index = sender.tag
-                
-                self.lblFileName.text = (self.totalFiles[index] as! String)
-//                let file = Bundle.main.url(forResource: "file_name", withExtension: "mp3")!
-                let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-                let completePath = directoryPath.absoluteString + (self.totalFiles[index] as! String)
-                let completePathURL = URL(string: completePath)
-//                let file = directoryPath + fileEndPoint
-//                let dirURL = URL(string: file)
-                
-                audioPlayer.numberOfLoops = 0 // loop count, set -1 for infinite
-                audioPlayer.volume = 1
-                audioPlayer.prepareToPlay()
-                try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
-                try AVAudioSession.sharedInstance().setActive(true)
-                if audioPlayer.isPlaying{
-                    audioPlayer.pause()
-                    sender.setBackgroundImage(UIImage(named: "existing_play_btn"), for: .normal)
-                    self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-                }else{
-                    audioPlayer = try AVAudioPlayer(contentsOf: completePathURL!)
-                    audioPlayer.play()
-                    self.mediaProgressView.audioURL = completePathURL!
-                    sender.setBackgroundImage(UIImage(named: "existing_pause_btn"), for: .normal)
-                    self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
-                }
-
-            } catch _ {
-                print("catch")
+        do {
+            let index = sender.tag
+            self.lblFileName.text = (self.totalFiles[index] as! String)
+            //                let file = Bundle.main.url(forResource: "file_name", withExtension: "mp3")!
+            let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            let completePath = directoryPath.absoluteString + (self.totalFiles[index] as! String)
+            let completePathURL = URL(string: completePath)
+            //                let file = directoryPath + fileEndPoint
+            //                let dirURL = URL(string: file)
+            
+            audioPlayer.numberOfLoops = 0 // loop count, set -1 for infinite
+            audioPlayer.volume = 1
+            audioPlayer.prepareToPlay()
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
+            try AVAudioSession.sharedInstance().setActive(true)
+            if audioPlayer.isPlaying{
+                audioPlayer.pause()
+                sender.setBackgroundImage(UIImage(named: "existing_play_btn"), for: .normal)
+                self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+            }else{
+                self.playingCellIndex = index
+                audioPlayer = try AVAudioPlayer(contentsOf: completePathURL!)
+                audioPlayer.delegate = self
+                audioPlayer.play()
+                self.mediaProgressView.audioURL = completePathURL!
+                sender.setBackgroundImage(UIImage(named: "existing_pause_btn"), for: .normal)
+                self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
             }
+            
+        } catch _ {
+            print("catch")
         }
-
+    }
+    
     // MARK: - @IBActions.
     @IBAction func onTapUpload(_ sender: UIButton) {
         
@@ -133,23 +135,32 @@ class ExistingVC: BaseViewController {
     
     @IBAction func onTapPlay(_ sender: UIButton){
         do {
+            var playingMediaIndex = 0
+            for (index, value) in self.totalFiles.enumerated() {
+                if value as? String == self.lblFileName.text!  {
+                    print("Finding Index-->>",index)
+                    playingMediaIndex = index
+                }
+            }
+            let cell  = tableView.cellForRow(at: IndexPath(row: playingMediaIndex, section: 0)) as? ExistingFileCell
             let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
             let completePath = directoryPath.absoluteString +  self.lblFileName.text!
             let completePathURL = URL(string: completePath)
             audioPlayer.numberOfLoops = 0 // loop count, set -1 for infinite
             audioPlayer.volume = 1
             audioPlayer.prepareToPlay()
-
+            
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
             try AVAudioSession.sharedInstance().setActive(true)
             if audioPlayer.isPlaying{
                 audioPlayer.pause()
-//                cell.btnPlay.setBackgroundImage(UIImage(named: "existing_play_btn"), for: .normal)
+                cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_play_btn"), for: .normal)
                 self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
             }else{
                 audioPlayer = try AVAudioPlayer(contentsOf: completePathURL!)
+                audioPlayer.delegate = self
                 audioPlayer.play()
-//                cell.btnPlay.setBackgroundImage(UIImage(named: "existing_pause_btn"), for: .normal)
+                cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_pause_btn"), for: .normal)
                 self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
             }
         } catch _ {
@@ -169,7 +180,7 @@ class ExistingVC: BaseViewController {
     @IBAction func onTapBTrimEnd(_ sender: UIButton){
         
     }
-
+    
 }
 
 // MARK: - Extension for tableView delegate & dataSource methods.
@@ -179,6 +190,7 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
             self.lblFileName.text = self.totalFiles[0] as? String
             self.tableView.isHidden = false
             self.viewBottomPlayer.isHidden = false
+            self.viewNoRecordedFile.isHidden = true
             return self.totalFiles.count
         }else{
             self.tableView.isHidden = true
@@ -205,19 +217,34 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
     }
     
     @objc func openCommentVC(){
-//        let VC = CommentsVC.instantiateFromAppStoryboard(appStoryboard: .Main)
-//            self.setPushTransitionAnimation(VC)
-//        VC.hidesBottomBarWhenPushed = true
-//        self.navigationController?.pushViewController(VC, animated: false)
+        //        let VC = CommentsVC.instantiateFromAppStoryboard(appStoryboard: .Main)
+        //            self.setPushTransitionAnimation(VC)
+        //        VC.hidesBottomBarWhenPushed = true
+        //        self.navigationController?.pushViewController(VC, animated: false)
     }
     
     @objc func openRenameFileVc(){
-//        let VC = RenameFileVC.instantiateFromAppStoryboard(appStoryboard: .Main)
-//            self.setPushTransitionAnimation(VC)
-//        VC.hidesBottomBarWhenPushed = true
-//        self.navigationController?.pushViewController(VC, animated: false)
+        //        let VC = RenameFileVC.instantiateFromAppStoryboard(appStoryboard: .Main)
+        //            self.setPushTransitionAnimation(VC)
+        //        VC.hidesBottomBarWhenPushed = true
+        //        self.navigationController?.pushViewController(VC, animated: false)
     }
-  }
+}
+
+// MARK: - Extension for AVAudioPlayerDelegate
+extension ExistingVC: AVAudioPlayerDelegate {
+    // Completion of playing
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        if flag {
+            let cell  = tableView.cellForRow(at: IndexPath(row: self.playingCellIndex, section: 0)) as? ExistingFileCell
+            cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_play_btn"), for: .normal)
+            self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+            print("Playing Completed")
+        }
+    }
+}
+
+// MARK: - Extension for FDWaveformViewDelegate
 
 extension ExistingVC: FDWaveformViewDelegate {
     func waveformViewWillRender(_ waveformView: FDWaveformView) {
@@ -241,5 +268,11 @@ extension ExistingVC: FDWaveformViewDelegate {
         endLoading = Date()
         NSLog("FDWaveformView loading done, took %0.3f seconds", endLoading.timeIntervalSince(startLoading))
         profileResult.append(String(format: " load %0.3f ", endLoading.timeIntervalSince(startLoading)))
+    }
+}
+
+extension Array where Element: Equatable {
+    func indexes(of element: Element) -> [Int] {
+        return self.enumerated().filter({ element == $0.element }).map({ $0.offset })
     }
 }

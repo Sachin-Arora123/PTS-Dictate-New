@@ -24,21 +24,16 @@ class TabbarVC: UITabBarController, UITabBarControllerDelegate {
         self.thirdTabbarItemImageView.contentMode = .center
         self.navigationController?.addCustomBottomLine(color: .black, height: 2.0)
         additionalSafeAreaInsets.bottom = UIDevice.current.hasNotch ? 0 : 12
-
-        self.tabBar.layer.borderWidth = 1.0
-        self.tabBar.layer.borderColor = UIColor.lightGray.cgColor
-        self.tabBar.clipsToBounds = false
-        
-//        let topBorder = CALayer()
-//
-//           let borderHeight: CGFloat = 2
-//
-//           topBorder.borderWidth = borderHeight
-//        topBorder.borderColor = UIColor.red.cgColor
-//        topBorder.frame = CGRect(x: 0, y: -1, width: self.view.frame.width, height: borderHeight)
-//
-//        self.tabBar.layer.addSublayer(topBorder)
-
+        //First, remove the default top line and background
+        UITabBar.appearance().shadowImage = UIImage()
+        UITabBar.appearance().backgroundImage = UIImage()
+        //Then, add the custom top line view with custom color. And set the default background color of tabbar
+        let lineView = UIView(frame: CGRect(x: 0, y: -1, width: UIScreen.main.bounds.width, height: 1))
+        lineView.backgroundColor = #colorLiteral(red: 0.5137254902, green: 0.5176470588, blue: 0.5137254902, alpha: 1)
+        self.tabBar.addSubview(lineView)
+        lineView.layer.masksToBounds = true
+        self.tabBar.sendSubviewToBack(lineView)
+//        self.tabBarController?.tabBar.backgroundColor = .white
     }
     
     
@@ -124,6 +119,22 @@ class TabbarVC: UITabBarController, UITabBarControllerDelegate {
                 }
             })
             return false
+        }else if viewController.title != "Record" {
+            if isRecording{
+                audioRecorder?.pause()
+                CommonFunctions.showAlert(view: viewController, title: "PTS Dictate", message: "Do you want to stop the current Recording ?", completion: {
+                    (result) in
+                    if result{
+                        self.setTabBarHidden(true, animated: false)
+                        NotificationCenter.default.post(name: Notification.Name("showBottomBtnView"), object: nil)
+                        print("Tapped Yes")
+                    }else{
+                        audioRecorder?.record()
+                        print("Tapped No")
+                    }
+                })
+                return false
+            }
         }
         return true
     }
@@ -144,5 +155,29 @@ extension UIImage {
         UIGraphicsEndImageContext()
 
         return image!
+    }
+}
+
+extension UITabBarController {
+    func setTabBarHidden(_ isHidden: Bool, animated: Bool, completion: (() -> Void)? = nil ) {
+        if (tabBar.isHidden == isHidden) {
+            completion?()
+        }
+
+        if !isHidden {
+            tabBar.isHidden = false
+        }
+
+        let height = tabBar.frame.size.height
+        let offsetY = view.frame.height - (isHidden ? 0 : height)
+        let duration = (animated ? 0.50 : 0.0)
+
+        let frame = CGRect(origin: CGPoint(x: tabBar.frame.minX, y: offsetY), size: tabBar.frame.size)
+        UIView.animate(withDuration: duration, animations: {
+            self.tabBar.frame = frame
+        }) { _ in
+            self.tabBar.isHidden = isHidden
+            completion?()
+        }
     }
 }

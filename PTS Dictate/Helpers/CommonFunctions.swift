@@ -110,4 +110,13 @@ class CommonFunctions: iProgressHUDDelegete {
         view!.dismissProgress()
     }
         
+    static func showHideViewWithAnimation(view: UIView, hidden: Bool, animation: UIView.AnimationOptions) {
+        UIView.transition(with: view,
+                                 duration: 0.50,
+                                 options: [animation],
+                                 animations: {
+                      view.isHidden = hidden
+               },
+                                 completion: nil)
+    }
 }

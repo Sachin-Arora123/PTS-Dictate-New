@@ -592,7 +592,7 @@
         <!--Record-->
         <scene sceneID="YCJ-ri-lex">
             <objects>
-                <viewController storyboardIdentifier="RecordVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="7Dt-rL-rdk" customClass="RecordVC" customModule="PTS_Dictate" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="RecordVC" title="Record" useStoryboardIdentifierAsRestorationIdentifier="YES" id="7Dt-rL-rdk" customClass="RecordVC" customModule="PTS_Dictate" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="F9Z-TR-piS">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -751,7 +751,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GVr-qK-lEL">
-                                <rect key="frame" x="0.0" y="743" width="414" height="70"/>
+                                <rect key="frame" x="0.0" y="826" width="414" height="70"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vDb-ZW-bej">
                                         <rect key="frame" x="20" y="15" width="111.5" height="40"/>
@@ -834,7 +834,7 @@
                             <constraint firstItem="WHC-EH-Ct0" firstAttribute="bottom" secondItem="u5k-jG-Lb8" secondAttribute="bottom" id="Ivu-Vy-0VY"/>
                             <constraint firstItem="EO8-So-pyD" firstAttribute="top" secondItem="u5k-jG-Lb8" secondAttribute="bottom" constant="10" id="MiV-Sj-n48"/>
                             <constraint firstItem="J8T-nC-uAX" firstAttribute="leading" secondItem="8du-Pf-dUx" secondAttribute="trailing" constant="5" id="MrT-K0-MEc"/>
-                            <constraint firstItem="GVr-qK-lEL" firstAttribute="bottom" secondItem="yo8-jP-fyy" secondAttribute="bottom" id="RDM-gf-y8v"/>
+                            <constraint firstItem="GVr-qK-lEL" firstAttribute="bottom" secondItem="F9Z-TR-piS" secondAttribute="bottom" id="RDM-gf-y8v"/>
                             <constraint firstItem="0dl-dH-n19" firstAttribute="top" secondItem="8du-Pf-dUx" secondAttribute="bottom" constant="2" id="S5d-Rh-sZx"/>
                             <constraint firstItem="WHC-EH-Ct0" firstAttribute="leading" secondItem="u5k-jG-Lb8" secondAttribute="trailing" constant="5" id="Uej-yw-iVf"/>
                             <constraint firstItem="u5k-jG-Lb8" firstAttribute="leading" secondItem="yo8-jP-fyy" secondAttribute="leading" constant="15" id="bCQ-0Q-Wtm"/>
