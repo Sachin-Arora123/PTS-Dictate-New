@@ -82,10 +82,10 @@ class TabbarVC: UITabBarController, UITabBarControllerDelegate {
     }()
     
     private func animate(_ imageView: UIImageView) {
-        UIView.animate(withDuration: 0.1, animations: {
-            imageView.transform = CGAffineTransform(scaleX: 1.25, y: 1.25)
+        UIView.animate(withDuration: 0.6, animations: {
+            imageView.transform = CGAffineTransform(scaleX: 1.40, y: 1.40)
         }) { _ in
-            UIView.animate(withDuration: 0.25, delay: 0.0, usingSpringWithDamping: 0.5, initialSpringVelocity: 3.0, options: .curveEaseInOut, animations: {
+            UIView.animate(withDuration: 0.50, delay: 0.0, usingSpringWithDamping: 0.3, initialSpringVelocity: 3.0, options: .curveEaseInOut, animations: {
                 imageView.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
             }, completion: nil)
         }
