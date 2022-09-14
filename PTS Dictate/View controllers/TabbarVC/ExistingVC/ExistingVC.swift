@@ -30,7 +30,8 @@ class ExistingVC: BaseViewController {
     
     var audioRecorder:AVAudioRecorder?
     var audioPlayer = AVAudioPlayer()
-    var totalFiles = [Any]()
+    var totalFiles = [String]()
+    var totalFilesSelected : [String] = []
     var playingCellIndex = -1
     // wave form var
     fileprivate var startRendering = Date()
@@ -67,12 +68,14 @@ class ExistingVC: BaseViewController {
         hideLeftButton()
         setTitleWithImage("Existing Dictations", andImage: UIImage(named: "tabbar_existing_dictations_highlighted.png") ?? UIImage())
         tableView.contentInset =  UIEdgeInsets(top: 0, left: 0, bottom: 25, right: 0)
-        totalFiles = self.findFilesWith(fileExtension: "m4a")
+//        totalFiles = self.findFilesWith(fileExtension: "m4a")
+        totalFiles = self.getSortedAudioList()
         self.tableView.reloadData()
     }
     
     @objc func newFileSaved(notification: Notification) {
-        totalFiles = self.findFilesWith(fileExtension: "m4a")
+//        totalFiles = self.findFilesWith(fileExtension: "m4a")
+        totalFiles = self.getSortedAudioList()
         self.tableView.reloadData()
     }
     
@@ -92,10 +95,10 @@ class ExistingVC: BaseViewController {
     @objc func play(_ sender: UIButton){
         do {
             let index = sender.tag
-            self.lblFileName.text = (self.totalFiles[index] as! String)
+            self.lblFileName.text = self.totalFiles[index]
             //                let file = Bundle.main.url(forResource: "file_name", withExtension: "mp3")!
             let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            let completePath = directoryPath.absoluteString + (self.totalFiles[index] as! String)
+            let completePath = directoryPath.absoluteString + self.totalFiles[index]
             let completePathURL = URL(string: completePath)
             //                let file = directoryPath + fileEndPoint
             //                let dirURL = URL(string: file)
@@ -130,7 +133,69 @@ class ExistingVC: BaseViewController {
     }
     
     @IBAction func onTapDelete(_ sender: UIButton) {
-        
+        if self.totalFilesSelected.count == 0{
+            CommonFunctions.alertMessage(view: self, title: "PTS Dictate", msg: "Please select atleast one file.", btnTitle: "OK")
+        }else{
+            CommonFunctions.showAlert(view: self, title: "PTS Dictate", message: "Are you sure want to Delete?", completion: {
+                (success) in
+                if success{
+                    print("tF===____>>>", self.totalFiles)
+                    print("tFSelect===____>>>", self.totalFilesSelected)
+                    for av in self.totalFilesSelected {
+                        self.removeAudio(itemName: av, fileExtension: "")
+                    }
+//                    self.totalFiles = self.findFilesWith(fileExtension: "m4a")
+                    self.totalFiles = self.getSortedAudioList()
+                    self.tableView.reloadData()
+                }
+            })
+        }
+    }
+    func getSortedAudioList() -> [String] {
+        var sortedDateArray = [String]()
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        guard let directoryURL = URL(string: paths.path) else {return [""]}
+        do {
+           let contents = try
+           FileManager.default.contentsOfDirectory(at: directoryURL,
+                  includingPropertiesForKeys:[.contentModificationDateKey],
+                  options: [.skipsHiddenFiles, .skipsSubdirectoryDescendants])
+               .filter { $0.lastPathComponent.hasSuffix(".m4a") }
+               .sorted(by: {
+                   let date0 = try $0.promisedItemResourceValues(forKeys:[.contentModificationDateKey]).contentModificationDate!
+                   let date1 = try $1.promisedItemResourceValues(forKeys:[.contentModificationDateKey]).contentModificationDate!
+                   return date0.compare(date1) == .orderedDescending
+                })
+          
+            // Print results
+            for item in contents {
+                guard let t = try? item.promisedItemResourceValues(forKeys:[.contentModificationDateKey]).contentModificationDate
+                    else {return [""]}
+                print ("Hello,\(t)   \(item.lastPathComponent)")
+                sortedDateArray.append(item.lastPathComponent)
+            }
+        } catch {
+            print ("Finding date sorted error-->>",error.localizedDescription)
+        }
+        print("List array-->>",sortedDateArray)
+        return sortedDateArray
+    }
+     func removeAudio(itemName:String, fileExtension: String) {
+         let fileManager = FileManager.default
+         let nsDocumentDirectory = FileManager.SearchPathDirectory.documentDirectory
+         let nsUserDomainMask = FileManager.SearchPathDomainMask.userDomainMask
+      let paths = NSSearchPathForDirectoriesInDomains(nsDocumentDirectory, nsUserDomainMask, true)
+      guard let dirPath = paths.first else {
+        return
+      }
+//      let filePath = "\(dirPath)/\(itemName).\(fileExtension)"
+         let filePath = "\(dirPath)/\(itemName)"
+      do {
+          try fileManager.removeItem(atPath: filePath)
+          print("Removed Successfully")
+      } catch let error as NSError {
+        print(error.debugDescription)
+      }
     }
     
     @IBAction func onTapPlay(_ sender: UIButton){
@@ -202,7 +267,17 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ExistingFileCell", for: indexPath) as! ExistingFileCell
-        cell.lblFileName.text = self.totalFiles[indexPath.row] as? String
+        if self.totalFilesSelected.contains((self.totalFiles[indexPath.row] as? String) ?? ""){
+            cell.btnSelection.setImage(UIImage(named: "checked_checkbox"), for: .normal)
+        }else{
+            cell.btnSelection.setImage(UIImage(named: "unchecked_checkbox"), for: .normal)
+        }
+        var fileSize = sizeForLocalFilePath(itemName: self.totalFiles[indexPath.row])
+        cell.lblFileSize.text = self.covertToFileString(with: fileSize)
+        cell.btnSelection.tag = indexPath.row
+        cell.btnSelection.removeTarget(self, action: nil, for: .touchUpInside)
+        cell.btnSelection.addTarget(self, action: #selector(btnActCheckBox(_:)), for: .touchUpInside)
+        cell.lblFileName.text = self.totalFiles[indexPath.row]
         cell.btnComment.tag = indexPath.row
         cell.btnEdit.tag = indexPath.row
         cell.btnPlay.tag = indexPath.row
@@ -215,6 +290,10 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
+}
+
+// MARK: - Objective C Methods
+extension ExistingVC{
     
     @objc func openCommentVC(){
         //        let VC = CommentsVC.instantiateFromAppStoryboard(appStoryboard: .Main)
@@ -228,6 +307,50 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
         //            self.setPushTransitionAnimation(VC)
         //        VC.hidesBottomBarWhenPushed = true
         //        self.navigationController?.pushViewController(VC, animated: false)
+    }
+    
+    @objc func btnActCheckBox(_ sender : UIButton){
+        if self.totalFilesSelected.contains((self.totalFiles[sender.tag] as? String) ?? ""){
+            if let ind = self.totalFilesSelected.firstIndex(of: (self.totalFiles[sender.tag] as? String) ?? ""){
+                self.totalFilesSelected.remove(at: ind)
+            }
+        }else{
+            self.totalFilesSelected.append((self.totalFiles[sender.tag] as? String) ?? "")
+        }
+        self.tableView.reloadData()
+    }
+    // file size
+    func sizeForLocalFilePath(itemName: String) -> UInt64 {
+        let fileManager = FileManager.default
+        let nsDocumentDirectory = FileManager.SearchPathDirectory.documentDirectory
+        let nsUserDomainMask = FileManager.SearchPathDomainMask.userDomainMask
+        let paths = NSSearchPathForDirectoriesInDomains(nsDocumentDirectory, nsUserDomainMask, true)
+        guard let dirPath = paths.first else {
+            return 0
+        }
+        let filePath = "\(dirPath)/\(itemName)"
+        do {
+            let fileAttributes = try FileManager.default.attributesOfItem(atPath: filePath)
+            if let fileSize = fileAttributes[FileAttributeKey.size]  {
+                return (fileSize as! NSNumber).uint64Value
+            } else {
+                print("Failed to get a size attribute from path: \(filePath)")
+            }
+        } catch {
+            print("Failed to get file attributes for local path: \(filePath) with error: \(error)")
+        }
+        return 0
+    }
+   
+    func covertToFileString(with size: UInt64) -> String {
+        var convertedValue: Double = Double(size)
+        var multiplyFactor = 0
+        let tokens = ["bytes", "KB", "MB", "GB", "TB", "PB",  "EB",  "ZB", "YB"]
+        while convertedValue > 1024 {
+            convertedValue /= 1024
+            multiplyFactor += 1
+        }
+        return String(format: "%4.2f %@", convertedValue, tokens[multiplyFactor])
     }
 }
 
@@ -275,4 +398,12 @@ extension Array where Element: Equatable {
     func indexes(of element: Element) -> [Int] {
         return self.enumerated().filter({ element == $0.element }).map({ $0.offset })
     }
+    func containsObject(_ object: Any) -> Bool {
+            let anObject = object as AnyObject
+            for obj in self {
+                let anObj = obj as AnyObject
+                return anObj.isEqual(anObject)
+            }
+            return false
+        }
 }

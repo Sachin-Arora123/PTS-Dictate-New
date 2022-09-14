@@ -74,6 +74,20 @@ class CommonFunctions: iProgressHUDDelegete {
             completion(true)
         }))
       }
+    static func alertMessage(view: UIViewController, title: String, msg: String, btnTitle: String) {
+        // Create new Alert
+        let alertMessage = UIAlertController(title: title, message: msg, preferredStyle: .alert)
+        
+        // Create OK button with action handler
+        let ok = UIAlertAction(title: btnTitle, style: .default, handler: { (action) -> Void in
+            print("Ok button tapped")
+         })
+        
+        //Add OK button to a dialog message
+        alertMessage.addAction(ok)
+        // Present Alert to
+        view.present(alertMessage, animated: true, completion: nil)
+    }
     static func getTopMostViewController() -> UIViewController?{
         if var topController = UIApplication.shared.keyWindow?.rootViewController {
             while let presentedViewController = topController.presentedViewController {

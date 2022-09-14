@@ -59,6 +59,23 @@ class RecordVC: BaseViewController {
         super.viewWillAppear(animated)
         setUpUI()
         self.recorderSetUp()
+        isRecording = false
+        let audioFileURL = self.createURLForNewRecord()
+        self.lblFNameValue.text = audioFileName
+        print("File Name of recorded audio",audioFileURL)
+        // Setup audio session
+        
+        do {
+            try audioSession.setCategory(AVAudioSession.Category(rawValue: convertFromAVAudioSessionCategory(AVAudioSession.Category.playAndRecord)), mode: .default)
+        } catch _ {
+        }
+        
+        // Define the recorder setting
+        let recorderSetting = [AVFormatIDKey: NSNumber(value: kAudioFormatMPEG4AAC as UInt32),
+                             AVSampleRateKey: 44100.0,
+                       AVNumberOfChannelsKey: 2 ]
+        
+        audioRecorder = try? AVAudioRecorder(url: audioFileURL, settings: recorderSetting)
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -129,22 +146,6 @@ class RecordVC: BaseViewController {
 //                     btnPlay.isSelected = false
                  }
              }
-        let audioFileURL = self.createURLForNewRecord()
-        self.lblFNameValue.text = audioFileName
-        print("File Name of recorded audio",audioFileURL)
-        // Setup audio session
-
-        do {
-            try audioSession.setCategory(AVAudioSession.Category(rawValue: convertFromAVAudioSessionCategory(AVAudioSession.Category.playAndRecord)), mode: .default)
-        } catch _ {
-        }
-
-        // Define the recorder setting
-        let recorderSetting = [AVFormatIDKey: NSNumber(value: kAudioFormatMPEG4AAC as UInt32),
-                               AVSampleRateKey: 44100.0,
-                               AVNumberOfChannelsKey: 2 ]
-
-        audioRecorder = try? AVAudioRecorder(url: audioFileURL, settings: recorderSetting)
              if let recorder = audioRecorder {
                  if !recorder.isRecording {
 //                     let audioSession = AVAudioSession.sharedInstance()
@@ -230,7 +231,6 @@ class RecordVC: BaseViewController {
     @IBAction func onTapPlay(_ sender: UIButton) {
         if let recorder = audioRecorder {
               if !recorder.isRecording {
-                  audioPlayer?.delegate = self
                   if ((audioPlayer?.isPlaying) == true){
                       audioPlayer?.pause()
                       btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
@@ -238,6 +238,7 @@ class RecordVC: BaseViewController {
                       btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: .normal)
                   }else{
                       audioPlayer = try? AVAudioPlayer(contentsOf: recorder.url)
+                      audioPlayer?.delegate = self
                       audioPlayer?.play()
                       btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
                       btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_disable"), for: .normal)
@@ -294,6 +295,7 @@ class RecordVC: BaseViewController {
              try self.audioFileName.write(to: url, atomically: true, encoding: .utf8)
              let input = try String(contentsOf: url)
              let dataDict:[String: String] = ["file": input]
+             isRecording = false
              NotificationCenter.default.post(name: Notification.Name("FileSaved"), object: nil, userInfo: dataDict)
              print("Saved File--->>",input)
              completion(true)
@@ -512,7 +514,10 @@ extension RecordVC: AVAudioRecorderDelegate,AVAudioPlayerDelegate {
     
     // Completion of playing
        func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-           print("Playing Completed")
+           if flag{
+               print("Playing Completed")
+               btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+           }
        }
 }
 
