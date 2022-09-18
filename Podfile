@@ -14,4 +14,6 @@ target 'PTS Dictate' do
   pod 'SwiftEntryKit'
   pod 'iProgressHUD', '~> 1.1.1'
   pod 'FDWaveformView'
+  pod "SwiftToast"
+
 end

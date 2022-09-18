@@ -16,6 +16,7 @@
 		182BE0BC28BD461E00327094 /* ProfileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182BE0BB28BD461E00327094 /* ProfileCell.swift */; };
 		182BE0BE28BD4ED000327094 /* NamingFormatVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182BE0BD28BD4ED000327094 /* NamingFormatVC.swift */; };
 		182BE0C128BD508500327094 /* NamingFormatCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182BE0C028BD508500327094 /* NamingFormatCell.swift */; };
+		1837EC0028D790FC0046B4AA /* NoticeView.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 1837EBFF28D790FB0046B4AA /* NoticeView.bundle */; };
 		184C5FED28C5239E005A52EB /* RecordVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184C5FEC28C5239E005A52EB /* RecordVC.swift */; };
 		184C964628C7C715004639B3 /* CommonElements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184C964528C7C715004639B3 /* CommonElements.swift */; };
 		1854B88928B94F690039A96E /* UploadProgressVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1854B88828B94F690039A96E /* UploadProgressVC.swift */; };
@@ -65,6 +66,7 @@
 		182BE0BB28BD461E00327094 /* ProfileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileCell.swift; sourceTree = "<group>"; };
 		182BE0BD28BD4ED000327094 /* NamingFormatVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NamingFormatVC.swift; sourceTree = "<group>"; };
 		182BE0C028BD508500327094 /* NamingFormatCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NamingFormatCell.swift; sourceTree = "<group>"; };
+		1837EBFF28D790FB0046B4AA /* NoticeView.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = NoticeView.bundle; sourceTree = "<group>"; };
 		184C5FEC28C5239E005A52EB /* RecordVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordVC.swift; sourceTree = "<group>"; };
 		184C964528C7C715004639B3 /* CommonElements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonElements.swift; sourceTree = "<group>"; };
 		1854B88828B94F690039A96E /* UploadProgressVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadProgressVC.swift; sourceTree = "<group>"; };
@@ -142,6 +144,7 @@
 		180EB43728B6A52200F1A3FB /* Extras */ = {
 			isa = PBXGroup;
 			children = (
+				1837EBFF28D790FB0046B4AA /* NoticeView.bundle */,
 				28A4F5CE28B510DE0035137B /* Assets.xcassets */,
 			);
 			path = Extras;
@@ -501,6 +504,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				18CDDB0A28B7D493006AB795 /* Tabbar.storyboard in Resources */,
+				1837EC0028D790FC0046B4AA /* NoticeView.bundle in Resources */,
 				28A4F5D228B510DE0035137B /* LaunchScreen.storyboard in Resources */,
 				28A4F5CF28B510DE0035137B /* Assets.xcassets in Resources */,
 				182BE0B328BD332300327094 /* Settings.storyboard in Resources */,

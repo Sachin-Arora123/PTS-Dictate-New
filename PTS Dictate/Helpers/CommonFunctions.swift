@@ -10,7 +10,7 @@ import Toaster
 import SwiftEntryKit
 import iProgressHUD
 import UIKit
-
+import SwiftToast
 
 class EntryAttributeWrapper {
     var attributes: EKAttributes
@@ -48,6 +48,22 @@ class CommonFunctions: iProgressHUDDelegete {
         let notificationMessage = EKNotificationMessage(simpleMessage: simpleMessage)
         let contentView = EKNotificationMessageView(with: notificationMessage)
         SwiftEntryKit.display(entry: contentView, using: attributesWrapper.attributes)
+    }
+    static func showToast(view: UIViewController, title: String) {
+        let toast =  SwiftToast(
+                            text: title,
+                            textAlignment: .right,
+                            image: UIImage(named: "notice_error_icon@2x"),
+                            backgroundColor: #colorLiteral(red: 0.5315770507, green: 0.03795098886, blue: 0.03016442619, alpha: 1),
+                            textColor: .white,
+                            font: .boldSystemFont(ofSize: 15.0),
+                            duration: 2.0,
+                            minimumHeight: CGFloat(100.0),
+                            statusBarStyle: .lightContent,
+                            aboveStatusBar: true,
+                            target: nil,
+                            style: .navigationBar)
+            view.present(toast, animated: true)
     }
     //Show alert
      static func alert(view: UIViewController, title: String, message: String) {
