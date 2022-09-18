@@ -43,9 +43,6 @@ class ExistingVC: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        mediaProgressView.delegate = self
-        mediaProgressView.progressColor = #colorLiteral(red: 0.2274509804, green: 0.2274509804, blue: 0.937254902, alpha: 1)
-        mediaProgressView.backgroundColor = #colorLiteral(red: 0.6509803922, green: 0.8235294118, blue: 0.9529411765, alpha: 1)
         // Do any additional setup after loading the view.
         NotificationCenter.default.addObserver(self, selector: #selector(self.newFileSaved(notification:)), name: Notification.Name("FileSaved"), object: nil)
     }
@@ -53,6 +50,17 @@ class ExistingVC: BaseViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setUpUI()
+        mediaProgressView.delegate = self
+        mediaProgressView.alpha = 1
+        mediaProgressView.wavesColor = #colorLiteral(red: 0.6509803922, green: 0.8235294118, blue: 0.9529411765, alpha: 1)
+        mediaProgressView.progressColor = #colorLiteral(red: 0.2273887992, green: 0.2274999917, blue: 0.9748747945, alpha: 1)
+        mediaProgressView.doesAllowScrubbing = true
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.totalFilesSelected.removeAll()
+        self.tabBarController?.navigationItem.rightBarButtonItem = nil
     }
     
     deinit{
@@ -70,6 +78,16 @@ class ExistingVC: BaseViewController {
         tableView.contentInset =  UIEdgeInsets(top: 0, left: 0, bottom: 25, right: 0)
 //        totalFiles = self.findFilesWith(fileExtension: "m4a")
         totalFiles = self.getSortedAudioList()
+        if totalFiles.count > 0{
+            self.lblPlayerStatus.text  = ""
+            setRighButtonImage(imageName: "unchecked_checkbox", selector: #selector(onTapRightImage))
+            let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            let completePath = directoryPath.absoluteString + self.totalFiles[0]
+            let completePathURL = URL(string: completePath)
+            self.mediaProgressView.audioURL = completePathURL!
+        }else{
+            setRighButtonImage(imageName: "plus", selector: #selector(onTapRightImage))
+        }
         self.tableView.reloadData()
     }
     
@@ -146,6 +164,11 @@ class ExistingVC: BaseViewController {
                     }
 //                    self.totalFiles = self.findFilesWith(fileExtension: "m4a")
                     self.totalFiles = self.getSortedAudioList()
+                    if self.totalFiles.count > 0{
+                        self.setRighButtonImage(imageName: "unchecked_checkbox", selector: #selector(self.onTapRightImage))
+                    }else{
+                        self.setRighButtonImage(imageName: "", selector: #selector(self.onTapRightImage))
+                    }
                     self.tableView.reloadData()
                 }
             })
@@ -218,6 +241,7 @@ class ExistingVC: BaseViewController {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
             try AVAudioSession.sharedInstance().setActive(true)
             if audioPlayer.isPlaying{
+                self.lblPlayerStatus.text = "Now Paused"
                 audioPlayer.pause()
                 cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_play_btn"), for: .normal)
                 self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
@@ -225,6 +249,8 @@ class ExistingVC: BaseViewController {
                 audioPlayer = try AVAudioPlayer(contentsOf: completePathURL!)
                 audioPlayer.delegate = self
                 audioPlayer.play()
+                self.lblPlayerStatus.text = "Now Playing"
+                self.mediaProgressView.audioURL = completePathURL!
                 cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_pause_btn"), for: .normal)
                 self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
             }
@@ -267,13 +293,16 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ExistingFileCell", for: indexPath) as! ExistingFileCell
-        if self.totalFilesSelected.contains((self.totalFiles[indexPath.row] as? String) ?? ""){
+        if self.totalFilesSelected.contains(self.totalFiles[indexPath.row]){
             cell.btnSelection.setImage(UIImage(named: "checked_checkbox"), for: .normal)
         }else{
             cell.btnSelection.setImage(UIImage(named: "unchecked_checkbox"), for: .normal)
         }
-        var fileSize = sizeForLocalFilePath(itemName: self.totalFiles[indexPath.row])
-        cell.lblFileSize.text = self.covertToFileString(with: fileSize)
+        DispatchQueue.main.async {
+            cell.lblFileTime.text = "\(self.duration(itemName:  self.totalFiles[indexPath.row]))"
+        }
+        cell.btnEdit.isHidden = true
+        cell.lblFileSize.text = fileSize(itemName:  self.totalFiles[indexPath.row])
         cell.btnSelection.tag = indexPath.row
         cell.btnSelection.removeTarget(self, action: nil, for: .touchUpInside)
         cell.btnSelection.addTarget(self, action: #selector(btnActCheckBox(_:)), for: .touchUpInside)
@@ -294,7 +323,48 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
 
 // MARK: - Objective C Methods
 extension ExistingVC{
-    
+    func duration(itemName: String) -> Double {
+        let nsDocumentDirectory = FileManager.SearchPathDirectory.documentDirectory
+        let nsUserDomainMask = FileManager.SearchPathDomainMask.userDomainMask
+        let paths = NSSearchPathForDirectoriesInDomains(nsDocumentDirectory, nsUserDomainMask, true)
+        let dirPath = paths.first ?? ""
+        let filePath =  dirPath + itemName
+//        let item = AVPlayerItem(url: URL(fileURLWithPath: filePath))
+        let asset = AVURLAsset(url: URL(fileURLWithPath: filePath))
+        return Double(CMTimeGetSeconds(asset.duration))
+    }
+  
+    func fileSize(itemName: String) -> String? {
+        let nsDocumentDirectory = FileManager.SearchPathDirectory.documentDirectory
+        let nsUserDomainMask = FileManager.SearchPathDomainMask.userDomainMask
+        let paths = NSSearchPathForDirectoriesInDomains(nsDocumentDirectory, nsUserDomainMask, true)
+        guard let dirPath = paths.first else {
+            return ""
+        }
+        let filePath = "\(dirPath)/\(itemName)"
+        guard let size = try? FileManager.default.attributesOfItem(atPath: filePath)[FileAttributeKey.size],
+            let fileSize = size as? UInt64 else {
+            return nil
+        }
+
+        // bytes
+        if fileSize < 1023 {
+            return String(format: "%lu bytes", CUnsignedLong(fileSize))
+        }
+        // KB
+        var floatSize = Float(fileSize / 1024)
+        if floatSize < 1023 {
+            return String(format: "%.1f KB", floatSize)
+        }
+        // MB
+        floatSize = floatSize / 1024
+        if floatSize < 1023 {
+            return String(format: "%.1f MB", floatSize)
+        }
+        // GB
+        floatSize = floatSize / 1024
+        return String(format: "%.1f GB", floatSize)
+    }
     @objc func openCommentVC(){
         //        let VC = CommentsVC.instantiateFromAppStoryboard(appStoryboard: .Main)
         //            self.setPushTransitionAnimation(VC)
@@ -310,12 +380,24 @@ extension ExistingVC{
     }
     
     @objc func btnActCheckBox(_ sender : UIButton){
-        if self.totalFilesSelected.contains((self.totalFiles[sender.tag] as? String) ?? ""){
-            if let ind = self.totalFilesSelected.firstIndex(of: (self.totalFiles[sender.tag] as? String) ?? ""){
+        if self.totalFilesSelected.contains(self.totalFiles[sender.tag]){
+            if let ind = self.totalFilesSelected.firstIndex(of: self.totalFiles[sender.tag]){
                 self.totalFilesSelected.remove(at: ind)
             }
         }else{
-            self.totalFilesSelected.append((self.totalFiles[sender.tag] as? String) ?? "")
+            self.totalFilesSelected.append(self.totalFiles[sender.tag])
+        }
+        self.tableView.reloadData()
+    }
+    // navbar right image action.
+    @objc func onTapRightImage() {
+        if self.tabBarController?.navigationItem.rightBarButtonItem?.image == getRighButtonImage(imageName: "unchecked_checkbox") {
+            self.totalFilesSelected = self.totalFiles
+            setRighButtonImage(imageName: "checked_checkbox", selector: #selector(onTapRightImage))
+        }else if self.tabBarController?.navigationItem.rightBarButtonItem?.image == getRighButtonImage(imageName: "unchecked_checkbox"){
+            setRighButtonImage(imageName: "unchecked_checkbox", selector: #selector(onTapRightImage))
+            self.totalFilesSelected.removeAll()
+            
         }
         self.tableView.reloadData()
     }
@@ -352,6 +434,25 @@ extension ExistingVC{
         }
         return String(format: "%4.2f %@", convertedValue, tokens[multiplyFactor])
     }
+    func sizePerMB(itemName: String) -> Double {
+//        let fileManager = FileManager.default
+        let nsDocumentDirectory = FileManager.SearchPathDirectory.documentDirectory
+        let nsUserDomainMask = FileManager.SearchPathDomainMask.userDomainMask
+        let paths = NSSearchPathForDirectoriesInDomains(nsDocumentDirectory, nsUserDomainMask, true)
+        guard let dirPath = paths.first else {
+            return 0
+        }
+        let filePath = "\(dirPath)/\(itemName)"
+        do {
+            let attribute = try FileManager.default.attributesOfItem(atPath: filePath)
+            if let size = attribute[FileAttributeKey.size] as? NSNumber {
+                return size.doubleValue / 1000000.0
+            }
+        } catch {
+            print("Error: \(error.localizedDescription)")
+        }
+        return 0.0
+    }
 }
 
 // MARK: - Extension for AVAudioPlayerDelegate
@@ -361,6 +462,7 @@ extension ExistingVC: AVAudioPlayerDelegate {
         if flag {
             let cell  = tableView.cellForRow(at: IndexPath(row: self.playingCellIndex, section: 0)) as? ExistingFileCell
             cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_play_btn"), for: .normal)
+            self.lblPlayerStatus.text  = ""
             self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
             print("Playing Completed")
         }
@@ -378,8 +480,9 @@ extension ExistingVC: FDWaveformViewDelegate {
         endRendering = Date()
         NSLog("FDWaveformView rendering done, took %0.3f seconds", endRendering.timeIntervalSince(startRendering))
         profileResult.append(String(format: " render %0.3f ", endRendering.timeIntervalSince(startRendering)))
-        UIView.animate(withDuration: 0.25, animations: {() -> Void in
+        UIView.animate(withDuration: 1, animations: {() -> Void in
             waveformView.alpha = 1.0
+            waveformView.progressColor = #colorLiteral(red: 0.2273887992, green: 0.2274999917, blue: 0.9748747945, alpha: 1)
         })
     }
     
