@@ -53,6 +53,10 @@ class RecordVC: BaseViewController {
 //        self.recorderSetUp()
 //        NotificationCenter.default.addObserver(self, selector: #selector(self.onDiscardRecorderSetUp), name: Notification.Name("refreshRecorder"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.showBottomView), name: Notification.Name("showBottomBtnView"), object: nil)
+        NotificationCenter.default.addObserver(self,
+             selector: #selector(applicationWillTerminate(notification:)),
+             name: UIApplication.willTerminateNotification,
+             object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -85,8 +89,19 @@ class RecordVC: BaseViewController {
     
     deinit {
       NotificationCenter.default.removeObserver(self, name: Notification.Name("showBottomBtnView"), object: nil)
+      NotificationCenter.default.removeObserver(self)
     }
-    
+    @objc func applicationWillTerminate(notification: Notification) {
+      // Notification received.
+        print("Notification received.")
+        self.saveRecordedAudio() {
+            (success) in
+            if success{
+                print("Bg success saved")
+            }
+        }
+    }
+
     // MARK: - UISetup
     func setUpUI(){
         hideLeftButton()
@@ -178,6 +193,9 @@ class RecordVC: BaseViewController {
                      btnBackwardTrimEnd.isUserInteractionEnabled = true
 //                     btnStop.isUserInteractionEnabled = true
                  }
+                 audioPlayer?.numberOfLoops = 0 // loop count, set -1 for infinite
+                 audioPlayer?.volume = 1
+                 audioPlayer?.prepareToPlay()
                  isRecording = true
              }
     }
@@ -229,8 +247,18 @@ class RecordVC: BaseViewController {
         view.layer.add(transition, forKey: kCATransition)
     }
     @IBAction func onTapPlay(_ sender: UIButton) {
+        do{
         if let recorder = audioRecorder {
               if !recorder.isRecording {
+//                  let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+//                  let completePath = directoryPath.absoluteString +  self.lblFNameValue.text!
+//                  let completePathURL = URL(string: completePath)
+//                  audioPlayer?.numberOfLoops = 0 // loop count, set -1 for infinite
+//                  audioPlayer?.volume = 1
+                  audioPlayer?.prepareToPlay()
+//
+//                  try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
+//                  try AVAudioSession.sharedInstance().setActive(true)
                   if ((audioPlayer?.isPlaying) == true){
                       audioPlayer?.pause()
                       btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
@@ -246,6 +274,9 @@ class RecordVC: BaseViewController {
                   }
               }
           }
+    }catch{
+        print("error")
+    }
     }
     @IBAction func onTapForwardTrim(_ sender: UIButton) {
         print("Forward Trim")
@@ -296,7 +327,7 @@ class RecordVC: BaseViewController {
              let input = try String(contentsOf: url)
              let dataDict:[String: String] = ["file": input]
              isRecording = false
-             NotificationCenter.default.post(name: Notification.Name("FileSaved"), object: nil, userInfo: dataDict)
+//             NotificationCenter.default.post(name: Notification.Name("FileSaved"), object: nil, userInfo: dataDict)
              print("Saved File--->>",input)
              completion(true)
          } catch {

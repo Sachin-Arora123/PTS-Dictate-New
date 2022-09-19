@@ -66,6 +66,24 @@ class BaseViewController: UIViewController {
         self.tabBarController?.navigationItem.leftBarButtonItem = leftBarButtonItem
 
     }
+    func setRighButtonImage(imageName: String, selector: Selector) {
+        let img = UIImage(named: imageName)?.withRenderingMode(.alwaysOriginal)
+        let rightButton = UIBarButtonItem(image: img,
+                                          style: UIBarButtonItem.Style.plain,
+                                          target: self,
+                                          action: selector)
+        self.tabBarController?.navigationItem.rightBarButtonItem = rightButton
+    }
+    
+    func getRighButtonImage(imageName: String) -> UIImage {
+        let img = UIImage(named: imageName)!.withRenderingMode(.alwaysOriginal)
+        let rightButton = UIBarButtonItem(image: img,
+                                          style: UIBarButtonItem.Style.plain,
+                                          target: self,
+                                          action: nil)
+        self.tabBarController?.navigationItem.rightBarButtonItem = rightButton
+        return rightButton.image ?? UIImage()
+    }
     
     func hideLeftButton(){
         self.tabBarController?.navigationItem.hidesBackButton = true
