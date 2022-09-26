@@ -19,10 +19,10 @@ class SettingsVC: BaseViewController {
                      "Disable Email Notification","Comments Screen",
                      "   Comments Screen - Mandatory","Indexing","Disable Editing Help Screens"]
     let dataTitle2 = ["Profile","File Naming Date Format",
-                      "Archive file after upload",
+                      "Archive file after upload","   Archived Days",
                       "Upload via WiFi only",
                       "Sleep Mode Override","About","Logout"]
-    let iconArray = ["settings_profile","settings_edit","settings_upload","settings_wifi","settings_standby","settings_info","settings_logout"]
+    let iconArray = ["settings_profile","settings_edit","settings_upload","settings_archive","settings_wifi","settings_standby","settings_info","settings_logout"]
     var switchState = true
     
     // MARK: - View Life-Cycle.
@@ -80,17 +80,17 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
             RecordingCell
             cell.btnSwitch.tag = indexPath.row
             cell.lblTitle.text = dataTitle1[indexPath.row]
-            cell.btnSwitch.addTarget(self, action: #selector(switchValueDidChange(_:)), for: .valueChanged)
+            cell.btnSwitch.addTarget(self, action: #selector(switchRecordingSection(_:)), for: .valueChanged)
             switch indexPath.row{
             case 0,1:
                 cell.btnSwitch.isHidden = true
             case 5:
                 cell.imgViewArrow.isHidden = true
-                if switchState{
+                if CoreData.shared.commentScreen == 1{
                     
                 }else{
                     cell.lblTitle.text = ""
-                    cell.btnSwitch.isHidden = true
+//                    cell.btnSwitch.isHidden = true
                     cell.imgViewArrow.isHidden = true
                 }
             default:
@@ -101,14 +101,28 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
         case 1:
             let cell = tableView.dequeueReusableCell(withIdentifier: "GeneralSettingCell", for: indexPath) as!
             GeneralSettingCell
+            cell.lblArchiveValue.isHidden = true
+            cell.btnSwitch.tag = indexPath.row
+            cell.btnSwitch.addTarget(self, action: #selector(switchGeneralSection(_:)), for: .valueChanged)
             cell.lblTitle.text = dataTitle2[indexPath.row]
             cell.imgViewIcon.image = UIImage(named: iconArray[indexPath.row])
             switch indexPath.row{
-            case 0,1,5:
+            case 0,1:
                 cell.btnSwitch.isHidden = true
-            case 2,3,4:
+            case 2,4,5:
                 cell.imgViewArrow.isHidden = true
-            case 6:
+            case 3:
+                cell.btnSwitch.isHidden = true
+                if CoreData.shared.archiveFile == 1{
+                    cell.lblArchiveValue.isHidden = false
+                    cell.lblArchiveValue.text = "\(1)"
+                }else{
+                    cell.lblTitle.text = ""
+                    cell.btnSwitch.isHidden = true
+                    cell.imgViewArrow.isHidden = true
+                    cell.imgViewIcon.isHidden = true
+                }
+            case 6,7:
                 cell.btnSwitch.isHidden = true
                 cell.imgViewArrow.isHidden = true
             default:
@@ -175,7 +189,7 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
         case 0:
             switch indexPath.row {
             case 5 :
-                if switchState{
+                if CoreData.shared.commentScreen == 1{
                     return UITableView.automaticDimension
                 }else{
                     return 0
@@ -184,30 +198,108 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
                 break
             }
         case 1:
-            break
+            switch indexPath.row {
+            case 3 :
+                if CoreData.shared.archiveFile == 1{
+                    return UITableView.automaticDimension
+                }else{
+                    return 0
+                }
+            default:
+                break
+            }
         default:
             break
         }
         return UITableView.automaticDimension
     }
     
-    @objc func switchValueDidChange(_ sender: UISwitch){
+    @objc func switchRecordingSection(_ sender: UISwitch){
         switch sender.tag {
+        case 2:
+            if sender.isOn {
+                CoreData.shared.voiceActivation = 1
+            }else{
+                CoreData.shared.voiceActivation = 0
+            }
+        case 3:
+            if sender.isOn {
+                CoreData.shared.disableEmailNotify = 1
+            }else{
+                CoreData.shared.disableEmailNotify = 0
+            }
         case 4:
             if sender.isOn {
-                switchState = true
+                CoreData.shared.commentScreen = 1
+//                switchState = true
                 let indexPath = IndexPath(row: 5, section: 0)
                 self.tableView.reloadRows(at: [indexPath], with: UITableView.RowAnimation.bottom)
             }else{
-                switchState = false
+                CoreData.shared.commentScreen = 0
+//                switchState = false
                 let indexPath = IndexPath(row: 5, section: 0)
                 self.tableView.reloadRows(at: [indexPath], with: UITableView.RowAnimation.top)
             }
         case 5:
-            break
+            CoreData.shared.getdata()
+            if CoreData.shared.commentScreen == 1{
+                if sender.isOn{
+                    CoreData.shared.commentScreenMandatory = 1
+                }else{
+                    CoreData.shared.commentScreenMandatory = 0
+                }
+            }
+        case 6:
+            if sender.isOn {
+                CoreData.shared.indexing = 1
+            }else{
+                CoreData.shared.indexing = 0
+            }
+        case 7:
+            if sender.isOn {
+                CoreData.shared.disableEditingHelp = 1
+            }else{
+                CoreData.shared.disableEditingHelp = 0
+            }
+        case 8:
+            if sender.isOn {
+                CoreData.shared.disableEditingHelp = 1
+            }else{
+                CoreData.shared.disableEditingHelp = 0
+            }
         default:
             break
         }
+        CoreData.shared.dataSave()
+    }
+    @objc func switchGeneralSection(_ sender: UISwitch){
+        switch sender.tag {
+        case 2:
+            if sender.isOn {
+                CoreData.shared.archiveFile = 1
+                let indexPath = IndexPath(row: 3, section: 1)
+                self.tableView.reloadRows(at: [indexPath], with: UITableView.RowAnimation.bottom)
+            }else{
+                CoreData.shared.archiveFile = 0
+                let indexPath = IndexPath(row: 3, section: 1)
+                self.tableView.reloadRows(at: [indexPath], with: UITableView.RowAnimation.top)
+            }
+        case 4:
+            if sender.isOn{
+                CoreData.shared.uploadViaWifi = 1
+            }else{
+                CoreData.shared.uploadViaWifi = 0
+            }
+        case 5:
+            if sender.isOn{
+                CoreData.shared.sleepModeOverride = 1
+            }else{
+                CoreData.shared.sleepModeOverride = 0
+            }
+        default:
+            break
+        }
+        CoreData.shared.dataSave()
     }
 }
 

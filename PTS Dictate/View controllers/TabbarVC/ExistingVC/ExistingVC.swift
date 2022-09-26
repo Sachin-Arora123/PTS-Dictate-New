@@ -33,6 +33,10 @@ class ExistingVC: BaseViewController {
     var totalFiles = [String]()
     var totalFilesSelected : [String] = []
     var playingCellIndex = -1
+    
+    private var audioMeteringLevelTimer: Timer?
+    var tag = -1
+    
     // wave form var
     fileprivate var startRendering = Date()
     fileprivate var endRendering = Date()
@@ -138,11 +142,29 @@ class ExistingVC: BaseViewController {
                 self.mediaProgressView.audioURL = completePathURL!
                 sender.setBackgroundImage(UIImage(named: "existing_pause_btn"), for: .normal)
                 self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
+                tag = sender.tag
+                self.audioMeteringLevelTimer = Timer.scheduledTimer(timeInterval: 0.05, target: self, selector: #selector(timerDidUpdateMeter), userInfo: nil, repeats: true)
+                self.lblTotalTime.text = self.getTimeDuration(filePath: self.totalFiles[index])
             }
-            
+            self.setTrimButtonInteraction(isInteractive: true)
         } catch _ {
             print("catch")
         }
+    }
+    
+    @objc func timerDidUpdateMeter() {
+        
+//        let cell = tableView.cellForRow(at: IndexPath(row: tag, section: 0)) as! ExistingFileCell
+            let min = Int(audioPlayer.currentTime / 60)
+            let sec = Int(audioPlayer.currentTime.truncatingRemainder(dividingBy: 60))
+            let totalTimeString = String(format: "%02d:%02d",min, sec)
+        
+//            cell.lblFileTime.text = totalTimeString
+        self.lblPlayingTime.text = totalTimeString
+        self.audioPlayer.updateMeters()
+            let averagePower = self.audioPlayer.averagePower(forChannel: 0)
+            let percentage: Float = pow(10, (0.05 * averagePower))
+            NotificationCenter.default.post(name: .audioPlayerManagerMeteringLevelDidUpdateNotification, object: self, userInfo: ["percentage": percentage])
     }
     
     // MARK: - @IBActions.
@@ -234,6 +256,7 @@ class ExistingVC: BaseViewController {
             let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
             let completePath = directoryPath.absoluteString +  self.lblFileName.text!
             let completePathURL = URL(string: completePath)
+            self.lblTotalTime.text = self.getTimeDuration(filePath: self.lblFileName.text!)
             audioPlayer.numberOfLoops = 0 // loop count, set -1 for infinite
             audioPlayer.volume = 1
             audioPlayer.prepareToPlay()
@@ -253,7 +276,10 @@ class ExistingVC: BaseViewController {
                 self.mediaProgressView.audioURL = completePathURL!
                 cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_pause_btn"), for: .normal)
                 self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
+                tag = playingMediaIndex
+                self.audioMeteringLevelTimer = Timer.scheduledTimer(timeInterval: 0.05, target: self, selector: #selector(timerDidUpdateMeter), userInfo: nil, repeats: true)
             }
+            self.setTrimButtonInteraction(isInteractive: true)
         } catch _ {
             print("catch")
         }
@@ -263,13 +289,19 @@ class ExistingVC: BaseViewController {
         
     }
     @IBAction func onTapFTrimEnd(_ sender: UIButton){
-        
+        let currentTime = audioPlayer.currentTime
+         audioPlayer.pause()
+        audioPlayer.play(atTime: currentTime + 3.0)
     }
     @IBAction func onTapBTrim(_ sender: UIButton){
         
     }
     @IBAction func onTapBTrimEnd(_ sender: UIButton){
         
+//        let currentTime = audioPlayer.currentTime
+//         audioPlayer.pause()
+//        audioPlayer.play(atTime: currentTime - 3.0)
+////        audioPlayer
     }
     
 }
@@ -298,9 +330,6 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
         }else{
             cell.btnSelection.setImage(UIImage(named: "unchecked_checkbox"), for: .normal)
         }
-        DispatchQueue.main.async {
-            cell.lblFileTime.text = "\(self.duration(itemName:  self.totalFiles[indexPath.row]))"
-        }
         cell.btnEdit.isHidden = true
         cell.lblFileSize.text = fileSize(itemName:  self.totalFiles[indexPath.row])
         cell.btnSelection.tag = indexPath.row
@@ -313,7 +342,12 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
         cell.btnPlay.addTarget(self, action: #selector(play), for: .touchUpInside)
         cell.btnComment.addTarget(self, action: #selector(openCommentVC), for: .touchUpInside)
         cell.btnEdit.addTarget(self, action: #selector(openRenameFileVc), for: .touchUpInside)
-        return cell
+        
+        DispatchQueue.main.async {
+            let time = self.getTimeDuration(filePath: self.totalFiles[indexPath.row])
+            cell.lblFileTime.text = time
+        }
+       return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -323,17 +357,28 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
 
 // MARK: - Objective C Methods
 extension ExistingVC{
-    func duration(itemName: String) -> Double {
-        let nsDocumentDirectory = FileManager.SearchPathDirectory.documentDirectory
-        let nsUserDomainMask = FileManager.SearchPathDomainMask.userDomainMask
-        let paths = NSSearchPathForDirectoriesInDomains(nsDocumentDirectory, nsUserDomainMask, true)
-        let dirPath = paths.first ?? ""
-        let filePath =  dirPath + itemName
-//        let item = AVPlayerItem(url: URL(fileURLWithPath: filePath))
-        let asset = AVURLAsset(url: URL(fileURLWithPath: filePath))
-        return Double(CMTimeGetSeconds(asset.duration))
+    func setTrimButtonInteraction(isInteractive: Bool){
+        self.btnForwardTrim.isUserInteractionEnabled = isInteractive
+        self.btnForwardTrimEnd.isUserInteractionEnabled = isInteractive
+        self.btnBackwardTrim.isUserInteractionEnabled = isInteractive
+        self.btnBackwardTrimEnd.isUserInteractionEnabled = isInteractive
     }
-  
+    
+    func getTimeDuration(filePath: String) -> String{
+        let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let completePath = directoryPath.absoluteString + filePath
+        //            if let completePathURL = URL(string: completePath){
+        let completePathURL = URL(string: completePath)
+        
+        let audioAsset = AVURLAsset.init(url: completePathURL!, options: nil)
+        let duration = audioAsset.duration
+        let durationInSeconds = CMTimeGetSeconds(duration)
+        let min = Int(durationInSeconds / 60)
+        let sec = Int(durationInSeconds.truncatingRemainder(dividingBy: 60))
+        let totalTimeString = String(format: "%02d:%02d",min, sec)
+        //            }
+        return totalTimeString
+    }
     func fileSize(itemName: String) -> String? {
         let nsDocumentDirectory = FileManager.SearchPathDirectory.documentDirectory
         let nsUserDomainMask = FileManager.SearchPathDomainMask.userDomainMask
@@ -401,28 +446,6 @@ extension ExistingVC{
         }
         self.tableView.reloadData()
     }
-    // file size
-    func sizeForLocalFilePath(itemName: String) -> UInt64 {
-        let fileManager = FileManager.default
-        let nsDocumentDirectory = FileManager.SearchPathDirectory.documentDirectory
-        let nsUserDomainMask = FileManager.SearchPathDomainMask.userDomainMask
-        let paths = NSSearchPathForDirectoriesInDomains(nsDocumentDirectory, nsUserDomainMask, true)
-        guard let dirPath = paths.first else {
-            return 0
-        }
-        let filePath = "\(dirPath)/\(itemName)"
-        do {
-            let fileAttributes = try FileManager.default.attributesOfItem(atPath: filePath)
-            if let fileSize = fileAttributes[FileAttributeKey.size]  {
-                return (fileSize as! NSNumber).uint64Value
-            } else {
-                print("Failed to get a size attribute from path: \(filePath)")
-            }
-        } catch {
-            print("Failed to get file attributes for local path: \(filePath) with error: \(error)")
-        }
-        return 0
-    }
    
     func covertToFileString(with size: UInt64) -> String {
         var convertedValue: Double = Double(size)
@@ -433,25 +456,6 @@ extension ExistingVC{
             multiplyFactor += 1
         }
         return String(format: "%4.2f %@", convertedValue, tokens[multiplyFactor])
-    }
-    func sizePerMB(itemName: String) -> Double {
-//        let fileManager = FileManager.default
-        let nsDocumentDirectory = FileManager.SearchPathDirectory.documentDirectory
-        let nsUserDomainMask = FileManager.SearchPathDomainMask.userDomainMask
-        let paths = NSSearchPathForDirectoriesInDomains(nsDocumentDirectory, nsUserDomainMask, true)
-        guard let dirPath = paths.first else {
-            return 0
-        }
-        let filePath = "\(dirPath)/\(itemName)"
-        do {
-            let attribute = try FileManager.default.attributesOfItem(atPath: filePath)
-            if let size = attribute[FileAttributeKey.size] as? NSNumber {
-                return size.doubleValue / 1000000.0
-            }
-        } catch {
-            print("Error: \(error.localizedDescription)")
-        }
-        return 0.0
     }
 }
 
@@ -497,16 +501,7 @@ extension ExistingVC: FDWaveformViewDelegate {
     }
 }
 
-extension Array where Element: Equatable {
-    func indexes(of element: Element) -> [Int] {
-        return self.enumerated().filter({ element == $0.element }).map({ $0.offset })
-    }
-    func containsObject(_ object: Any) -> Bool {
-            let anObject = object as AnyObject
-            for obj in self {
-                let anObj = obj as AnyObject
-                return anObj.isEqual(anObject)
-            }
-            return false
-        }
+extension Notification.Name {
+    static let audioPlayerManagerMeteringLevelDidUpdateNotification = Notification.Name("AudioPlayerManagerMeteringLevelDidUpdateNotification")
+    static let audioPlayerManagerMeteringLevelDidFinishNotification = Notification.Name("AudioPlayerManagerMeteringLevelDidFinishNotification")
 }

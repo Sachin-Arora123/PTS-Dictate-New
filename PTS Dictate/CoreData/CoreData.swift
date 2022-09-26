@@ -10,13 +10,27 @@ import CoreData
 import Foundation
 
 class CoreData: NSObject {
-    
+    // 1 - true for switch on & 0 - false for switch off
     var accessToken: String =  ""
     var userName : String = ""
     var email: String = ""
     var privilege: String = ""
     var isRemeberMe : Bool = false
     var password = ""
+    var audioQuality = 11
+    var voiceActivation = 0 // 1 - true & 0 - false
+    var disableEmailNotify = 0 // 1 - true & 0 - false
+    var commentScreen = 0 // 1 - true & 0 - false
+    var commentScreenMandatory = 0 // 1 - true & 0 - false
+    var indexing = 0 // 1 - true & 0 - false
+    var disableEditingHelp = 0 // 1 - true & 0 - false
+    var fileNameFormat: String = ""
+    var dateFormat: String = ""
+    var archiveFile = 0 // 1 - true & 0 - false
+    var archiveFileDays = 1 // 1 - day default
+    var uploadViaWifi = 0 // 1 - true & 0 - false
+    var sleepModeOverride = 0 // 1 - true & 0 - false
+    
     
     class var shared: CoreData{
         struct singleTon {
@@ -51,7 +65,19 @@ class CoreData: NSObject {
         newData.setValue(password, forKey: "password")
         newData.setValue(email, forKey: "email")
         newData.setValue(privilege, forKey: "privilege")
-
+        newData.setValue(audioQuality, forKey: "audioQuality")
+        newData.setValue(voiceActivation, forKey: "voiceActivation")
+        newData.setValue(disableEmailNotify, forKey: "disableEmailNotify")
+        newData.setValue(commentScreen, forKey: "commentScreen")
+        newData.setValue(commentScreenMandatory, forKey: "commentScreenMandatory")
+        newData.setValue(indexing, forKey: "indexing")
+        newData.setValue(disableEditingHelp, forKey: "disableEditingHelp")
+        newData.setValue(fileNameFormat, forKey: "fileNameFormat")
+        newData.setValue(dateFormat, forKey: "dateFormat")
+        newData.setValue(archiveFile, forKey: "archiveFile")
+        newData.setValue(archiveFileDays, forKey: "archiveFileDays")
+        newData.setValue(uploadViaWifi, forKey: "uploadViaWifi")
+        newData.setValue(sleepModeOverride, forKey: "sleepModeOverride")
         do {
             try context.save()
             print(newData)
@@ -94,6 +120,58 @@ class CoreData: NSObject {
                         self.privilege = privilege
                         print("data get userName \(privilege)")
                     }
+                    if let audioQuality = result.value(forKey: "audioQuality") as? Int{
+                        self.audioQuality = audioQuality
+                        print("data get audioQuality \(audioQuality)")
+                    }
+                    if let voiceActivation = result.value(forKey: "voiceActivation") as? Int{
+                        self.voiceActivation = voiceActivation
+                        print("data get voiceActivation \(voiceActivation)")
+                    }
+                    if let disableEmailNotify = result.value(forKey: "disableEmailNotify") as? Int{
+                        self.disableEmailNotify = disableEmailNotify
+                        print("data get disableEmailNotify \(disableEmailNotify)")
+                    }
+                    if let commentScreen = result.value(forKey: "commentScreen") as? Int{
+                        self.commentScreen = commentScreen
+                        print("data get commentScreen \(commentScreen)")
+                    }
+                    if let commentScreenMandatory = result.value(forKey: "commentScreenMandatory") as? Int{
+                        self.commentScreenMandatory = commentScreenMandatory
+                        print("data get commentScreenMandatory \(commentScreenMandatory)")
+                    }
+                    if let indexing = result.value(forKey: "indexing") as? Int{
+                        self.indexing = indexing
+                        print("data get indexing \(indexing)")
+                    }
+                    if let disableEditingHelp = result.value(forKey: "disableEditingHelp") as? Int{
+                        self.disableEditingHelp = disableEditingHelp
+                        print("data get disableEditingHelp \(disableEditingHelp)")
+                    }
+                    if let fileNameFormat = result.value(forKey: "fileNameFormat") as? String{
+                        self.fileNameFormat = fileNameFormat
+                        print("data get fileNameFormat \(fileNameFormat)")
+                    }
+                    if let dateFormat = result.value(forKey: "dateFormat") as? String{
+                        self.dateFormat = dateFormat
+                        print("data get dateFormat \(dateFormat)")
+                    }
+                    if let archiveFile = result.value(forKey: "archiveFile") as? Int{
+                        self.archiveFile = archiveFile
+                        print("data get archiveFile \(archiveFile)")
+                    }
+                    if let archiveFileDays = result.value(forKey: "archiveFileDays") as? Int{
+                        self.archiveFileDays = archiveFileDays
+                        print("data get archiveFileDays \(archiveFileDays)")
+                    }
+                    if let uploadViaWifi = result.value(forKey: "uploadViaWifi") as? Int{
+                        self.uploadViaWifi = uploadViaWifi
+                        print("data get uploadViaWifi \(uploadViaWifi)")
+                    }
+                    if let sleepModeOverride = result.value(forKey: "sleepModeOverride") as? Int{
+                        self.sleepModeOverride = sleepModeOverride
+                        print("data get id \(sleepModeOverride)")
+                    }
                 }
             }
         }
@@ -110,6 +188,19 @@ class CoreData: NSObject {
         accessToken =  ""
         email = ""
         privilege = ""
+        audioQuality = 11
+        voiceActivation = 0
+        disableEmailNotify = 0
+        commentScreen = 0
+        commentScreenMandatory = 0
+        indexing = 0
+        disableEditingHelp = 0
+        fileNameFormat = ""
+        dateFormat = ""
+        archiveFile = 0
+        archiveFileDays = 1
+        uploadViaWifi = 0
+        sleepModeOverride = 0
         
         if !self.isRemeberMe{
             self.userName = ""
