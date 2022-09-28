@@ -4,6 +4,7 @@ PODS:
   - iProgressHUD (1.1.1)
   - IQKeyboardManagerSwift (6.5.10)
   - SwiftEntryKit (2.0.0)
+  - SwiftToast (1.1.3)
   - SwiftyJSON (5.0.1)
   - Toaster (2.3.0)
 
@@ -13,6 +14,7 @@ DEPENDENCIES:
   - iProgressHUD (~> 1.1.1)
   - IQKeyboardManagerSwift
   - SwiftEntryKit
+  - SwiftToast
   - SwiftyJSON
   - Toaster
 
@@ -23,6 +25,7 @@ SPEC REPOS:
     - iProgressHUD
     - IQKeyboardManagerSwift
     - SwiftEntryKit
+    - SwiftToast
     - SwiftyJSON
     - Toaster
 
@@ -32,9 +35,10 @@ SPEC CHECKSUMS:
   iProgressHUD: caa742128253c97f2c2e1ec59e2bbe6cf689df6a
   IQKeyboardManagerSwift: 52962c76ab33532f15ad9f3ff4e5715eda5335bb
   SwiftEntryKit: 61b5fa36f34a97dd8013e48a7345bc4c4720be9a
+  SwiftToast: 029cbeda85c04fb3fa5df774ba461b19971bc6c5
   SwiftyJSON: 2f33a42c6fbc52764d96f13368585094bfd8aa5e
   Toaster: c3473963c78e8cabbf6ea6f11ad0fdaae6f54987
 
-PODFILE CHECKSUM: 557c393433b8a44e84141d8dde297070ddca9fbb
+PODFILE CHECKSUM: 350bed1e2f2b25f5eafafc3e148a9ad4a993169f
 
 COCOAPODS: 1.11.3

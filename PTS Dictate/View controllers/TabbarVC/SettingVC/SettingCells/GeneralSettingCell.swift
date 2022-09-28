@@ -14,6 +14,7 @@ class GeneralSettingCell: UITableViewCell {
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var btnSwitch: UISwitch!
     @IBOutlet weak var imgViewArrow: UIImageView!
+    @IBOutlet weak var lblArchiveValue: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
