@@ -36,6 +36,23 @@ class RecordVC: BaseViewController {
     @IBOutlet weak var btnEdit: UIButton!
     @IBOutlet weak var btnDiscard: UIButton!
     @IBOutlet weak var lblPlayerStatus: UILabel!
+    @IBOutlet weak var segmentControl: UISegmentedControl!
+    @IBOutlet weak var currentPlayingTime: UILabel!
+    @IBOutlet weak var lblSeperator: UILabel!
+    @IBOutlet weak var playerTotalTime: UILabel!
+    @IBOutlet weak var stackView: UIStackView!
+    @IBOutlet weak var playerWaveView: UIView!
+    @IBOutlet weak var bookmarkWaveTime: UIView!
+    @IBOutlet weak var bookMarkView: UIView!
+    @IBOutlet weak var btnLeftBookmark: UIButton!
+    @IBOutlet weak var btnRightBookmark: UIButton!
+    @IBOutlet weak var btnBookmark: UIButton!
+    @IBOutlet weak var viewClear: UIView!
+    @IBOutlet weak var btnClear: UIButton!
+    @IBOutlet weak var insertTimer: UILabel!
+    @IBOutlet weak var stackViewHeight: NSLayoutConstraint!
+    @IBOutlet weak var segmentHeight: NSLayoutConstraint!
+    @IBOutlet weak var progressViewHeight: NSLayoutConstraint!
     
     let fileManager = FileManager.default
     let audioSession = AVAudioSession.sharedInstance()
@@ -45,6 +62,13 @@ class RecordVC: BaseViewController {
     var recordTimer:Timer!
     var audioFileName: String = ""
     var dataListArray = [AnyObject]()
+    var articleChunks = [AVURLAsset]()
+    var fileDestinationUrl:URL!
+    var settings         = [String : Int]()
+    var fileURL1:URL!
+    var fileURL2:URL!
+    var isAppendPlaying: Bool = false
+
     
     // MARK: - View Life-Cycle.
     override func viewDidLoad() {
@@ -80,6 +104,7 @@ class RecordVC: BaseViewController {
                        AVNumberOfChannelsKey: 2 ]
         
         audioRecorder = try? AVAudioRecorder(url: audioFileURL, settings: recorderSetting)
+        fileURL1 = audioFileURL
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -106,6 +131,16 @@ class RecordVC: BaseViewController {
     func setUpUI(){
         hideLeftButton()
         setTitleWithImage("Record", andImage: UIImage(named: "title_record_normal.png") ?? UIImage())
+        segmentControl.isHidden = true
+        stackView.isHidden = true
+        stackViewHeight.constant = 0
+        playerTotalTime.isHidden = true
+        lblSeperator.isHidden = true
+        currentPlayingTime.isHidden = true
+        insertTimer.isHidden = true
+        segmentHeight.constant = 0
+        viewProgress.isHidden = false
+        progressViewHeight.constant = 45
     }
  
     @objc func showBottomView() {
@@ -223,6 +258,16 @@ class RecordVC: BaseViewController {
 //                    self.viewBottomButton.isHidden = false
                     CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
                     lblPlayerStatus.text = "Stopped"
+                    progressViewHeight.constant = 0
+                    viewProgress.isHidden = true
+                    stackView.isHidden = false
+                    playerWaveView.isHidden = false
+                    bookMarkView.isHidden = true
+                    viewClear.isHidden = true
+                    stackViewHeight.constant = 200 - 45 * 2 - 70
+                    if isAppendPlaying{
+                        playmerge(audio1: fileURL1 as! NSURL, audio2: fileURL2 as! NSURL)
+                    }
                 } catch _ {
                 }
 //            }
@@ -234,8 +279,6 @@ class RecordVC: BaseViewController {
                 player.stop()
             }
         }
-        // If user recorded then stopped then allow SAVE now (even without a title)
-//        btnSave.isEnabled = true
     }
     //MARK: Slide View - Top To Bottom
     func viewSlideInFromTopToBottom(view: UIView) -> Void {
@@ -295,6 +338,89 @@ class RecordVC: BaseViewController {
 
     }
     
+    @IBAction func segmentChanged(_ sender: Any) {
+        switch segmentControl.selectedSegmentIndex {
+        case 0:
+            self.viewClear.isHidden = true
+            self.stackViewHeight.constant = 200 - 45 * 3
+            break
+        case 1:
+            settings = [
+                AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+                AVSampleRateKey: 12000,
+                AVNumberOfChannelsKey: 1,
+                AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+            ]
+            self.stackView.isHidden = false
+            self.stackViewHeight.constant = 200 - 45 * 2
+            self.bookMarkView.isHidden = true
+            self.bookmarkWaveTime.isHidden = true
+            self.btnClear.setImage(UIImage(named: "btn_start_point_normal"), for: .normal)
+            self.btnClear.setBackgroundImage(UIImage(named: ""), for: .normal)
+            startRecording()
+            break
+        case 2:
+            break
+        case 3:
+            break
+        default:
+            break
+        }
+    }
+
+    func concatChunks(filePath: String) {
+        let composition = AVMutableComposition()
+        
+        /* `CMTimeRange` to store total duration and know when to
+         insert subsequent assets.
+         */
+        var insertAt = CMTimeRange(start: CMTime.zero, end: CMTime.zero)
+        
+        repeat {
+            let asset = self.articleChunks.removeFirst()
+            
+            let assetTimeRange =
+            CMTimeRange(start: CMTime.zero, end: asset.duration)
+            
+            do {
+                try composition.insertTimeRange(assetTimeRange,
+                                                of: asset,
+                                                at: insertAt.end)
+            } catch {
+                NSLog("Unable to compose asset track.")
+            }
+            
+            let nextDuration = insertAt.duration + assetTimeRange.duration
+            insertAt = CMTimeRange(start: CMTime.zero, duration: nextDuration)
+        } while self.articleChunks.count != 0
+        
+        let exportSession =
+        AVAssetExportSession(
+            asset:      composition,
+            presetName: AVAssetExportPresetAppleM4A)
+        
+        exportSession?.outputFileType = AVFileType.m4a
+        exportSession?.outputURL = NSURL.fileURL(withPath: filePath)
+        /* create URL for output */
+        // exportSession?.metadata = ...
+        
+        exportSession?.exportAsynchronously
+        {
+            
+            switch exportSession?.status {
+            case .unknown?: break
+            case .waiting?: break
+            case .exporting?:
+                break
+            case .completed?: break
+            case .failed?: break
+            case .cancelled?: break
+            case .none: break
+            }
+            
+        }
+    }
+
     func listVideos() -> [URL] {
         let documentDirectory = self.getDocumentsDirectory()
         let files = try? fileManager.contentsOfDirectory(
@@ -356,12 +482,13 @@ class RecordVC: BaseViewController {
         })
     }
     @IBAction func onTapEdit(_ sender: UIButton) {
-        print("Edit")
-        let allFiles =  self.listVideos()
-        print("all data files--->>",allFiles.count)
-        let allFind = self.findFilesWith(fileExtension: "m4a")
-        print("all find data files--->>",allFind.count)
-//            self.getSavedFiles()
+        segmentControl.selectedSegmentIndex = -1
+        segmentHeight.constant = 31
+        segmentControl.isHidden = false
+        btnStop.isUserInteractionEnabled = true
+        btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: .normal)
+        CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: true, animation: .transitionFlipFromBottom)
+        self.tabBarController?.setTabBarHidden(false, animated: false)
     }
     @IBAction func onTapDiscard(_ sender: UIButton) {
         CommonFunctions.showAlert(view: self, title: "PTS Dictate", message: "Do you want to discard the current Recording?", completion: {
@@ -378,7 +505,14 @@ class RecordVC: BaseViewController {
         print("Discard")
     }
     
-   @objc func onDiscardRecorderSetUp(){
+    @IBAction func onTapClear(_ sender: UIButton) {
+        if sender.imageView?.image == UIImage(named: "btn_start_point_normal"){
+            print("Start Point")
+        }else{
+            print("Clear")
+        }
+    }
+    @objc func onDiscardRecorderSetUp(){
 //        self.recorderSetUp()
         self.recordTimer.invalidate()
         self.lblTime.text = "00:00:00"
@@ -559,4 +693,147 @@ extension DateFormatter {
         dateFormatter.dateFormat = "ddMMyyyy_ss_SSS"
         return dateFormatter
     }()
+}
+// Extension for merge audio file
+extension RecordVC{
+    func directoryURL() -> NSURL? {
+        let fileManager = FileManager.default
+        let urls = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
+        let documentDirectory = urls[0] as NSURL
+        fileURL2 = documentDirectory.appendingPathComponent(".m4a")
+        do {
+            try  FileManager.default.removeItem(at: fileURL2)
+        } catch let error as NSError {
+            print(error.debugDescription)
+        }
+        return fileURL2 as NSURL?
+    }
+    func startRecording() {
+        let fileUrl2 = getDocumentsDirectory().appendingPathComponent(".m4a")
+        do {
+            audioRecorder = try AVAudioRecorder(url: self.directoryURL()! as URL,
+                                                settings: settings)
+            audioRecorder!.delegate = self
+            audioRecorder!.prepareToRecord()
+        } catch {
+            finishRecording(success: false)
+        }
+        do {
+            try audioSession.setActive(true)
+            audioRecorder!.record()
+            isAppendPlaying = true
+        } catch let error as NSError {
+            print(error.debugDescription)
+        }
+    }
+    func finishRecording(success: Bool) {
+        audioRecorder!.stop()
+        if success {
+            print(success)
+            audioPlayer = try! AVAudioPlayer(contentsOf: fileURL2)
+        } else {
+            audioRecorder = nil
+            print("Somthing Wrong.")
+        }
+    }
+    func playmerge(audio1: NSURL, audio2:  NSURL)
+    {
+        let composition = AVMutableComposition()
+        let compositionAudioTrack1:AVMutableCompositionTrack? = composition.addMutableTrack(withMediaType: .audio, preferredTrackID: CMPersistentTrackID())
+        let compositionAudioTrack2:AVMutableCompositionTrack? = composition.addMutableTrack(withMediaType: .audio, preferredTrackID: CMPersistentTrackID())
+        
+        let documentDirectoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first! as NSURL
+        self.fileDestinationUrl = documentDirectoryURL.appendingPathComponent(".m4a")! as URL
+        
+        let filemanager = FileManager.default
+        if (!filemanager.fileExists(atPath: self.fileDestinationUrl.path))
+        {
+            do
+            {
+                try filemanager.removeItem(at: self.fileDestinationUrl)
+            }
+            catch let error as NSError
+            {
+                NSLog("Error: \(error)")
+            }
+        }
+        else
+        {
+            do
+            {
+                try filemanager.removeItem(at: self.fileDestinationUrl)
+                let alert = UIAlertController(title: "Alert", message: "File Merged Successfuly. Click on play to check", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+            }
+            catch let error as NSError
+            {
+                NSLog("Error: \(error)")
+            }
+        }
+        
+        let url1 = audio1
+        let url2 = audio2
+        
+        let avAsset1 = AVURLAsset(url: url1 as URL, options: nil)
+        let avAsset2 = AVURLAsset(url: url2 as URL, options: nil)
+        
+        let tracks1 = avAsset1.tracks(withMediaType: .audio)
+        let tracks2 = avAsset2.tracks(withMediaType: .audio)
+        
+        let assetTrack1:AVAssetTrack = tracks1[0]
+        let assetTrack2:AVAssetTrack = tracks2[0]
+        
+        let duration1: CMTime = assetTrack1.timeRange.duration
+        let duration2: CMTime = assetTrack2.timeRange.duration
+        
+        print("duration1 = \(duration1)")
+        print("duration2 = \(duration2)")
+        
+        let timeRange1 = CMTimeRangeMake(start: .zero, duration: duration1)
+        let timeRange2 = CMTimeRangeMake(start: .zero, duration: duration2)
+        
+        print("timeRange1 = \(timeRange1)")
+        print("timeRange2 = \(timeRange2)")
+        
+        do
+        {
+            try compositionAudioTrack1?.insertTimeRange(timeRange1, of: assetTrack1, at: .zero)
+            let nextClipStartTime = CMTimeAdd(.zero, timeRange1.duration)
+            try compositionAudioTrack2?.insertTimeRange(timeRange2, of: assetTrack2, at: nextClipStartTime)
+        }
+        catch
+        {
+            print(error)
+        }
+        
+        let assetExport = AVAssetExportSession(asset: composition, presetName: AVAssetExportPresetAppleM4A)
+        assetExport?.outputFileType = .m4a
+        assetExport?.outputURL = fileDestinationUrl
+        assetExport?.exportAsynchronously(completionHandler: {
+            
+            switch assetExport!.status
+            {
+                case .failed:
+                    print("failed \(String(describing: assetExport?.error))")
+                case .cancelled:
+                    print("cancelled \(String(describing: assetExport?.error))")
+                case .unknown:
+                    print("unknown\(String(describing: assetExport?.error))")
+                case .waiting:
+                    print("waiting\(String(describing: assetExport?.error))")
+                case .exporting:
+                    print("exporting\(String(describing: assetExport?.error))")
+                default:
+                    print("complete")
+            }
+            
+            do {
+                audioPlayer = try AVAudioPlayer(contentsOf:self.fileDestinationUrl)
+            }
+            catch let error as NSError {
+                print(error.debugDescription)
+            }
+        })
+    }
 }
