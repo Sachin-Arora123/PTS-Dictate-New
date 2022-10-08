@@ -293,9 +293,11 @@ class ExistingVC: BaseViewController {
          audioPlayer.pause()
         audioPlayer.play(atTime: currentTime + 3.0)
     }
+    
     @IBAction func onTapBTrim(_ sender: UIButton){
         
     }
+    
     @IBAction func onTapBTrimEnd(_ sender: UIButton){
         
 //        let currentTime = audioPlayer.currentTime
