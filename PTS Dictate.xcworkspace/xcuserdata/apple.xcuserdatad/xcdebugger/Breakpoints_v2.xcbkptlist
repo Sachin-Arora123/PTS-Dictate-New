@@ -7,17 +7,49 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "2B827D29-D6E2-4233-8B07-C68CE4262E99"
+            uuid = "5E58EC4A-7455-48FB-BE67-0ACD2D4C518D"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "PTS Dictate/View controllers/TabbarVC/ExistingVC/ExistingVC.swift"
+            filePath = "Pods/SoundWave/SoundWave/Classes/AudioVisualizationView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "294"
-            endingLineNumber = "294"
-            landmarkName = "onTapFTrimEnd(_:)"
+            startingLineNumber = "299"
+            endingLineNumber = "299"
+            landmarkName = "drawMeteringLevelBars(inContext:)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "5E58EC4A-7455-48FB-BE67-0ACD2D4C518D - ea0cb32b4eaf41"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "SoundWave.AudioVisualizationView.drawMeteringLevelBars(inContext: __C.CGContextRef) -&gt; ()"
+                  moduleName = "SoundWave"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apple/Documents/PTS-Dictate-New/Pods/SoundWave/SoundWave/Classes/AudioVisualizationView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "299"
+                  endingLineNumber = "299"
+                  offsetFromSymbolStart = "892">
+               </Location>
+               <Location
+                  uuid = "5E58EC4A-7455-48FB-BE67-0ACD2D4C518D - ea0cb32b4eaf41"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "SoundWave.AudioVisualizationView.drawMeteringLevelBars(inContext: __C.CGContextRef) -&gt; ()"
+                  moduleName = "SoundWave"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apple/Documents/PTS-Dictate-New/Pods/SoundWave/SoundWave/Classes/AudioVisualizationView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "299"
+                  endingLineNumber = "299"
+                  offsetFromSymbolStart = "895">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
