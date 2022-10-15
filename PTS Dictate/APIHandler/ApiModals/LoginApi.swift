@@ -21,3 +21,12 @@ struct LoginAPI: Codable {
         case responseMsg = "response_msg"
     }
 }
+
+// MARK: - UploadAPI
+struct UploadAPI: Codable {
+    let responseCode, responseMsg: String?
+    enum CodingKeys: String, CodingKey {
+        case responseCode = "response_code"
+        case responseMsg = "response_msg"
+    }
+}

@@ -46,6 +46,7 @@
 		18DF4BDF28BE8730002FC063 /* CommonFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DF4BDE28BE872F002FC063 /* CommonFunctions.swift */; };
 		18DF4BE128BE899D002FC063 /* Extension+UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DF4BE028BE899D002FC063 /* Extension+UIView.swift */; };
 		18DF4BE428BE955E002FC063 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DF4BE328BE955E002FC063 /* LoginViewModel.swift */; };
+		18E8AAE828F89E0400DF73F4 /* ExistingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E8AAE728F89E0400DF73F4 /* ExistingViewModel.swift */; };
 		28A4F5C628B510D90035137B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5C528B510D90035137B /* AppDelegate.swift */; };
 		28A4F5C828B510D90035137B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5C728B510D90035137B /* SceneDelegate.swift */; };
 		28A4F5CA28B510D90035137B /* LoginVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5C928B510D90035137B /* LoginVC.swift */; };
@@ -96,6 +97,7 @@
 		18DF4BDE28BE872F002FC063 /* CommonFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonFunctions.swift; sourceTree = "<group>"; };
 		18DF4BE028BE899D002FC063 /* Extension+UIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+UIView.swift"; sourceTree = "<group>"; };
 		18DF4BE328BE955E002FC063 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
+		18E8AAE728F89E0400DF73F4 /* ExistingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExistingViewModel.swift; sourceTree = "<group>"; };
 		28A4F5C228B510D90035137B /* PTS Dictate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PTS Dictate.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		28A4F5C528B510D90035137B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		28A4F5C728B510D90035137B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -206,6 +208,7 @@
 			children = (
 				182BE0B028BD29C000327094 /* ExistingVC.swift */,
 				186765F428C4B803006BABDF /* ExistingFileCell.swift */,
+				18E8AAE728F89E0400DF73F4 /* ExistingViewModel.swift */,
 			);
 			path = ExistingVC;
 			sourceTree = "<group>";
@@ -579,6 +582,7 @@
 				18CDDB0D28B7D683006AB795 /* TabbarVC.swift in Sources */,
 				186765F528C4B803006BABDF /* ExistingFileCell.swift in Sources */,
 				186765F928C4C97E006BABDF /* RenameFileVC.swift in Sources */,
+				18E8AAE828F89E0400DF73F4 /* ExistingViewModel.swift in Sources */,
 				182BE0BE28BD4ED000327094 /* NamingFormatVC.swift in Sources */,
 				180EB43928B6A87D00F1A3FB /* Extension+UIViewController.swift in Sources */,
 				18CDDB0F28B7D96C006AB795 /* Storyboard.swift in Sources */,

@@ -14,4 +14,5 @@ let MediaURL = ""
 //MARK: - Api Paths
 enum ApiPath: String{
     case login = "loginCheck"
+    case upload = "UploadFile"
 }

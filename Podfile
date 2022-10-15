@@ -16,6 +16,5 @@ target 'PTS Dictate' do
   pod 'FDWaveformView'
   pod "SwiftToast"
   pod "SoundWave"
-pod "SCWaveformView"
 
 end
