@@ -3,6 +3,8 @@ PODS:
   - FDWaveformView (5.0.1)
   - iProgressHUD (1.1.1)
   - IQKeyboardManagerSwift (6.5.10)
+  - SCWaveformView (2.0.6)
+  - SoundWave (0.1.4)
   - SwiftEntryKit (2.0.0)
   - SwiftToast (1.1.3)
   - SwiftyJSON (5.0.1)
@@ -13,6 +15,8 @@ DEPENDENCIES:
   - FDWaveformView
   - iProgressHUD (~> 1.1.1)
   - IQKeyboardManagerSwift
+  - SCWaveformView
+  - SoundWave
   - SwiftEntryKit
   - SwiftToast
   - SwiftyJSON
@@ -24,6 +28,8 @@ SPEC REPOS:
     - FDWaveformView
     - iProgressHUD
     - IQKeyboardManagerSwift
+    - SCWaveformView
+    - SoundWave
     - SwiftEntryKit
     - SwiftToast
     - SwiftyJSON
@@ -34,11 +40,13 @@ SPEC CHECKSUMS:
   FDWaveformView: c188be613947273cc83d6f0056505f60e6c4b9ac
   iProgressHUD: caa742128253c97f2c2e1ec59e2bbe6cf689df6a
   IQKeyboardManagerSwift: 52962c76ab33532f15ad9f3ff4e5715eda5335bb
+  SCWaveformView: 78b3503675aafcdaf9c283d68cb45c9fc735af87
+  SoundWave: d98ffaa863570b29d991da32a09b7ce1b4aaf2d4
   SwiftEntryKit: 61b5fa36f34a97dd8013e48a7345bc4c4720be9a
   SwiftToast: 029cbeda85c04fb3fa5df774ba461b19971bc6c5
   SwiftyJSON: 2f33a42c6fbc52764d96f13368585094bfd8aa5e
   Toaster: c3473963c78e8cabbf6ea6f11ad0fdaae6f54987
 
-PODFILE CHECKSUM: 350bed1e2f2b25f5eafafc3e148a9ad4a993169f
+PODFILE CHECKSUM: b1354747debbdbdc5759f345809ef0203f620f2f
 
 COCOAPODS: 1.11.3
