@@ -20,7 +20,7 @@ class EntryAttributeWrapper {
 }
 
 class CommonFunctions: iProgressHUDDelegete {
-    static func toster(_ title : String, titleDesc: String){
+    static func toster(_ title : String, titleDesc: String, _ showImage:Bool){
         let attributesWrapper: EntryAttributeWrapper = {
             var attributes = EKAttributes()
             attributes.positionConstraints = .fullWidth
@@ -38,13 +38,24 @@ class CommonFunctions: iProgressHUDDelegete {
             text: titleDesc,
             style: EKProperty.LabelStyle(
                 font: UIFont.systemFont(ofSize: 18, weight: .light),
-                color: .white,alignment: NSTextAlignment.left,displayMode: .light,numberOfLines: 0
+                color: .white.with(alpha: 0.6),alignment: NSTextAlignment.left,displayMode: .light,numberOfLines: 0
             )
         )
-        let simpleMessage = EKSimpleMessage(
-            title: title,
-            description: description
-        )
+        
+        var simpleMessage : EKSimpleMessage!
+        if showImage{
+            simpleMessage = EKSimpleMessage(
+                image: EKProperty.ImageContent(image: UIImage(named: "settings_info") ?? UIImage()),
+                title: title,
+                description: description
+            )
+        }else{
+            simpleMessage = EKSimpleMessage(
+                title: title,
+                description: description
+            )
+        }
+        
         let notificationMessage = EKNotificationMessage(simpleMessage: simpleMessage)
         let contentView = EKNotificationMessageView(with: notificationMessage)
         SwiftEntryKit.display(entry: contentView, using: attributesWrapper.attributes)

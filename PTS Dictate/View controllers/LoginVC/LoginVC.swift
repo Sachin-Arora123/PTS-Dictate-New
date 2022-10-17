@@ -43,23 +43,21 @@ class LoginVC: UIViewController {
     
     //MARK: - @IBAction
     @IBAction func btnActRemeberMe(_ sender: UIButton) {
-//        isRemember = !isRemember
-//        sender.setImage(UIImage(named: isRemember ? "checked_checkbox" : "unchecked_checkbox"), for: .normal)
-            UIView.animate(
-                withDuration: 0.2,
-                delay: 0.0,
-                usingSpringWithDamping: 0.2,
-                initialSpringVelocity: 10.0,
-                options: [],
-                animations: {
-                    sender.setTitleColor(UIColor.appThemeColor, for: .normal)
-                    sender.transform = CGAffineTransform(scaleX: 1.2, y: 1.2)
-                    sender.transform =  CGAffineTransform(scaleX: 1.0, y: 1.0)
-                }) { finished in
-                    sender.setBackgroundImage(nil, for: .normal)
-                    sender.setTitleColor(UIColor.blackTextColor, for: .normal)
-                    self.setRemeberMeButton()
-                }
+        UIView.animate(
+            withDuration: 0.2,
+            delay: 0.0,
+            usingSpringWithDamping: 0.2,
+            initialSpringVelocity: 10.0,
+            options: [],
+            animations: {
+                sender.setTitleColor(UIColor.appThemeColor, for: .normal)
+                sender.transform = CGAffineTransform(scaleX: 1.2, y: 1.2)
+                sender.transform =  CGAffineTransform(scaleX: 1.0, y: 1.0)
+            }) { finished in
+                sender.setBackgroundImage(nil, for: .normal)
+                sender.setTitleColor(UIColor.blackTextColor, for: .normal)
+                self.setRemeberMeButton()
+            }
     }
     
     
@@ -79,10 +77,10 @@ class LoginVC: UIViewController {
                 let userName = self.tfUserName.text ?? ""
                 let tfPassword = self.tfPassword.text ?? ""
                 if userName.trimmingCharacters(in: .whitespacesAndNewlines) == "" {
-                    CommonFunctions.toster("PTS Dictate", titleDesc: "User name should not be empty")
+                    CommonFunctions.toster("PTS Dictate", titleDesc: "User name should not be empty", true)
                     self.tfUserName.shake()
                 }else if tfPassword.trimmingCharacters(in: .whitespacesAndNewlines) == ""{
-                    CommonFunctions.toster("PTS Dictate", titleDesc: "Password should not be empty")
+                    CommonFunctions.toster("PTS Dictate", titleDesc: "Password should not be empty", true)
                     self.tfPassword.shake()
                 }else {
                     self.loginViewModel.LoginApiHit(userName: userName, password: tfPassword)

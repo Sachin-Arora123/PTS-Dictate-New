@@ -342,7 +342,7 @@ class ApiHandler: NSObject {
 //                    multipartFormData.append((value as AnyObject).data(using: String.Encoding.utf8.rawValue)!, withName: key)
 //                }
                 
-            }, to: "https://www.etranscriptions.com.au/scripts/web_response.php?Case=UploadFile&Login_Name=\(CoreData.shared.userName)&To_User=PTS&Email_Notification=ON", method: kMehod, headers: header).uploadProgress(queue: .main, closure: { progress in
+            }, to: "https://www.etranscriptions.com.au/scripts/web_response.php?Case=UploadFile&Login_Name=\(CoreData.shared.userName)&From_User=PTS&To_User=PTS&Email_Notification=ON", method: kMehod, headers: header).uploadProgress(queue: .main, closure: { progress in
                 print("Upload Progress: \(progress.fractionCompleted)")
             }).responseJSON(completionHandler: { data in
                 print("upload finished: \(data)")

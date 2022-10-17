@@ -171,6 +171,8 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
                 let vc = AboutVC.instantiateFromAppStoryboard(appStoryboard: .Settings)
                 self.navigationController?.pushViewController(vc, animated: true)
             case 6:
+                print("About")
+            case 7:
                 self.logOutAlert()
             default:
                 break

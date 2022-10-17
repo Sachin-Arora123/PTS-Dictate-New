@@ -44,9 +44,14 @@ class LoginViewModel {
                 let vc = TabbarVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
 //                    UIView.animate(withDuration: 0.50, animations: {() -> Void in
 //                    UIView.setAnimationCurve(.easeInOut)
-                        let nav = UINavigationController(rootViewController: vc)
+                let nav = UINavigationController(rootViewController: vc)
                 if UIApplication.shared.windows.count > 0 {
                     UIApplication.shared.windows[0].rootViewController = nav
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                        //show welcome banner
+                        CommonFunctions.toster("Welcome", titleDesc: CoreData.shared.userName, false)
+                    }
                 }
                         AppDelegate.sharedInstance().changeRootViewController(nav, options: .transitionFlipFromRight,animated: true)
 //                        self.loginViewController?.navigationController?.pushViewController(vc, animated: true)
@@ -57,7 +62,7 @@ class LoginViewModel {
                 CoreData.shared.password = password
                 CoreData.shared.addData(loginData: LoginAPI)
             }else{
-                CommonFunctions.toster("PTS Dictate",titleDesc: "Please enter valid username & password")
+                CommonFunctions.toster("PTS Dictate",titleDesc: "Please enter valid username & password", true)
             }
             
         }, onFailure: { (reload, error) in
