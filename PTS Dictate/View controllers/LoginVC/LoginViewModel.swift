@@ -58,9 +58,13 @@ class LoginViewModel {
 //                        UIView.setAnimationTransition(.flipFromRight, for: (self.loginViewController?.navigationController?.view)!, cache: false)
 //                })
                 CoreData.shared.isRemeberMe = self.loginViewController?.isRemember ?? false
-                CoreData.shared.userName = userName
+                CoreData.shared.userName = LoginAPI.userName ?? userName
+                CoreData.shared.userId = userName
                 CoreData.shared.password = password
                 CoreData.shared.addData(loginData: LoginAPI)
+                CoreData.shared.userInfo.append(userName)
+                CoreData.shared.userInfo.append(LoginAPI.userName ?? userName)
+                CoreData.shared.userInfo.append(LoginAPI.email ?? "")
             }else{
                 CommonFunctions.toster("PTS Dictate",titleDesc: "Please enter valid username & password", true)
             }

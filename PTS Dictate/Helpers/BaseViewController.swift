@@ -31,6 +31,22 @@ class BaseViewController: UIViewController {
         DispatchQueue.main.async {
             self.navigationController?.addCustomBottomLine(color: UIColor.lightGray, height: 0.5)
         }
+        
+        if #available(iOS 13.0, *) {
+            let appearance = UINavigationBarAppearance()
+            appearance.backgroundColor = .white
+            appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+            appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+            
+            appearance.titleTextAttributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 20), NSAttributedString.Key.foregroundColor:UIColor.appThemeColor]
+
+            navigationController?.navigationBar.tintColor = .white
+            navigationController?.navigationBar.standardAppearance = appearance
+            navigationController?.navigationBar.compactAppearance = appearance
+            navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        } else {
+            // Fallback on earlier versions
+        }
     }
     
     func setTitle(title: String) {
@@ -38,6 +54,8 @@ class BaseViewController: UIViewController {
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 20), NSAttributedString.Key.foregroundColor:UIColor.appThemeColor]
         
         self.navigationController?.navigationBar.clipsToBounds = false
+        
+
     }
     
     func setTitleWithImage(_ title: String, andImage image: UIImage) {

@@ -13,24 +13,30 @@ class CoreData: NSObject {
     // 1 - true for switch on & 0 - false for switch off
     var accessToken: String =  ""
     var userName : String = ""
+    var userId : String = ""
     var email: String = ""
     var privilege: String = ""
     var isRemeberMe : Bool = false
     var password = ""
-    var audioQuality = 11
+    var audioQuality = 0
     var voiceActivation = 0 // 1 - true & 0 - false
     var disableEmailNotify = 0 // 1 - true & 0 - false
     var commentScreen = 0 // 1 - true & 0 - false
     var commentScreenMandatory = 0 // 1 - true & 0 - false
     var indexing = 0 // 1 - true & 0 - false
     var disableEditingHelp = 0 // 1 - true & 0 - false
-    var fileNameFormat: String = ""
+//    var fileNameFormat: String = ""
     var dateFormat: String = ""
     var archiveFile = 0 // 1 - true & 0 - false
     var archiveFileDays = 1 // 1 - day default
     var uploadViaWifi = 0 // 1 - true & 0 - false
     var sleepModeOverride = 0 // 1 - true & 0 - false
     
+    var microSensitivityValue : Double = 1.0
+    
+    var fileName : String = ""
+    
+    var userInfo = [String]()
     
     class var shared: CoreData{
         struct singleTon {
@@ -61,6 +67,7 @@ class CoreData: NSObject {
         let newData = NSEntityDescription.insertNewObject(forEntityName: "Login", into: context)
         newData.setValue(accessToken, forKey: "accessToken")
         newData.setValue(userName, forKey: "userName")
+        newData.setValue(userId, forKey: "userId")
         newData.setValue(isRemeberMe, forKey: "isRemeberMe")
         newData.setValue(password, forKey: "password")
         newData.setValue(email, forKey: "email")
@@ -72,12 +79,14 @@ class CoreData: NSObject {
         newData.setValue(commentScreenMandatory, forKey: "commentScreenMandatory")
         newData.setValue(indexing, forKey: "indexing")
         newData.setValue(disableEditingHelp, forKey: "disableEditingHelp")
-        newData.setValue(fileNameFormat, forKey: "fileNameFormat")
+//        newData.setValue(fileNameFormat, forKey: "fileNameFormat")
         newData.setValue(dateFormat, forKey: "dateFormat")
         newData.setValue(archiveFile, forKey: "archiveFile")
         newData.setValue(archiveFileDays, forKey: "archiveFileDays")
         newData.setValue(uploadViaWifi, forKey: "uploadViaWifi")
         newData.setValue(sleepModeOverride, forKey: "sleepModeOverride")
+        newData.setValue(microSensitivityValue, forKey: "microSensitivityValue")
+        newData.setValue(fileName, forKey: "fileName")
         do {
             try context.save()
             print(newData)
@@ -103,6 +112,10 @@ class CoreData: NSObject {
                     if let userName = result.value(forKey: "userName") as? String{
                         self.userName = userName
                         print("data get userName \(userName)")
+                    }
+                    if let userId = result.value(forKey: "userId") as? String{
+                        self.userId = userId
+                        print("data get userId \(userId)")
                     }
                     if let isRemeberMe = result.value(forKey: "isRemeberMe") as? Bool{
                         self.isRemeberMe = isRemeberMe
@@ -148,10 +161,10 @@ class CoreData: NSObject {
                         self.disableEditingHelp = disableEditingHelp
                         print("data get disableEditingHelp \(disableEditingHelp)")
                     }
-                    if let fileNameFormat = result.value(forKey: "fileNameFormat") as? String{
-                        self.fileNameFormat = fileNameFormat
-                        print("data get fileNameFormat \(fileNameFormat)")
-                    }
+//                    if let fileNameFormat = result.value(forKey: "fileNameFormat") as? String{
+//                        self.fileNameFormat = fileNameFormat
+//                        print("data get fileNameFormat \(fileNameFormat)")
+//                    }
                     if let dateFormat = result.value(forKey: "dateFormat") as? String{
                         self.dateFormat = dateFormat
                         print("data get dateFormat \(dateFormat)")
@@ -172,6 +185,14 @@ class CoreData: NSObject {
                         self.sleepModeOverride = sleepModeOverride
                         print("data get id \(sleepModeOverride)")
                     }
+                    if let microSensitivityValue = result.value(forKey: "microSensitivityValue") as? Double{
+                        self.microSensitivityValue = microSensitivityValue
+                        print("data get microSensitivityValue \(microSensitivityValue)")
+                    }
+                    if let fileName = result.value(forKey: "fileName") as? String{
+                        self.fileName = fileName
+                        print("data get fileName \(fileName)")
+                    }
                 }
             }
         }
@@ -187,6 +208,7 @@ class CoreData: NSObject {
         let DelAllReqVar = NSBatchDeleteRequest(fetchRequest: NSFetchRequest<NSFetchRequestResult>(entityName: "Login"))
         accessToken =  ""
         email = ""
+        userId = ""
         privilege = ""
         audioQuality = 11
         voiceActivation = 0
@@ -195,13 +217,15 @@ class CoreData: NSObject {
         commentScreenMandatory = 0
         indexing = 0
         disableEditingHelp = 0
-        fileNameFormat = ""
+//        fileNameFormat = ""
         dateFormat = ""
         archiveFile = 0
         archiveFileDays = 1
         uploadViaWifi = 0
         sleepModeOverride = 0
-        
+        microSensitivityValue = 1.0
+        userInfo.removeAll()
+        fileName = ""
         if !self.isRemeberMe{
             self.userName = ""
             self.password = ""

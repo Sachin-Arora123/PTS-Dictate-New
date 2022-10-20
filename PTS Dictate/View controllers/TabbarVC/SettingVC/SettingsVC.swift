@@ -108,25 +108,47 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
             cell.imgViewIcon.image = UIImage(named: iconArray[indexPath.row])
             switch indexPath.row{
             case 0,1:
-                cell.btnSwitch.isHidden = true
-            case 2,4,5:
+                cell.imgViewArrow.isHidden = false
+                cell.imgViewIcon.isHidden = false
+                cell.btnSwitch.isHidden =  true
+            case 2:
+                cell.imgViewIcon.isHidden = false
+                cell.btnSwitch.isHidden =  false
                 cell.imgViewArrow.isHidden = true
+                cell.btnSwitch.isOn = CoreData.shared.archiveFile == 1 ? true : false
+            case 4:
+                cell.imgViewIcon.isHidden = false
+                cell.btnSwitch.isHidden =  false
+                cell.imgViewArrow.isHidden = true
+                cell.btnSwitch.isOn = CoreData.shared.uploadViaWifi == 1 ? true : false
+            case 5:
+                cell.imgViewIcon.isHidden = false
+                cell.btnSwitch.isHidden =  false
+                cell.imgViewArrow.isHidden = true
+                cell.btnSwitch.isOn = CoreData.shared.sleepModeOverride == 1 ? true : false
             case 3:
                 cell.btnSwitch.isHidden = true
                 if CoreData.shared.archiveFile == 1{
                     cell.lblArchiveValue.isHidden = false
-                    cell.lblArchiveValue.text = "\(1)"
+                    cell.lblArchiveValue.text = "\(CoreData.shared.archiveFileDays)"
+                    cell.imgViewIcon.isHidden = false
+                    cell.imgViewArrow.isHidden = false
                 }else{
+                    cell.lblArchiveValue.isHidden = true
                     cell.lblTitle.text = ""
                     cell.btnSwitch.isHidden = true
                     cell.imgViewArrow.isHidden = true
                     cell.imgViewIcon.isHidden = true
                 }
             case 6,7:
+                cell.imgViewIcon.isHidden = false
                 cell.btnSwitch.isHidden = true
                 cell.imgViewArrow.isHidden = true
             default:
-                break
+                cell.btnSwitch.isHidden = false
+                cell.imgViewArrow.isHidden = false
+                cell.imgViewIcon.isHidden = false
+                cell.lblArchiveValue.isHidden = false
             }
             return cell
         default:
@@ -167,6 +189,39 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
             case 1:
                 let vc = NamingFormatVC.instantiateFromAppStoryboard(appStoryboard: .Settings)
                 self.navigationController?.pushViewController(vc, animated: true)
+            case 3:
+                    let alert = UIAlertController(title: "Enter archive days", message: nil, preferredStyle: .alert)
+
+                    //2. Add the text field. You can configure it however you need.
+                    alert.addTextField { (textField) in
+                        textField.text = "\(CoreData.shared.archiveFileDays)"
+                        textField.keyboardType = .phonePad
+                    }
+                    
+
+                    // 3. Grab the value from the text field, and print it when the user clicks OK.
+                    alert.addAction(UIAlertAction(title: "Cencel", style: .cancel, handler: { [weak alert] (_) in
+                        print("Cancel")
+                    }))
+                    
+                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
+                        let textField = alert?.textFields![0] // Force unwrapping because we know it exists.
+                        print("Text field: \(textField?.text ?? "")")
+                        let textValue =  ((textField?.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "") as NSString).integerValue
+                        if textValue >= 1{
+                            CoreData.shared.archiveFileDays = textValue
+                            CoreData.shared.dataSave()
+                            self.tableView.reloadData()
+                        }else{
+                            CoreData.shared.archiveFileDays = 1
+                            CoreData.shared.dataSave()
+                            self.tableView.reloadData()
+                        }
+                    }))
+
+                    // 4. Present the alert.
+                    self.present(alert, animated: true, completion: nil)
+
             case 5:
                 let vc = AboutVC.instantiateFromAppStoryboard(appStoryboard: .Settings)
                 self.navigationController?.pushViewController(vc, animated: true)
@@ -263,17 +318,18 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
             }else{
                 CoreData.shared.disableEditingHelp = 0
             }
-        case 8:
-            if sender.isOn {
-                CoreData.shared.disableEditingHelp = 1
-            }else{
-                CoreData.shared.disableEditingHelp = 0
-            }
+//        case 8:
+//            if sender.isOn {
+//                CoreData.shared.disableEditingHelp = 1
+//            }else{
+//                CoreData.shared.disableEditingHelp = 0
+//            }
         default:
             break
         }
         CoreData.shared.dataSave()
     }
+    
     @objc func switchGeneralSection(_ sender: UISwitch){
         switch sender.tag {
         case 2:
@@ -281,6 +337,39 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
                 CoreData.shared.archiveFile = 1
                 let indexPath = IndexPath(row: 3, section: 1)
                 self.tableView.reloadRows(at: [indexPath], with: UITableView.RowAnimation.bottom)
+                
+                //1. Create the alert controller.
+                let alert = UIAlertController(title: "Enter archive days", message: nil, preferredStyle: .alert)
+
+                //2. Add the text field. You can configure it however you need.
+                alert.addTextField { (textField) in
+                    textField.text = "\(CoreData.shared.archiveFileDays)"
+                    textField.keyboardType = .phonePad
+                }
+                
+
+                // 3. Grab the value from the text field, and print it when the user clicks OK.
+                alert.addAction(UIAlertAction(title: "Cencel", style: .cancel, handler: { [weak alert] (_) in
+                    print("Cancel")
+                }))
+                
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
+                    let textField = alert?.textFields![0] // Force unwrapping because we know it exists.
+                    print("Text field: \(textField?.text ?? "")")
+                    let textValue =  ((textField?.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "") as NSString).integerValue
+                    if textValue >= 1{
+                        CoreData.shared.archiveFileDays = textValue
+                        CoreData.shared.dataSave()
+                        self.tableView.reloadData()
+                    }else{
+                        CoreData.shared.archiveFileDays = 1
+                        CoreData.shared.dataSave()
+                        self.tableView.reloadData()
+                    }
+                }))
+
+                // 4. Present the alert.
+                self.present(alert, animated: true, completion: nil)
             }else{
                 CoreData.shared.archiveFile = 0
                 let indexPath = IndexPath(row: 3, section: 1)

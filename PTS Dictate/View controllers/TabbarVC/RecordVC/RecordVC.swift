@@ -64,7 +64,7 @@ class RecordVC: BaseViewController {
     var dataListArray = [AnyObject]()
     var articleChunks = [AVURLAsset]()
     var fileDestinationUrl:URL!
-    var settings         = [String : Int]()
+    var settings         = [String : Any]()
     var fileURL1:URL!
     var fileURL2:URL!
     var isAppendPlaying: Bool = false
@@ -100,8 +100,8 @@ class RecordVC: BaseViewController {
         
         // Define the recorder setting
         let recorderSetting = [AVFormatIDKey: NSNumber(value: kAudioFormatMPEG4AAC as UInt32),
-                             AVSampleRateKey: 44100.0,
-                       AVNumberOfChannelsKey: 2 ]
+                             AVSampleRateKey: Double(savedAudioQuality(audioQuality: AudioQuality(rawValue: CoreData.shared.audioQuality)!)),
+                       AVNumberOfChannelsKey: 2] as [String : Any]
         
         audioRecorder = try? AVAudioRecorder(url: audioFileURL, settings: recorderSetting)
         fileURL1 = audioFileURL
@@ -347,7 +347,7 @@ class RecordVC: BaseViewController {
         case 1:
             settings = [
                 AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-                AVSampleRateKey: 12000,
+                AVSampleRateKey: Double(savedAudioQuality(audioQuality: AudioQuality(rawValue: CoreData.shared.audioQuality)!)),
                 AVNumberOfChannelsKey: 1,
                 AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
             ]
