@@ -29,13 +29,16 @@ class ExistingVC: BaseViewController {
     @IBOutlet weak var tableView: UITableView!
     
     let existingViewModel = ExistingViewModel.shared
-
+    
     var audioRecorder:AVAudioRecorder?
     var audioPlayer = AVAudioPlayer()
     var totalFiles = [String]()
     var totalFilesSelected : [String] = []
     var playingCellIndex = -1
     var fileDuration = 0
+    var comments: [String: String] {
+        return CoreData.shared.comments
+    }
     
     private var audioMeteringLevelTimer: Timer?
     var tag = -1
@@ -53,12 +56,13 @@ class ExistingVC: BaseViewController {
         // Do any additional setup after loading the view.
         NotificationCenter.default.addObserver(self, selector: #selector(self.newFileSaved(notification:)), name: Notification.Name("FileSaved"), object: nil)
         self.existingViewModel.existingViewController = self
+        print(comments)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setUpUI()
-            self.setUpWave()
+        self.setUpWave()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -80,23 +84,27 @@ class ExistingVC: BaseViewController {
         hideLeftButton()
         setTitleWithImage("Existing Dictations", andImage: UIImage(named: "tabbar_existing_dictations_highlighted.png") ?? UIImage())
         tableView.contentInset =  UIEdgeInsets(top: 0, left: 0, bottom: 25, right: 0)
-//        totalFiles = self.findFilesWith(fileExtension: "m4a")
+        //        totalFiles = self.findFilesWith(fileExtension: "m4a")
         totalFiles = self.getSortedAudioList()
+        setRightBarItem()
+    }
+    
+    fileprivate func setRightBarItem() {
         if totalFiles.count > 0{
             self.lblPlayerStatus.text  = ""
             setRighButtonImage(imageName: "unchecked_checkbox", selector: #selector(onTapRightImage))
             let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
             let completePath = directoryPath.absoluteString + self.totalFiles[0]
             let completePathURL = URL(string: completePath)
-//            self.mediaProgressView.audioURL = completePathURL!
+            //            self.mediaProgressView.audioURL = completePathURL!
         }else{
-            setRighButtonImage(imageName: "plus", selector: #selector(onTapRightImage))
+            setRighButtonImage(imageName: "quickAdd", selector: #selector(onTapRightImage))
         }
         self.tableView.reloadData()
     }
     
     @objc func newFileSaved(notification: Notification) {
-//        totalFiles = self.findFilesWith(fileExtension: "m4a")
+        //        totalFiles = self.findFilesWith(fileExtension: "m4a")
         totalFiles = self.getSortedAudioList()
         self.tableView.reloadData()
     }
@@ -140,7 +148,7 @@ class ExistingVC: BaseViewController {
                 audioPlayer =  try AVAudioPlayer(contentsOf: completePathURL!)
                 audioPlayer.delegate = self
                 audioPlayer.play()
-//                self.mediaProgressView.audioURL = completePathURL!
+                //                self.mediaProgressView.audioURL = completePathURL!
                 self.mediaProgressView.meteringLevels = [0.1, 0.67, 0.13, 0.78, 0.31]
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.0){
                     self.mediaProgressView.play(for: self.audioPlayer.duration / self.audioPlayer.duration)
@@ -159,17 +167,17 @@ class ExistingVC: BaseViewController {
     
     @objc func timerDidUpdateMeter() {
         
-//        let cell = tableView.cellForRow(at: IndexPath(row: tag, section: 0)) as! ExistingFileCell
-            let min = Int(audioPlayer.currentTime / 60)
-            let sec = Int(audioPlayer.currentTime.truncatingRemainder(dividingBy: 60))
-            let totalTimeString = String(format: "%02d:%02d",min, sec)
+        //        let cell = tableView.cellForRow(at: IndexPath(row: tag, section: 0)) as! ExistingFileCell
+        let min = Int(audioPlayer.currentTime / 60)
+        let sec = Int(audioPlayer.currentTime.truncatingRemainder(dividingBy: 60))
+        let totalTimeString = String(format: "%02d:%02d",min, sec)
         
-//            cell.lblFileTime.text = totalTimeString
+        //            cell.lblFileTime.text = totalTimeString
         self.lblPlayingTime.text = totalTimeString
         self.audioPlayer.updateMeters()
-            let averagePower = self.audioPlayer.averagePower(forChannel: 0)
-            let percentage: Float = pow(10, (0.05 * averagePower))
-            NotificationCenter.default.post(name: .audioPlayerManagerMeteringLevelDidUpdateNotification, object: self, userInfo: ["percentage": percentage])
+        let averagePower = self.audioPlayer.averagePower(forChannel: 0)
+        let percentage: Float = pow(10, (0.05 * averagePower))
+        NotificationCenter.default.post(name: .audioPlayerManagerMeteringLevelDidUpdateNotification, object: self, userInfo: ["percentage": percentage])
     }
     
     // MARK: - @IBActions.
@@ -194,14 +202,9 @@ class ExistingVC: BaseViewController {
                     for av in self.totalFilesSelected {
                         self.removeAudio(itemName: av, fileExtension: "")
                     }
-//                    self.totalFiles = self.findFilesWith(fileExtension: "m4a")
+                    //                    self.totalFiles = self.findFilesWith(fileExtension: "m4a")
                     self.totalFiles = self.getSortedAudioList()
-                    if self.totalFiles.count > 0{
-                        self.setRighButtonImage(imageName: "unchecked_checkbox", selector: #selector(self.onTapRightImage))
-                    }else{
-                        self.setRighButtonImage(imageName: "", selector: #selector(self.onTapRightImage))
-                    }
-                    self.tableView.reloadData()
+                    self.setRightBarItem()
                 }
             })
         }
@@ -211,21 +214,21 @@ class ExistingVC: BaseViewController {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         guard let directoryURL = URL(string: paths.path) else {return [""]}
         do {
-           let contents = try
-           FileManager.default.contentsOfDirectory(at: directoryURL,
-                  includingPropertiesForKeys:[.contentModificationDateKey],
-                  options: [.skipsHiddenFiles, .skipsSubdirectoryDescendants])
-               .filter { $0.lastPathComponent.hasSuffix(".m4a") }
-               .sorted(by: {
-                   let date0 = try $0.promisedItemResourceValues(forKeys:[.contentModificationDateKey]).contentModificationDate!
-                   let date1 = try $1.promisedItemResourceValues(forKeys:[.contentModificationDateKey]).contentModificationDate!
-                   return date0.compare(date1) == .orderedDescending
-                })
-          
+            let contents = try
+            FileManager.default.contentsOfDirectory(at: directoryURL,
+                                                    includingPropertiesForKeys:[.contentModificationDateKey],
+                                                    options: [.skipsHiddenFiles, .skipsSubdirectoryDescendants])
+            .filter { $0.lastPathComponent.hasSuffix(".m4a") }
+            .sorted(by: {
+                let date0 = try $0.promisedItemResourceValues(forKeys:[.contentModificationDateKey]).contentModificationDate!
+                let date1 = try $1.promisedItemResourceValues(forKeys:[.contentModificationDateKey]).contentModificationDate!
+                return date0.compare(date1) == .orderedDescending
+            })
+            
             // Print results
             for item in contents {
                 guard let t = try? item.promisedItemResourceValues(forKeys:[.contentModificationDateKey]).contentModificationDate
-                    else {return [""]}
+                else {return [""]}
                 print ("Hello,\(t)   \(item.lastPathComponent)")
                 sortedDateArray.append(item.lastPathComponent)
             }
@@ -235,22 +238,22 @@ class ExistingVC: BaseViewController {
         print("List array-->>",sortedDateArray)
         return sortedDateArray
     }
-     func removeAudio(itemName:String, fileExtension: String) {
-         let fileManager = FileManager.default
-         let nsDocumentDirectory = FileManager.SearchPathDirectory.documentDirectory
-         let nsUserDomainMask = FileManager.SearchPathDomainMask.userDomainMask
-      let paths = NSSearchPathForDirectoriesInDomains(nsDocumentDirectory, nsUserDomainMask, true)
-      guard let dirPath = paths.first else {
-        return
-      }
-//      let filePath = "\(dirPath)/\(itemName).\(fileExtension)"
-         let filePath = "\(dirPath)/\(itemName)"
-      do {
-          try fileManager.removeItem(atPath: filePath)
-          print("Removed Successfully")
-      } catch let error as NSError {
-        print(error.debugDescription)
-      }
+    func removeAudio(itemName:String, fileExtension: String) {
+        let fileManager = FileManager.default
+        let nsDocumentDirectory = FileManager.SearchPathDirectory.documentDirectory
+        let nsUserDomainMask = FileManager.SearchPathDomainMask.userDomainMask
+        let paths = NSSearchPathForDirectoriesInDomains(nsDocumentDirectory, nsUserDomainMask, true)
+        guard let dirPath = paths.first else {
+            return
+        }
+        //      let filePath = "\(dirPath)/\(itemName).\(fileExtension)"
+        let filePath = "\(dirPath)/\(itemName)"
+        do {
+            try fileManager.removeItem(atPath: filePath)
+            print("Removed Successfully")
+        } catch let error as NSError {
+            print(error.debugDescription)
+        }
     }
     
     @IBAction func onTapPlay(_ sender: UIButton){
@@ -284,7 +287,7 @@ class ExistingVC: BaseViewController {
                 audioPlayer.delegate = self
                 audioPlayer.play()
                 self.lblPlayerStatus.text = "Now Playing"
-//                self.mediaProgressView.audioURL = completePathURL!
+                //                self.mediaProgressView.audioURL = completePathURL!
                 self.mediaProgressView.meteringLevels = [0.1, 0.67, 0.13, 0.78, 0.31]
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.0){
                     self.mediaProgressView.play(for: self.audioPlayer.duration / self.audioPlayer.duration)
@@ -305,7 +308,7 @@ class ExistingVC: BaseViewController {
     }
     @IBAction func onTapFTrimEnd(_ sender: UIButton){
         let currentTime = audioPlayer.currentTime
-         audioPlayer.pause()
+        audioPlayer.pause()
         audioPlayer.play(atTime: currentTime + 3.0)
     }
     
@@ -315,10 +318,10 @@ class ExistingVC: BaseViewController {
     
     @IBAction func onTapBTrimEnd(_ sender: UIButton){
         
-//        let currentTime = audioPlayer.currentTime
-//         audioPlayer.pause()
-//        audioPlayer.play(atTime: currentTime - 3.0)
-////        audioPlayer
+        //        let currentTime = audioPlayer.currentTime
+        //         audioPlayer.pause()
+        //        audioPlayer.play(atTime: currentTime - 3.0)
+        ////        audioPlayer
     }
     func setUpWave() {
         self.mediaProgressView.meteringLevelBarWidth = 1.0
@@ -374,7 +377,7 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
             let time = self.getTimeDuration(filePath: self.totalFiles[indexPath.row])
             cell.lblFileTime.text = time
         }
-       return cell
+        return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -416,10 +419,10 @@ extension ExistingVC{
         }
         let filePath = "\(dirPath)/\(itemName)"
         guard let size = try? FileManager.default.attributesOfItem(atPath: filePath)[FileAttributeKey.size],
-            let fileSize = size as? UInt64 else {
+              let fileSize = size as? UInt64 else {
             return nil
         }
-
+        
         // bytes
         if fileSize < 1023 {
             return String(format: "%lu bytes", CUnsignedLong(fileSize))
@@ -439,10 +442,10 @@ extension ExistingVC{
         return String(format: "%.1f GB", floatSize)
     }
     @objc func openCommentVC(){
-        //        let VC = CommentsVC.instantiateFromAppStoryboard(appStoryboard: .Main)
-        //            self.setPushTransitionAnimation(VC)
-        //        VC.hidesBottomBarWhenPushed = true
-        //        self.navigationController?.pushViewController(VC, animated: false)
+        let VC = CommentsVC.instantiateFromAppStoryboard(appStoryboard: .Main)
+        self.setPushTransitionAnimation(VC)
+        VC.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(VC, animated: false)
     }
     
     @objc func openRenameFileVc(){
@@ -464,17 +467,23 @@ extension ExistingVC{
     }
     // navbar right image action.
     @objc func onTapRightImage() {
-        if self.tabBarController?.navigationItem.rightBarButtonItem?.image == getRighButtonImage(imageName: "unchecked_checkbox") {
-            self.totalFilesSelected = self.totalFiles
-            setRighButtonImage(imageName: "checked_checkbox", selector: #selector(onTapRightImage))
-        }else if self.tabBarController?.navigationItem.rightBarButtonItem?.image == getRighButtonImage(imageName: "unchecked_checkbox"){
-            setRighButtonImage(imageName: "unchecked_checkbox", selector: #selector(onTapRightImage))
-            self.totalFilesSelected.removeAll()
-            
+        if totalFiles.count > 0 {
+            if self.tabBarController?.navigationItem.rightBarButtonItem?.image == getRighButtonImage(imageName: "unchecked_checkbox") {
+                self.totalFilesSelected = self.totalFiles
+                setRighButtonImage(imageName: "checked_checkbox", selector: #selector(onTapRightImage))
+            }else if self.tabBarController?.navigationItem.rightBarButtonItem?.image == getRighButtonImage(imageName: "unchecked_checkbox"){
+                setRighButtonImage(imageName: "unchecked_checkbox", selector: #selector(onTapRightImage))
+                self.totalFilesSelected.removeAll()
+            }
+        } else {
+            let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
+            self.setPushTransitionAnimation(VC)
+            self.navigationController?.popViewController(animated: false)
+            self.tabBarController?.selectedIndex = 2
         }
         self.tableView.reloadData()
     }
-   
+    
     func covertToFileString(with size: UInt64) -> String {
         var convertedValue: Double = Double(size)
         var multiplyFactor = 0

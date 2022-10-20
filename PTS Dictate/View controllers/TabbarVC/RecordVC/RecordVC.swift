@@ -68,6 +68,12 @@ class RecordVC: BaseViewController {
     var fileURL1:URL!
     var fileURL2:URL!
     var isAppendPlaying: Bool = false
+    private var isCommentsOn:Bool {
+        return CoreData.shared.commentScreen == 1 ?  true : false
+    }
+    private var isCommentsMandotary:Bool {
+        return CoreData.shared.commentScreenMandatory == 1 ?  true : false
+    }
 
     
     // MARK: - View Life-Cycle.
@@ -458,9 +464,18 @@ class RecordVC: BaseViewController {
              completion(true)
          } catch {
              print("Saving error-->>",error.localizedDescription)
+             
          }
     }
     
+    func pushCommentVC(){
+        let VC = CommentsVC.instantiateFromAppStoryboard(appStoryboard: .Main)
+        self.setPushTransitionAnimation(VC)
+        VC.hidesBottomBarWhenPushed = true
+        VC.isCommentsMandotary = isCommentsMandotary
+        VC.fileName = audioFileName
+        self.navigationController?.pushViewController(VC, animated: false)
+    }
     @IBAction func onTapSave(_ sender: UIButton) {
         print("Saved")
         CommonFunctions.showAlert(view: self, title: "PTS Dictate", message: "Do you want to save the current Recording ?", completion: {
@@ -473,10 +488,14 @@ class RecordVC: BaseViewController {
                 }
 //                NotificationCenter.default.post(name: Notification.Name("refreshRecorder"), object: nil)
                 DispatchQueue.main.async {
-                    let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
-                    self.setPushTransitionAnimation(VC)
-                    self.navigationController?.popViewController(animated: false)
-                   self.tabBarController?.selectedIndex = 0
+                    if self.isCommentsOn {
+                        self.pushCommentVC()
+                    } else {
+                        let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
+                        self.setPushTransitionAnimation(VC)
+                        self.navigationController?.popViewController(animated: false)
+                        self.tabBarController?.selectedIndex = 0
+                    }
                 }
             }
         })

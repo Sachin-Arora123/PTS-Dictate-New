@@ -30,7 +30,7 @@ class CoreData: NSObject {
     var archiveFileDays = 1 // 1 - day default
     var uploadViaWifi = 0 // 1 - true & 0 - false
     var sleepModeOverride = 0 // 1 - true & 0 - false
-    
+    var comments: [String:String] = [:] // [fileName:Comment]
     
     class var shared: CoreData{
         struct singleTon {
@@ -78,6 +78,7 @@ class CoreData: NSObject {
         newData.setValue(archiveFileDays, forKey: "archiveFileDays")
         newData.setValue(uploadViaWifi, forKey: "uploadViaWifi")
         newData.setValue(sleepModeOverride, forKey: "sleepModeOverride")
+        newData.setValue(comments, forKey: "comments")
         do {
             try context.save()
             print(newData)
@@ -172,6 +173,9 @@ class CoreData: NSObject {
                         self.sleepModeOverride = sleepModeOverride
                         print("data get id \(sleepModeOverride)")
                     }
+                    if let comments = result.value(forKey: "comments") as? [String:String] {
+                        self.comments = comments
+                    }
                 }
             }
         }
@@ -201,6 +205,7 @@ class CoreData: NSObject {
         archiveFileDays = 1
         uploadViaWifi = 0
         sleepModeOverride = 0
+        comments = [:]
         
         if !self.isRemeberMe{
             self.userName = ""
