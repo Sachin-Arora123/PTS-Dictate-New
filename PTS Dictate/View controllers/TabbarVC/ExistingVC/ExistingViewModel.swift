@@ -19,7 +19,7 @@ class  ExistingViewModel{
     
     var existingViewController : ExistingVC?
     
-    func uploadAudio(userName : String, toUser: String, emailNotify: Bool, fileUrl: URL) {
+    func uploadAudio(userName : String, toUser: String, emailNotify: Bool = false, fileUrl: URL) {
         let params : [String : Any] = [
             "Login_Name" : userName as Any,
             "To_User" : toUser as Any,

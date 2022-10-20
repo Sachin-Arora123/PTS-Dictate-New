@@ -115,7 +115,7 @@
 		69B110541135EBAEF9C91DAC74CA2842 /* EKImageNoteMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35D6DA13AB218DDA6D9501BAB436F957 /* EKImageNoteMessageView.swift */; };
 		6E48BC03DA78EFF77A86E599F4C6175D /* SwiftToast-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 235BD205B6B4FF7A03E4C63748013956 /* SwiftToast-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6EE027B0D6B336AFC075EC3C9F086F07 /* EKAlertMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A3C9E29F7B217C7B5661E590397746 /* EKAlertMessageView.swift */; };
-		6F7D31BA8ED34E81807E414F94EECCBF /* SwiftToast-SwiftToast in Resources */ = {isa = PBXBuildFile; fileRef = 37E57848E5F027252D2115BDBBFCE0EC /* SwiftToast-SwiftToast */; };
+		6F7D31BA8ED34E81807E414F94EECCBF /* SwiftToast.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 37E57848E5F027252D2115BDBBFCE0EC /* SwiftToast.bundle */; };
 		6FD77DED1C4ADCEB2E4E4AE00DD35BF9 /* SwiftToast-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = C0470B727CA6323CEFDE4EAC6344E6D6 /* SwiftToast-dummy.m */; };
 		7100E8E5F7D79F849F6F6C004ABEF7F7 /* NVActivityIndicatorAnimationBallScale.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2266865FCD16FDEB0E7F5A37D5668F92 /* NVActivityIndicatorAnimationBallScale.swift */; };
 		71211533927975D052B0313AA01D247C /* NVActivityIndicatorAnimationBallTrianglePath.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA954025017060A8C83922D5A86A21D /* NVActivityIndicatorAnimationBallTrianglePath.swift */; };
@@ -390,7 +390,7 @@
 		3662E58468C79D92898CF9864F2304F3 /* Alamofire.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Alamofire.release.xcconfig; sourceTree = "<group>"; };
 		376C770B3256BAB943D3AD7F52B3EB42 /* iProgressHUDGlobal.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = iProgressHUDGlobal.swift; path = iProgressHUD/iProgressHUD/iProgressHUDGlobal.swift; sourceTree = "<group>"; };
 		37D94071C736756655185BCF5ADE0C00 /* NVActivityIndicatorAnimationLineSpinFadeLoader.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NVActivityIndicatorAnimationLineSpinFadeLoader.swift; path = iProgressHUD/iProgressHUD/NVActivityIndicatorView/Animations/NVActivityIndicatorAnimationLineSpinFadeLoader.swift; sourceTree = "<group>"; };
-		37E57848E5F027252D2115BDBBFCE0EC /* SwiftToast-SwiftToast */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "SwiftToast-SwiftToast"; path = SwiftToast.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		37E57848E5F027252D2115BDBBFCE0EC /* SwiftToast.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftToast.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		3872A3A956CACBF474B2232CFCF98932 /* NVActivityIndicatorAnimationBallGridBeat.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NVActivityIndicatorAnimationBallGridBeat.swift; path = iProgressHUD/iProgressHUD/NVActivityIndicatorView/Animations/NVActivityIndicatorAnimationBallGridBeat.swift; sourceTree = "<group>"; };
 		388609A129A482B76B7584FC4886B135 /* EKAccessoryNoteMessageView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EKAccessoryNoteMessageView.swift; path = Source/MessageViews/Notes/EKAccessoryNoteMessageView.swift; sourceTree = "<group>"; };
 		3A736D736462F47B54886EFB934E6065 /* ServerTrustEvaluation.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ServerTrustEvaluation.swift; path = Source/ServerTrustEvaluation.swift; sourceTree = "<group>"; };
@@ -425,7 +425,7 @@
 		5A6E0339B9569A3F67C2CB262BFF3B32 /* ToastView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ToastView.swift; path = Sources/ToastView.swift; sourceTree = "<group>"; };
 		5BCE137C80C3F05538CD75141F300DF3 /* ParameterEncoder.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ParameterEncoder.swift; path = Source/ParameterEncoder.swift; sourceTree = "<group>"; };
 		5BEBA574C920EF92DE4ACBCDB54CB5F0 /* EKAttributes+Scroll.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "EKAttributes+Scroll.swift"; path = "Source/Model/EntryAttributes/EKAttributes+Scroll.swift"; sourceTree = "<group>"; };
-		5D797E9A5C5782CE845840781FA1CC81 /* Alamofire */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Alamofire; path = Alamofire.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		5D797E9A5C5782CE845840781FA1CC81 /* Alamofire.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Alamofire.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D8E8A47195D611C4500AA5ABE73D8B3 /* NVActivityIndicatorAnimationCircleStrokeSpin.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NVActivityIndicatorAnimationCircleStrokeSpin.swift; path = iProgressHUD/iProgressHUD/NVActivityIndicatorView/Animations/NVActivityIndicatorAnimationCircleStrokeSpin.swift; sourceTree = "<group>"; };
 		5DC67BB95FB01CB4F38C6E4CBF9DBAC8 /* EKPopUpMessageView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EKPopUpMessageView.swift; path = Source/MessageViews/EKPopUpMessageView.swift; sourceTree = "<group>"; };
 		5E2103B9204350AC58BC08A8AA513824 /* IQKeyboardManager+Position.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "IQKeyboardManager+Position.swift"; path = "IQKeyboardManagerSwift/IQKeyboardManager+Position.swift"; sourceTree = "<group>"; };
@@ -501,11 +501,11 @@
 		985333610DC71251A53BA3848901A2D4 /* NVActivityIndicatorAnimationOrbit.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NVActivityIndicatorAnimationOrbit.swift; path = iProgressHUD/iProgressHUD/NVActivityIndicatorView/Animations/NVActivityIndicatorAnimationOrbit.swift; sourceTree = "<group>"; };
 		990E2A693CAADF872ECCC483137A412F /* EKAttributes+Shadow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "EKAttributes+Shadow.swift"; path = "Source/Model/EntryAttributes/EKAttributes+Shadow.swift"; sourceTree = "<group>"; };
 		99232DAE6DD4132785FE176A782A9DC3 /* IQKeyboardManager+Toolbar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "IQKeyboardManager+Toolbar.swift"; path = "IQKeyboardManagerSwift/IQKeyboardManager+Toolbar.swift"; sourceTree = "<group>"; };
-		995AB38F157512FE6970F34E82ED4037 /* SCWaveformView */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = SCWaveformView; path = SCWaveformView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		995AB38F157512FE6970F34E82ED4037 /* SCWaveformView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SCWaveformView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9BA69E71B87A091C4304D66C4D0170E5 /* Toaster.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = Toaster.h; path = Sources/Toaster.h; sourceTree = "<group>"; };
 		9C184A9AC3E31C1839B0F488CB21D8B5 /* IQKeyboardManagerConstantsInternal.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = IQKeyboardManagerConstantsInternal.swift; path = IQKeyboardManagerSwift/Constants/IQKeyboardManagerConstantsInternal.swift; sourceTree = "<group>"; };
 		9D6DC2D689A3C5E2F889D1EF24CCBB69 /* IQKeyboardReturnKeyHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = IQKeyboardReturnKeyHandler.swift; path = IQKeyboardManagerSwift/IQKeyboardReturnKeyHandler.swift; sourceTree = "<group>"; };
-		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		9E31A678D8F3A41726C04160984A7790 /* UIColor+Utils.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIColor+Utils.swift"; path = "Source/Extensions/UIColor+Utils.swift"; sourceTree = "<group>"; };
 		9EC969703E2603AF6445CF88640DF0B4 /* SwiftToastView.xib */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.xib; name = SwiftToastView.xib; path = SwiftToast/Classes/SwiftToastView.xib; sourceTree = "<group>"; };
 		9F814F238CAB476425AEB257AA9F378A /* NVActivityIndicatorShape.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NVActivityIndicatorShape.swift; path = iProgressHUD/iProgressHUD/NVActivityIndicatorView/NVActivityIndicatorShape.swift; sourceTree = "<group>"; };
@@ -515,7 +515,7 @@
 		A1C6F573A21BC5D4FC149AE3E689E840 /* UIViewArray+QuickLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIViewArray+QuickLayout.swift"; path = "Source/Extensions/QuickLayout/UIViewArray+QuickLayout.swift"; sourceTree = "<group>"; };
 		A347AE6E3B8A2CFEF9EE7E572969385C /* SwiftyJSON-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "SwiftyJSON-dummy.m"; sourceTree = "<group>"; };
 		A3983CDF1D081718A87B494A6BEC5AF8 /* EKAttributes+PopBehavior.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "EKAttributes+PopBehavior.swift"; path = "Source/Model/EntryAttributes/EKAttributes+PopBehavior.swift"; sourceTree = "<group>"; };
-		A5CCAF6069C94C9539A50900E71ACC12 /* FDWaveformView */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = FDWaveformView; path = FDWaveformView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A5CCAF6069C94C9539A50900E71ACC12 /* FDWaveformView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FDWaveformView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A66728692E7AEF58B736851EA70256D7 /* NVActivityIndicatorAnimationLineScale.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NVActivityIndicatorAnimationLineScale.swift; path = iProgressHUD/iProgressHUD/NVActivityIndicatorView/Animations/NVActivityIndicatorAnimationLineScale.swift; sourceTree = "<group>"; };
 		A7927EADA3AE1079C9D5C54696659F57 /* IQKeyboardManager+Debug.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "IQKeyboardManager+Debug.swift"; path = "IQKeyboardManagerSwift/IQKeyboardManager+Debug.swift"; sourceTree = "<group>"; };
 		A844B30CC2257BF4D93EDE0790040B3F /* SCWaveformCache.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SCWaveformCache.m; path = Sources/SCWaveformCache.m; sourceTree = "<group>"; };
@@ -605,7 +605,7 @@
 		F2F9A6CADB47AD5BA91B95967B480F46 /* URLRequest+Alamofire.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "URLRequest+Alamofire.swift"; path = "Source/URLRequest+Alamofire.swift"; sourceTree = "<group>"; };
 		F3A53FD1AC05951242D7A0F953906052 /* NVActivityIndicatorAnimationBallClipRotateMultiple.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NVActivityIndicatorAnimationBallClipRotateMultiple.swift; path = iProgressHUD/iProgressHUD/NVActivityIndicatorView/Animations/NVActivityIndicatorAnimationBallClipRotateMultiple.swift; sourceTree = "<group>"; };
 		F56A8B51F2F0FF57ED4F51FA7EB83AA1 /* EKRootViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EKRootViewController.swift; path = Source/Infra/EKRootViewController.swift; sourceTree = "<group>"; };
-		F5F61692373D8170051B0CFD64BC34D4 /* iProgressHUD */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = iProgressHUD; path = iProgressHUD.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F5F61692373D8170051B0CFD64BC34D4 /* iProgressHUD.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = iProgressHUD.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F625DBF56E17255B572B009D64E60008 /* Alamofire-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Alamofire-umbrella.h"; sourceTree = "<group>"; };
 		F6B919107123961B2E190C72419047CD /* IQKeyboardManagerSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = IQKeyboardManagerSwift.release.xcconfig; sourceTree = "<group>"; };
 		F730316DD881925B1FFBA6BBF050F4C6 /* EKAttributes+Presets.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "EKAttributes+Presets.swift"; path = "Source/Model/EntryAttributes/EKAttributes+Presets.swift"; sourceTree = "<group>"; };
@@ -786,7 +786,6 @@
 				BCBEC4BEEE1D7767953E630FA455FD1A /* Chronometer.swift */,
 				E2FFD051C5ADCA43EEFB9F199794E579 /* Support Files */,
 			);
-			name = SoundWave;
 			path = SoundWave;
 			sourceTree = "<group>";
 		};
@@ -855,7 +854,6 @@
 				8EFFE55AC67752F40E50249B936B894D /* NVActivityIndicatorViewable.swift */,
 				4E31DEBA7F805571214DE527E1C9EE6D /* Support Files */,
 			);
-			name = iProgressHUD;
 			path = iProgressHUD;
 			sourceTree = "<group>";
 		};
@@ -901,7 +899,6 @@
 				17160F6B615EC4417BC51A8E1805F8EE /* UIApplication+Load.swift */,
 				892DD002C0966881EEFC4C4ED1C27FC3 /* Support Files */,
 			);
-			name = Toaster;
 			path = Toaster;
 			sourceTree = "<group>";
 		};
@@ -931,7 +928,6 @@
 				199BB3812388D129C365C8A049757269 /* SCWaveformView.m */,
 				A4321C617FE6A22FA0BD8A49768D618B /* Support Files */,
 			);
-			name = SCWaveformView;
 			path = SCWaveformView;
 			sourceTree = "<group>";
 		};
@@ -941,7 +937,6 @@
 				E24F3C3699D87AB78B7EFCA3F36321EC /* SwiftyJSON.swift */,
 				D8F8D53EA8D75452D424B90ABEDBF286 /* Support Files */,
 			);
-			name = SwiftyJSON;
 			path = SwiftyJSON;
 			sourceTree = "<group>";
 		};
@@ -973,7 +968,6 @@
 				7466949D1C388E3B30F5E580FA936BAF /* IQUIViewController+Additions.swift */,
 				C8C52F069DABE4A70152829040082E69 /* Support Files */,
 			);
-			name = IQKeyboardManagerSwift;
 			path = IQKeyboardManagerSwift;
 			sourceTree = "<group>";
 		};
@@ -985,7 +979,6 @@
 				EEF29BB154D6786805A41C4875651F3F /* FDWaveformView.swift */,
 				053CE5DF7D830E5415BB146AB90BE764 /* Support Files */,
 			);
-			name = FDWaveformView;
 			path = FDWaveformView;
 			sourceTree = "<group>";
 		};
@@ -1062,7 +1055,6 @@
 				A1C6F573A21BC5D4FC149AE3E689E840 /* UIViewArray+QuickLayout.swift */,
 				0C4FCCFC3CFFD2F0608793706F487C39 /* Support Files */,
 			);
-			name = SwiftEntryKit;
 			path = SwiftEntryKit;
 			sourceTree = "<group>";
 		};
@@ -1084,16 +1076,16 @@
 		B63A884BF0178AF203F0E8BCDABA2E91 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				5D797E9A5C5782CE845840781FA1CC81 /* Alamofire */,
-				A5CCAF6069C94C9539A50900E71ACC12 /* FDWaveformView */,
-				F5F61692373D8170051B0CFD64BC34D4 /* iProgressHUD */,
+				5D797E9A5C5782CE845840781FA1CC81 /* Alamofire.framework */,
+				A5CCAF6069C94C9539A50900E71ACC12 /* FDWaveformView.framework */,
+				F5F61692373D8170051B0CFD64BC34D4 /* iProgressHUD.framework */,
 				A8E950A16D00F649C54FFB30F81D7842 /* IQKeyboardManagerSwift */,
 				021BF35C19D7E72D2D5C461DC6D0FD33 /* Pods-PTS Dictate */,
-				995AB38F157512FE6970F34E82ED4037 /* SCWaveformView */,
+				995AB38F157512FE6970F34E82ED4037 /* SCWaveformView.framework */,
 				843FFB1A5DEC64169D3AD840635DA0CC /* SoundWave */,
 				DA5F7E5AA5A762E4504855EAF3216C8A /* SwiftEntryKit */,
 				CFFE536DE5D28FB64EB2D5A0ED11BFFC /* SwiftToast */,
-				37E57848E5F027252D2115BDBBFCE0EC /* SwiftToast-SwiftToast */,
+				37E57848E5F027252D2115BDBBFCE0EC /* SwiftToast.bundle */,
 				E23C076BA70925415F490FEDB215DA92 /* SwiftyJSON */,
 				BD810337F4A305D60D9250A197AA1EF1 /* Toaster */,
 			);
@@ -1165,7 +1157,6 @@
 				533DD749D47FA1E766874356D40B0F25 /* Validation.swift */,
 				EB39402FAC90DEB635ECC55B7373FB79 /* Support Files */,
 			);
-			name = Alamofire;
 			path = Alamofire;
 			sourceTree = "<group>";
 		};
@@ -1247,7 +1238,6 @@
 				51F7D46A0EF0011DF4CE2BBAB9695513 /* Resources */,
 				B79BB92AFAFEE97ED03BA3050F54B7D4 /* Support Files */,
 			);
-			name = SwiftToast;
 			path = SwiftToast;
 			sourceTree = "<group>";
 		};
@@ -1399,7 +1389,7 @@
 			);
 			name = FDWaveformView;
 			productName = FDWaveformView;
-			productReference = A5CCAF6069C94C9539A50900E71ACC12 /* FDWaveformView */;
+			productReference = A5CCAF6069C94C9539A50900E71ACC12 /* FDWaveformView.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		B350276D4749496E38AB8782E04E0C6A /* iProgressHUD */ = {
@@ -1417,7 +1407,7 @@
 			);
 			name = iProgressHUD;
 			productName = iProgressHUD;
-			productReference = F5F61692373D8170051B0CFD64BC34D4 /* iProgressHUD */;
+			productReference = F5F61692373D8170051B0CFD64BC34D4 /* iProgressHUD.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		B490E7485944099E16C9CBD79119D1D4 /* IQKeyboardManagerSwift */ = {
@@ -1488,7 +1478,7 @@
 			);
 			name = "SwiftToast-SwiftToast";
 			productName = SwiftToast;
-			productReference = 37E57848E5F027252D2115BDBBFCE0EC /* SwiftToast-SwiftToast */;
+			productReference = 37E57848E5F027252D2115BDBBFCE0EC /* SwiftToast.bundle */;
 			productType = "com.apple.product-type.bundle";
 		};
 		E9BD85398665C800FFFB4F6DCDAEA6D4 /* SCWaveformView */ = {
@@ -1506,7 +1496,7 @@
 			);
 			name = SCWaveformView;
 			productName = SCWaveformView;
-			productReference = 995AB38F157512FE6970F34E82ED4037 /* SCWaveformView */;
+			productReference = 995AB38F157512FE6970F34E82ED4037 /* SCWaveformView.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		EA048E7FF7975207A426B906DF16EFFE /* Pods-PTS Dictate */ = {
@@ -1552,7 +1542,7 @@
 			);
 			name = Alamofire;
 			productName = Alamofire;
-			productReference = 5D797E9A5C5782CE845840781FA1CC81 /* Alamofire */;
+			productReference = 5D797E9A5C5782CE845840781FA1CC81 /* Alamofire.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		F0987D2BA445E423F5BB22D4899D2E22 /* SoundWave */ = {
@@ -1705,7 +1695,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6F7D31BA8ED34E81807E414F94EECCBF /* SwiftToast-SwiftToast in Resources */,
+				6F7D31BA8ED34E81807E414F94EECCBF /* SwiftToast.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2081,6 +2071,7 @@
 			baseConfigurationReference = 226C4EC49EE9CB8C304DF5B14D66998B /* SwiftToast.release.xcconfig */;
 			buildSettings = {
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/SwiftToast";
+				DEVELOPMENT_TEAM = C9D722FWWH;
 				IBSC_MODULE = SwiftToast;
 				INFOPLIST_FILE = "Target Support Files/SwiftToast/ResourceBundle-SwiftToast-SwiftToast-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -2096,11 +2087,11 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 05100835F54F0D869D734E7B8ECB04E1 /* iProgressHUD.release.xcconfig */;
 			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = "";
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -2130,11 +2121,11 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1D366C532B95D2FD9A44F07D16605DCB /* SCWaveformView.release.xcconfig */;
 			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = C9D722FWWH;
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = C9D722FWWH;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -2335,6 +2326,7 @@
 			baseConfigurationReference = 449557796087698F085BF3F7FC460011 /* SwiftToast.debug.xcconfig */;
 			buildSettings = {
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/SwiftToast";
+				DEVELOPMENT_TEAM = C9D722FWWH;
 				IBSC_MODULE = SwiftToast;
 				INFOPLIST_FILE = "Target Support Files/SwiftToast/ResourceBundle-SwiftToast-SwiftToast-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -2350,11 +2342,11 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B7F1A6639BFE83E6CABD1A7E1DC96DB5 /* SCWaveformView.debug.xcconfig */;
 			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = C9D722FWWH;
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = C9D722FWWH;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -2385,11 +2377,11 @@
 			baseConfigurationReference = D28D60EFF99C3CE2E014E8943BA69F31 /* Alamofire.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = "";
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -2589,11 +2581,11 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5875C861BDB90D7500F2F9200730DD31 /* FDWaveformView.debug.xcconfig */;
 			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = "";
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -2727,11 +2719,11 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B34526DA86E2DE4ACC7F03DE0B5516B5 /* iProgressHUD.debug.xcconfig */;
 			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = "";
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -2797,11 +2789,11 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B021A088CD6614E9F178DE824F9ECEBB /* FDWaveformView.release.xcconfig */;
 			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = "";
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -2902,11 +2894,11 @@
 			baseConfigurationReference = 3662E58468C79D92898CF9864F2304F3 /* Alamofire.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = "";
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
