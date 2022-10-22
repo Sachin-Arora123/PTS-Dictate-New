@@ -56,7 +56,6 @@ class ExistingVC: BaseViewController {
         // Do any additional setup after loading the view.
         NotificationCenter.default.addObserver(self, selector: #selector(self.newFileSaved(notification:)), name: Notification.Name("FileSaved"), object: nil)
         self.existingViewModel.existingViewController = self
-        print(comments)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -77,8 +76,6 @@ class ExistingVC: BaseViewController {
     
     // MARK: - UISetup
     func setUpUI(){
-        tableView.delegate = nil
-        tableView.dataSource = nil
         tableView.delegate = self
         tableView.dataSource = self
         hideLeftButton()
@@ -334,6 +331,22 @@ class ExistingVC: BaseViewController {
         self.mediaProgressView.audioVisualizationMode = .read
         self.mediaProgressView.meteringLevels = [0.1, 0.67, 0.13, 0.78, 0.31]
     }
+    
+    fileprivate func getSelectedAudioComment(selected audio: String) -> String {
+        for (key, value) in comments where key == audio {
+            return value
+        }
+        return ""
+    }
+    
+    fileprivate func pushToComments(selected audio: String) {
+        let VC = CommentsVC.instantiateFromAppStoryboard(appStoryboard: .Main)
+        self.setPushTransitionAnimation(VC)
+        VC.hidesBottomBarWhenPushed = true
+        VC.canEditComments = false
+        VC.comment = getSelectedAudioComment(selected: audio)
+        self.navigationController?.pushViewController(VC, animated: false)
+    }
 }
 
 // MARK: - Extension for tableView delegate & dataSource methods.
@@ -441,11 +454,9 @@ extension ExistingVC{
         floatSize = floatSize / 1024
         return String(format: "%.1f GB", floatSize)
     }
-    @objc func openCommentVC(){
-        let VC = CommentsVC.instantiateFromAppStoryboard(appStoryboard: .Main)
-        self.setPushTransitionAnimation(VC)
-        VC.hidesBottomBarWhenPushed = true
-        self.navigationController?.pushViewController(VC, animated: false)
+    @objc func openCommentVC(_ sender: UIButton){
+        let audioFile = totalFiles[sender.tag]
+        pushToComments(selected: audioFile)
     }
     
     @objc func openRenameFileVc(){

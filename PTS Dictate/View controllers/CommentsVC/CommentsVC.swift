@@ -20,6 +20,7 @@ class CommentsVC: BaseViewController {
     var isCommentsMandotary = false
     var canEditComments = true
     var fileName = ""
+    var comment = ""
     // MARK: - View Life-Cycle.
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,20 +37,29 @@ class CommentsVC: BaseViewController {
     }
     
     @IBAction func discardTapped(_ sender:UIButton) {
-        
+        popToExitingVC()
     }
     
     // MARK: UISetUp
     func setUpUI() {
         hideLeftButton()
         setTitleWithoutImage("Comments")
+        if isCommentsMandotary {
+            btnDiscard.isUserInteractionEnabled = true
+        } else {
+            btnDiscard.isUserInteractionEnabled = false
+        }
         if canEditComments {
             txtViewComment.isEditable = true
             txtViewComment.becomeFirstResponder()
+            btnSave.isUserInteractionEnabled = true
+            btnDiscard.isUserInteractionEnabled = true
+        } else {
+            txtViewComment.isEditable = false
+            txtViewComment.text = comment
+            btnSave.isUserInteractionEnabled = false
+            btnDiscard.isUserInteractionEnabled = false
         }
-
-//        txtViewComment.returnKeyType = .next
-        btnDiscard.isUserInteractionEnabled = !isCommentsMandotary
         self.navigationController?.navigationItem.hidesBackButton = true
     }
     
@@ -58,7 +68,18 @@ class CommentsVC: BaseViewController {
         CoreData.shared.dataSave()
         let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
         self.setPushTransitionAnimation(VC)
-        self.navigationController?.popViewController(animated: false)
-        self.tabBarController?.selectedIndex = 2
+        popToExitingVC()
+    }
+    
+    fileprivate func popToExitingVC() {
+        guard let viewControllers = self.navigationController?.viewControllers else {return }
+        for controller in viewControllers {
+            if controller.isKind(of: TabbarVC.self) {
+                let tabVC = controller as! TabbarVC
+                    tabVC.selectedIndex = 0 //no need of this line if you want to access same tab where you have started your navigation
+//                let VCs = tabVC.selectedViewController as! ExistingVC
+                self.navigationController?.popToRootViewController(animated: true)
+            }
+        }
     }
 }

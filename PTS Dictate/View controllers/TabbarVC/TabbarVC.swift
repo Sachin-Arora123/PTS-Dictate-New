@@ -21,7 +21,9 @@ class TabbarVC: UITabBarController, UITabBarControllerDelegate {
  
         let thirdItemView = self.tabBar.subviews[2]
         self.thirdTabbarItemImageView = thirdItemView.subviews.first as? UIImageView
-        self.thirdTabbarItemImageView.contentMode = .center
+        if thirdTabbarItemImageView != nil {
+            self.thirdTabbarItemImageView.contentMode = .center
+        }
         self.navigationController?.addCustomBottomLine(color: .black, height: 2.0)
         additionalSafeAreaInsets.bottom = UIDevice.current.hasNotch ? 0 : 12
         //First, remove the default top line and background
@@ -98,7 +100,9 @@ class TabbarVC: UITabBarController, UITabBarControllerDelegate {
             break
         case 2:
             if currentIndex != selectedIndex {
-                animate(thirdTabbarItemImageView)
+                if thirdTabbarItemImageView != nil {
+                    animate(thirdTabbarItemImageView)
+                }
             }
         default:
             break
