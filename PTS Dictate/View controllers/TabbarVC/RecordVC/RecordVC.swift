@@ -85,26 +85,18 @@ class RecordVC: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        setUpUI()
-        self.recorderSetUp()
-        isRecording = false
-        let audioFileURL = self.createURLForNewRecord()
-        self.lblFNameValue.text = audioFileName
-        print("File Name of recorded audio",audioFileURL)
-        // Setup audio session
         
+        //UI setup
+        setUpUI()
+        
+        //recorder setup
+        self.recorderSetUp()
+    
+        //Audio session Setup
         do {
             try audioSession.setCategory(AVAudioSession.Category(rawValue: convertFromAVAudioSessionCategory(AVAudioSession.Category.playAndRecord)), mode: .default)
         } catch _ {
         }
-        
-        // Define the recorder setting
-        let recorderSetting = [AVFormatIDKey: NSNumber(value: kAudioFormatMPEG4AAC as UInt32),
-                             AVSampleRateKey: Double(savedAudioQuality(audioQuality: AudioQuality(rawValue: CoreData.shared.audioQuality)!)),
-                       AVNumberOfChannelsKey: 2] as [String : Any]
-        
-        audioRecorder = try? AVAudioRecorder(url: audioFileURL, settings: recorderSetting)
-        fileURL1 = audioFileURL
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -116,6 +108,7 @@ class RecordVC: BaseViewController {
       NotificationCenter.default.removeObserver(self, name: Notification.Name("showBottomBtnView"), object: nil)
       NotificationCenter.default.removeObserver(self)
     }
+    
     @objc func applicationWillTerminate(notification: Notification) {
       // Notification received.
         print("Notification received.")
@@ -141,6 +134,34 @@ class RecordVC: BaseViewController {
         segmentHeight.constant = 0
         viewProgress.isHidden = false
         progressViewHeight.constant = 45
+    }
+    
+    func recorderSetUp() {
+//        audioRecorder = nil
+        
+        // Define the recorder setting
+        isRecording = false
+        self.fileURL1 = self.createURLForNewRecord()
+        self.lblFNameValue.text = audioFileName
+        print("File Name of recorded audio",self.fileURL1 ?? "")
+
+        let recorderSetting = [
+            AVSampleRateKey : Double(savedAudioQuality(audioQuality: AudioQuality(rawValue: CoreData.shared.audioQuality)!)),
+            AVFormatIDKey : NSNumber(value: Int32(kAudioFormatMPEG4AAC)),
+            AVNumberOfChannelsKey : NSNumber(value: 1),
+            AVEncoderAudioQualityKey : NSNumber(value: AVAudioQuality.medium.rawValue)
+        ] as [String : Any]
+        
+        audioRecorder = try? AVAudioRecorder(url: self.fileURL1, settings: recorderSetting)
+        audioRecorder?.delegate = self
+        audioRecorder?.isMeteringEnabled = true
+        
+        self.initiallyBtnStateSetup()
+        self.viewBottomButton.isHidden = true
+        
+        // Microphone Authorization/Permission
+        self.checkMicrophoneAccess()
+        
     }
  
     @objc func showBottomView() {
@@ -175,104 +196,85 @@ class RecordVC: BaseViewController {
         lblPlayerStatus.text = ""
     }
     
-    func recorderSetUp() {
-        audioRecorder = nil
-        self.initiallyBtnStateSetup()
-        self.viewBottomButton.isHidden = true
-        // Microphone Authorization/Permission
-        self.checkMicrophoneAccess()
-        // Set the audio file
-        audioRecorder?.delegate = self
-        audioRecorder?.isMeteringEnabled = true
-    }
+    
     
     // MARK: - @IBActions.
     @IBAction func onTapRecord(_ sender: UIButton) {
-             // Stop the audio player before recording
-             if let player = audioPlayer {
-                 if player.isPlaying {
-                     player.stop()
+         // Stop the audio player before recording
+         if let player = audioPlayer {
+             if player.isPlaying {
+                 player.stop()
 //                     btnPlay.setImage(UIImage(named: ""), for: UIControl.State())
 //                     btnPlay.isSelected = false
-                 }
              }
-             if let recorder = audioRecorder {
-                 if !recorder.isRecording {
-//                     let audioSession = AVAudioSession.sharedInstance()
-                     
-                     do {
-                         try audioSession.setActive(true)
-                     } catch _ {
-                     }
-                     // Start recording
-                     audioRecorder?.prepareToRecord()
-                     recorder.record()
-                     self.recordTimer = Timer.scheduledTimer(timeInterval: 0.1, target:self, selector:#selector(self.updateAudioMeter(timer:)), userInfo:nil, repeats:true)
-                     
-                     self.lblPlayerStatus.text = "Recording"
-                     self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: UIControl.State.normal)
-                     self.btnStop.isUserInteractionEnabled = true
-                     self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: .normal)
-                     
-                     
-                 } else {
-                     // Pause recording
-                     recorder.pause()
-                     lblPlayerStatus.text = "Paused"
-                     btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: UIControl.State.normal)
-                     btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-                     btnBackwardTrim.setBackgroundImage(UIImage(named: "existing_rewind_normal"), for: .normal)
-                     btnBackwardTrimEnd.setBackgroundImage(UIImage(named: "existing_backward_fast_normal"), for: .normal)
-                     btnPlay.isUserInteractionEnabled = true
-                     btnBackwardTrim.isUserInteractionEnabled = true
-                     btnBackwardTrimEnd.isUserInteractionEnabled = true
+         }
+        
+        //Start recording
+        if !(audioRecorder?.isRecording ?? false) {
+             do {
+                 try audioSession.setActive(true)
+             } catch {
+                 print(error.localizedDescription)
+             }
+            audioRecorder?.prepareToRecord()
+            audioRecorder?.record()
+            self.recordTimer = Timer.scheduledTimer(timeInterval: 0.1, target:self, selector:#selector(self.updateAudioMeter(timer:)), userInfo:nil, repeats:true)
+             
+            self.lblPlayerStatus.text = "Recording"
+            self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: UIControl.State.normal)
+            self.btnStop.isUserInteractionEnabled = true
+            self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: .normal)
+        }else{
+             // Pause recording
+             audioRecorder?.pause()
+             lblPlayerStatus.text = "Paused"
+             btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: UIControl.State.normal)
+             btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+             btnBackwardTrim.setBackgroundImage(UIImage(named: "existing_rewind_normal"), for: .normal)
+             btnBackwardTrimEnd.setBackgroundImage(UIImage(named: "existing_backward_fast_normal"), for: .normal)
+             btnPlay.isUserInteractionEnabled = true
+             btnBackwardTrim.isUserInteractionEnabled = true
+             btnBackwardTrimEnd.isUserInteractionEnabled = true
 //                     btnStop.isUserInteractionEnabled = true
-                 }
-                 audioPlayer?.numberOfLoops = 0 // loop count, set -1 for infinite
-                 audioPlayer?.volume = 1
-                 audioPlayer?.prepareToPlay()
-                 isRecording = true
-             }
+        }
+        audioPlayer?.numberOfLoops = 0 // loop count, set -1 for infinite
+        audioPlayer?.volume = 1
+        audioPlayer?.prepareToPlay()
+        isRecording = true
     }
     
     @IBAction func onTapStop(_ sender: UIButton) {
-        
-//        if let recorder = audioRecorder {
-//            if recorder.isRecording {
-                audioRecorder?.stop()
-//                let audioSession = AVAudioSession.sharedInstance()
-                do {
-                    try audioSession.setActive(false)
-                    print("Stop")
-                    self.tabBarController?.setTabBarHidden(true, animated: false)
-                    btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
-                    btnRecord.isUserInteractionEnabled = false
-                    btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-                    btnBackwardTrim.setBackgroundImage(UIImage(named: "existing_rewind_normal"), for: .normal)
-                    btnBackwardTrimEnd.setBackgroundImage(UIImage(named: "existing_backward_fast_normal"), for: .normal)
-                    btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_disable"), for: .normal)
-                    btnPlay.isUserInteractionEnabled = true
-                    btnBackwardTrim.isUserInteractionEnabled = true
-                    btnBackwardTrimEnd.isUserInteractionEnabled = true
-                    btnStop.isUserInteractionEnabled = false
+        audioRecorder?.stop()
+        do {
+            try audioSession.setActive(false)
+            print("Stop")
+            self.tabBarController?.setTabBarHidden(true, animated: false)
+            btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
+            btnRecord.isUserInteractionEnabled = false
+            btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+            btnBackwardTrim.setBackgroundImage(UIImage(named: "existing_rewind_normal"), for: .normal)
+            btnBackwardTrimEnd.setBackgroundImage(UIImage(named: "existing_backward_fast_normal"), for: .normal)
+            btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_disable"), for: .normal)
+            btnPlay.isUserInteractionEnabled = true
+            btnBackwardTrim.isUserInteractionEnabled = true
+            btnBackwardTrimEnd.isUserInteractionEnabled = true
+            btnStop.isUserInteractionEnabled = false
 //                    self.viewBottomButton.isHidden = false
-                    CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
-                    lblPlayerStatus.text = "Stopped"
-                    progressViewHeight.constant = 0
-                    viewProgress.isHidden = true
-                    stackView.isHidden = false
-                    playerWaveView.isHidden = false
-                    bookMarkView.isHidden = true
-                    viewClear.isHidden = true
-                    stackViewHeight.constant = 200 - 45 * 2 - 70
-                    if isAppendPlaying{
-                        playmerge(audio1: fileURL1 as! NSURL, audio2: fileURL2 as! NSURL)
-                    }
-                } catch _ {
-                }
-//            }
-//        }
-        
+            CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
+            lblPlayerStatus.text = "Stopped"
+            progressViewHeight.constant = 0
+            viewProgress.isHidden = true
+            stackView.isHidden = false
+            playerWaveView.isHidden = false
+            bookMarkView.isHidden = true
+            viewClear.isHidden = true
+            stackViewHeight.constant = 200 - 45 * 2 - 70
+            if isAppendPlaying{
+                playmerge(audio1: fileURL1 as! NSURL, audio2: fileURL2 as! NSURL)
+            }
+        } catch _ {
+        }
+
         // Stop the audio player if playing
         if let player = audioPlayer {
             if player.isPlaying {
@@ -308,7 +310,12 @@ class RecordVC: BaseViewController {
                       btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: .normal)
                       btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: .normal)
                   }else{
-                      audioPlayer = try? AVAudioPlayer(contentsOf: recorder.url)
+                      do{
+                          try audioPlayer = AVAudioPlayer(contentsOf: recorder.url)
+                      }catch{
+                          print(error.localizedDescription)
+                      }
+                      
                       audioPlayer?.delegate = self
                       audioPlayer?.play()
                       btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)

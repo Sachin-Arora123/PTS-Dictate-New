@@ -115,7 +115,7 @@
 		69B110541135EBAEF9C91DAC74CA2842 /* EKImageNoteMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35D6DA13AB218DDA6D9501BAB436F957 /* EKImageNoteMessageView.swift */; };
 		6E48BC03DA78EFF77A86E599F4C6175D /* SwiftToast-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 235BD205B6B4FF7A03E4C63748013956 /* SwiftToast-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6EE027B0D6B336AFC075EC3C9F086F07 /* EKAlertMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A3C9E29F7B217C7B5661E590397746 /* EKAlertMessageView.swift */; };
-		6F7D31BA8ED34E81807E414F94EECCBF /* SwiftToast-SwiftToast in Resources */ = {isa = PBXBuildFile; fileRef = 37E57848E5F027252D2115BDBBFCE0EC /* SwiftToast-SwiftToast */; };
+		6F7D31BA8ED34E81807E414F94EECCBF /* SwiftToast.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 37E57848E5F027252D2115BDBBFCE0EC /* SwiftToast.bundle */; };
 		6FD77DED1C4ADCEB2E4E4AE00DD35BF9 /* SwiftToast-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = C0470B727CA6323CEFDE4EAC6344E6D6 /* SwiftToast-dummy.m */; };
 		7100E8E5F7D79F849F6F6C004ABEF7F7 /* NVActivityIndicatorAnimationBallScale.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2266865FCD16FDEB0E7F5A37D5668F92 /* NVActivityIndicatorAnimationBallScale.swift */; };
 		71211533927975D052B0313AA01D247C /* NVActivityIndicatorAnimationBallTrianglePath.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA954025017060A8C83922D5A86A21D /* NVActivityIndicatorAnimationBallTrianglePath.swift */; };
@@ -390,7 +390,7 @@
 		3662E58468C79D92898CF9864F2304F3 /* Alamofire.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Alamofire.release.xcconfig; sourceTree = "<group>"; };
 		376C770B3256BAB943D3AD7F52B3EB42 /* iProgressHUDGlobal.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = iProgressHUDGlobal.swift; path = iProgressHUD/iProgressHUD/iProgressHUDGlobal.swift; sourceTree = "<group>"; };
 		37D94071C736756655185BCF5ADE0C00 /* NVActivityIndicatorAnimationLineSpinFadeLoader.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NVActivityIndicatorAnimationLineSpinFadeLoader.swift; path = iProgressHUD/iProgressHUD/NVActivityIndicatorView/Animations/NVActivityIndicatorAnimationLineSpinFadeLoader.swift; sourceTree = "<group>"; };
-		37E57848E5F027252D2115BDBBFCE0EC /* SwiftToast-SwiftToast */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "SwiftToast-SwiftToast"; path = SwiftToast.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		37E57848E5F027252D2115BDBBFCE0EC /* SwiftToast.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftToast.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		3872A3A956CACBF474B2232CFCF98932 /* NVActivityIndicatorAnimationBallGridBeat.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NVActivityIndicatorAnimationBallGridBeat.swift; path = iProgressHUD/iProgressHUD/NVActivityIndicatorView/Animations/NVActivityIndicatorAnimationBallGridBeat.swift; sourceTree = "<group>"; };
 		388609A129A482B76B7584FC4886B135 /* EKAccessoryNoteMessageView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EKAccessoryNoteMessageView.swift; path = Source/MessageViews/Notes/EKAccessoryNoteMessageView.swift; sourceTree = "<group>"; };
 		3A736D736462F47B54886EFB934E6065 /* ServerTrustEvaluation.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ServerTrustEvaluation.swift; path = Source/ServerTrustEvaluation.swift; sourceTree = "<group>"; };
@@ -505,7 +505,7 @@
 		9BA69E71B87A091C4304D66C4D0170E5 /* Toaster.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = Toaster.h; path = Sources/Toaster.h; sourceTree = "<group>"; };
 		9C184A9AC3E31C1839B0F488CB21D8B5 /* IQKeyboardManagerConstantsInternal.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = IQKeyboardManagerConstantsInternal.swift; path = IQKeyboardManagerSwift/Constants/IQKeyboardManagerConstantsInternal.swift; sourceTree = "<group>"; };
 		9D6DC2D689A3C5E2F889D1EF24CCBB69 /* IQKeyboardReturnKeyHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = IQKeyboardReturnKeyHandler.swift; path = IQKeyboardManagerSwift/IQKeyboardReturnKeyHandler.swift; sourceTree = "<group>"; };
-		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		9E31A678D8F3A41726C04160984A7790 /* UIColor+Utils.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIColor+Utils.swift"; path = "Source/Extensions/UIColor+Utils.swift"; sourceTree = "<group>"; };
 		9EC969703E2603AF6445CF88640DF0B4 /* SwiftToastView.xib */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.xib; name = SwiftToastView.xib; path = SwiftToast/Classes/SwiftToastView.xib; sourceTree = "<group>"; };
 		9F814F238CAB476425AEB257AA9F378A /* NVActivityIndicatorShape.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NVActivityIndicatorShape.swift; path = iProgressHUD/iProgressHUD/NVActivityIndicatorView/NVActivityIndicatorShape.swift; sourceTree = "<group>"; };
@@ -786,7 +786,6 @@
 				BCBEC4BEEE1D7767953E630FA455FD1A /* Chronometer.swift */,
 				E2FFD051C5ADCA43EEFB9F199794E579 /* Support Files */,
 			);
-			name = SoundWave;
 			path = SoundWave;
 			sourceTree = "<group>";
 		};
@@ -855,7 +854,6 @@
 				8EFFE55AC67752F40E50249B936B894D /* NVActivityIndicatorViewable.swift */,
 				4E31DEBA7F805571214DE527E1C9EE6D /* Support Files */,
 			);
-			name = iProgressHUD;
 			path = iProgressHUD;
 			sourceTree = "<group>";
 		};
@@ -901,7 +899,6 @@
 				17160F6B615EC4417BC51A8E1805F8EE /* UIApplication+Load.swift */,
 				892DD002C0966881EEFC4C4ED1C27FC3 /* Support Files */,
 			);
-			name = Toaster;
 			path = Toaster;
 			sourceTree = "<group>";
 		};
@@ -931,7 +928,6 @@
 				199BB3812388D129C365C8A049757269 /* SCWaveformView.m */,
 				A4321C617FE6A22FA0BD8A49768D618B /* Support Files */,
 			);
-			name = SCWaveformView;
 			path = SCWaveformView;
 			sourceTree = "<group>";
 		};
@@ -941,7 +937,6 @@
 				E24F3C3699D87AB78B7EFCA3F36321EC /* SwiftyJSON.swift */,
 				D8F8D53EA8D75452D424B90ABEDBF286 /* Support Files */,
 			);
-			name = SwiftyJSON;
 			path = SwiftyJSON;
 			sourceTree = "<group>";
 		};
@@ -973,7 +968,6 @@
 				7466949D1C388E3B30F5E580FA936BAF /* IQUIViewController+Additions.swift */,
 				C8C52F069DABE4A70152829040082E69 /* Support Files */,
 			);
-			name = IQKeyboardManagerSwift;
 			path = IQKeyboardManagerSwift;
 			sourceTree = "<group>";
 		};
@@ -985,7 +979,6 @@
 				EEF29BB154D6786805A41C4875651F3F /* FDWaveformView.swift */,
 				053CE5DF7D830E5415BB146AB90BE764 /* Support Files */,
 			);
-			name = FDWaveformView;
 			path = FDWaveformView;
 			sourceTree = "<group>";
 		};
@@ -1062,7 +1055,6 @@
 				A1C6F573A21BC5D4FC149AE3E689E840 /* UIViewArray+QuickLayout.swift */,
 				0C4FCCFC3CFFD2F0608793706F487C39 /* Support Files */,
 			);
-			name = SwiftEntryKit;
 			path = SwiftEntryKit;
 			sourceTree = "<group>";
 		};
@@ -1093,7 +1085,7 @@
 				843FFB1A5DEC64169D3AD840635DA0CC /* SoundWave */,
 				DA5F7E5AA5A762E4504855EAF3216C8A /* SwiftEntryKit */,
 				CFFE536DE5D28FB64EB2D5A0ED11BFFC /* SwiftToast */,
-				37E57848E5F027252D2115BDBBFCE0EC /* SwiftToast-SwiftToast */,
+				37E57848E5F027252D2115BDBBFCE0EC /* SwiftToast.bundle */,
 				E23C076BA70925415F490FEDB215DA92 /* SwiftyJSON */,
 				BD810337F4A305D60D9250A197AA1EF1 /* Toaster */,
 			);
@@ -1165,7 +1157,6 @@
 				533DD749D47FA1E766874356D40B0F25 /* Validation.swift */,
 				EB39402FAC90DEB635ECC55B7373FB79 /* Support Files */,
 			);
-			name = Alamofire;
 			path = Alamofire;
 			sourceTree = "<group>";
 		};
@@ -1247,7 +1238,6 @@
 				51F7D46A0EF0011DF4CE2BBAB9695513 /* Resources */,
 				B79BB92AFAFEE97ED03BA3050F54B7D4 /* Support Files */,
 			);
-			name = SwiftToast;
 			path = SwiftToast;
 			sourceTree = "<group>";
 		};
@@ -1488,7 +1478,7 @@
 			);
 			name = "SwiftToast-SwiftToast";
 			productName = SwiftToast;
-			productReference = 37E57848E5F027252D2115BDBBFCE0EC /* SwiftToast-SwiftToast */;
+			productReference = 37E57848E5F027252D2115BDBBFCE0EC /* SwiftToast.bundle */;
 			productType = "com.apple.product-type.bundle";
 		};
 		E9BD85398665C800FFFB4F6DCDAEA6D4 /* SCWaveformView */ = {
@@ -1705,7 +1695,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6F7D31BA8ED34E81807E414F94EECCBF /* SwiftToast-SwiftToast in Resources */,
+				6F7D31BA8ED34E81807E414F94EECCBF /* SwiftToast.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2081,6 +2071,7 @@
 			baseConfigurationReference = 226C4EC49EE9CB8C304DF5B14D66998B /* SwiftToast.release.xcconfig */;
 			buildSettings = {
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/SwiftToast";
+				DEVELOPMENT_TEAM = 3SZD7B8XW4;
 				IBSC_MODULE = SwiftToast;
 				INFOPLIST_FILE = "Target Support Files/SwiftToast/ResourceBundle-SwiftToast-SwiftToast-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -2335,6 +2326,7 @@
 			baseConfigurationReference = 449557796087698F085BF3F7FC460011 /* SwiftToast.debug.xcconfig */;
 			buildSettings = {
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/SwiftToast";
+				DEVELOPMENT_TEAM = 3SZD7B8XW4;
 				IBSC_MODULE = SwiftToast;
 				INFOPLIST_FILE = "Target Support Files/SwiftToast/ResourceBundle-SwiftToast-SwiftToast-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;

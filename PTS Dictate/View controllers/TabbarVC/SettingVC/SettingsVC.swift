@@ -140,7 +140,12 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
                     cell.imgViewArrow.isHidden = true
                     cell.imgViewIcon.isHidden = true
                 }
-            case 6,7:
+            case 6:
+                cell.imgViewIcon.isHidden = false
+                cell.btnSwitch.isHidden = true
+                cell.imgViewArrow.isHidden = false
+            case 7:
+                //logout
                 cell.imgViewIcon.isHidden = false
                 cell.btnSwitch.isHidden = true
                 cell.imgViewArrow.isHidden = true
@@ -222,11 +227,9 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
                     // 4. Present the alert.
                     self.present(alert, animated: true, completion: nil)
 
-            case 5:
+            case 6:
                 let vc = AboutVC.instantiateFromAppStoryboard(appStoryboard: .Settings)
                 self.navigationController?.pushViewController(vc, animated: true)
-            case 6:
-                print("About")
             case 7:
                 self.logOutAlert()
             default:
