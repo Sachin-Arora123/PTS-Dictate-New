@@ -13,24 +13,24 @@ class AboutVC: BaseViewController {
     @IBOutlet weak var tableView: UITableView!
     
     let titleArray = ["App Version","App Last Updated Date","Contact Us"]
+    var lastReleaseDate = ""
+    let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
     
     // MARK: - View Life-Cycle.
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
-        
-    }
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
         setUpUI()
         needsUpdate()
-        print(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        hideLeftButton()
+        setTitleWithoutImage("About")
     }
     
     // MARK: - UISetup
     func setUpUI(){
-        hideLeftButton()
-        setTitleWithoutImage("About")
         tableView.delegate = self
         tableView.dataSource = self
         tableView.contentInset =  UIEdgeInsets(top: -12, left: 0, bottom: 0, right: 0)
@@ -38,45 +38,32 @@ class AboutVC: BaseViewController {
     
     func needsUpdate() {
         
-//        let urlToDocumentsFolder: URL? = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last
-//         let installDate = try? FileManager.default.attributesOfItem(atPath: (urlToDocumentsFolder?.path)!)[.creationDate] as? Date
-//         print("Install Date of app is \(installDate)")
+//        let infoDictionary = Bundle.main.infoDictionary
+//        let appID = infoDictionary?["CFBundleIdentifier"] as? String
+//        let url = URL(string: "http://itunes.apple.com/lookup?bundleId=\(appID ?? "")")
         
-        
-        let infoDictionary = Bundle.main.infoDictionary
-        let appID = infoDictionary?["CFBundleIdentifier"] as? String
-        let url = URL(string: "http://itunes.apple.com/lookup?bundleId=\(appID ?? "")")
-        var data: Data? = nil
-        if let url {
-            data = try? Data(contentsOf: url)
-        }
-        var lookup: [AnyHashable : Any]? = nil
-        do {
-            if let data {
-                lookup = try JSONSerialization.jsonObject(with: data, options: []) as? [AnyHashable : Any]
+        //sending a static url for now as the app id of this project is different than the old one.
+        if let url = URL(string: "http://itunes.apple.com/lookup?bundleId=com.pts.ptsdictate"){
+            
+            
+            
+            
+            if let data = try? Data(contentsOf: url){
+                let lookup = try? JSONSerialization.jsonObject(with: data, options: []) as? [AnyHashable : Any]
+                if lookup?["resultCount"] as? Int == 1{
+                    if let results = lookup?["results"] as? [Any]{
+                        let strReleaseDate = (results.first as? [String : Any])?["currentVersionReleaseDate"]
+                        let dateformatter = DateFormatter()
+                        dateformatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+                        if let date = dateformatter.date(from: strReleaseDate as! String){
+                            dateformatter.dateFormat = "dd/MM/yy"
+                            lastReleaseDate = dateformatter.string(from: date)
+                            tableView.reloadData()
+                        }
+                    }
+                }
             }
-        } catch {
         }
-
-//        if (lookup?["resultCount"] as? NSNumber)?.intValue ?? 0 == 1 {
-//            let appStoreVersion = lookup?["results"][0]["version"] as? String
-//            let strReleaseDate = lookup?["results"][0]["currentVersionReleaseDate"] as? String
-//
-//            let dateFormatter = DateFormatter()
-//            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
-//            let date = dateFormatter.date(from: strReleaseDate ?? "")
-//            dateFormatter.dateFormat = "dd/MM/yy"
-//            if let date {
-//                currentReleaseDate = dateFormatter.string(from: date)
-//            }
-//
-//            let currentVersion = infoDictionary?["CFBundleShortVersionString"] as? String
-//            if appStoreVersion != currentVersion {
-//                print("Need to update [\(appStoreVersion ?? "") != \(currentVersion ?? "")]")
-//            }
-//        }
-//        myTblView.reloadData()
-
     }
 }
 
@@ -89,7 +76,7 @@ extension AboutVC: UITableViewDelegate,UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "AboutInfoCell", for: indexPath) as! AboutInfoCell
         cell.lblTitle.text = titleArray[indexPath.row]
-//        cell.lblTitleDesc.text =
+        cell.lblTitleDesc.text = indexPath.row == 0 ? appVersion : lastReleaseDate
         if indexPath.row != 2 {
             cell.imgViewArrow.isHidden = true
         }else {
