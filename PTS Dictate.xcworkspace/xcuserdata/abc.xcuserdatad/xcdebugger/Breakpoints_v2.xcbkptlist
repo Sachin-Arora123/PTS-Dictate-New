@@ -80,7 +80,7 @@
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "339"
                   endingLineNumber = "339"
-                  offsetFromSymbolStart = "440">
+                  offsetFromSymbolStart = "519">
                </Location>
                <Location
                   uuid = "952418A2-1549-44FD-9713-9C66E22FFAA4 - 5b7931eb96e33de6"
@@ -95,7 +95,7 @@
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "340"
                   endingLineNumber = "340"
-                  offsetFromSymbolStart = "68">
+                  offsetFromSymbolStart = "41">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -144,7 +144,7 @@
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "350"
                   endingLineNumber = "350"
-                  offsetFromSymbolStart = "440">
+                  offsetFromSymbolStart = "455">
                </Location>
                <Location
                   uuid = "CBAF3EB2-A5DA-4D68-9EEA-9F2B044A5B2D - ab6844a826c3f266"
@@ -159,7 +159,7 @@
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "350"
                   endingLineNumber = "350"
-                  offsetFromSymbolStart = "512">
+                  offsetFromSymbolStart = "531">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -193,22 +193,6 @@
             startingLineNumber = "178"
             endingLineNumber = "178"
             landmarkName = "onTapUpload(_:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "C9F4D531-03C2-4C6F-9E74-F93B0AC281E2"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PTS Dictate/View controllers/TabbarVC/SettingVC/SettingsVC.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "278"
-            endingLineNumber = "278"
-            landmarkName = "switchRecordingSection(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -263,16 +247,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "3E6EE4D2-A0E6-4899-AADF-D3C77A47E749"
+            uuid = "2DDA6CFB-5336-4C83-8F34-3266823E76D1"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "PTS Dictate/Helpers/BaseViewController.swift"
+            filePath = "PTS Dictate/View controllers/TabbarVC/SettingVC/SettingsVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "120"
-            endingLineNumber = "120"
-            landmarkName = "btnBackAction()"
+            startingLineNumber = "303"
+            endingLineNumber = "303"
+            landmarkName = "switchRecordingSection(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

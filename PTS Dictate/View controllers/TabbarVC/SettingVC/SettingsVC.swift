@@ -81,18 +81,41 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
             cell.btnSwitch.tag = indexPath.row
             cell.lblTitle.text = dataTitle1[indexPath.row]
             cell.btnSwitch.addTarget(self, action: #selector(switchRecordingSection(_:)), for: .valueChanged)
+            cell.imgViewArrow.isHidden = true
+            
             switch indexPath.row{
             case 0,1:
+                //audio quality, microphone senstivity
                 cell.btnSwitch.isHidden = true
+                cell.imgViewArrow.isHidden = false
+            case 2:
+                //voice activation auto pause
+                cell.btnSwitch.isHidden = false
+                cell.btnSwitch.isOn = (CoreData.shared.voiceActivation == 1)
+            case 3:
+                //disable email notification
+                cell.btnSwitch.isHidden = false
+                cell.btnSwitch.isOn = (CoreData.shared.disableEmailNotify == 1)
+            case 4:
+                //comment screen
+                cell.btnSwitch.isHidden = false
+                cell.btnSwitch.isOn = (CoreData.shared.commentScreen == 1)
             case 5:
-                cell.imgViewArrow.isHidden = true
+                //comment mandatory screen
                 if CoreData.shared.commentScreen == 1{
-                    
+                    cell.btnSwitch.isOn = (CoreData.shared.commentScreenMandatory == 1)
                 }else{
                     cell.lblTitle.text = ""
-//                    cell.btnSwitch.isHidden = true
                     cell.imgViewArrow.isHidden = true
                 }
+            case 6:
+                //indexing
+                cell.btnSwitch.isHidden = false
+                cell.btnSwitch.isOn = (CoreData.shared.indexing == 1)
+            case 7:
+                //disable editing alerts
+                cell.btnSwitch.isHidden = false
+                cell.btnSwitch.isOn = (CoreData.shared.disableEditingHelp == 1)
             default:
                 cell.imgViewArrow.isHidden = true
                 break
@@ -106,27 +129,20 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
             cell.btnSwitch.addTarget(self, action: #selector(switchGeneralSection(_:)), for: .valueChanged)
             cell.lblTitle.text = dataTitle2[indexPath.row]
             cell.imgViewIcon.image = UIImage(named: iconArray[indexPath.row])
+            cell.imgViewIcon.isHidden = false
+            
             switch indexPath.row{
             case 0,1:
+                //profile, filename format
                 cell.imgViewArrow.isHidden = false
-                cell.imgViewIcon.isHidden = false
                 cell.btnSwitch.isHidden =  true
             case 2:
-                cell.imgViewIcon.isHidden = false
+                //archive file after upload
                 cell.btnSwitch.isHidden =  false
                 cell.imgViewArrow.isHidden = true
                 cell.btnSwitch.isOn = CoreData.shared.archiveFile == 1 ? true : false
-            case 4:
-                cell.imgViewIcon.isHidden = false
-                cell.btnSwitch.isHidden =  false
-                cell.imgViewArrow.isHidden = true
-                cell.btnSwitch.isOn = CoreData.shared.uploadViaWifi == 1 ? true : false
-            case 5:
-                cell.imgViewIcon.isHidden = false
-                cell.btnSwitch.isHidden =  false
-                cell.imgViewArrow.isHidden = true
-                cell.btnSwitch.isOn = CoreData.shared.sleepModeOverride == 1 ? true : false
             case 3:
+                //archive days
                 cell.btnSwitch.isHidden = true
                 if CoreData.shared.archiveFile == 1{
                     cell.lblArchiveValue.isHidden = false
@@ -140,19 +156,27 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
                     cell.imgViewArrow.isHidden = true
                     cell.imgViewIcon.isHidden = true
                 }
+            case 4:
+                //upload via wifi
+                cell.btnSwitch.isHidden =  false
+                cell.imgViewArrow.isHidden = true
+                cell.btnSwitch.isOn = (CoreData.shared.uploadViaWifi == 1)
+            case 5:
+                //sleep mode ovveride
+                cell.btnSwitch.isHidden =  false
+                cell.imgViewArrow.isHidden = true
+                cell.btnSwitch.isOn = (CoreData.shared.sleepModeOverride == 1)
             case 6:
-                cell.imgViewIcon.isHidden = false
+                //about
                 cell.btnSwitch.isHidden = true
                 cell.imgViewArrow.isHidden = false
             case 7:
                 //logout
-                cell.imgViewIcon.isHidden = false
                 cell.btnSwitch.isHidden = true
                 cell.imgViewArrow.isHidden = true
             default:
                 cell.btnSwitch.isHidden = false
                 cell.imgViewArrow.isHidden = false
-                cell.imgViewIcon.isHidden = false
                 cell.lblArchiveValue.isHidden = false
             }
             return cell
@@ -295,7 +319,9 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
                 let indexPath = IndexPath(row: 5, section: 0)
                 self.tableView.reloadRows(at: [indexPath], with: UITableView.RowAnimation.bottom)
             }else{
+                //disbale comment mandatory as well if user is disbling comment screen
                 CoreData.shared.commentScreen = 0
+                CoreData.shared.commentScreenMandatory = 0
 //                switchState = false
                 let indexPath = IndexPath(row: 5, section: 0)
                 self.tableView.reloadRows(at: [indexPath], with: UITableView.RowAnimation.top)
