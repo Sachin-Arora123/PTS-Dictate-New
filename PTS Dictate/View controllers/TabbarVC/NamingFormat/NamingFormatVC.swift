@@ -33,7 +33,20 @@ class NamingFormatVC: BaseViewController {
     // MARK: - View Life-Cycle.
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        setupHeaderName()
+    }
+    
+    func setupHeaderName(){
+        let currentDate = Date()
+        let dateFormatter = DateFormatter()
+        let fileFormatString = CoreData.shared.dateFormat
+        if fileFormatString.count == 0 {
+            dateFormatter.dateFormat = "ddMMyyyy"
+        }
+
+        let currentDateStr = "\(dateFormatter.string(from: currentDate))"
+
+        txtFldHeaderFileName.text = (CoreData.shared.profileName) + "_" + currentDateStr + "_File_001" + ".m4a"
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -89,9 +102,9 @@ extension NamingFormatVC: UITableViewDelegate, UITableViewDataSource {
         cell.txtFldDateFormat.tag = indexPath.row
         cell.delegate = self
         if indexPath.row == 0{
-            cell.txtFldDateFormat.text = self.fileName
+            cell.txtFldDateFormat.text = (self.fileName != "") ? self.fileName : CoreData.shared.profileName
         }else{
-            cell.txtFldDateFormat.text = self.dateFormate
+            cell.txtFldDateFormat.text = (self.dateFormate != "") ? self.dateFormate : "ddmmyyyy"
         }
         if  selectedTFIndex != nil{
             if indexPath.row == selectedTFIndex{
@@ -168,10 +181,6 @@ extension NamingFormatVC: UIPickerViewDataSource, UIPickerViewDelegate{
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
-    
-//    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
-//        return 1
-//    }
 
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         return pickerViewData.count

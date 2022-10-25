@@ -114,7 +114,7 @@ extension LoginVC{
         if CoreData.shared.isRemeberMe{
             self.setRemeberMeButton()
             self.tfPassword.text = CoreData.shared.password
-            self.tfUserName.text = CoreData.shared.userName
+            self.tfUserName.text = CoreData.shared.userId
         }
             
         self.setCrossBtn(tfs: [self.tfPassword, self.tfUserName])

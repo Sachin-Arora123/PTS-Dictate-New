@@ -13,6 +13,7 @@ class CoreData: NSObject {
     // 1 - true for switch on & 0 - false for switch off
     var accessToken: String =  ""
     var userName : String = ""
+    var profileName : String = ""
     var userId : String = ""
     var email: String = ""
     var privilege: String = ""
@@ -67,6 +68,7 @@ class CoreData: NSObject {
         let newData = NSEntityDescription.insertNewObject(forEntityName: "Login", into: context)
         newData.setValue(accessToken, forKey: "accessToken")
         newData.setValue(userName, forKey: "userName")
+        newData.setValue(profileName, forKey: "profileName")
         newData.setValue(userId, forKey: "userId")
         newData.setValue(isRemeberMe, forKey: "isRemeberMe")
         newData.setValue(password, forKey: "password")
@@ -113,6 +115,10 @@ class CoreData: NSObject {
                         self.userName = userName
                         print("data get userName \(userName)")
                     }
+                    if let profileName = result.value(forKey: "profileName") as? String{
+                        self.profileName = profileName
+                        print("data get profileName \(profileName)")
+                    }
                     if let userId = result.value(forKey: "userId") as? String{
                         self.userId = userId
                         print("data get userId \(userId)")
@@ -131,7 +137,7 @@ class CoreData: NSObject {
                     }
                     if let privilege = result.value(forKey: "privilege") as? String{
                         self.privilege = privilege
-                        print("data get userName \(privilege)")
+                        print("data get privilege \(privilege)")
                     }
                     if let audioQuality = result.value(forKey: "audioQuality") as? Int{
                         self.audioQuality = audioQuality
@@ -208,7 +214,8 @@ class CoreData: NSObject {
         let DelAllReqVar = NSBatchDeleteRequest(fetchRequest: NSFetchRequest<NSFetchRequestResult>(entityName: "Login"))
         accessToken =  ""
         email = ""
-        userId = ""
+        userName = ""
+        profileName = ""
         privilege = ""
         audioQuality = 11
         voiceActivation = 0
@@ -227,7 +234,7 @@ class CoreData: NSObject {
         userInfo.removeAll()
         fileName = ""
         if !self.isRemeberMe{
-            self.userName = ""
+            self.userId = ""
             self.password = ""
         }
         do {
