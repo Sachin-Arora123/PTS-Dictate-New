@@ -323,19 +323,57 @@ class RecordVC: BaseViewController {
     }
     @IBAction func onTapForwardTrim(_ sender: UIButton) {
         print("Forward Trim")
+        fastForwardByTime(timeVal: 1.0)
     }
     @IBAction func onTapForwardTrimEnd(_ sender: UIButton) {
         print("Forward Trimfast End")
+        fastForwardByTime(timeVal: 3.0)
     }
     
     @IBAction func onTapBackwardTrim(_ sender: UIButton) {
         print("Backward Trim")
-
+        fastBackwardByTime(timeVal: 1.0)
     }
     
     @IBAction func onTapBackwardTrimEnd(_ sender: UIButton) {
         print("Backward TrimFast End")
-
+        fastBackwardByTime(timeVal: 3.0)
+    }
+    
+    func fastForwardByTime(timeVal: Double) {
+        audioPlayer = try? AVAudioPlayer(contentsOf: audioRecorder!.url)
+        var time: TimeInterval = audioPlayer?.currentTime ?? 0.0
+        time += timeVal
+        if time > audioPlayer!.duration {
+            if let player = audioPlayer {
+                if player.isPlaying {
+                    player.stop()
+                }
+            }
+        } else {
+            audioPlayer?.currentTime = time
+            let min = Int(audioPlayer!.currentTime / 60)
+            let sec = Int(audioPlayer!.currentTime.truncatingRemainder(dividingBy: 60))
+            let totalTimeString = String(format: "%02d:%02d", min, sec)
+            self.lblTime.text = totalTimeString
+            audioPlayer?.updateMeters()
+        }
+    }
+    
+    func fastBackwardByTime(timeVal: Double) {
+        audioPlayer = try? AVAudioPlayer(contentsOf: audioRecorder!.url)
+        var time: TimeInterval = audioPlayer?.currentTime ?? 0.0
+        time -= timeVal
+        if time < 0 {
+            audioPlayer?.stop()
+        } else {
+            audioPlayer?.currentTime = time
+            let min = Int(audioPlayer!.currentTime / 60)
+            let sec = Int(audioPlayer!.currentTime.truncatingRemainder(dividingBy: 60))
+            let totalTimeString = String(format: "%02d:%02d", min, sec)
+            self.lblTime.text = totalTimeString
+            audioPlayer?.updateMeters()
+        }
     }
     
     @IBAction func segmentChanged(_ sender: Any) {
