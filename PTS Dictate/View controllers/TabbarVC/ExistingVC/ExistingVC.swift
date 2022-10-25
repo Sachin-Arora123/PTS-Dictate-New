@@ -9,6 +9,11 @@ import UIKit
 import AVFoundation
 import SoundWave
 
+
+enum AudioControllers: Int {
+    case fastRewind = 0, rewind, play, forward, fastForward
+}
+
 class ExistingVC: BaseViewController {
     
     // MARK: - @IBOutlets.
@@ -42,6 +47,7 @@ class ExistingVC: BaseViewController {
     
     private var audioMeteringLevelTimer: Timer?
     var tag = -1
+    private var currentlyPlayingAudio: URL?
     
     // wave form var
     fileprivate var startRendering = Date()
@@ -76,8 +82,6 @@ class ExistingVC: BaseViewController {
     
     // MARK: - UISetup
     func setUpUI(){
-        tableView.delegate = self
-        tableView.dataSource = self
         hideLeftButton()
         setTitleWithImage("Existing Dictations", andImage: UIImage(named: "tabbar_existing_dictations_highlighted.png") ?? UIImage())
         tableView.contentInset =  UIEdgeInsets(top: 0, left: 0, bottom: 25, right: 0)
@@ -253,73 +257,11 @@ class ExistingVC: BaseViewController {
         }
     }
     
-    @IBAction func onTapPlay(_ sender: UIButton){
-        do {
-            var playingMediaIndex = 0
-            for (index, value) in self.totalFiles.enumerated() {
-                if value as? String == self.lblFileName.text!  {
-                    print("Finding Index-->>",index)
-                    playingMediaIndex = index
-                }
-            }
-            let cell  = tableView.cellForRow(at: IndexPath(row: playingMediaIndex, section: 0)) as? ExistingFileCell
-            let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            let completePath = directoryPath.absoluteString +  self.lblFileName.text!
-            let completePathURL = URL(string: completePath)
-            self.lblTotalTime.text = self.getTimeDuration(filePath: self.lblFileName.text!)
-            audioPlayer.numberOfLoops = 0 // loop count, set -1 for infinite
-            audioPlayer.volume = 1
-            audioPlayer.prepareToPlay()
-            
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
-            try AVAudioSession.sharedInstance().setActive(true)
-            if audioPlayer.isPlaying{
-                self.lblPlayerStatus.text = "Now Paused"
-                audioPlayer.pause()
-                self.mediaProgressView.pause()
-                cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_play_btn"), for: .normal)
-                self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-            }else{
-                audioPlayer = try AVAudioPlayer(contentsOf: completePathURL!)
-                audioPlayer.delegate = self
-                audioPlayer.play()
-                self.lblPlayerStatus.text = "Now Playing"
-                //                self.mediaProgressView.audioURL = completePathURL!
-                self.mediaProgressView.meteringLevels = [0.1, 0.67, 0.13, 0.78, 0.31]
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0){
-                    self.mediaProgressView.play(for: self.audioPlayer.duration / self.audioPlayer.duration)
-                }
-                cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_pause_btn"), for: .normal)
-                self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
-                tag = playingMediaIndex
-                self.audioMeteringLevelTimer = Timer.scheduledTimer(timeInterval: 0.05, target: self, selector: #selector(timerDidUpdateMeter), userInfo: nil, repeats: true)
-            }
-            self.setTrimButtonInteraction(isInteractive: true)
-        } catch _ {
-            print("catch")
-        }
+    @IBAction func audioControllersTapped(_ sender: UIButton) {
+        let controllerType: AudioControllers = AudioControllers(rawValue: sender.tag) ?? .play
+        controllAudioPlayer(controllerType: controllerType)
     }
     
-    @IBAction func onTapFTrim(_ sender: UIButton){
-        
-    }
-    @IBAction func onTapFTrimEnd(_ sender: UIButton){
-        let currentTime = audioPlayer.currentTime
-        audioPlayer.pause()
-        audioPlayer.play(atTime: currentTime + 3.0)
-    }
-    
-    @IBAction func onTapBTrim(_ sender: UIButton){
-        
-    }
-    
-    @IBAction func onTapBTrimEnd(_ sender: UIButton){
-        
-        //        let currentTime = audioPlayer.currentTime
-        //         audioPlayer.pause()
-        //        audioPlayer.play(atTime: currentTime - 3.0)
-        ////        audioPlayer
-    }
     func setUpWave() {
         self.mediaProgressView.meteringLevelBarWidth = 1.0
         self.mediaProgressView.meteringLevelBarInterItem = 1.0
@@ -347,6 +289,102 @@ class ExistingVC: BaseViewController {
         VC.comment = getSelectedAudioComment(selected: audio)
         self.navigationController?.pushViewController(VC, animated: false)
     }
+    
+    // notaFIXME: need to fix those functions to controll media
+    private func settingUpPlayer() {
+        do {
+            audioPlayer.numberOfLoops = 0 // loop count, set -1 for infinite
+            audioPlayer.volume = 1
+            audioPlayer.prepareToPlay()
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
+            try AVAudioSession.sharedInstance().setActive(true)
+        }  catch _ {
+            print("can't settingup player")
+        }
+    }
+    
+    private func preparePlayerToPlay(completePathURL: URL) {
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: completePathURL)
+            audioPlayer.delegate = self
+            audioPlayer.play()
+        } catch _ {
+            print("can't prepare player")
+        }
+    }
+    
+    private func getFilePath() -> URL{
+        let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let completePath = directoryPath.absoluteString +  self.lblFileName.text!
+        let completePathURL = URL(string: completePath)!
+        return completePathURL
+    }
+    
+    private func playAudio() {
+        var playingMediaIndex = 0
+        for (index, value) in self.totalFiles.enumerated() {
+            if value as? String == self.lblFileName.text!  {
+                print("Finding Index-->>",index)
+                playingMediaIndex = index
+            }
+        }
+        let cell  = tableView.cellForRow(at: IndexPath(row: playingMediaIndex, section: 0)) as? ExistingFileCell
+        self.lblTotalTime.text = self.getTimeDuration(filePath: self.lblFileName.text!)
+       settingUpPlayer()
+        if audioPlayer.isPlaying{
+            self.lblPlayerStatus.text = "Now Paused"
+            audioPlayer.pause()
+            self.mediaProgressView.pause()
+            cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_play_btn"), for: .normal)
+            self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+        }else{
+           preparePlayerToPlay(completePathURL: getFilePath())
+            self.lblPlayerStatus.text = "Now Playing"
+            //                self.mediaProgressView.audioURL = completePathURL!
+            self.mediaProgressView.meteringLevels = [0.1, 0.67, 0.13, 0.78, 0.31]
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0){
+                self.mediaProgressView.play(for: self.audioPlayer.duration / self.audioPlayer.duration)
+            }
+            cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_pause_btn"), for: .normal)
+            self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
+            tag = playingMediaIndex
+            self.audioMeteringLevelTimer = Timer.scheduledTimer(timeInterval: 0.05, target: self, selector: #selector(timerDidUpdateMeter), userInfo: nil, repeats: true)
+        }
+        self.setTrimButtonInteraction(isInteractive: true)
+    }
+    
+    private func controllAudioPlayer(controllerType: AudioControllers) {
+        DispatchQueue.main.async {
+            self.audioPlayer.pause()
+            let currentTime = self.audioPlayer.currentTime
+            switch controllerType {
+            case .fastRewind:
+                if currentTime > TimeInterval(10.0) {
+                    self.audioPlayer.play(atTime: currentTime - 10.0)
+                }
+            case .rewind:
+                if currentTime > TimeInterval(3.0) {
+                    self.audioPlayer.play(atTime: currentTime - 3.0)
+                }
+            case .play:
+                self.playAudio()
+            case .forward:
+                if currentTime > TimeInterval(0.0) && currentTime < self.audioPlayer.duration {
+                    self.preparePlayerToPlay(completePathURL: self.getFilePath())
+                    self.audioPlayer.play(atTime: currentTime + 3.0)
+                }
+            case .fastForward:
+                if currentTime > TimeInterval(0.0) && currentTime < self.audioPlayer.duration {
+                    self.audioPlayer.play(atTime: currentTime + 10.0)
+                }
+            }
+        }
+    }
+    
+    func selectAudioFileToPlay(audio index:Int?) {
+        
+    }
+    
 }
 
 // MARK: - Extension for tableView delegate & dataSource methods.
@@ -373,6 +411,7 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
         }else{
             cell.btnSelection.setImage(UIImage(named: "unchecked_checkbox"), for: .normal)
         }
+        cell.isUserInteractionEnabled = true
         cell.btnEdit.isHidden = true
         cell.lblFileSize.text = fileSize(itemName:  self.totalFiles[indexPath.row])
         cell.btnSelection.tag = indexPath.row
@@ -393,6 +432,9 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        self.lblFileName.text = totalFiles[indexPath.row]
+    }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }

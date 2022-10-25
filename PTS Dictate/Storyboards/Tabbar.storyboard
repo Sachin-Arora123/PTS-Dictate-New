@@ -35,7 +35,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <color key="backgroundColor" systemColor="systemBlueColor"/>
                                 <constraints>
                                     <constraint firstItem="6cn-OQ-YnY" firstAttribute="top" secondItem="TGe-IW-Gqg" secondAttribute="bottom" constant="7" id="242-ez-lDN"/>
                                     <constraint firstItem="6cn-OQ-YnY" firstAttribute="leading" secondItem="mUz-eO-ZaL" secondAttribute="leading" constant="20" id="5KM-UJ-f2k"/>
@@ -44,7 +44,7 @@
                                     <constraint firstAttribute="trailing" secondItem="6cn-OQ-YnY" secondAttribute="trailing" constant="20" id="vIP-Kg-9Mu"/>
                                 </constraints>
                             </view>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="r3n-m9-8pm">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="r3n-m9-8pm">
                                 <rect key="frame" x="0.0" y="48" width="414" height="545.5"/>
                                 <color key="backgroundColor" systemColor="systemGroupedBackgroundColor"/>
                                 <prototypes>
@@ -128,7 +128,6 @@
                                                             <state key="normal" backgroundImage="music_edit_normal"/>
                                                         </button>
                                                     </subviews>
-                                                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                     <constraints>
                                                         <constraint firstItem="Elx-Pm-ytr" firstAttribute="leading" secondItem="fos-hg-LEz" secondAttribute="leading" id="19g-51-j5Q"/>
                                                         <constraint firstItem="5Cg-vX-J0F" firstAttribute="centerY" secondItem="vmQ-lS-cEp" secondAttribute="centerY" id="3hs-jj-bOW"/>
@@ -172,6 +171,10 @@
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="q4s-u4-31I" id="Z09-B3-cA3"/>
+                                    <outlet property="delegate" destination="q4s-u4-31I" id="ucm-70-Aoh"/>
+                                </connections>
                             </tableView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WaY-Y2-phQ">
                                 <rect key="frame" x="0.0" y="573.5" width="414" height="239.5"/>
@@ -245,10 +248,10 @@
                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                 <state key="normal" backgroundImage="existing_backward_fast_disable"/>
                                                 <connections>
-                                                    <action selector="onTapBTrimEnd:" destination="q4s-u4-31I" eventType="touchUpInside" id="FnV-sc-s7D"/>
+                                                    <action selector="audioControllersTapped:" destination="q4s-u4-31I" eventType="touchUpInside" id="lsa-jS-sVk"/>
                                                 </connections>
                                             </button>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Al2-8W-75a">
+                                            <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Al2-8W-75a">
                                                 <rect key="frame" x="84" y="10" width="40" height="40"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="40" id="2PF-t5-yR7"/>
@@ -257,10 +260,10 @@
                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                 <state key="normal" backgroundImage="existing_rewind_disable"/>
                                                 <connections>
-                                                    <action selector="onTapBTrim:" destination="q4s-u4-31I" eventType="touchUpInside" id="5Re-30-ma5"/>
+                                                    <action selector="audioControllersTapped:" destination="q4s-u4-31I" eventType="touchUpInside" id="4t2-ey-Y1H"/>
                                                 </connections>
                                             </button>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="R31-zh-aR2">
+                                            <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="R31-zh-aR2">
                                                 <rect key="frame" x="152" y="0.0" width="60" height="60"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="60" id="ibR-qS-YUT"/>
@@ -268,22 +271,10 @@
                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                 <state key="normal" backgroundImage="existing_controls_play_btn_normal"/>
                                                 <connections>
-                                                    <action selector="onTapPlay:" destination="q4s-u4-31I" eventType="touchUpInside" id="vZM-aT-5vT"/>
+                                                    <action selector="audioControllersTapped:" destination="q4s-u4-31I" eventType="touchUpInside" id="P2f-Uf-LGx"/>
                                                 </connections>
                                             </button>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aYN-YW-iRC">
-                                                <rect key="frame" x="314" y="10" width="40" height="40"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="40" id="GRb-Qu-crc"/>
-                                                    <constraint firstAttribute="width" constant="40" id="iwQ-AH-zjV"/>
-                                                </constraints>
-                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                                <state key="normal" backgroundImage="existing_forward_fast_normal"/>
-                                                <connections>
-                                                    <action selector="onTapFTrimEnd:" destination="q4s-u4-31I" eventType="touchUpInside" id="uUD-7V-f3q"/>
-                                                </connections>
-                                            </button>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JM2-iD-lFG">
+                                            <button opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JM2-iD-lFG">
                                                 <rect key="frame" x="232" y="10" width="40" height="40"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="40" id="ZwS-GA-Ppk"/>
@@ -292,7 +283,19 @@
                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                 <state key="normal" backgroundImage="existing_forward_normal"/>
                                                 <connections>
-                                                    <action selector="onTapFTrim:" destination="q4s-u4-31I" eventType="touchUpInside" id="K8m-3P-j9t"/>
+                                                    <action selector="audioControllersTapped:" destination="q4s-u4-31I" eventType="touchUpInside" id="Rri-oz-hDx"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aYN-YW-iRC">
+                                                <rect key="frame" x="314" y="10" width="40" height="40"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="40" id="GRb-Qu-crc"/>
+                                                    <constraint firstAttribute="width" constant="40" id="iwQ-AH-zjV"/>
+                                                </constraints>
+                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                <state key="normal" backgroundImage="existing_forward_fast_normal"/>
+                                                <connections>
+                                                    <action selector="audioControllersTapped:" destination="q4s-u4-31I" eventType="touchUpInside" id="rbh-MN-QeK"/>
                                                 </connections>
                                             </button>
                                         </subviews>
@@ -330,9 +333,6 @@
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                 <state key="normal" backgroundImage="delete_btn_normal"/>
-                                                <connections>
-                                                    <action selector="onTapDelete:" destination="q4s-u4-31I" eventType="touchUpInside" id="Nbk-LF-kCc"/>
-                                                </connections>
                                             </button>
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -1273,6 +1273,9 @@
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemBlueColor">
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGroupedBackgroundColor">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
