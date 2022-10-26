@@ -26,8 +26,8 @@ class NamingFormatVC: BaseViewController {
     let pickerViewData : [String] = ["yyyymmdd", "yyyyddmm", "mmyyyydd", "mmddyyyy", "ddyyyymm", "ddmmyyyy"]
     
     var fileName = CoreData.shared.fileName
-    var dateFormate = CoreData.shared.dateFormat
-    
+    var dateFormat = CoreData.shared.dateFormat
+    var currentDateStr = ""
     var selectedTFIndex : Int?
     
     // MARK: - View Life-Cycle.
@@ -39,14 +39,34 @@ class NamingFormatVC: BaseViewController {
     func setupHeaderName(){
         let currentDate = Date()
         let dateFormatter = DateFormatter()
-        let fileFormatString = CoreData.shared.dateFormat
-        if fileFormatString.count == 0 {
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let currentDateStr = dateFormatter.string(from: currentDate)
+        let convertedDate = dateFormatter.date(from: currentDateStr) ?? Date()
+        
+        if self.dateFormat.count == 0 {
             dateFormatter.dateFormat = "ddMMyyyy"
+        }else{
+            dateFormatter.dateFormat = self.dateFormat.replacingOccurrences(of: "mm", with: "MM")
         }
+        
+        self.currentDateStr = "\(dateFormatter.string(from: convertedDate))"
+        
+        
+        let nameToShow = (self.fileName.count != 0) ? self.fileName : CoreData.shared.profileName
 
-        let currentDateStr = "\(dateFormatter.string(from: currentDate))"
-
-        txtFldHeaderFileName.text = (CoreData.shared.profileName) + "_" + currentDateStr + "_File_001" + ".m4a"
+        txtFldHeaderFileName.text = nameToShow + "_" + self.currentDateStr + "_File_001" + ".m4a"
+    }
+    
+    func changeHeaderName(){
+        let currentDate = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let currentDateStr = dateFormatter.string(from: currentDate)
+        let convertedDate = dateFormatter.date(from: currentDateStr) ?? Date()
+        dateFormatter.dateFormat = self.dateFormat.replacingOccurrences(of: "mm", with: "MM")
+        self.currentDateStr = "\(dateFormatter.string(from: convertedDate))"
+        let nameToShow = (self.fileName.count != 0) ? self.fileName : CoreData.shared.profileName
+        txtFldHeaderFileName.text = nameToShow + "_" + self.currentDateStr + "_File_001" + ".m4a"
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -81,7 +101,7 @@ class NamingFormatVC: BaseViewController {
         self.view.endEditing(true)
         DispatchQueue.main.asyncAfter(deadline: .now()+0.1, execute: {
             CoreData.shared.fileName = self.fileName
-            CoreData.shared.dateFormat = self.dateFormate
+            CoreData.shared.dateFormat = self.dateFormat
             CoreData.shared.dataSave()
             
             CommonFunctions.toster("Updated successfully", titleDesc: "", false)
@@ -104,9 +124,9 @@ extension NamingFormatVC: UITableViewDelegate, UITableViewDataSource {
         if indexPath.row == 0{
             cell.txtFldDateFormat.text = (self.fileName != "") ? self.fileName : CoreData.shared.profileName
         }else{
-            cell.txtFldDateFormat.text = (self.dateFormate != "") ? self.dateFormate : "ddmmyyyy"
+            cell.txtFldDateFormat.text = (self.dateFormat != "") ? self.dateFormat : "ddmmyyyy"
         }
-        if  selectedTFIndex != nil{
+        if selectedTFIndex != nil{
             if indexPath.row == selectedTFIndex{
                 cell.txtFldDateFormat.becomeFirstResponder()
             }
@@ -124,12 +144,14 @@ extension NamingFormatVC : NamingFormatCellDelegate{
     func passData(text: String, id: Int) {
         if id == 0{
             self.fileName = text
+            txtFldHeaderFileName.text = self.fileName + "_" + self.currentDateStr + "_File_001" + ".m4a"
         }else{
-            self.dateFormate = text
+            self.dateFormat = text
             self.hideBottomView()
         }
         
 //        selectedTFIndex = nil
+        
     }
     
     func sendTextFieldDidEditing(textField: UITextField, id: Int) {
@@ -140,27 +162,23 @@ extension NamingFormatVC : NamingFormatCellDelegate{
     }
     
     func showBottomView(){
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-            self.pickerViewBottomConstant.constant = 0
+        self.pickerViewBottomConstant.constant = 0
         self.changeTabBar(hidden: true, animated: false)
-            UIView.animate(withDuration: 0.4, delay: 0.1, options: UIView.AnimationOptions.curveEaseInOut) {
-                self.view.layoutIfNeeded()
-            } completion: { done in
-                print(done)
-            }
-//        }
+        UIView.animate(withDuration: 0.4, delay: 0.1, options: UIView.AnimationOptions.curveEaseInOut) {
+            self.view.layoutIfNeeded()
+        } completion: { done in
+            print(done)
+        }
     }
     
     func hideBottomView(){
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-            self.pickerViewBottomConstant.constant = -900
+        self.pickerViewBottomConstant.constant = -900
         self.changeTabBar(hidden: false, animated: false)
-            UIView.animate(withDuration: 0.4, delay: 0.1, options: UIView.AnimationOptions.curveEaseInOut) {
-                self.view.layoutIfNeeded()
-            } completion: { done in
-                print(done)
-            }
-//        }
+        UIView.animate(withDuration: 0.4, delay: 0.1, options: UIView.AnimationOptions.curveEaseInOut) {
+            self.view.layoutIfNeeded()
+        } completion: { done in
+            print(done)
+        }
     }
     
     func changeTabBar(hidden:Bool, animated: Bool){
@@ -191,10 +209,9 @@ extension NamingFormatVC: UIPickerViewDataSource, UIPickerViewDelegate{
     }
 
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        dateFormate = pickerViewData[row]
+        self.dateFormat = pickerViewData[row]
         let cell = tableView.cellForRow(at: IndexPath(row: 1, section: 0)) as! NamingFormatCell
         cell.txtFldDateFormat.text = pickerViewData[row]
-//        self.tableView.reloadRows(at: [IndexPath(row: 1, section: 0)], with: .automatic)
-//        self.tableView.reloadData()
+        changeHeaderName()
     }
 }
