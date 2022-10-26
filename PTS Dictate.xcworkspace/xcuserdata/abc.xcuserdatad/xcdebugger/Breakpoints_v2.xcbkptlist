@@ -238,8 +238,8 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "261"
-            endingLineNumber = "261"
+            startingLineNumber = "264"
+            endingLineNumber = "264"
             landmarkName = "onTapStop(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -254,8 +254,8 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "286"
-            endingLineNumber = "286"
+            startingLineNumber = "289"
+            endingLineNumber = "289"
             landmarkName = "onTapStop(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -270,8 +270,8 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "325"
-            endingLineNumber = "325"
+            startingLineNumber = "328"
+            endingLineNumber = "328"
             landmarkName = "onTapPlay(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -286,8 +286,8 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "246"
-            endingLineNumber = "246"
+            startingLineNumber = "249"
+            endingLineNumber = "249"
             landmarkName = "onTapRecord(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -302,10 +302,42 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "166"
-            endingLineNumber = "166"
+            startingLineNumber = "169"
+            endingLineNumber = "169"
             landmarkName = "recorderSetUp()"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "102DFFDF-5622-4886-968A-4F29EEBCBD50 - 641238c86bf0ba1a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "PTS_Dictate.RecordVC.recorderSetUp() -&gt; ()"
+                  moduleName = "PTS Dictate"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/abc/Desktop/PTS%20Dictate/PTS%20Dictate/View%20controllers/TabbarVC/RecordVC/RecordVC.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "170"
+                  endingLineNumber = "170"
+                  offsetFromSymbolStart = "296">
+               </Location>
+               <Location
+                  uuid = "102DFFDF-5622-4886-968A-4F29EEBCBD50 - 641238c86bf0ba1a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "PTS_Dictate.RecordVC.recorderSetUp() -&gt; ()"
+                  moduleName = "PTS Dictate"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/abc/Desktop/PTS%20Dictate/PTS%20Dictate/View%20controllers/TabbarVC/RecordVC/RecordVC.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "170"
+                  endingLineNumber = "170"
+                  offsetFromSymbolStart = "529">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -318,8 +350,8 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "683"
-            endingLineNumber = "683"
+            startingLineNumber = "685"
+            endingLineNumber = "685"
             landmarkName = "createURLForNewRecord()"
             landmarkType = "7">
          </BreakpointContent>
@@ -369,6 +401,22 @@
             startingLineNumber = "46"
             endingLineNumber = "46"
             landmarkName = "setupHeaderName()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "9D25DE08-966F-4831-B5B1-0E2CFFB6CB7A"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "600"
+            endingLineNumber = "600"
+            landmarkName = "updateAudioMeter(timer:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

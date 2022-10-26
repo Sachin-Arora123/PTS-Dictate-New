@@ -91,6 +91,8 @@ class RecordVC: BaseViewController {
         
         //recorder setup
         self.recorderSetUp()
+        
+        self.setupFileName()
     
         //Audio session Setup
         do {
@@ -136,26 +138,27 @@ class RecordVC: BaseViewController {
         progressViewHeight.constant = 45
     }
     
-//    func setupHeaderName(){
-//        let currentDate = Date()
-//        let dateFormatter = DateFormatter()
-//        dateFormatter.dateFormat = "yyyy-MM-dd"
-//        let currentDateStr = dateFormatter.string(from: currentDate)
-//        let convertedDate = dateFormatter.date(from: currentDateStr) ?? Date()
-//        let fileFormatString = CoreData.shared.dateFormat
-//
-//        if fileFormatString.count == 0 {
-//            dateFormatter.dateFormat = "ddMMyyyy"
-//        }else{
-//            dateFormatter.dateFormat = fileFormatString
-//        }
-//
-//        let convertedDateStr = "\(dateFormatter.string(from: convertedDate))"
-//
-//        let nameToShow = (self.fileName.count != 0) ? self.fileName : CoreData.shared.profileName
-//
-//        txtFldHeaderFileName.text = nameToShow + "_" + convertedDateStr + "_File_001" + ".m4a"
-//    }
+    func setupFileName(){
+        let currentDate = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let currentDateStr = dateFormatter.string(from: currentDate)
+        let convertedDate = dateFormatter.date(from: currentDateStr) ?? Date()
+        let fileFormatString = CoreData.shared.dateFormat
+
+        if fileFormatString.count == 0 {
+            dateFormatter.dateFormat = "ddMMyyyy"
+        }else{
+            dateFormatter.dateFormat = fileFormatString.replacingOccurrences(of: "mm", with: "MM")
+        }
+
+        let convertedDateStr = "\(dateFormatter.string(from: convertedDate))"
+
+        let nameToShow = (CoreData.shared.fileName.count != 0) ? CoreData.shared.fileName : CoreData.shared.profileName
+
+        //need to check recording file count here as well(001 for now)
+        self.lblFNameValue.text = nameToShow + "_" + convertedDateStr + "_File_001" + ".m4a"
+    }
     
     func recorderSetUp() {
 //        audioRecorder = nil
@@ -163,7 +166,7 @@ class RecordVC: BaseViewController {
         // Define the recorder setting
         isRecording = false
         self.fileURL1 = self.createURLForNewRecord()
-        self.lblFNameValue.text = audioFileName
+//        self.lblFNameValue.text = audioFileName
         print("File Name of recorded audio",self.fileURL1 ?? "")
 
         let recorderSetting = [
@@ -589,15 +592,14 @@ class RecordVC: BaseViewController {
     // Upadte Timer method.
    @objc func updateAudioMeter(timer: Timer) {
         if let recorder = audioRecorder {
-        if recorder.isRecording
-        {
-            let hr = Int((recorder.currentTime / 60) / 60)
-            let min = Int(recorder.currentTime / 60)
-            let sec = Int(recorder.currentTime.truncatingRemainder(dividingBy: 60))
-            let totalTimeString = String(format: "%02d:%02d:%02d", hr, min, sec)
-            self.lblTime.text = totalTimeString
-            recorder.updateMeters()
-         }
+            if recorder.isRecording{
+                let hr = Int((recorder.currentTime / 60) / 60)
+                let min = Int(recorder.currentTime / 60)
+                let sec = Int(recorder.currentTime.truncatingRemainder(dividingBy: 60))
+                let totalTimeString = String(format: "%02d:%02d:%02d", hr, min, sec)
+                self.lblTime.text = totalTimeString
+                recorder.updateMeters()
+             }
         }
     }
 
