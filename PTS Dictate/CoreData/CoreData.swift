@@ -31,6 +31,11 @@ class CoreData: NSObject {
     var uploadViaWifi = 0 // 1 - true & 0 - false
     var sleepModeOverride = 0 // 1 - true & 0 - false
     var comments: [String:String] = [:] // [fileName:Comment]
+    var audioFiles: [AudioFile] = [] {
+        didSet {
+            AudioFiles.shared.audioFiles = audioFiles
+        }
+    }
     
     class var shared: CoreData{
         struct singleTon {
@@ -79,6 +84,7 @@ class CoreData: NSObject {
         newData.setValue(uploadViaWifi, forKey: "uploadViaWifi")
         newData.setValue(sleepModeOverride, forKey: "sleepModeOverride")
         newData.setValue(comments, forKey: "comments")
+        newData.setValue(audioFiles, forKey: "audioFiles")
         do {
             try context.save()
             print(newData)
@@ -87,6 +93,7 @@ class CoreData: NSObject {
             print("new data save error")
         }
     }
+    
     // MARK: - getLocalData
     func getdata() {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -176,6 +183,10 @@ class CoreData: NSObject {
                     if let comments = result.value(forKey: "comments") as? [String:String] {
                         self.comments = comments
                     }
+                    if let audioFiles = result.value(forKey: "audioFiles") as? [AudioFile] {
+                        self.audioFiles = audioFiles
+                        print("data get audio files \(audioFiles)")
+                    }
                 }
             }
         }
@@ -206,6 +217,7 @@ class CoreData: NSObject {
         uploadViaWifi = 0
         sleepModeOverride = 0
         comments = [:]
+        audioFiles = []
         
         if !self.isRemeberMe{
             self.userName = ""

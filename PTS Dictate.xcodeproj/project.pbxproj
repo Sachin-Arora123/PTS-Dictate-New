@@ -47,6 +47,8 @@
 		18DF4BE128BE899D002FC063 /* Extension+UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DF4BE028BE899D002FC063 /* Extension+UIView.swift */; };
 		18DF4BE428BE955E002FC063 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DF4BE328BE955E002FC063 /* LoginViewModel.swift */; };
 		18E8AAE828F89E0400DF73F4 /* ExistingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E8AAE728F89E0400DF73F4 /* ExistingViewModel.swift */; };
+		2327B8A82907BEB9000BCEDD /* AudioFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2327B8A72907BEB9000BCEDD /* AudioFile.swift */; };
+		2327B8AA2907C049000BCEDD /* AudioFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2327B8A92907C049000BCEDD /* AudioFiles.swift */; };
 		28A4F5C628B510D90035137B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5C528B510D90035137B /* AppDelegate.swift */; };
 		28A4F5C828B510D90035137B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5C728B510D90035137B /* SceneDelegate.swift */; };
 		28A4F5CA28B510D90035137B /* LoginVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5C928B510D90035137B /* LoginVC.swift */; };
@@ -98,6 +100,8 @@
 		18DF4BE028BE899D002FC063 /* Extension+UIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+UIView.swift"; sourceTree = "<group>"; };
 		18DF4BE328BE955E002FC063 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		18E8AAE728F89E0400DF73F4 /* ExistingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExistingViewModel.swift; sourceTree = "<group>"; };
+		2327B8A72907BEB9000BCEDD /* AudioFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFile.swift; sourceTree = "<group>"; };
+		2327B8A92907C049000BCEDD /* AudioFiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFiles.swift; sourceTree = "<group>"; };
 		28A4F5C228B510D90035137B /* PTS Dictate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PTS Dictate.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		28A4F5C528B510D90035137B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		28A4F5C728B510D90035137B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -361,6 +365,15 @@
 			path = CoreData;
 			sourceTree = "<group>";
 		};
+		2327B8A62907BE8C000BCEDD /* AudioFiles Handler Model */ = {
+			isa = PBXGroup;
+			children = (
+				2327B8A72907BEB9000BCEDD /* AudioFile.swift */,
+				2327B8A92907C049000BCEDD /* AudioFiles.swift */,
+			);
+			path = "AudioFiles Handler Model";
+			sourceTree = "<group>";
+		};
 		28A4F5B928B510D90035137B = {
 			isa = PBXGroup;
 			children = (
@@ -431,6 +444,7 @@
 		28A4F5DC28B51D630035137B /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				2327B8A62907BE8C000BCEDD /* AudioFiles Handler Model */,
 				180EB43428B6A15900F1A3FB /* BaseViewController.swift */,
 				18DF4BDE28BE872F002FC063 /* CommonFunctions.swift */,
 			);
@@ -567,6 +581,7 @@
 			files = (
 				1868EAD428BAAAD600216D62 /* SettingsVC.swift in Sources */,
 				180EB43528B6A15900F1A3FB /* BaseViewController.swift in Sources */,
+				2327B8A82907BEB9000BCEDD /* AudioFile.swift in Sources */,
 				18DF4BDF28BE8730002FC063 /* CommonFunctions.swift in Sources */,
 				28A4F5CA28B510D90035137B /* LoginVC.swift in Sources */,
 				1868EAD628BAB2E200216D62 /* GeneralSettingCell.swift in Sources */,
@@ -578,6 +593,7 @@
 				18DF4BD428BE7B5D002FC063 /* LoginApi.swift in Sources */,
 				18DF4BE428BE955E002FC063 /* LoginViewModel.swift in Sources */,
 				1854B88928B94F690039A96E /* UploadProgressVC.swift in Sources */,
+				2327B8AA2907C049000BCEDD /* AudioFiles.swift in Sources */,
 				185BE70F28BBE539004484CF /* AudioQualityVC.swift in Sources */,
 				18CDDB0D28B7D683006AB795 /* TabbarVC.swift in Sources */,
 				186765F528C4B803006BABDF /* ExistingFileCell.swift in Sources */,

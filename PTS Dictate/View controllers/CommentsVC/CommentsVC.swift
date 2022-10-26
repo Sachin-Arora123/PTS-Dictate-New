@@ -64,6 +64,10 @@ class CommentsVC: BaseViewController {
     }
     
     fileprivate func saveComment() {
+        var audios = AudioFiles.shared.audioFiles
+        audios.append(AudioFile(name: fileName, fileInfo: AudioFileInfo(comment: txtViewComment.text, isUploaded: false, archivedDays: 1, canEdit: false)))
+//        Constants.userDefaults.set(audios, forKey: Constants.UserDefaultKeys.audioFiles)
+        CoreData.shared.audioFiles = audios
         CoreData.shared.comments[fileName] = txtViewComment.text
         CoreData.shared.dataSave()
         let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)

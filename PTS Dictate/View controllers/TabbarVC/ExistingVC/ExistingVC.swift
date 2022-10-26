@@ -48,7 +48,6 @@ class ExistingVC: BaseViewController {
     private var audioMeteringLevelTimer: Timer?
     var tag = -1
     private var currentlyPlayingAudio: URL?
-    
     // wave form var
     fileprivate var startRendering = Date()
     fileprivate var endRendering = Date()
@@ -67,6 +66,9 @@ class ExistingVC: BaseViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setUpUI()
+        if CoreData.shared.audioFiles.count > 0 {
+            CoreData.shared.audioFiles[0].fileInfo?.comment = "new Comment"
+        }
         self.setUpWave()
     }
     
@@ -94,10 +96,6 @@ class ExistingVC: BaseViewController {
         if totalFiles.count > 0{
             self.lblPlayerStatus.text  = ""
             setRighButtonImage(imageName: "unchecked_checkbox", selector: #selector(onTapRightImage))
-            let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            let completePath = directoryPath.absoluteString + self.totalFiles[0]
-            let completePathURL = URL(string: completePath)
-            //            self.mediaProgressView.audioURL = completePathURL!
         }else{
             setRighButtonImage(imageName: "quickAdd", selector: #selector(onTapRightImage))
         }
@@ -330,7 +328,7 @@ class ExistingVC: BaseViewController {
         }
         let cell  = tableView.cellForRow(at: IndexPath(row: playingMediaIndex, section: 0)) as? ExistingFileCell
         self.lblTotalTime.text = self.getTimeDuration(filePath: self.lblFileName.text!)
-       settingUpPlayer()
+        settingUpPlayer()
         if audioPlayer.isPlaying{
             self.lblPlayerStatus.text = "Now Paused"
             audioPlayer.pause()
@@ -338,7 +336,7 @@ class ExistingVC: BaseViewController {
             cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_play_btn"), for: .normal)
             self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
         }else{
-           preparePlayerToPlay(completePathURL: getFilePath())
+            preparePlayerToPlay(completePathURL: getFilePath())
             self.lblPlayerStatus.text = "Now Playing"
             //                self.mediaProgressView.audioURL = completePathURL!
             self.mediaProgressView.meteringLevels = [0.1, 0.67, 0.13, 0.78, 0.31]
