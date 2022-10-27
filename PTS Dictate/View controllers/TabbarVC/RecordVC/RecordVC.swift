@@ -16,6 +16,8 @@ var audioPlayer:AVAudioPlayer?
 class RecordVC: BaseViewController {
     
     // MARK: - @IBOutlets.
+    
+    @IBOutlet weak var customRangeBar: F3BarGauge!
     @IBOutlet weak var viewProgress: UIView!
     @IBOutlet weak var btnRecord: UIButton!
     @IBOutlet weak var btnStop: UIButton!
@@ -68,6 +70,7 @@ class RecordVC: BaseViewController {
     var fileURL1:URL!
     var fileURL2:URL!
     var isAppendPlaying: Bool = false
+    var currentRecordUpdateTimer: Timer!
 
     
     // MARK: - View Life-Cycle.
@@ -139,7 +142,7 @@ class RecordVC: BaseViewController {
         currentPlayingTime.isHidden = true
         insertTimer.isHidden = true
         segmentHeight.constant = 0
-        viewProgress.isHidden = false
+        viewProgress.isHidden = true
         progressViewHeight.constant = 45
     }
  
@@ -175,9 +178,23 @@ class RecordVC: BaseViewController {
         lblPlayerStatus.text = ""
     }
     
+    func audioRangeMeterSetUp() {
+        self.customRangeBar.backgroundColor = .white
+        self.customRangeBar.numBars = 30
+        self.customRangeBar.minLimit = -100
+        self.customRangeBar.maxLimit = -10
+        self.customRangeBar.normalBarColor = hexStringToUIColor(hex: "F74118")
+        self.customRangeBar.warningBarColor = UIColor(red: 105.0/255.0, green: 105.0/255.0, blue: 105.0/255.0, alpha: 1.0)
+        self.customRangeBar.dangerBarColor = UIColor(red: 211.0/255.0, green: 211.0/255.0, blue: 211.0/255.0, alpha: 1.0)
+        self.customRangeBar.outerBorderColor = .gray
+        self.customRangeBar.innerBorderColor = .black
+        self.customRangeBar.alpha = 1.0
+    }
+    
     func recorderSetUp() {
         audioRecorder = nil
         self.initiallyBtnStateSetup()
+        self.audioRangeMeterSetUp()
         self.viewBottomButton.isHidden = true
         // Microphone Authorization/Permission
         self.checkMicrophoneAccess()
@@ -208,6 +225,11 @@ class RecordVC: BaseViewController {
                      audioRecorder?.prepareToRecord()
                      recorder.record()
                      self.recordTimer = Timer.scheduledTimer(timeInterval: 0.1, target:self, selector:#selector(self.updateAudioMeter(timer:)), userInfo:nil, repeats:true)
+                     self.currentRecordUpdateTimer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(self.updateRecording(timer:)), userInfo: nil, repeats: true)
+                     if self.customRangeBar.alpha == 0.0 {
+                         self.customRangeBar.alpha = 1.0
+                         self.viewProgress.isHidden = true
+                     }
                      
                      self.lblPlayerStatus.text = "Recording"
                      self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: UIControl.State.normal)
@@ -259,7 +281,9 @@ class RecordVC: BaseViewController {
                     CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
                     lblPlayerStatus.text = "Stopped"
                     progressViewHeight.constant = 0
-                    viewProgress.isHidden = true
+                    viewProgress.isHidden = false
+                    //self.customRangeBar.value = -160
+                    self.customRangeBar.isHidden = true
                     stackView.isHidden = false
                     playerWaveView.isHidden = false
                     bookMarkView.isHidden = true
@@ -553,6 +577,8 @@ class RecordVC: BaseViewController {
     @objc func onDiscardRecorderSetUp(){
 //        self.recorderSetUp()
         self.recordTimer.invalidate()
+        self.currentRecordUpdateTimer.invalidate()
+        self.customRangeBar.isHidden = false
         self.lblTime.text = "00:00:00"
         self.btnRecord.isUserInteractionEnabled = true
         self.btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: .normal)
@@ -623,12 +649,22 @@ class RecordVC: BaseViewController {
         }
     }
 
+    @objc func updateRecording(timer: Timer) {
+        if let recorder = audioRecorder, recorder.isRecording == true {
+            recorder.updateMeters()
+            let decibels = Float(recorder.peakPower(forChannel: 0))
+            let value = [3.5, 3.4, 3.3, 3.2, 3.1, 3.0]
+            self.customRangeBar.value = decibels * Float(value[0])
+        }
+    }
+    
     func finishAudioRecording(success: Bool) {
         if let recorder = audioRecorder {
             if success {
                 recorder.stop()
 //                audioRecorder = nil
                 recordTimer.invalidate()
+                currentRecordUpdateTimer.invalidate()
                 print("recorded successfully.")
             }else {
                 print("Recording Failed")
