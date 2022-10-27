@@ -217,7 +217,7 @@ class CoreData: NSObject {
         userName = ""
         profileName = ""
         privilege = ""
-        audioQuality = 11
+        audioQuality = 0
         voiceActivation = 0
         disableEmailNotify = 0
         commentScreen = 0

@@ -73,8 +73,6 @@ class RecordVC: BaseViewController {
     // MARK: - View Life-Cycle.
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
-//        self.recorderSetUp()
 //        NotificationCenter.default.addObserver(self, selector: #selector(self.onDiscardRecorderSetUp), name: Notification.Name("refreshRecorder"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.showBottomView), name: Notification.Name("showBottomBtnView"), object: nil)
         NotificationCenter.default.addObserver(self,
@@ -158,10 +156,11 @@ class RecordVC: BaseViewController {
 
         //need to check recording file count here as well(001 for now)
         self.lblFNameValue.text = nameToShow + "_" + convertedDateStr + "_File_001" + ".m4a"
+        
+        self.lblFSizeValue.text = "0.00 Mb"
     }
     
     func recorderSetUp() {
-//        audioRecorder = nil
         
         // Define the recorder setting
         isRecording = false
@@ -169,14 +168,35 @@ class RecordVC: BaseViewController {
 //        self.lblFNameValue.text = audioFileName
         print("File Name of recorded audio",self.fileURL1 ?? "")
 
+        
+        let index = CoreData.shared.audioQuality
+        var sampleRateKey = 0
+
+        switch index {
+        case 0:
+            sampleRateKey  = 11025
+        case 1:
+            sampleRateKey  = 22050
+        case 2:
+            sampleRateKey  = 44100
+        default:
+            sampleRateKey  = 11025
+        }
+        
         let recorderSetting = [
-            AVSampleRateKey : Double(savedAudioQuality(audioQuality: AudioQuality(rawValue: CoreData.shared.audioQuality)!)),
+            //giving the AVSampleRateKey according to the microphone senstivity value in settings.
+            AVSampleRateKey : sampleRateKey,
             AVFormatIDKey : NSNumber(value: Int32(kAudioFormatMPEG4AAC)),
             AVNumberOfChannelsKey : NSNumber(value: 1),
             AVEncoderAudioQualityKey : NSNumber(value: AVAudioQuality.medium.rawValue)
         ] as [String : Any]
+  
+        do{
+            audioRecorder = try AVAudioRecorder(url: self.fileURL1, settings: recorderSetting)
+        }catch{
+            print(error.localizedDescription)
+        }
         
-        audioRecorder = try? AVAudioRecorder(url: self.fileURL1, settings: recorderSetting)
         audioRecorder?.delegate = self
         audioRecorder?.isMeteringEnabled = true
         
@@ -535,6 +555,7 @@ class RecordVC: BaseViewController {
 //        self.recorderSetUp()
         self.recordTimer.invalidate()
         self.lblTime.text = "00:00:00"
+        self.lblFSizeValue.text = "0.00 Mb"
         self.btnRecord.isUserInteractionEnabled = true
         self.btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: .normal)
         self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_diable"), for: .normal)
@@ -598,6 +619,7 @@ class RecordVC: BaseViewController {
                 let sec = Int(recorder.currentTime.truncatingRemainder(dividingBy: 60))
                 let totalTimeString = String(format: "%02d:%02d:%02d", hr, min, sec)
                 self.lblTime.text = totalTimeString
+                self.lblFSizeValue.text = String(format: "%.2f", Float(try! Data(contentsOf: recorder.url).count) / 1024.0 / 1024.0) + " Mb"
                 recorder.updateMeters()
              }
         }
@@ -615,51 +637,52 @@ class RecordVC: BaseViewController {
             }
         }
     }
+    
     // Microphone Access
-        func checkMicrophoneAccess() {
-            // Check Microphone Authorization
-            switch AVAudioSession.sharedInstance().recordPermission {
-                
-            case AVAudioSession.RecordPermission.granted:
-                print(#function, " Microphone Permission Granted")
-                break
-                
-            case AVAudioSession.RecordPermission.denied:
-                // Dismiss Keyboard (on UIView level, without reference to a specific text field)
-                UIApplication.shared.sendAction(#selector(UIView.endEditing(_:)), to:nil, from:nil, for:nil)
-                CommonFunctions.showAlert(view: self, title: "Microphone Error!", message: "PTS Dictate is Not Authorized to Access the Microphone!", completion: {
-                    (result) in
-                    if result {
-                        DispatchQueue.main.async {
-                            if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
-                                UIApplication.shared.open(settingsURL, options: self.convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
-                            }
-                        }
-                    }else{
-                        print("No Message")
-                    }
-                })
-                return
-                
-            case AVAudioSession.RecordPermission.undetermined:
-                print("Request permission here")
-                // Dismiss Keyboard (on UIView level, without reference to a specific text field)
-                UIApplication.shared.sendAction(#selector(UIView.endEditing(_:)), to:nil, from:nil, for:nil)
-                
-                AVAudioSession.sharedInstance().requestRecordPermission({ (granted) in
-                    // Handle granted
-                    if granted {
-                        print(#function, " Now Granted")
-                    } else {
-                        print("Pemission Not Granted")
-                        
-                    } // end else
-                })
-            @unknown default:
-                print("ERROR! Unknown Default. Check!")
-            } // end switch
+    func checkMicrophoneAccess() {
+        // Check Microphone Authorization
+        switch AVAudioSession.sharedInstance().recordPermission {
             
-        }
+        case AVAudioSession.RecordPermission.granted:
+            print(#function, " Microphone Permission Granted")
+            break
+            
+        case AVAudioSession.RecordPermission.denied:
+            // Dismiss Keyboard (on UIView level, without reference to a specific text field)
+            UIApplication.shared.sendAction(#selector(UIView.endEditing(_:)), to:nil, from:nil, for:nil)
+            CommonFunctions.showAlert(view: self, title: "Microphone Error!", message: "PTS Dictate is Not Authorized to Access the Microphone!", completion: {
+                (result) in
+                if result {
+                    DispatchQueue.main.async {
+                        if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+                            UIApplication.shared.open(settingsURL, options: self.convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
+                        }
+                    }
+                }else{
+                    print("No Message")
+                }
+            })
+            return
+            
+        case AVAudioSession.RecordPermission.undetermined:
+            print("Request permission here")
+            // Dismiss Keyboard (on UIView level, without reference to a specific text field)
+            UIApplication.shared.sendAction(#selector(UIView.endEditing(_:)), to:nil, from:nil, for:nil)
+            
+            AVAudioSession.sharedInstance().requestRecordPermission({ (granted) in
+                // Handle granted
+                if granted {
+                    print(#function, " Now Granted")
+                } else {
+                    print("Pemission Not Granted")
+                    
+                } // end else
+            })
+        @unknown default:
+            print("ERROR! Unknown Default. Check!")
+        } // end switch
+        
+    }
 
     // Helper function inserted by Swift migrator.
     fileprivate func convertFromAVAudioSessionCategory(_ input: AVAudioSession.Category) -> String {
@@ -670,8 +693,7 @@ class RecordVC: BaseViewController {
     fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
         return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
     }
-    func getDocumentsDirectory() -> URL
-    {
+    func getDocumentsDirectory() -> URL{
         let paths = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
         let  documentsDirectory = paths[0]
         return documentsDirectory
@@ -712,6 +734,7 @@ extension DateFormatter {
         return dateFormatter
     }()
 }
+
 // Extension for merge audio file
 extension RecordVC{
     func directoryURL() -> NSURL? {
@@ -754,8 +777,7 @@ extension RecordVC{
             print("Somthing Wrong.")
         }
     }
-    func playmerge(audio1: NSURL, audio2:  NSURL)
-    {
+    func playmerge(audio1: NSURL, audio2:  NSURL){
         let composition = AVMutableComposition()
         let compositionAudioTrack1:AVMutableCompositionTrack? = composition.addMutableTrack(withMediaType: .audio, preferredTrackID: CMPersistentTrackID())
         let compositionAudioTrack2:AVMutableCompositionTrack? = composition.addMutableTrack(withMediaType: .audio, preferredTrackID: CMPersistentTrackID())

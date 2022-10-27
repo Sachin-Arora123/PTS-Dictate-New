@@ -66,11 +66,6 @@ extension NamingFormatCell: UITextFieldDelegate{
         }
         
     }
-    
-//    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-//
-//        return true
-//    }
 //
 //    func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
 //
