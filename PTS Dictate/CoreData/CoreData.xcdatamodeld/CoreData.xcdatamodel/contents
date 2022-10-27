@@ -11,6 +11,7 @@
         <attribute name="disableEditingHelp" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="disableEmailNotify" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="email" optional="YES" attributeType="String"/>
+        <attribute name="fileCount" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="fileName" optional="YES" attributeType="String"/>
         <attribute name="indexing" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="isRemeberMe" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>

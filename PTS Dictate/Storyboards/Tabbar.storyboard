@@ -891,56 +891,60 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GVr-qK-lEL">
                                 <rect key="frame" x="0.0" y="826" width="414" height="70"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vDb-ZW-bej">
-                                        <rect key="frame" x="20" y="15" width="111.5" height="40"/>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                        <state key="normal" backgroundImage="save_btn_normal">
-                                            <color key="titleColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="onTapSave:" destination="7Dt-rL-rdk" eventType="touchUpInside" id="U33-6s-sGd"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iLU-WB-rd0">
-                                        <rect key="frame" x="282.5" y="15" width="111.5" height="40"/>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                        <state key="normal" backgroundImage="discard_btn_normal">
-                                            <color key="titleColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="onTapDiscard:" destination="7Dt-rL-rdk" eventType="touchUpInside" id="ay5-E9-jYw"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ymt-7o-6fE">
-                                        <rect key="frame" x="151.5" y="15" width="111" height="40"/>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                        <state key="normal" backgroundImage="record_edit_btn_normal">
-                                            <color key="titleColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="onTapEdit:" destination="7Dt-rL-rdk" eventType="touchUpInside" id="8mG-A8-9nl"/>
-                                        </connections>
-                                    </button>
+                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="A4k-1I-WOY">
+                                        <rect key="frame" x="85.5" y="15" width="243" height="40"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vDb-ZW-bej">
+                                                <rect key="frame" x="0.0" y="0.0" width="111.5" height="40"/>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="40" id="Zd3-t1-VZj"/>
+                                                    <constraint firstAttribute="width" constant="111.5" id="qEY-kf-fcj"/>
+                                                </constraints>
+                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                <state key="normal" backgroundImage="save_btn_normal">
+                                                    <color key="titleColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="onTapSave:" destination="7Dt-rL-rdk" eventType="touchUpInside" id="U33-6s-sGd"/>
+                                                </connections>
+                                            </button>
+                                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ymt-7o-6fE">
+                                                <rect key="frame" x="121.5" y="0.0" width="111" height="40"/>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                <state key="normal" backgroundImage="record_edit_btn_normal">
+                                                    <color key="titleColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="onTapEdit:" destination="7Dt-rL-rdk" eventType="touchUpInside" id="8mG-A8-9nl"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iLU-WB-rd0">
+                                                <rect key="frame" x="131.5" y="0.0" width="111.5" height="40"/>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                <state key="normal" backgroundImage="discard_btn_normal">
+                                                    <color key="titleColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="onTapDiscard:" destination="7Dt-rL-rdk" eventType="touchUpInside" id="ay5-E9-jYw"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstItem="iLU-WB-rd0" firstAttribute="width" secondItem="vDb-ZW-bej" secondAttribute="width" id="F1j-ye-jbi"/>
+                                            <constraint firstItem="Ymt-7o-6fE" firstAttribute="width" secondItem="vDb-ZW-bej" secondAttribute="width" multiplier="0.995516" id="luF-8c-afU"/>
+                                            <constraint firstItem="Ymt-7o-6fE" firstAttribute="height" secondItem="vDb-ZW-bej" secondAttribute="height" id="pGL-ej-5Zt"/>
+                                            <constraint firstItem="iLU-WB-rd0" firstAttribute="height" secondItem="vDb-ZW-bej" secondAttribute="height" id="vXv-5p-EX6"/>
+                                        </constraints>
+                                    </stackView>
                                 </subviews>
                                 <color key="backgroundColor" red="0.90196078431372551" green="0.90196078431372551" blue="0.90196078431372551" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
-                                    <constraint firstItem="Ymt-7o-6fE" firstAttribute="centerX" secondItem="GVr-qK-lEL" secondAttribute="centerX" id="2Ud-3G-zrn"/>
-                                    <constraint firstAttribute="bottom" secondItem="vDb-ZW-bej" secondAttribute="bottom" constant="15" id="3Pd-2r-PFS"/>
-                                    <constraint firstItem="iLU-WB-rd0" firstAttribute="top" secondItem="GVr-qK-lEL" secondAttribute="top" constant="15" id="AmU-23-Nxq"/>
-                                    <constraint firstAttribute="bottom" secondItem="iLU-WB-rd0" secondAttribute="bottom" constant="15" id="B8w-zi-FsD"/>
-                                    <constraint firstItem="iLU-WB-rd0" firstAttribute="width" secondItem="Ymt-7o-6fE" secondAttribute="width" id="BJH-ne-WBg"/>
-                                    <constraint firstItem="vDb-ZW-bej" firstAttribute="width" secondItem="Ymt-7o-6fE" secondAttribute="width" id="Dnk-8e-YxP"/>
-                                    <constraint firstAttribute="trailing" secondItem="iLU-WB-rd0" secondAttribute="trailing" constant="20" id="Mil-Do-2i5"/>
-                                    <constraint firstItem="iLU-WB-rd0" firstAttribute="leading" secondItem="Ymt-7o-6fE" secondAttribute="trailing" constant="20" id="NgJ-QV-Tgm"/>
-                                    <constraint firstItem="Ymt-7o-6fE" firstAttribute="leading" secondItem="vDb-ZW-bej" secondAttribute="trailing" constant="20" id="NxO-FO-aOd"/>
-                                    <constraint firstItem="vDb-ZW-bej" firstAttribute="top" secondItem="GVr-qK-lEL" secondAttribute="top" constant="15" id="OVW-N4-ws3"/>
-                                    <constraint firstItem="Ymt-7o-6fE" firstAttribute="centerY" secondItem="GVr-qK-lEL" secondAttribute="centerY" id="P6A-iG-XNq"/>
-                                    <constraint firstAttribute="bottom" secondItem="Ymt-7o-6fE" secondAttribute="bottom" constant="15" id="Ump-JY-QUs"/>
-                                    <constraint firstItem="vDb-ZW-bej" firstAttribute="leading" secondItem="GVr-qK-lEL" secondAttribute="leading" constant="20" id="VAf-a0-oii"/>
-                                    <constraint firstItem="Ymt-7o-6fE" firstAttribute="top" secondItem="GVr-qK-lEL" secondAttribute="top" constant="15" id="yFC-Dj-3Y1"/>
+                                    <constraint firstAttribute="height" constant="70" id="1Da-Pt-Qdp"/>
+                                    <constraint firstItem="A4k-1I-WOY" firstAttribute="centerY" secondItem="GVr-qK-lEL" secondAttribute="centerY" id="3fY-Kv-U3Y"/>
+                                    <constraint firstItem="A4k-1I-WOY" firstAttribute="centerX" secondItem="GVr-qK-lEL" secondAttribute="centerX" id="Rhr-0M-txy"/>
                                 </constraints>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="0.00 Mb" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="liF-96-KCv">

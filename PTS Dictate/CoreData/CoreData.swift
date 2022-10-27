@@ -26,7 +26,7 @@ class CoreData: NSObject {
     var commentScreenMandatory = 0 // 1 - true & 0 - false
     var indexing = 0 // 1 - true & 0 - false
     var disableEditingHelp = 0 // 1 - true & 0 - false
-//    var fileNameFormat: String = ""
+    var fileCount: Int = 1
     var dateFormat: String = ""
     var archiveFile = 0 // 1 - true & 0 - false
     var archiveFileDays = 1 // 1 - day default
@@ -81,7 +81,7 @@ class CoreData: NSObject {
         newData.setValue(commentScreenMandatory, forKey: "commentScreenMandatory")
         newData.setValue(indexing, forKey: "indexing")
         newData.setValue(disableEditingHelp, forKey: "disableEditingHelp")
-//        newData.setValue(fileNameFormat, forKey: "fileNameFormat")
+        newData.setValue(fileCount, forKey: "fileCount")
         newData.setValue(dateFormat, forKey: "dateFormat")
         newData.setValue(archiveFile, forKey: "archiveFile")
         newData.setValue(archiveFileDays, forKey: "archiveFileDays")
@@ -167,10 +167,10 @@ class CoreData: NSObject {
                         self.disableEditingHelp = disableEditingHelp
                         print("data get disableEditingHelp \(disableEditingHelp)")
                     }
-//                    if let fileNameFormat = result.value(forKey: "fileNameFormat") as? String{
-//                        self.fileNameFormat = fileNameFormat
-//                        print("data get fileNameFormat \(fileNameFormat)")
-//                    }
+                    if let fileCount = result.value(forKey: "fileCount") as? Int{
+                        self.fileCount = fileCount
+                        print("data get fileCount \(fileCount)")
+                    }
                     if let dateFormat = result.value(forKey: "dateFormat") as? String{
                         self.dateFormat = dateFormat
                         print("data get dateFormat \(dateFormat)")
@@ -224,7 +224,6 @@ class CoreData: NSObject {
         commentScreenMandatory = 0
         indexing = 0
         disableEditingHelp = 0
-//        fileNameFormat = ""
         dateFormat = ""
         archiveFile = 0
         archiveFileDays = 1

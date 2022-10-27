@@ -87,11 +87,14 @@ class RecordVC: BaseViewController {
         //UI setup
         setUpUI()
         
+        //setup file name
+        self.setupFileName()
+        
         //recorder setup
         self.recorderSetUp()
         
-        self.setupFileName()
-    
+        
+        
         //Audio session Setup
         do {
             try audioSession.setCategory(.playAndRecord, mode: .default, options: [.allowBluetooth, .defaultToSpeaker])
@@ -154,8 +157,8 @@ class RecordVC: BaseViewController {
 
         let nameToShow = (CoreData.shared.fileName.count != 0) ? CoreData.shared.fileName : CoreData.shared.profileName
 
-        //need to check recording file count here as well(001 for now)
-        self.lblFNameValue.text = nameToShow + "_" + convertedDateStr + "_File_001" + ".m4a"
+        //need to check recording file count here as well
+        self.lblFNameValue.text = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)" + ".m4a"
         
         self.lblFSizeValue.text = "0.00 Mb"
     }
@@ -295,7 +298,6 @@ class RecordVC: BaseViewController {
             btnBackwardTrim.isUserInteractionEnabled = true
             btnBackwardTrimEnd.isUserInteractionEnabled = true
             btnStop.isUserInteractionEnabled = false
-//                    self.viewBottomButton.isHidden = false
             CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
             lblPlayerStatus.text = "Stopped"
             progressViewHeight.constant = 0
@@ -507,6 +509,7 @@ class RecordVC: BaseViewController {
             if success{
                 self.saveRecordedAudio() { (success) in
                     if success{
+                        CoreData.shared.fileCount += 1
                         self.onDiscardRecorderSetUp()
                     }
                 }
@@ -700,9 +703,10 @@ class RecordVC: BaseViewController {
     }
     private func createURLForNewRecord() -> URL {
         let appGroupFolderUrl = self.getDocumentsDirectory()
-        let fileNamePrefix = DateFormatter.sharedDateFormatter.string(from: Date())
-        let fullFileName = "pixel01_" + fileNamePrefix + ".m4a"
+//        let fileNamePrefix = DateFormatter.sharedDateFormatter.string(from: Date())
+//        let fullFileName = "pixel01_" + fileNamePrefix + ".m4a"
 //        self.audioFileName = fullFileName
+        let fullFileName = (self.lblFNameValue.text ?? "")
         let newRecordFileName = appGroupFolderUrl.appendingPathComponent(fullFileName)
         return newRecordFileName
     }
