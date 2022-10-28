@@ -11,7 +11,7 @@ import AVFoundation
 
 var isRecording: Bool = false
 var audioRecorder:AVAudioRecorder?
-var audioPlayer:AVAudioPlayer?
+var audioPlayer:AVAudioPlayer!
 
 class RecordVC: BaseViewController {
     
@@ -382,10 +382,18 @@ class RecordVC: BaseViewController {
     @IBAction func segmentChanged(_ sender: Any) {
         switch segmentControl.selectedSegmentIndex {
         case 0:
-            self.viewClear.isHidden = true
-            self.stackViewHeight.constant = 150 - 45 * 3
+            print("append")
+            //show alert first and then functionality
+            CommonFunctions.alertMessage(view: self, title: "Append", msg: "When the append function is selected, the cursor will automatically move to the end of the original recording. If you want the Append to start at a different point, move the cursor to a desired point and tap the orange Record button to start the Append function.", btnTitle: "OK")
+//            self.viewClear.isHidden = true
+//            self.stackViewHeight.constant = 150 - 45 * 3
+            
+            self.btnRecord.isUserInteractionEnabled = true
+            self.btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: .normal)
+            
             break
         case 1:
+            print("insert")
             settings = [
                 AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
                 AVSampleRateKey: Double(savedAudioQuality(audioQuality: AudioQuality(rawValue: CoreData.shared.audioQuality)!)),
@@ -401,8 +409,10 @@ class RecordVC: BaseViewController {
             startRecording()
             break
         case 2:
+            print("overrrite")
             break
         case 3:
+            print("partial delete")
             break
         default:
             break

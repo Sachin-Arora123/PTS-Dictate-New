@@ -892,7 +892,7 @@
                                 <rect key="frame" x="0.0" y="826" width="414" height="70"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="A4k-1I-WOY">
-                                        <rect key="frame" x="85.5" y="15" width="243" height="40"/>
+                                        <rect key="frame" x="20" y="15" width="374" height="40"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vDb-ZW-bej">
                                                 <rect key="frame" x="0.0" y="0.0" width="111.5" height="40"/>
@@ -909,8 +909,8 @@
                                                     <action selector="onTapSave:" destination="7Dt-rL-rdk" eventType="touchUpInside" id="U33-6s-sGd"/>
                                                 </connections>
                                             </button>
-                                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ymt-7o-6fE">
-                                                <rect key="frame" x="121.5" y="0.0" width="111" height="40"/>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ymt-7o-6fE">
+                                                <rect key="frame" x="131.5" y="0.0" width="111" height="40"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                 <state key="normal" backgroundImage="record_edit_btn_normal">
@@ -921,7 +921,7 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iLU-WB-rd0">
-                                                <rect key="frame" x="131.5" y="0.0" width="111.5" height="40"/>
+                                                <rect key="frame" x="262.5" y="0.0" width="111.5" height="40"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                 <state key="normal" backgroundImage="discard_btn_normal">

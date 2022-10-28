@@ -54,6 +54,7 @@
 		28A4F5CF28B510DE0035137B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 28A4F5CE28B510DE0035137B /* Assets.xcassets */; };
 		28A4F5D228B510DE0035137B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 28A4F5D028B510DE0035137B /* LaunchScreen.storyboard */; };
 		28A4F5DE28B51D750035137B /* Extension+Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5DD28B51D750035137B /* Extension+Navigation.swift */; };
+		28B457B3290BE31300D14BAC /* RecordVCNew.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28B457B2290BE31300D14BAC /* RecordVCNew.swift */; };
 		4BFCB13CEA7E06C3217E3512 /* Pods_PTS_Dictate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7801E7DB3243DA4B1EF6CD0C /* Pods_PTS_Dictate.framework */; };
 /* End PBXBuildFile section */
 
@@ -107,6 +108,7 @@
 		28A4F5D128B510DE0035137B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		28A4F5D328B510DE0035137B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		28A4F5DD28B51D750035137B /* Extension+Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+Navigation.swift"; sourceTree = "<group>"; };
+		28B457B2290BE31300D14BAC /* RecordVCNew.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordVCNew.swift; sourceTree = "<group>"; };
 		60EFDBA9037F05EEA8612299 /* Pods-PTS Dictate.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PTS Dictate.debug.xcconfig"; path = "Target Support Files/Pods-PTS Dictate/Pods-PTS Dictate.debug.xcconfig"; sourceTree = "<group>"; };
 		7801E7DB3243DA4B1EF6CD0C /* Pods_PTS_Dictate.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PTS_Dictate.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2DCF3613E1B667385F2C263 /* Pods-PTS Dictate.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PTS Dictate.release.xcconfig"; path = "Target Support Files/Pods-PTS Dictate/Pods-PTS Dictate.release.xcconfig"; sourceTree = "<group>"; };
@@ -251,6 +253,7 @@
 			isa = PBXGroup;
 			children = (
 				184C5FEC28C5239E005A52EB /* RecordVC.swift */,
+				28B457B2290BE31300D14BAC /* RecordVCNew.swift */,
 			);
 			path = RecordVC;
 			sourceTree = "<group>";
@@ -590,6 +593,7 @@
 				18DF4BD228BE7B5D002FC063 /* ApiConstant.swift in Sources */,
 				18DF4BD728BE7B5D002FC063 /* ApiHandler.swift in Sources */,
 				1854B88C28B958530039A96E /* UploadListCell.swift in Sources */,
+				28B457B3290BE31300D14BAC /* RecordVCNew.swift in Sources */,
 				28A4F5C628B510D90035137B /* AppDelegate.swift in Sources */,
 				182BE0B628BD3B6000327094 /* MicroSensitivityVC.swift in Sources */,
 				1855435828C36494008AFBC2 /* AboutInfoCell.swift in Sources */,
