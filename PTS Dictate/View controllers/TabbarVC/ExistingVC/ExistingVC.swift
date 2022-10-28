@@ -66,9 +66,6 @@ class ExistingVC: BaseViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setUpUI()
-        if CoreData.shared.audioFiles.count > 0 {
-            CoreData.shared.audioFiles[0].fileInfo?.comment = "new Comment"
-        }
         self.setUpWave()
     }
     
@@ -202,6 +199,7 @@ class ExistingVC: BaseViewController {
                         self.removeAudio(itemName: av, fileExtension: "")
                     }
                     //                    self.totalFiles = self.findFilesWith(fileExtension: "m4a")
+                    AudioFiles.shared.deleteAudio(names: self.totalFilesSelected)
                     self.totalFiles = self.getSortedAudioList()
                     self.setRightBarItem()
                 }

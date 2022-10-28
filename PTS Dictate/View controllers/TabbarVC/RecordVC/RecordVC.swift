@@ -491,6 +491,7 @@ class RecordVC: BaseViewController {
                     if self.isCommentsOn {
                         self.pushCommentVC()
                     } else {
+                        AudioFiles.shared.saveNewAudioFile(name: self.audioFileName)
                         let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
                         self.setPushTransitionAnimation(VC)
                         self.navigationController?.popViewController(animated: false)
