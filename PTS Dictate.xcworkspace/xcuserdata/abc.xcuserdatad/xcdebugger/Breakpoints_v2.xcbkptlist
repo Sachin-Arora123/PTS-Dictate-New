@@ -270,9 +270,9 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "215"
-            endingLineNumber = "215"
-            landmarkName = "showBottomView()"
+            startingLineNumber = "216"
+            endingLineNumber = "216"
+            landmarkName = "recorderSetUp()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -286,9 +286,9 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "632"
-            endingLineNumber = "632"
-            landmarkName = "finishAudioRecording(success:)"
+            startingLineNumber = "526"
+            endingLineNumber = "526"
+            landmarkName = "listVideos()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -302,9 +302,9 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "718"
-            endingLineNumber = "718"
-            landmarkName = "audioRecorderDidFinishRecording(_:successfully:)"
+            startingLineNumber = "612"
+            endingLineNumber = "612"
+            landmarkName = "onTapClear(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -318,9 +318,9 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "757"
-            endingLineNumber = "757"
-            landmarkName = "startRecording()"
+            startingLineNumber = "651"
+            endingLineNumber = "651"
+            landmarkName = "removeDiscardAudio(itemName:fileExtension:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -359,38 +359,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "F2E0B241-A84C-473B-BD15-4C06B6DFAEC1"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "439"
-            endingLineNumber = "439"
-            landmarkName = "concatChunks(filePath:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "2ACA2FD0-BCB5-4480-8F9B-1BD532B2C10D"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "443"
-            endingLineNumber = "443"
-            landmarkName = "concatChunks(filePath:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "64E05097-5832-4663-9E9F-C313C05F1677"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -398,9 +366,9 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "467"
-            endingLineNumber = "467"
-            landmarkName = "listVideos()"
+            startingLineNumber = "361"
+            endingLineNumber = "361"
+            landmarkName = "onTapPlay(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -414,9 +382,9 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "540"
-            endingLineNumber = "540"
-            landmarkName = "onTapDiscard(_:)"
+            startingLineNumber = "434"
+            endingLineNumber = "434"
+            landmarkName = "fastBackwardByTime(timeVal:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -430,9 +398,9 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "748"
-            endingLineNumber = "748"
-            landmarkName = "directoryURL()"
+            startingLineNumber = "642"
+            endingLineNumber = "642"
+            landmarkName = "removeDiscardAudio(itemName:fileExtension:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -446,9 +414,9 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "350"
-            endingLineNumber = "350"
-            landmarkName = "onTapPlay(_:)"
+            startingLineNumber = "271"
+            endingLineNumber = "271"
+            landmarkName = "onTapRecord(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -462,25 +430,9 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "726"
-            endingLineNumber = "726"
-            landmarkName = "audioPlayerDidFinishPlaying(_:successfully:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "08962F1C-527D-47E4-97FE-D570B48ED00E"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "287"
-            endingLineNumber = "287"
-            landmarkName = "onTapStop(_:)"
+            startingLineNumber = "620"
+            endingLineNumber = "620"
+            landmarkName = "onDiscardRecorderSetUp()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -494,9 +446,9 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "513"
-            endingLineNumber = "513"
-            landmarkName = "onTapSave(_:)"
+            startingLineNumber = "407"
+            endingLineNumber = "407"
+            landmarkName = "fastForwardByTime(timeVal:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -510,8 +462,8 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "161"
-            endingLineNumber = "161"
+            startingLineNumber = "162"
+            endingLineNumber = "162"
             landmarkName = "setupFileName()"
             landmarkType = "7">
          </BreakpointContent>
@@ -526,9 +478,9 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "491"
-            endingLineNumber = "491"
-            landmarkName = "saveRecordedAudio(completion:)"
+            startingLineNumber = "385"
+            endingLineNumber = "385"
+            landmarkName = "onTapForwardTrim(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -542,10 +494,10 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "711"
-            endingLineNumber = "711"
-            landmarkName = "createURLForNewRecord()"
-            landmarkType = "7">
+            startingLineNumber = "605"
+            endingLineNumber = "605"
+            landmarkName = "RecordVC"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

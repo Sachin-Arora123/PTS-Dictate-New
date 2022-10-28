@@ -55,6 +55,8 @@
 		28A4F5D228B510DE0035137B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 28A4F5D028B510DE0035137B /* LaunchScreen.storyboard */; };
 		28A4F5DE28B51D750035137B /* Extension+Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5DD28B51D750035137B /* Extension+Navigation.swift */; };
 		4BFCB13CEA7E06C3217E3512 /* Pods_PTS_Dictate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7801E7DB3243DA4B1EF6CD0C /* Pods_PTS_Dictate.framework */; };
+		616E4A43290AB21E0011ABF2 /* F3BarGauge.m in Sources */ = {isa = PBXBuildFile; fileRef = 616E4A41290AB21E0011ABF2 /* F3BarGauge.m */; };
+		616E4A45290AB9550011ABF2 /* Extension+UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616E4A44290AB9550011ABF2 /* Extension+UIColor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -108,6 +110,10 @@
 		28A4F5D328B510DE0035137B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		28A4F5DD28B51D750035137B /* Extension+Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+Navigation.swift"; sourceTree = "<group>"; };
 		60EFDBA9037F05EEA8612299 /* Pods-PTS Dictate.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PTS Dictate.debug.xcconfig"; path = "Target Support Files/Pods-PTS Dictate/Pods-PTS Dictate.debug.xcconfig"; sourceTree = "<group>"; };
+		616E4A41290AB21E0011ABF2 /* F3BarGauge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = F3BarGauge.m; sourceTree = "<group>"; };
+		616E4A42290AB21E0011ABF2 /* F3BarGauge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = F3BarGauge.h; sourceTree = "<group>"; };
+		616E4A44290AB9550011ABF2 /* Extension+UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+UIColor.swift"; sourceTree = "<group>"; };
+		61736DF3290AA79E006D8065 /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
 		7801E7DB3243DA4B1EF6CD0C /* Pods_PTS_Dictate.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PTS_Dictate.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2DCF3613E1B667385F2C263 /* Pods-PTS Dictate.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PTS Dictate.release.xcconfig"; path = "Target Support Files/Pods-PTS Dictate/Pods-PTS Dictate.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -139,6 +145,7 @@
 				18DF4BE028BE899D002FC063 /* Extension+UIView.swift */,
 				180EB43828B6A87D00F1A3FB /* Extension+UIViewController.swift */,
 				18CDDB0E28B7D96C006AB795 /* Storyboard.swift */,
+				616E4A44290AB9550011ABF2 /* Extension+UIColor.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -382,6 +389,7 @@
 		28A4F5C428B510D90035137B /* PTS Dictate */ = {
 			isa = PBXGroup;
 			children = (
+				616E4A3F290AB1E30011ABF2 /* Third-Party */,
 				184C964428C7C707004639B3 /* CommonFunctions */,
 				18DF4BD828BE7D4F002FC063 /* CoreData */,
 				18DF4BCA28BE7B5D002FC063 /* APIHandler */,
@@ -433,8 +441,26 @@
 			children = (
 				180EB43428B6A15900F1A3FB /* BaseViewController.swift */,
 				18DF4BDE28BE872F002FC063 /* CommonFunctions.swift */,
+				61736DF3290AA79E006D8065 /* Bridging-Header.h */,
 			);
 			path = Helpers;
+			sourceTree = "<group>";
+		};
+		616E4A3F290AB1E30011ABF2 /* Third-Party */ = {
+			isa = PBXGroup;
+			children = (
+				616E4A40290AB1F40011ABF2 /* F3BarGauge */,
+			);
+			path = "Third-Party";
+			sourceTree = "<group>";
+		};
+		616E4A40290AB1F40011ABF2 /* F3BarGauge */ = {
+			isa = PBXGroup;
+			children = (
+				616E4A42290AB21E0011ABF2 /* F3BarGauge.h */,
+				616E4A41290AB21E0011ABF2 /* F3BarGauge.m */,
+			);
+			path = F3BarGauge;
 			sourceTree = "<group>";
 		};
 		97719E97C8011AC41905B41C /* Pods */ = {
@@ -572,6 +598,7 @@
 				28A4F5CA28B510D90035137B /* LoginVC.swift in Sources */,
 				1868EAD628BAB2E200216D62 /* GeneralSettingCell.swift in Sources */,
 				186765FB28C4C994006BABDF /* CommentsVC.swift in Sources */,
+				616E4A43290AB21E0011ABF2 /* F3BarGauge.m in Sources */,
 				18DF4BDD28BE7E30002FC063 /* CoreData.swift in Sources */,
 				18DF4BE128BE899D002FC063 /* Extension+UIView.swift in Sources */,
 				1855435628C36474008AFBC2 /* AboutVC.swift in Sources */,
@@ -588,6 +615,7 @@
 				180EB43928B6A87D00F1A3FB /* Extension+UIViewController.swift in Sources */,
 				18CDDB0F28B7D96C006AB795 /* Storyboard.swift in Sources */,
 				18DF4BD228BE7B5D002FC063 /* ApiConstant.swift in Sources */,
+				616E4A45290AB9550011ABF2 /* Extension+UIColor.swift in Sources */,
 				18DF4BD728BE7B5D002FC063 /* ApiHandler.swift in Sources */,
 				1854B88C28B958530039A96E /* UploadListCell.swift in Sources */,
 				28A4F5C628B510D90035137B /* AppDelegate.swift in Sources */,
@@ -687,6 +715,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -740,6 +769,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -773,8 +803,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "pixelscope.PTS-Dictate";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "";
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_OBJC_BRIDGING_HEADER = "PTS Dictate/Helpers/Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -808,7 +837,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "pixelscope.PTS-Dictate";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "PTS Dictate/Helpers/Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
