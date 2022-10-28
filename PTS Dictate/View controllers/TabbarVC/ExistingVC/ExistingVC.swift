@@ -277,11 +277,12 @@ class ExistingVC: BaseViewController {
         return ""
     }
     
-    fileprivate func pushToComments(selected audio: String) {
+    fileprivate func pushToComments(selected audio: String, index: Int) {
         let VC = CommentsVC.instantiateFromAppStoryboard(appStoryboard: .Main)
         self.setPushTransitionAnimation(VC)
         VC.hidesBottomBarWhenPushed = true
-        VC.canEditComments = false
+        VC.updateComment = true
+        VC.selectedAudio = index
         VC.comment = getSelectedAudioComment(selected: audio)
         self.navigationController?.pushViewController(VC, animated: false)
     }
@@ -494,7 +495,7 @@ extension ExistingVC{
     }
     @objc func openCommentVC(_ sender: UIButton){
         let audioFile = totalFiles[sender.tag]
-        pushToComments(selected: audioFile)
+        pushToComments(selected: audioFile, index: sender.tag)
     }
     
     @objc func openRenameFileVc(){

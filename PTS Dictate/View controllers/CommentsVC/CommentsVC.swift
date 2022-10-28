@@ -19,6 +19,8 @@ class CommentsVC: BaseViewController {
     // MARK: Properties
     var isCommentsMandotary = false
     var canEditComments = true
+    var updateComment = false
+    var selectedAudio = 0
     var fileName = ""
     var comment = ""
     // MARK: - View Life-Cycle.
@@ -64,6 +66,9 @@ class CommentsVC: BaseViewController {
     }
     
     fileprivate func saveComment() {
+        if updateComment {
+            UpdateAudioFile.comment(txtViewComment.text ?? "").update(audio: selectedAudio)
+        }
         AudioFiles.shared.saveNewAudioFile(name: fileName, comment: txtViewComment.text ?? "")
         let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
         self.setPushTransitionAnimation(VC)
