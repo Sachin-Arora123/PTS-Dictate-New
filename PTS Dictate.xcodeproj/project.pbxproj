@@ -57,31 +57,10 @@
 		4BFCB13CEA7E06C3217E3512 /* Pods_PTS_Dictate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7801E7DB3243DA4B1EF6CD0C /* Pods_PTS_Dictate.framework */; };
 		6139A90A290C2E1B00D4C1DD /* RecordVCNew.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6139A909290C2E1B00D4C1DD /* RecordVCNew.swift */; };
 		6139A90C290C327400D4C1DD /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6139A90B290C327400D4C1DD /* Constants.swift */; };
-		6139A945290C41C100D4C1DD /* PDColoredProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6139A90F290C41C100D4C1DD /* PDColoredProgressView.m */; };
-		6139A946290C41C100D4C1DD /* drawing.m in Sources */ = {isa = PBXBuildFile; fileRef = 6139A910290C41C100D4C1DD /* drawing.m */; };
-		6139A947290C41C100D4C1DD /* iToast.m in Sources */ = {isa = PBXBuildFile; fileRef = 6139A913290C41C100D4C1DD /* iToast.m */; };
 		6139A948290C41C100D4C1DD /* SCWaveformCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 6139A917290C41C100D4C1DD /* SCWaveformCache.m */; };
 		6139A949290C41C100D4C1DD /* SCWaveformView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6139A919290C41C100D4C1DD /* SCWaveformView.m */; };
 		6139A94A290C41C100D4C1DD /* SCScrollableWaveformView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6139A91A290C41C100D4C1DD /* SCScrollableWaveformView.m */; };
-		6139A94B290C41C100D4C1DD /* UIView+Geometry.m in Sources */ = {isa = PBXBuildFile; fileRef = 6139A91C290C41C100D4C1DD /* UIView+Geometry.m */; };
-		6139A94C290C41C100D4C1DD /* FVSoundWaveView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6139A920290C41C100D4C1DD /* FVSoundWaveView.m */; };
-		6139A94D290C41C100D4C1DD /* SoundManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6139A921290C41C100D4C1DD /* SoundManager.m */; };
-		6139A94E290C41C100D4C1DD /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 6139A923290C41C100D4C1DD /* Reachability.m */; };
 		6139A94F290C41C100D4C1DD /* NBTouchAndHoldButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 6139A926290C41C100D4C1DD /* NBTouchAndHoldButton.m */; };
-		6139A950290C41C100D4C1DD /* WBGreenGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6139A929290C41C100D4C1DD /* WBGreenGradientView.m */; };
-		6139A951290C41C100D4C1DD /* WBStickyNoticeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6139A92C290C41C100D4C1DD /* WBStickyNoticeView.m */; };
-		6139A952290C41C100D4C1DD /* WBGrayGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6139A92E290C41C100D4C1DD /* WBGrayGradientView.m */; };
-		6139A953290C41C100D4C1DD /* WBSuccessNoticeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6139A930290C41C100D4C1DD /* WBSuccessNoticeView.m */; };
-		6139A954290C41C100D4C1DD /* WBNoticeOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 6139A931290C41C100D4C1DD /* WBNoticeOperation.m */; };
-		6139A955290C41C100D4C1DD /* WBErrorNoticeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6139A932290C41C100D4C1DD /* WBErrorNoticeView.m */; };
-		6139A956290C41C100D4C1DD /* WBBlueGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6139A933290C41C100D4C1DD /* WBBlueGradientView.m */; };
-		6139A957290C41C100D4C1DD /* WBReminderGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6139A934290C41C100D4C1DD /* WBReminderGradientView.m */; };
-		6139A958290C41C100D4C1DD /* WBReminderNoticeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6139A935290C41C100D4C1DD /* WBReminderNoticeView.m */; };
-		6139A959290C41C100D4C1DD /* WBNoticeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6139A937290C41C100D4C1DD /* WBNoticeView.m */; };
-		6139A95A290C41C100D4C1DD /* UILabel+WBExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6139A938290C41C100D4C1DD /* UILabel+WBExtensions.m */; };
-		6139A95B290C41C100D4C1DD /* NSOperationQueue+WBNoticeExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6139A93A290C41C100D4C1DD /* NSOperationQueue+WBNoticeExtensions.m */; };
-		6139A95C290C41C100D4C1DD /* WBRedGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6139A93F290C41C100D4C1DD /* WBRedGradientView.m */; };
-		6139A95D290C41C100D4C1DD /* NoticeView.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 6139A944290C41C100D4C1DD /* NoticeView.bundle */; };
 		616E4A43290AB21E0011ABF2 /* F3BarGauge.m in Sources */ = {isa = PBXBuildFile; fileRef = 616E4A41290AB21E0011ABF2 /* F3BarGauge.m */; };
 		616E4A45290AB9550011ABF2 /* Extension+UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616E4A44290AB9550011ABF2 /* Extension+UIColor.swift */; };
 /* End PBXBuildFile section */
@@ -139,55 +118,14 @@
 		60EFDBA9037F05EEA8612299 /* Pods-PTS Dictate.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PTS Dictate.debug.xcconfig"; path = "Target Support Files/Pods-PTS Dictate/Pods-PTS Dictate.debug.xcconfig"; sourceTree = "<group>"; };
 		6139A909290C2E1B00D4C1DD /* RecordVCNew.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecordVCNew.swift; sourceTree = "<group>"; };
 		6139A90B290C327400D4C1DD /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
-		6139A90E290C41C100D4C1DD /* PDColoredProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDColoredProgressView.h; sourceTree = "<group>"; };
-		6139A90F290C41C100D4C1DD /* PDColoredProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDColoredProgressView.m; sourceTree = "<group>"; };
-		6139A910290C41C100D4C1DD /* drawing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = drawing.m; sourceTree = "<group>"; };
-		6139A912290C41C100D4C1DD /* iToast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iToast.h; sourceTree = "<group>"; };
-		6139A913290C41C100D4C1DD /* iToast.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iToast.m; sourceTree = "<group>"; };
 		6139A915290C41C100D4C1DD /* SCScrollableWaveformView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCScrollableWaveformView.h; sourceTree = "<group>"; };
 		6139A916290C41C100D4C1DD /* SCWaveformView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCWaveformView.h; sourceTree = "<group>"; };
 		6139A917290C41C100D4C1DD /* SCWaveformCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCWaveformCache.m; sourceTree = "<group>"; };
 		6139A918290C41C100D4C1DD /* SCWaveformCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCWaveformCache.h; sourceTree = "<group>"; };
 		6139A919290C41C100D4C1DD /* SCWaveformView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCWaveformView.m; sourceTree = "<group>"; };
 		6139A91A290C41C100D4C1DD /* SCScrollableWaveformView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCScrollableWaveformView.m; sourceTree = "<group>"; };
-		6139A91C290C41C100D4C1DD /* UIView+Geometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Geometry.m"; sourceTree = "<group>"; };
-		6139A91D290C41C100D4C1DD /* FVSoundWaveView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FVSoundWaveView.h; sourceTree = "<group>"; };
-		6139A91E290C41C100D4C1DD /* SoundManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundManager.h; sourceTree = "<group>"; };
-		6139A91F290C41C100D4C1DD /* UIView+Geometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Geometry.h"; sourceTree = "<group>"; };
-		6139A920290C41C100D4C1DD /* FVSoundWaveView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FVSoundWaveView.m; sourceTree = "<group>"; };
-		6139A921290C41C100D4C1DD /* SoundManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundManager.m; sourceTree = "<group>"; };
-		6139A923290C41C100D4C1DD /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
-		6139A924290C41C100D4C1DD /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		6139A926290C41C100D4C1DD /* NBTouchAndHoldButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBTouchAndHoldButton.m; sourceTree = "<group>"; };
 		6139A927290C41C100D4C1DD /* NBTouchAndHoldButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBTouchAndHoldButton.h; sourceTree = "<group>"; };
-		6139A929290C41C100D4C1DD /* WBGreenGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WBGreenGradientView.m; sourceTree = "<group>"; };
-		6139A92A290C41C100D4C1DD /* NSOperationQueue+WBNoticeExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSOperationQueue+WBNoticeExtensions.h"; sourceTree = "<group>"; };
-		6139A92B290C41C100D4C1DD /* UILabel+WBExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UILabel+WBExtensions.h"; sourceTree = "<group>"; };
-		6139A92C290C41C100D4C1DD /* WBStickyNoticeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WBStickyNoticeView.m; sourceTree = "<group>"; };
-		6139A92D290C41C100D4C1DD /* WBNoticeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WBNoticeView.h; sourceTree = "<group>"; };
-		6139A92E290C41C100D4C1DD /* WBGrayGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WBGrayGradientView.m; sourceTree = "<group>"; };
-		6139A92F290C41C100D4C1DD /* WBRedGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WBRedGradientView.h; sourceTree = "<group>"; };
-		6139A930290C41C100D4C1DD /* WBSuccessNoticeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WBSuccessNoticeView.m; sourceTree = "<group>"; };
-		6139A931290C41C100D4C1DD /* WBNoticeOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WBNoticeOperation.m; sourceTree = "<group>"; };
-		6139A932290C41C100D4C1DD /* WBErrorNoticeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WBErrorNoticeView.m; sourceTree = "<group>"; };
-		6139A933290C41C100D4C1DD /* WBBlueGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WBBlueGradientView.m; sourceTree = "<group>"; };
-		6139A934290C41C100D4C1DD /* WBReminderGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WBReminderGradientView.m; sourceTree = "<group>"; };
-		6139A935290C41C100D4C1DD /* WBReminderNoticeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WBReminderNoticeView.m; sourceTree = "<group>"; };
-		6139A936290C41C100D4C1DD /* WBGrayGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WBGrayGradientView.h; sourceTree = "<group>"; };
-		6139A937290C41C100D4C1DD /* WBNoticeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WBNoticeView.m; sourceTree = "<group>"; };
-		6139A938290C41C100D4C1DD /* UILabel+WBExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UILabel+WBExtensions.m"; sourceTree = "<group>"; };
-		6139A939290C41C100D4C1DD /* WBStickyNoticeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WBStickyNoticeView.h; sourceTree = "<group>"; };
-		6139A93A290C41C100D4C1DD /* NSOperationQueue+WBNoticeExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSOperationQueue+WBNoticeExtensions.m"; sourceTree = "<group>"; };
-		6139A93B290C41C100D4C1DD /* WBGreenGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WBGreenGradientView.h; sourceTree = "<group>"; };
-		6139A93C290C41C100D4C1DD /* WBErrorNoticeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WBErrorNoticeView.h; sourceTree = "<group>"; };
-		6139A93D290C41C100D4C1DD /* WBNoticeOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WBNoticeOperation.h; sourceTree = "<group>"; };
-		6139A93E290C41C100D4C1DD /* WBSuccessNoticeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WBSuccessNoticeView.h; sourceTree = "<group>"; };
-		6139A93F290C41C100D4C1DD /* WBRedGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WBRedGradientView.m; sourceTree = "<group>"; };
-		6139A940290C41C100D4C1DD /* WBReminderGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WBReminderGradientView.h; sourceTree = "<group>"; };
-		6139A941290C41C100D4C1DD /* WBBlueGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WBBlueGradientView.h; sourceTree = "<group>"; };
-		6139A942290C41C100D4C1DD /* WBNoticeView+ForSubclassEyesOnly.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "WBNoticeView+ForSubclassEyesOnly.h"; sourceTree = "<group>"; };
-		6139A943290C41C100D4C1DD /* WBReminderNoticeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WBReminderNoticeView.h; sourceTree = "<group>"; };
-		6139A944290C41C100D4C1DD /* NoticeView.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = NoticeView.bundle; sourceTree = "<group>"; };
 		616E4A41290AB21E0011ABF2 /* F3BarGauge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = F3BarGauge.m; sourceTree = "<group>"; };
 		616E4A42290AB21E0011ABF2 /* F3BarGauge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = F3BarGauge.h; sourceTree = "<group>"; };
 		616E4A44290AB9550011ABF2 /* Extension+UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+UIColor.swift"; sourceTree = "<group>"; };
@@ -526,25 +464,6 @@
 			path = Helpers;
 			sourceTree = "<group>";
 		};
-		6139A90D290C41C100D4C1DD /* PDColoredProgressView */ = {
-			isa = PBXGroup;
-			children = (
-				6139A90E290C41C100D4C1DD /* PDColoredProgressView.h */,
-				6139A90F290C41C100D4C1DD /* PDColoredProgressView.m */,
-				6139A910290C41C100D4C1DD /* drawing.m */,
-			);
-			path = PDColoredProgressView;
-			sourceTree = "<group>";
-		};
-		6139A911290C41C100D4C1DD /* Toast */ = {
-			isa = PBXGroup;
-			children = (
-				6139A912290C41C100D4C1DD /* iToast.h */,
-				6139A913290C41C100D4C1DD /* iToast.m */,
-			);
-			path = Toast;
-			sourceTree = "<group>";
-		};
 		6139A914290C41C100D4C1DD /* ScWaveFormView */ = {
 			isa = PBXGroup;
 			children = (
@@ -558,28 +477,6 @@
 			path = ScWaveFormView;
 			sourceTree = "<group>";
 		};
-		6139A91B290C41C100D4C1DD /* FVSoundWaveView */ = {
-			isa = PBXGroup;
-			children = (
-				6139A91C290C41C100D4C1DD /* UIView+Geometry.m */,
-				6139A91D290C41C100D4C1DD /* FVSoundWaveView.h */,
-				6139A91E290C41C100D4C1DD /* SoundManager.h */,
-				6139A91F290C41C100D4C1DD /* UIView+Geometry.h */,
-				6139A920290C41C100D4C1DD /* FVSoundWaveView.m */,
-				6139A921290C41C100D4C1DD /* SoundManager.m */,
-			);
-			path = FVSoundWaveView;
-			sourceTree = "<group>";
-		};
-		6139A922290C41C100D4C1DD /* Reachability */ = {
-			isa = PBXGroup;
-			children = (
-				6139A923290C41C100D4C1DD /* Reachability.m */,
-				6139A924290C41C100D4C1DD /* Reachability.h */,
-			);
-			path = Reachability;
-			sourceTree = "<group>";
-		};
 		6139A925290C41C100D4C1DD /* NBTouchAndHoldButton */ = {
 			isa = PBXGroup;
 			children = (
@@ -589,51 +486,11 @@
 			path = NBTouchAndHoldButton;
 			sourceTree = "<group>";
 		};
-		6139A928290C41C100D4C1DD /* WBNoticeView */ = {
-			isa = PBXGroup;
-			children = (
-				6139A929290C41C100D4C1DD /* WBGreenGradientView.m */,
-				6139A92A290C41C100D4C1DD /* NSOperationQueue+WBNoticeExtensions.h */,
-				6139A92B290C41C100D4C1DD /* UILabel+WBExtensions.h */,
-				6139A92C290C41C100D4C1DD /* WBStickyNoticeView.m */,
-				6139A92D290C41C100D4C1DD /* WBNoticeView.h */,
-				6139A92E290C41C100D4C1DD /* WBGrayGradientView.m */,
-				6139A92F290C41C100D4C1DD /* WBRedGradientView.h */,
-				6139A930290C41C100D4C1DD /* WBSuccessNoticeView.m */,
-				6139A931290C41C100D4C1DD /* WBNoticeOperation.m */,
-				6139A932290C41C100D4C1DD /* WBErrorNoticeView.m */,
-				6139A933290C41C100D4C1DD /* WBBlueGradientView.m */,
-				6139A934290C41C100D4C1DD /* WBReminderGradientView.m */,
-				6139A935290C41C100D4C1DD /* WBReminderNoticeView.m */,
-				6139A936290C41C100D4C1DD /* WBGrayGradientView.h */,
-				6139A937290C41C100D4C1DD /* WBNoticeView.m */,
-				6139A938290C41C100D4C1DD /* UILabel+WBExtensions.m */,
-				6139A939290C41C100D4C1DD /* WBStickyNoticeView.h */,
-				6139A93A290C41C100D4C1DD /* NSOperationQueue+WBNoticeExtensions.m */,
-				6139A93B290C41C100D4C1DD /* WBGreenGradientView.h */,
-				6139A93C290C41C100D4C1DD /* WBErrorNoticeView.h */,
-				6139A93D290C41C100D4C1DD /* WBNoticeOperation.h */,
-				6139A93E290C41C100D4C1DD /* WBSuccessNoticeView.h */,
-				6139A93F290C41C100D4C1DD /* WBRedGradientView.m */,
-				6139A940290C41C100D4C1DD /* WBReminderGradientView.h */,
-				6139A941290C41C100D4C1DD /* WBBlueGradientView.h */,
-				6139A942290C41C100D4C1DD /* WBNoticeView+ForSubclassEyesOnly.h */,
-				6139A943290C41C100D4C1DD /* WBReminderNoticeView.h */,
-				6139A944290C41C100D4C1DD /* NoticeView.bundle */,
-			);
-			path = WBNoticeView;
-			sourceTree = "<group>";
-		};
 		616E4A3F290AB1E30011ABF2 /* Third-Party */ = {
 			isa = PBXGroup;
 			children = (
-				6139A91B290C41C100D4C1DD /* FVSoundWaveView */,
 				6139A925290C41C100D4C1DD /* NBTouchAndHoldButton */,
-				6139A90D290C41C100D4C1DD /* PDColoredProgressView */,
-				6139A922290C41C100D4C1DD /* Reachability */,
 				6139A914290C41C100D4C1DD /* ScWaveFormView */,
-				6139A911290C41C100D4C1DD /* Toast */,
-				6139A928290C41C100D4C1DD /* WBNoticeView */,
 				616E4A40290AB1F40011ABF2 /* F3BarGauge */,
 			);
 			path = "Third-Party";
@@ -723,7 +580,6 @@
 				28A4F5CF28B510DE0035137B /* Assets.xcassets in Resources */,
 				182BE0B328BD332300327094 /* Settings.storyboard in Resources */,
 				28A4F5CD28B510D90035137B /* Main.storyboard in Resources */,
-				6139A95D290C41C100D4C1DD /* NoticeView.bundle in Resources */,
 				1868EADA28BAB3BB00216D62 /* RecordingCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -779,36 +635,24 @@
 			files = (
 				1868EAD428BAAAD600216D62 /* SettingsVC.swift in Sources */,
 				180EB43528B6A15900F1A3FB /* BaseViewController.swift in Sources */,
-				6139A945290C41C100D4C1DD /* PDColoredProgressView.m in Sources */,
-				6139A950290C41C100D4C1DD /* WBGreenGradientView.m in Sources */,
 				18DF4BDF28BE8730002FC063 /* CommonFunctions.swift in Sources */,
-				6139A955290C41C100D4C1DD /* WBErrorNoticeView.m in Sources */,
 				28A4F5CA28B510D90035137B /* LoginVC.swift in Sources */,
 				1868EAD628BAB2E200216D62 /* GeneralSettingCell.swift in Sources */,
 				6139A94A290C41C100D4C1DD /* SCScrollableWaveformView.m in Sources */,
-				6139A95B290C41C100D4C1DD /* NSOperationQueue+WBNoticeExtensions.m in Sources */,
 				186765FB28C4C994006BABDF /* CommentsVC.swift in Sources */,
 				6139A94F290C41C100D4C1DD /* NBTouchAndHoldButton.m in Sources */,
-				6139A952290C41C100D4C1DD /* WBGrayGradientView.m in Sources */,
 				616E4A43290AB21E0011ABF2 /* F3BarGauge.m in Sources */,
 				6139A949290C41C100D4C1DD /* SCWaveformView.m in Sources */,
-				6139A957290C41C100D4C1DD /* WBReminderGradientView.m in Sources */,
-				6139A94B290C41C100D4C1DD /* UIView+Geometry.m in Sources */,
 				18DF4BDD28BE7E30002FC063 /* CoreData.swift in Sources */,
-				6139A951290C41C100D4C1DD /* WBStickyNoticeView.m in Sources */,
 				18DF4BE128BE899D002FC063 /* Extension+UIView.swift in Sources */,
-				6139A946290C41C100D4C1DD /* drawing.m in Sources */,
 				1855435628C36474008AFBC2 /* AboutVC.swift in Sources */,
 				184C5FED28C5239E005A52EB /* RecordVC.swift in Sources */,
-				6139A95C290C41C100D4C1DD /* WBRedGradientView.m in Sources */,
 				6139A948290C41C100D4C1DD /* SCWaveformCache.m in Sources */,
-				6139A959290C41C100D4C1DD /* WBNoticeView.m in Sources */,
 				18DF4BD428BE7B5D002FC063 /* LoginApi.swift in Sources */,
 				18DF4BE428BE955E002FC063 /* LoginViewModel.swift in Sources */,
 				1854B88928B94F690039A96E /* UploadProgressVC.swift in Sources */,
 				185BE70F28BBE539004484CF /* AudioQualityVC.swift in Sources */,
 				18CDDB0D28B7D683006AB795 /* TabbarVC.swift in Sources */,
-				6139A953290C41C100D4C1DD /* WBSuccessNoticeView.m in Sources */,
 				186765F528C4B803006BABDF /* ExistingFileCell.swift in Sources */,
 				186765F928C4C97E006BABDF /* RenameFileVC.swift in Sources */,
 				18E8AAE828F89E0400DF73F4 /* ExistingViewModel.swift in Sources */,
@@ -816,24 +660,18 @@
 				180EB43928B6A87D00F1A3FB /* Extension+UIViewController.swift in Sources */,
 				18CDDB0F28B7D96C006AB795 /* Storyboard.swift in Sources */,
 				18DF4BD228BE7B5D002FC063 /* ApiConstant.swift in Sources */,
-				6139A954290C41C100D4C1DD /* WBNoticeOperation.m in Sources */,
 				6139A90C290C327400D4C1DD /* Constants.swift in Sources */,
 				616E4A45290AB9550011ABF2 /* Extension+UIColor.swift in Sources */,
 				18DF4BD728BE7B5D002FC063 /* ApiHandler.swift in Sources */,
 				1854B88C28B958530039A96E /* UploadListCell.swift in Sources */,
-				6139A94D290C41C100D4C1DD /* SoundManager.m in Sources */,
 				28A4F5C628B510D90035137B /* AppDelegate.swift in Sources */,
 				182BE0B628BD3B6000327094 /* MicroSensitivityVC.swift in Sources */,
-				6139A94C290C41C100D4C1DD /* FVSoundWaveView.m in Sources */,
 				1855435828C36494008AFBC2 /* AboutInfoCell.swift in Sources */,
 				18DF4BDB28BE7D81002FC063 /* CoreData.xcdatamodeld in Sources */,
 				182BE0B928BD459A00327094 /* ProfileVC.swift in Sources */,
 				188CEDDD28C372BA0083BAA2 /* ContactUsCell.swift in Sources */,
 				18DF4BD328BE7B5D002FC063 /* Reachability.swift in Sources */,
-				6139A947290C41C100D4C1DD /* iToast.m in Sources */,
 				28A4F5DE28B51D750035137B /* Extension+Navigation.swift in Sources */,
-				6139A95A290C41C100D4C1DD /* UILabel+WBExtensions.m in Sources */,
-				6139A956290C41C100D4C1DD /* WBBlueGradientView.m in Sources */,
 				188CEDDB28C3729C0083BAA2 /* ContactUsVC.swift in Sources */,
 				185BE71128BBE568004484CF /* AudioQualityCell.swift in Sources */,
 				182BE0BC28BD461E00327094 /* ProfileCell.swift in Sources */,
@@ -842,8 +680,6 @@
 				1868EAD928BAB3BB00216D62 /* RecordingCell.swift in Sources */,
 				184C964628C7C715004639B3 /* CommonElements.swift in Sources */,
 				182BE0B128BD29C000327094 /* ExistingVC.swift in Sources */,
-				6139A958290C41C100D4C1DD /* WBReminderNoticeView.m in Sources */,
-				6139A94E290C41C100D4C1DD /* Reachability.m in Sources */,
 				182BE0C128BD508500327094 /* NamingFormatCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
