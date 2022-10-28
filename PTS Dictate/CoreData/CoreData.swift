@@ -34,10 +34,14 @@ class CoreData: NSObject {
     var sleepModeOverride = 0 // 1 - true & 0 - false
     
     var microSensitivityValue : Double = 1.0
-    
     var fileName : String = ""
-    
     var userInfo = [String]()
+    var comments: [String:String] = [:] // [fileName:Comment]
+    var audioFiles: [AudioFile] = [] {
+        didSet {
+            AudioFiles.shared.audioFiles = audioFiles
+        }
+    }
     
     class var shared: CoreData{
         struct singleTon {
@@ -89,6 +93,8 @@ class CoreData: NSObject {
         newData.setValue(sleepModeOverride, forKey: "sleepModeOverride")
         newData.setValue(microSensitivityValue, forKey: "microSensitivityValue")
         newData.setValue(fileName, forKey: "fileName")
+        newData.setValue(comments, forKey: "comments")
+        newData.setValue(audioFiles, forKey: "audioFiles")
         do {
             try context.save()
             print(newData)
@@ -97,6 +103,7 @@ class CoreData: NSObject {
             print("new data save error")
         }
     }
+    
     // MARK: - getLocalData
     func getdata() {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -198,15 +205,22 @@ class CoreData: NSObject {
                     if let fileName = result.value(forKey: "fileName") as? String{
                         self.fileName = fileName
                         print("data get fileName \(fileName)")
+                        if let comments = result.value(forKey: "comments") as? [String:String] {
+                            self.comments = comments
+                        }
+                        if let audioFiles = result.value(forKey: "audioFiles") as? [AudioFile] {
+                            self.audioFiles = audioFiles
+                            print("data get audio files \(audioFiles)")
+                        }
                     }
                 }
             }
-        }
-        catch
-        {
+            
+        }catch{
             print("something error during getting data")
         }
     }
+    
     // MARK: - deleteLocalData
     func deleteProfile() {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -232,6 +246,9 @@ class CoreData: NSObject {
         microSensitivityValue = 1.0
         userInfo.removeAll()
         fileName = ""
+        comments = [:]
+        audioFiles = []
+        
         if !self.isRemeberMe{
             self.userId = ""
             self.password = ""
