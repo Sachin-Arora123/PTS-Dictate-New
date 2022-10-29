@@ -11,7 +11,7 @@ import AVFoundation
 
 var isRecording: Bool = false
 var audioRecorder:AVAudioRecorder?
-var audioPlayer:AVAudioPlayer?
+var audioPlayer:AVAudioPlayer!
 
 class RecordVC: BaseViewController {
     
@@ -66,7 +66,7 @@ class RecordVC: BaseViewController {
     var dataListArray = [AnyObject]()
     var articleChunks = [AVURLAsset]()
     var fileDestinationUrl:URL!
-    var settings         = [String : Int]()
+    var settings         = [String : Any]()
     var fileURL1:URL!
     var fileURL2:URL!
     var isAppendPlaying: Bool = false
@@ -76,8 +76,6 @@ class RecordVC: BaseViewController {
     // MARK: - View Life-Cycle.
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
-//        self.recorderSetUp()
 //        NotificationCenter.default.addObserver(self, selector: #selector(self.onDiscardRecorderSetUp), name: Notification.Name("refreshRecorder"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.showBottomView), name: Notification.Name("showBottomBtnView"), object: nil)
         NotificationCenter.default.addObserver(self,
@@ -88,26 +86,21 @@ class RecordVC: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        setUpUI()
-        self.recorderSetUp()
-        isRecording = false
-        let audioFileURL = self.createURLForNewRecord()
-        self.lblFNameValue.text = audioFileName
-        print("File Name of recorded audio",audioFileURL)
-        // Setup audio session
         
+        //UI setup
+        setUpUI()
+        
+        //setup file name
+        self.setupFileName()
+        
+        //recorder setup
+        self.recorderSetUp()
+        
+        //Audio session Setup
         do {
-            try audioSession.setCategory(AVAudioSession.Category(rawValue: convertFromAVAudioSessionCategory(AVAudioSession.Category.playAndRecord)), mode: .default)
+            try audioSession.setCategory(.playAndRecord, mode: .default, options: [.allowBluetooth, .defaultToSpeaker])
         } catch _ {
         }
-        
-        // Define the recorder setting
-        let recorderSetting = [AVFormatIDKey: NSNumber(value: kAudioFormatMPEG4AAC as UInt32),
-                             AVSampleRateKey: 44100.0,
-                       AVNumberOfChannelsKey: 2 ]
-        
-        audioRecorder = try? AVAudioRecorder(url: audioFileURL, settings: recorderSetting)
-        fileURL1 = audioFileURL
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -119,6 +112,7 @@ class RecordVC: BaseViewController {
       NotificationCenter.default.removeObserver(self, name: Notification.Name("showBottomBtnView"), object: nil)
       NotificationCenter.default.removeObserver(self)
     }
+    
     @objc func applicationWillTerminate(notification: Notification) {
       // Notification received.
         print("Notification received.")
@@ -145,10 +139,81 @@ class RecordVC: BaseViewController {
         viewProgress.isHidden = true
         progressViewHeight.constant = 45
     }
+    
+    func setupFileName(){
+        let currentDate = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let currentDateStr = dateFormatter.string(from: currentDate)
+        let convertedDate = dateFormatter.date(from: currentDateStr) ?? Date()
+        let fileFormatString = CoreData.shared.dateFormat
+
+        if fileFormatString.count == 0 {
+            dateFormatter.dateFormat = "ddMMyyyy"
+        }else{
+            dateFormatter.dateFormat = fileFormatString.replacingOccurrences(of: "mm", with: "MM")
+        }
+
+        let convertedDateStr = "\(dateFormatter.string(from: convertedDate))"
+
+        let nameToShow = (CoreData.shared.fileName.count != 0) ? CoreData.shared.fileName : CoreData.shared.profileName
+
+        //need to check recording file count here as well
+        self.lblFNameValue.text = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)" + ".m4a"
+        
+        self.lblFSizeValue.text = "0.00 Mb"
+    }
+    
+    func recorderSetUp() {
+        
+        // Define the recorder setting
+        isRecording = false
+        self.fileURL1 = self.createURLForNewRecord()
+//        self.lblFNameValue.text = audioFileName
+        print("File Name of recorded audio",self.fileURL1 ?? "")
+
+        
+        let index = CoreData.shared.audioQuality
+        var sampleRateKey = 0
+
+        switch index {
+        case 0:
+            sampleRateKey  = 11025
+        case 1:
+            sampleRateKey  = 22050
+        case 2:
+            sampleRateKey  = 44100
+        default:
+            sampleRateKey  = 11025
+        }
+        
+        let recorderSetting = [
+            //giving the AVSampleRateKey according to the microphone senstivity value in settings.
+            AVSampleRateKey : sampleRateKey,
+            AVFormatIDKey : NSNumber(value: Int32(kAudioFormatMPEG4AAC)),
+            AVNumberOfChannelsKey : NSNumber(value: 1),
+            AVEncoderAudioQualityKey : NSNumber(value: AVAudioQuality.medium.rawValue)
+        ] as [String : Any]
+  
+        do{
+            audioRecorder = try AVAudioRecorder(url: self.fileURL1, settings: recorderSetting)
+        }catch{
+            print(error.localizedDescription)
+        }
+        
+        audioRecorder?.delegate = self
+        audioRecorder?.isMeteringEnabled = true
+        
+        self.initiallyBtnStateSetup()
+        self.viewBottomButton.isHidden = true
+        
+        // Microphone Authorization/Permission
+        self.checkMicrophoneAccess()
+        
+    }
  
     @objc func showBottomView() {
         audioRecorder?.stop()
-//        let audioSession = AVAudioSession.sharedInstance()
         do {
             try audioSession.setActive(false)
             print("Stop")
@@ -162,7 +227,6 @@ class RecordVC: BaseViewController {
             btnBackwardTrim.isUserInteractionEnabled = true
             btnBackwardTrimEnd.isUserInteractionEnabled = true
             btnStop.isUserInteractionEnabled = false
-//            self.viewBottomButton.isHidden = false
             CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
             lblPlayerStatus.text = "Stopped"
         } catch _ {
@@ -191,112 +255,74 @@ class RecordVC: BaseViewController {
         self.customRangeBar.alpha = 1.0
     }
     
-    func recorderSetUp() {
-        audioRecorder = nil
-        self.initiallyBtnStateSetup()
-        self.audioRangeMeterSetUp()
-        self.viewBottomButton.isHidden = true
-        // Microphone Authorization/Permission
-        self.checkMicrophoneAccess()
-        // Set the audio file
-        audioRecorder?.delegate = self
-        audioRecorder?.isMeteringEnabled = true
-    }
-    
     // MARK: - @IBActions.
     @IBAction func onTapRecord(_ sender: UIButton) {
-             // Stop the audio player before recording
-             if let player = audioPlayer {
-                 if player.isPlaying {
-                     player.stop()
-//                     btnPlay.setImage(UIImage(named: ""), for: UIControl.State())
-//                     btnPlay.isSelected = false
-                 }
+        // Stop the audio player before recording
+        if let player = audioPlayer , player.isPlaying{
+            player.stop()
+        }
+        
+        if !(audioRecorder?.isRecording ?? false) {
+            //start recording
+             do {
+                 try audioSession.setActive(true)
+             } catch {
+                 print(error.localizedDescription)
              }
-             if let recorder = audioRecorder {
-                 if !recorder.isRecording {
-//                     let audioSession = AVAudioSession.sharedInstance()
-                     
-                     do {
-                         try audioSession.setActive(true)
-                     } catch _ {
-                     }
-                     // Start recording
-                     audioRecorder?.prepareToRecord()
-                     recorder.record()
-                     self.recordTimer = Timer.scheduledTimer(timeInterval: 0.1, target:self, selector:#selector(self.updateAudioMeter(timer:)), userInfo:nil, repeats:true)
-                     self.currentRecordUpdateTimer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(self.updateRecording(timer:)), userInfo: nil, repeats: true)
-                     if self.customRangeBar.alpha == 0.0 {
-                         self.customRangeBar.alpha = 1.0
-                         self.viewProgress.isHidden = true
-                     }
-                     
-                     self.lblPlayerStatus.text = "Recording"
-                     self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: UIControl.State.normal)
-                     self.btnStop.isUserInteractionEnabled = true
-                     self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: .normal)
-                     
-                     
-                 } else {
-                     // Pause recording
-                     recorder.pause()
-                     lblPlayerStatus.text = "Paused"
-                     btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: UIControl.State.normal)
-                     btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-                     btnBackwardTrim.setBackgroundImage(UIImage(named: "existing_rewind_normal"), for: .normal)
-                     btnBackwardTrimEnd.setBackgroundImage(UIImage(named: "existing_backward_fast_normal"), for: .normal)
-                     btnPlay.isUserInteractionEnabled = true
-                     btnBackwardTrim.isUserInteractionEnabled = true
-                     btnBackwardTrimEnd.isUserInteractionEnabled = true
-//                     btnStop.isUserInteractionEnabled = true
-                 }
-                 audioPlayer?.numberOfLoops = 0 // loop count, set -1 for infinite
-                 audioPlayer?.volume = 1
-                 audioPlayer?.prepareToPlay()
-                 isRecording = true
-             }
+            audioRecorder?.prepareToRecord()
+            audioRecorder?.record()
+            self.recordTimer = Timer.scheduledTimer(timeInterval: 0.1, target:self, selector:#selector(self.updateAudioMeter(timer:)), userInfo:nil, repeats:true)
+             
+            self.lblPlayerStatus.text = "Recording"
+            self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: UIControl.State.normal)
+            self.btnStop.isUserInteractionEnabled = true
+            self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: .normal)
+        }else{
+            // Pause recording
+            audioRecorder?.pause()
+            lblPlayerStatus.text = "Paused"
+            btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: UIControl.State.normal)
+            btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+            btnBackwardTrim.setBackgroundImage(UIImage(named: "existing_rewind_normal"), for: .normal)
+            btnBackwardTrimEnd.setBackgroundImage(UIImage(named: "existing_backward_fast_normal"), for: .normal)
+            btnPlay.isUserInteractionEnabled = true
+            btnBackwardTrim.isUserInteractionEnabled = true
+            btnBackwardTrimEnd.isUserInteractionEnabled = true
+        }
+        
+        isRecording = true
     }
     
     @IBAction func onTapStop(_ sender: UIButton) {
-        
-//        if let recorder = audioRecorder {
-//            if recorder.isRecording {
-                audioRecorder?.stop()
-//                let audioSession = AVAudioSession.sharedInstance()
-                do {
-                    try audioSession.setActive(false)
-                    print("Stop")
-                    self.tabBarController?.setTabBarHidden(true, animated: false)
-                    btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
-                    btnRecord.isUserInteractionEnabled = false
-                    btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-                    btnBackwardTrim.setBackgroundImage(UIImage(named: "existing_rewind_normal"), for: .normal)
-                    btnBackwardTrimEnd.setBackgroundImage(UIImage(named: "existing_backward_fast_normal"), for: .normal)
-                    btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_disable"), for: .normal)
-                    btnPlay.isUserInteractionEnabled = true
-                    btnBackwardTrim.isUserInteractionEnabled = true
-                    btnBackwardTrimEnd.isUserInteractionEnabled = true
-                    btnStop.isUserInteractionEnabled = false
-//                    self.viewBottomButton.isHidden = false
-                    CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
-                    lblPlayerStatus.text = "Stopped"
-                    progressViewHeight.constant = 0
-                    viewProgress.isHidden = false
-                    //self.customRangeBar.value = -160
-                    self.customRangeBar.isHidden = true
-                    stackView.isHidden = false
-                    playerWaveView.isHidden = false
-                    bookMarkView.isHidden = true
-                    viewClear.isHidden = true
-                    stackViewHeight.constant = 200 - 45 * 2 - 70
-                    if isAppendPlaying{
-                        playmerge(audio1: fileURL1 as! NSURL, audio2: fileURL2 as! NSURL)
-                    }
-                } catch _ {
-                }
-//            }
-//        }
-        
+        audioRecorder?.stop()
+        do {
+            try audioSession.setActive(false)
+            self.tabBarController?.setTabBarHidden(true, animated: false)
+            btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
+            btnRecord.isUserInteractionEnabled = false
+            btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+            btnBackwardTrim.setBackgroundImage(UIImage(named: "existing_rewind_normal"), for: .normal)
+            btnBackwardTrimEnd.setBackgroundImage(UIImage(named: "existing_backward_fast_normal"), for: .normal)
+            btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_disable"), for: .normal)
+            btnPlay.isUserInteractionEnabled = true
+            btnBackwardTrim.isUserInteractionEnabled = true
+            btnBackwardTrimEnd.isUserInteractionEnabled = true
+            btnStop.isUserInteractionEnabled = false
+            CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
+            lblPlayerStatus.text = "Stopped"
+            progressViewHeight.constant = 0
+            viewProgress.isHidden = true
+            stackView.isHidden = false
+            playerWaveView.isHidden = false
+            bookMarkView.isHidden = true
+            viewClear.isHidden = true
+            stackViewHeight.constant = 150 - 45 * 2 - 70
+            if isAppendPlaying{
+                playmerge(audio1: fileURL1 as! NSURL, audio2: fileURL2 as! NSURL)
+            }
+        } catch {
+            print(error.localizedDescription)
+        }
         // Stop the audio player if playing
         if let player = audioPlayer {
             if player.isPlaying {
@@ -313,37 +339,37 @@ class RecordVC: BaseViewController {
         transition.subtype = CATransitionSubtype.fromBottom
         view.layer.add(transition, forKey: kCATransition)
     }
+    
     @IBAction func onTapPlay(_ sender: UIButton) {
-        do{
         if let recorder = audioRecorder {
-              if !recorder.isRecording {
-//                  let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-//                  let completePath = directoryPath.absoluteString +  self.lblFNameValue.text!
-//                  let completePathURL = URL(string: completePath)
-//                  audioPlayer?.numberOfLoops = 0 // loop count, set -1 for infinite
-//                  audioPlayer?.volume = 1
-                  audioPlayer?.prepareToPlay()
-//
-//                  try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
-//                  try AVAudioSession.sharedInstance().setActive(true)
-                  if ((audioPlayer?.isPlaying) == true){
-                      audioPlayer?.pause()
-                      btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-                      btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: .normal)
-                      btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: .normal)
-                  }else{
-                      audioPlayer = try? AVAudioPlayer(contentsOf: recorder.url)
-                      audioPlayer?.delegate = self
-                      audioPlayer?.play()
-                      btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
-                      btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_disable"), for: .normal)
-                      btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
+          if !recorder.isRecording {
+              audioPlayer?.numberOfLoops = 0 // loop count, set -1 for infinite
+              audioPlayer?.volume = 1
+              audioPlayer?.prepareToPlay()
+
+              if ((audioPlayer?.isPlaying) == true){
+                  //pause audio
+                  audioPlayer?.pause()
+                  btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+                  btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: .normal)
+                  btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: .normal)
+              }else{
+                  //play audio
+                  do{
+                      try audioPlayer = AVAudioPlayer(contentsOf: recorder.url)
+                  }catch{
+                      print(error.localizedDescription)
+                      return
                   }
+                  
+                  audioPlayer?.delegate = self
+                  audioPlayer?.play()
+                  btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
+                  btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_disable"), for: .normal)
+                  btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
               }
-          }
-    }catch{
-        print("error")
-    }
+            }
+        }
     }
     @IBAction func onTapForwardTrim(_ sender: UIButton) {
         print("Forward Trim")
@@ -403,18 +429,26 @@ class RecordVC: BaseViewController {
     @IBAction func segmentChanged(_ sender: Any) {
         switch segmentControl.selectedSegmentIndex {
         case 0:
-            self.viewClear.isHidden = true
-            self.stackViewHeight.constant = 200 - 45 * 3
+            print("append")
+            //show alert first and then functionality
+            CommonFunctions.alertMessage(view: self, title: "Append", msg: "When the append function is selected, the cursor will automatically move to the end of the original recording. If you want the Append to start at a different point, move the cursor to a desired point and tap the orange Record button to start the Append function.", btnTitle: "OK")
+//            self.viewClear.isHidden = true
+//            self.stackViewHeight.constant = 150 - 45 * 3
+            
+            self.btnRecord.isUserInteractionEnabled = true
+            self.btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: .normal)
+            
             break
         case 1:
+            print("insert")
             settings = [
                 AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-                AVSampleRateKey: 12000,
+                AVSampleRateKey: Double(savedAudioQuality(audioQuality: AudioQuality(rawValue: CoreData.shared.audioQuality)!)),
                 AVNumberOfChannelsKey: 1,
                 AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
             ]
             self.stackView.isHidden = false
-            self.stackViewHeight.constant = 200 - 45 * 2
+            self.stackViewHeight.constant = 150 - 45 * 2
             self.bookMarkView.isHidden = true
             self.bookmarkWaveTime.isHidden = true
             self.btnClear.setImage(UIImage(named: "btn_start_point_normal"), for: .normal)
@@ -422,8 +456,10 @@ class RecordVC: BaseViewController {
             startRecording()
             break
         case 2:
+            print("overrrite")
             break
         case 3:
+            print("partial delete")
             break
         default:
             break
@@ -530,6 +566,7 @@ class RecordVC: BaseViewController {
             if success{
                 self.saveRecordedAudio() { (success) in
                     if success{
+                        CoreData.shared.fileCount += 1
                         self.onDiscardRecorderSetUp()
                     }
                 }
@@ -580,6 +617,7 @@ class RecordVC: BaseViewController {
         self.currentRecordUpdateTimer.invalidate()
         self.customRangeBar.isHidden = false
         self.lblTime.text = "00:00:00"
+        self.lblFSizeValue.text = "0.00 Mb"
         self.btnRecord.isUserInteractionEnabled = true
         self.btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: .normal)
         self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_diable"), for: .normal)
@@ -637,15 +675,15 @@ class RecordVC: BaseViewController {
     // Upadte Timer method.
    @objc func updateAudioMeter(timer: Timer) {
         if let recorder = audioRecorder {
-        if recorder.isRecording
-        {
-            let hr = Int((recorder.currentTime / 60) / 60)
-            let min = Int(recorder.currentTime / 60)
-            let sec = Int(recorder.currentTime.truncatingRemainder(dividingBy: 60))
-            let totalTimeString = String(format: "%02d:%02d:%02d", hr, min, sec)
-            self.lblTime.text = totalTimeString
-            recorder.updateMeters()
-         }
+            if recorder.isRecording{
+                let hr = Int((recorder.currentTime / 60) / 60)
+                let min = Int(recorder.currentTime / 60)
+                let sec = Int(recorder.currentTime.truncatingRemainder(dividingBy: 60))
+                let totalTimeString = String(format: "%02d:%02d:%02d", hr, min, sec)
+                self.lblTime.text = totalTimeString
+                self.lblFSizeValue.text = String(format: "%.2f", Float(try! Data(contentsOf: recorder.url).count) / 1024.0 / 1024.0) + " Mb"
+                recorder.updateMeters()
+             }
         }
     }
 
@@ -671,51 +709,52 @@ class RecordVC: BaseViewController {
             }
         }
     }
+    
     // Microphone Access
-        func checkMicrophoneAccess() {
-            // Check Microphone Authorization
-            switch AVAudioSession.sharedInstance().recordPermission {
-                
-            case AVAudioSession.RecordPermission.granted:
-                print(#function, " Microphone Permission Granted")
-                break
-                
-            case AVAudioSession.RecordPermission.denied:
-                // Dismiss Keyboard (on UIView level, without reference to a specific text field)
-                UIApplication.shared.sendAction(#selector(UIView.endEditing(_:)), to:nil, from:nil, for:nil)
-                CommonFunctions.showAlert(view: self, title: "Microphone Error!", message: "PTS Dictate is Not Authorized to Access the Microphone!", completion: {
-                    (result) in
-                    if result {
-                        DispatchQueue.main.async {
-                            if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
-                                UIApplication.shared.open(settingsURL, options: self.convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
-                            }
-                        }
-                    }else{
-                        print("No Message")
-                    }
-                })
-                return
-                
-            case AVAudioSession.RecordPermission.undetermined:
-                print("Request permission here")
-                // Dismiss Keyboard (on UIView level, without reference to a specific text field)
-                UIApplication.shared.sendAction(#selector(UIView.endEditing(_:)), to:nil, from:nil, for:nil)
-                
-                AVAudioSession.sharedInstance().requestRecordPermission({ (granted) in
-                    // Handle granted
-                    if granted {
-                        print(#function, " Now Granted")
-                    } else {
-                        print("Pemission Not Granted")
-                        
-                    } // end else
-                })
-            @unknown default:
-                print("ERROR! Unknown Default. Check!")
-            } // end switch
+    func checkMicrophoneAccess() {
+        // Check Microphone Authorization
+        switch AVAudioSession.sharedInstance().recordPermission {
             
-        }
+        case AVAudioSession.RecordPermission.granted:
+            print(#function, " Microphone Permission Granted")
+            break
+            
+        case AVAudioSession.RecordPermission.denied:
+            // Dismiss Keyboard (on UIView level, without reference to a specific text field)
+            UIApplication.shared.sendAction(#selector(UIView.endEditing(_:)), to:nil, from:nil, for:nil)
+            CommonFunctions.showAlert(view: self, title: "Microphone Error!", message: "PTS Dictate is Not Authorized to Access the Microphone!", completion: {
+                (result) in
+                if result {
+                    DispatchQueue.main.async {
+                        if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+                            UIApplication.shared.open(settingsURL, options: self.convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
+                        }
+                    }
+                }else{
+                    print("No Message")
+                }
+            })
+            return
+            
+        case AVAudioSession.RecordPermission.undetermined:
+            print("Request permission here")
+            // Dismiss Keyboard (on UIView level, without reference to a specific text field)
+            UIApplication.shared.sendAction(#selector(UIView.endEditing(_:)), to:nil, from:nil, for:nil)
+            
+            AVAudioSession.sharedInstance().requestRecordPermission({ (granted) in
+                // Handle granted
+                if granted {
+                    print(#function, " Now Granted")
+                } else {
+                    print("Pemission Not Granted")
+                    
+                } // end else
+            })
+        @unknown default:
+            print("ERROR! Unknown Default. Check!")
+        } // end switch
+        
+    }
 
     // Helper function inserted by Swift migrator.
     fileprivate func convertFromAVAudioSessionCategory(_ input: AVAudioSession.Category) -> String {
@@ -733,9 +772,10 @@ class RecordVC: BaseViewController {
     }
     private func createURLForNewRecord() -> URL {
         let appGroupFolderUrl = self.getDocumentsDirectory()
-        let fileNamePrefix = DateFormatter.sharedDateFormatter.string(from: Date())
-        let fullFileName = "pixel01_" + fileNamePrefix + ".m4a"
-        self.audioFileName = fullFileName
+//        let fileNamePrefix = DateFormatter.sharedDateFormatter.string(from: Date())
+//        let fullFileName = "pixel01_" + fileNamePrefix + ".m4a"
+//        self.audioFileName = fullFileName
+        let fullFileName = (self.lblFNameValue.text ?? "")
         let newRecordFileName = appGroupFolderUrl.appendingPathComponent(fullFileName)
         return newRecordFileName
     }
@@ -743,20 +783,20 @@ class RecordVC: BaseViewController {
 
 extension RecordVC: AVAudioRecorderDelegate,AVAudioPlayerDelegate {
     // completion of recording
-       func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
-           if flag {
-               print("Recording Completed")
-               self.finishAudioRecording(success: true)
-           }
+    func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
+       if flag {
+           print("Recording Completed")
+           self.finishAudioRecording(success: true)
        }
+    }
     
     // Completion of playing
-       func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-           if flag{
-               print("Playing Completed")
-               btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-           }
-       }
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        if flag{
+            print("Playing Completed")
+            btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+        }
+    }
 }
 
 extension DateFormatter {
@@ -767,6 +807,7 @@ extension DateFormatter {
         return dateFormatter
     }()
 }
+
 // Extension for merge audio file
 extension RecordVC{
     func directoryURL() -> NSURL? {
@@ -809,8 +850,7 @@ extension RecordVC{
             print("Somthing Wrong.")
         }
     }
-    func playmerge(audio1: NSURL, audio2:  NSURL)
-    {
+    func playmerge(audio1: NSURL, audio2:  NSURL){
         let composition = AVMutableComposition()
         let compositionAudioTrack1:AVMutableCompositionTrack? = composition.addMutableTrack(withMediaType: .audio, preferredTrackID: CMPersistentTrackID())
         let compositionAudioTrack2:AVMutableCompositionTrack? = composition.addMutableTrack(withMediaType: .audio, preferredTrackID: CMPersistentTrackID())

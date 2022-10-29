@@ -6,15 +6,31 @@
 //
 
 import UIKit
+enum AudioQuality : Int {
+    case one = 0
+    case two = 1
+    case three = 2
+}
 
+func savedAudioQuality(audioQuality : AudioQuality) -> Double {
+    switch audioQuality {
+    case .one:
+        return 11025.0
+    case .two:
+        return 22050.0
+    case .three:
+        return 44100.0
+    }
+}
+//print(checkPoint(compass: CompassPoint(rawValue: 3)!))
 class AudioQualityVC: BaseViewController {
     
     // MARK: - @IBOutlets.
     @IBOutlet weak var tableView: UITableView!
     
     // MARK: - data var
-    let titleArray = ["11 kHz","22 kHz","44.1kHz"]
-    var selectedData = "11 kHz"
+    let titleArray = ["11 kHz","22 kHz","44.1 kHz"]
+    var selectedData = 0
     
     
     // MARK: - View Life-Cycle.
@@ -67,10 +83,13 @@ extension AudioQualityVC: UITableViewDelegate,UITableViewDataSource {
 //            self.selectedData = "AAC"
             break
         case 1:
-            self.selectedData = titleArray[indexPath.row]
+//            self.selectedData = titleArray[indexPath.row]
+            self.selectedData = indexPath.row
+            CoreData.shared.audioQuality = self.selectedData
         default:
             break
         }
+        CoreData.shared.dataSave()
         self.tableView.reloadData()
     }
     
@@ -87,14 +106,19 @@ extension AudioQualityVC: UITableViewDelegate,UITableViewDataSource {
             cell.isUserInteractionEnabled = true
             self.tableView.separatorStyle = .singleLine
             cell.lblTitle.text = titleArray[indexPath.row]
+            if CoreData.shared.audioQuality == indexPath.row {
+                cell.imgViewTick.isHidden = false
+            }else{
+                cell.imgViewTick.isHidden = true
+            }
         default:
             break
         }
-        if cell.lblTitle.text == self.selectedData{
-            cell.imgViewTick.isHidden = false
-        }else{
-            cell.imgViewTick.isHidden = true
-        }
+//        if cell.lblTitle.text == self.selectedData{
+//            cell.imgViewTick.isHidden = false
+//        }else{
+//            cell.imgViewTick.isHidden = true
+//        }
         return cell
         
     }

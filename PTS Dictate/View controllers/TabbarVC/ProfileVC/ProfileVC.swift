@@ -44,6 +44,10 @@ extension ProfileVC: UITableViewDelegate,UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ProfileCell", for: indexPath) as! ProfileCell
         cell.lblTitleName.text = titleArray[indexPath.row]
+//        if CoreData.shared.userInfo.count > 0{
+//            cell.lblTitleValue.text = CoreData.shared.userInfo[indexPath.row]
+//        }
+        cell.setData(indexPath: indexPath)
         return cell
     }
     
