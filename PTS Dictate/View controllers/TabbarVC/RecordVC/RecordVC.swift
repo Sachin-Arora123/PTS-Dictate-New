@@ -726,8 +726,7 @@ class RecordVC: BaseViewController {
     fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
         return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
     }
-    func getDocumentsDirectory() -> URL
-    {
+    func getDocumentsDirectory() -> URL{
         let paths = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
         let  documentsDirectory = paths[0]
         return documentsDirectory

@@ -432,8 +432,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1885"
             endingLineNumber = "1885"
-            landmarkName = "RecordVCNew"
-            landmarkType = "3">
+            landmarkName = "startPointBtnTapped(sender:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

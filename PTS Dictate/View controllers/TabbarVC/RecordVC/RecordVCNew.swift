@@ -151,36 +151,36 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     private var isRecording = 0
     private var isErasing = 0
     private var isOverwriting = 0
-    private var isEdit : Bool?
+    private var isEdit : Bool = false
     private var isAlertShown : Bool?
     private var isFirstTime : Bool?
-    private var isRecordAtBeginning : Bool?
+    private var isRecordAtBeginning : Bool = false
     private var fileCountInt = 0
     private var previousFilelength = 0.0
     private var bookMarTapCount = 0
     private var sliderValue = 0.0
     private var trimCount = 0
-    private var autoSaveIsOn : Bool?
-    private var isPaused : Bool?
-    private var isPausedFromTab : Bool?
-    private var isSaveAutoSaveFile : Bool?
-    private var isUploadWarning : Bool?
-    private var isLimitReached : Bool?
-    private var isRecordStopTapped : Bool?
-    private var isRecordStarted : Bool?
-    private var isVoiceActivation : Bool?
-    private var isAppend : Bool?
+    private var autoSaveIsOn : Bool = false
+    private var isPaused : Bool = false
+    private var isPausedFromTab : Bool = false
+    private var isSaveAutoSaveFile : Bool = false
+    private var isUploadWarning : Bool = false
+    private var isLimitReached : Bool = false
+    private var isRecordStopTapped : Bool = false
+    private var isRecordStarted : Bool = false
+    private var isVoiceActivation : Bool = false
+    private var isAppend : Bool = false
     private var isSaving = 0.0
-    private var isLoadingShowing : Bool?
-    private var isBookMarkTap : Bool?
+    private var isLoadingShowing : Bool = false
+    private var isBookMarkTap : Bool = false
     private var editMode = 0
     private var startPointTime = 0
     private var endPointTime = 0
-    private var isFirstTimeInEditing : Bool?
-    private var isAppendPopupShowed : Bool?
-    private var isEditButtonTapped : Bool?
-    private var isAppendWithOverwriting : Bool?
-    private var isStopBtnTappedWhileOverwriting : Bool?
+    private var isFirstTimeInEditing : Bool = false
+    private var isAppendPopupShowed : Bool = false
+    private var isEditButtonTapped : Bool = false
+    private var isAppendWithOverwriting : Bool = false
+    private var isStopBtnTappedWhileOverwriting : Bool = false
     private var pageScrollView : UIScrollView?
     private var headerView : UIView?
     private var segmentBgView : UIView?
@@ -4507,69 +4507,62 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
         }
 
-        func getDocumentDirectory() -> String! {
-            let paths:[AnyObject]! = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true)
-            return paths.objectAtIndex(0)
-        }
+    func getDocumentDirectory() -> URL {
+        let paths = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
+        let  documentsDirectory = paths[0]
+        return documentsDirectory
+    }
 
-        func getRecordedFile() -> String! {
-            return self.getDocumentDirectory().stringByAppendingPathComponent("Record").stringByAppendingPathComponent(String(format:"%@%d%@",RECORDED_FILE,trimCount,".m4a"))
-        }
+    func getRecordedFile() -> String {
+        return self.getDocumentDirectory().appendingPathComponent("Record").appendingPathComponent(String(format:"%@%d%@",RECORDED_FILE,trimCount,".m4a"))
+    }
     
-    func getExistingFolder() -> String! {
-            if !editRecording {
-                return  self.getDocumentDirectory().stringByAppendingPathComponent("Existing")
+    func getExistingFolder() -> String {
+        if !editRecording {
+            return  self.getDocumentDirectory().appendingPathComponent("Existing")
+        }
+        return  self.getDocumentDirectory().appendingPathComponent("Record")
+    }
+
+    func getEditRecordFolder() -> String {
+        return  self.getDocumentDirectory().appendingPathComponent("EditRecord")
+    }
+
+    func createFolder(folderName:String) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), {
+            let dataPath:String! = self.getDocumentDirectory().appendingPathComponent(String(format:"%@/", folderName))
+            DispatchQueue.main.async {
+                if !FileManager.default.fileExists(atPath: dataPath){
+                    FileManager.default.createDirectory(atPath: dataPath, withIntermediateDirectories: false)
+                }
             }
-            return  self.getDocumentDirectory().stringByAppendingPathComponent("Record")
-        }
+        })
+    }
 
-        func getEditRecordFolder() -> String! {
-            return  self.getDocumentDirectory().stringByAppendingPathComponent("EditRecord")
-        }
-
-        func createFolder(folderName:String!) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), {
-                let dataPath:String! = self.getDocumentDirectory().stringByAppendingPathComponent(String(format:"%@/", folderName))
-                dispatch_async(dispatch_get_main_queue(), {
-                    if !NSFileManager.defaultManager().fileExistsAtPath(dataPath)
-                    {
-                        NSFileManager.defaultManager().createDirectoryAtPath(dataPath, withIntermediateDirectories:false, attributes:nil, error:nil)
-                    }
-                })
-            })
-        }
-
-        func createFolderInDocuments(folderName:String!) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), {
-                let dataPath:String! = self.getDocumentDirectory().stringByAppendingPathComponent(String(format:"%@/", folderName))
-                let success:Bool = NSFileManager.defaultManager().removeItemAtPath(dataPath, error:nil)
-                dispatch_async(dispatch_get_main_queue(), {
-                    if success {
-                        // NSLog(@"FOLDER DELETED");
-                    }
-                    if !NSFileManager.defaultManager().fileExistsAtPath(dataPath)
-                        {NSFileManager.defaultManager().createDirectoryAtPath(dataPath, withIntermediateDirectories:false, attributes:nil, error:nil)}
-                    // NSLog(@"FOLDER CREATED");
-
-                })
-            })
-        }
-
-        func deleteParticularFileInFolder(filepath:String!) {
-            let fileManager:NSFileManager! = NSFileManager.defaultManager()
-            let isFileThere:Bool = NSFileManager.defaultManager().fileExistsAtPath(filepath)
-            if isFileThere {
-                fileManager.removeItemAtPath(filepath, error:nil)
+    func createFolderInDocuments(folderName:String!) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), {
+            let dataPath:String! = self.getDocumentDirectory().appendingPathComponent(String(format:"%@/", folderName))
+            let success:Bool = try? FileManager.default.removeItem(atPath: dataPath)
+            DispatchQueue.main.async {
+                if !FileManager.defaul.fileExists(atPath: dataPath){
+                    FileManager.default.createDirectory(atPath: dataPath, withIntermediateDirectories: false)
+                }
             }
+        })
+    }
+
+    func deleteParticularFileInFolder(filepath:String!) {
+        let fileManager = FileManager.default
+        let isFileThere = FileManager.default.fileExists(atPath: dataPath)
+        if isFileThere {
+            fileManager.removeItem(atPath: dataPath)
         }
+    }
 
-        func playRecordedAudio() {
-
-            self.playerButtonsEnable = true
-
-            self.thePlayer.play()
-
-        }
+    func playRecordedAudio() {
+        self.playerButtonsEnable = true
+        self.thePlayer?.play()
+    }
 
         func updateTemprecording() {
 
@@ -4801,15 +4794,15 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     func pauseAudioPlayer() {
             //  NSLog(@"<======= PAUSE AUDIO PLAYER =======>");
 
-            self.thePlayer.pause()
+            self.thePlayer?.pause()
 
             //stop the NSTimer
-            self.playerTimer.invalidate()
+            self.playerTimer?.invalidate()
             self.playerTimer = nil
 
             //PTS-??
-            if self.segmentedControl.selectedSegmentIndex == 3 {
-                self.recordBtn.enabled = self.stopBtn.enabled = false
+            if self.segmentedControl?.selectedSegmentIndex == 3 {
+                self.recordBtn?.enabled = self.stopBtn?.enabled = false
             }
             else {
                 if !isRecordStopTapped {
@@ -4827,7 +4820,6 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         }
 
         func pauseAudioPlayerForBookmark(currentTime:String!) {
-            NSLog("<======= PAUSE AUDIO PLAYER =======>")
 
             self.pauseArr.removeAllObjects()
             self.pauseArr.addObject(currentTime)
@@ -4851,13 +4843,13 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
             self.playRecordedAudio()
 
-            self.playerTimer = NSTimer.scheduledTimerWithTimeInterval(1.0, target:self, selector:Selector("updatePlayerTiming"), userInfo:self.thePlayer, repeats:true)
+            self.playerTimer = Timer.scheduledTimerWithTimeInterval(1.0, target:self, selector:Selector("updatePlayerTiming"), userInfo:self.thePlayer, repeats:true)
 
         }
 
 
         func isPlaying() -> Bool {
-            if self.thePlayer.currentItem && self.thePlayer.rate != 0
+            if self.thePlayer?.currentItem && self.thePlayer?.rate != 0
             {
                 return true
             }
@@ -4865,7 +4857,6 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         }
 
         func playAudioPlayer() {
-            NSLog("<======= PLAY AUDIO PLAYER =======>")
 
             // Setup audio session
             var setOverrideError:NSError!
@@ -4875,25 +4866,16 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             session.setCategory(AVAudioSessionCategoryPlayAndRecord, error:&setCategoryError)
             session.setActive(true, error:&setCategoryError)
 
-            if (setCategoryError != nil) {
-                NSLog("%@", setCategoryError.description())
-            }
-
             session.overrideOutputAudioPort(AVAudioSessionPortOverrideSpeaker, error:&setOverrideError)
 
-
-            if (setOverrideError != nil) {
-                NSLog("%@", setOverrideError.description())
-            }
-
             //stop the NSTimer
-            self.playerTimer.invalidate()
+            self.playerTimer?.invalidate()
             self.playerTimer = nil
 
-            self.eraseBtn.enabled = true
-            self.eraseBtn.alpha = 1.0
+            self.eraseBtn?.enabled = true
+            self.eraseBtn?.alpha = 1.0
 
-            self.recordBtn.enabled = self.stopBtn.enabled = false
+            self.recordBtn?.enabled = self.stopBtn.enabled = false
 
             playBtn.setImage(K_SETIMAGE("existing_controls_pause_btn_normal.png"), forState:UIControlStateNormal)
             playBtn.setImage(K_SETIMAGE("existing_controls_pause_btn_disable.png"), forState:UIControlStateDisabled)
@@ -4904,56 +4886,53 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 NSLog("LAST VALUE @@@@@@@@@@@")
 
-                self.thePlayer.seekToTime(CMTimeMake(0, 1))
+                self.thePlayer?.seek(to: CMTime(value: 0, timescale: 1))
             }
 
-            let playerItem:AVPlayerItem! = self.thePlayer.currentItem
+            let playerItem = self.thePlayer?.currentItem
 
             // Subscribe to the AVPlayerItem's DidPlayToEndTime notification.
-            NSNotificationCenter.defaultCenter().addObserver(self, selector:Selector("itemDidFinishPlaying:"), name:AVPlayerItemDidPlayToEndTimeNotification, object:playerItem)
+            NotificationCenter.default.addObserver(self, selector:Selector("itemDidFinishPlaying:"), name:AVPlayerItemDidPlayToEndTimeNotification, object:playerItem)
 
-            self.playerTimer = NSTimer.scheduledTimerWithTimeInterval(1.0, target:self, selector:Selector("updatePlayerTiming"), userInfo:self.thePlayer, repeats:true)
+            self.playerTimer = Timer.scheduledTimerWithTimeInterval(1.0, target:self, selector:Selector("updatePlayerTiming"), userInfo:self.thePlayer, repeats:true)
 
         }
 
-        func itemDidFinishPlaying(notification:NSNotification!) {
+        func itemDidFinishPlaying(notification:NSNotification) {
             // Will be called when AVPlayer finishes playing playerItem
-
-            NSLog("========> itemDidFinishPlaying <=======")
-
-            self.thePlayer.seekToTime(CMTimeMake(0, 1))
-            self.thePlayer.pause()
+            self.thePlayer?.seek(to: CMTime(value: 0, timescale: 1))
+            self.thePlayer?.pause()
 
             self.stopAllProcess()
 
             self.waveformView.progressTime = CMTimeMakeWithSeconds(lroundf(self.recordedFileDuration), 10000)
 
             if !isRecordStopTapped {
-                self.recordBtn.enabled = self.stopBtn.enabled = true
+                self.recordBtn?.enabled = self.stopBtn?.enabled = true
             }
-            if self.segmentedControl.selectedSegmentIndex == 2 {
-                self.recordBtn.enabled = self.stopBtn.enabled = false
+            if self.segmentedControl?.selectedSegmentIndex == 2 {
+                self.recordBtn?.enabled = self.stopBtn?.enabled = false
             }
 
             let currentTime:UILabel! = self.view.viewWithTag(TAG_CURRENTTIME_LBL)
             currentTime.text = String(format:"%@ | %@", self.timeFormatted(lroundf(self.recordedFileDuration)),self.timeFormatted(lroundf(self.recordedFileDuration)))
 
-            self.waveFormSlider.setValue(lroundf(self.recordedFileDuration), animated:true)
+            self.waveFormSlider?.setValue(lroundf(self.recordedFileDuration), animated:true)
 
-            NSNotificationCenter.defaultCenter().removeObserver(self, name:AVPlayerItemDidPlayToEndTimeNotification, object:nil)
+            NotificationCenter.default.removeObserver(self, name:AVPlayerItemDidPlayToEndTimeNotification, object:nil)
 
         }
     
     func updatePlayerTiming() {
-        let playerItem:AVPlayerItem! = self.thePlayer.currentItem
-        let currentTime:CMTime = playerItem.currentTime
-        let time:Float = CMTimeGetSeconds(currentTime)
+        let playerItem = self.thePlayer?.currentItem
+        let currentTime = playerItem?.currentTime
+        let time = CMTimeGetSeconds(currentTime)
         if !isBookMarkTap {
             if (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
                 let current:String! = self.timeFormatted(lroundf(time))
-                if self.bookMarkArr.count > 0 {
-
-                    for var i:Int=0 ; i < self.bookMarkArr.count ; i++ {
+                if self.bookMarkArr?.count > 0 {
+                    
+                    for var i in 0..<self.bookMarkArr.count{
                         switch (i) {
                             case 0:
                                 if (self.bookMarkArr.objectAtIndex(0) == current) {
@@ -5162,12 +5141,12 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 }
             }
         }
-        self.updateTimeForPlayer(self.thePlayer)
+        self.updateTimeForPlayer(p: self.thePlayer)
     }
     
     func stopAllProcess() {
         //stop the NSTimer
-        self.playerTimer.invalidate()
+        self.playerTimer?.invalidate()
         self.playerTimer = nil
         autoSaveIsOn = false
 
@@ -5180,18 +5159,18 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     }
 
     func showWaveForm() {
-        if self.graphView.alpha == 0 {
-            self.graphView.alpha = 1.0
-            if self.customRangeBar.alpha == 1.0 {
-                self.customRangeBar.alpha = 0.0
+        if self.graphView?.alpha == 0 {
+            self.graphView?.alpha = 1.0
+            if self.customRangeBar?.alpha == 1.0 {
+                self.customRangeBar?.alpha = 0.0
             }
         }
     }
 
     func hideWaveForm() {
-        if self.graphView.alpha == 1.0 {
-            self.graphView.alpha = 0
-            self.bookmarkBackwardBtn.enabled = self.bookmarkFordwardBtn.enabled = false
+        if self.graphView?.alpha == 1.0 {
+            self.graphView?.alpha = 0
+            self.bookmarkBackwardBtn?.enabled = self.bookmarkFordwardBtn?.enabled = false
         }
     }
 
@@ -5209,57 +5188,38 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     }
 
     func showSegmentView() {
-        if self.segmentBgView.alpha == 0  {
-
-            self.segmentBgView.alpha = 1.0
-            let frame:CGRect = self.segmentBgView.frame
-            self.segmentBgView.frame = CGRectMake(0, -frame.size.height, self.view.frame.size.width, frame.size.height)
-            //self.segmentedControl.selectedSegmentIndex = 0;
-            //editMode = 0;
-
-            UIView.animateWithDuration(1.0,
-                                  delay:0,
-                                options:UIViewAnimationOptionTransitionFlipFromTop,
-                             animations:{
-                                 self.segmentBgView.frame = CGRectMake(0, -5, self.view.frame.size.width, frame.size.height)
-                                 self.customRangeBar.frame = CGRectMake(10, 15, self.view.frame.size.width - 20, 35)
-                                 self.headerView.frame = CGRectMake(0, frame.size.height - 20, self.headerView.frame.size.width, self.headerView.frame.size.height)
-                             },
-                             completion:{ (finished:Bool) in
-                             })
+        if self.segmentBgView?.alpha == 0{
+            self.segmentBgView?.alpha = 1.0
+            let frame = self.segmentBgView?.frame
+            self.segmentBgView?.frame = CGRect(x: 0, y: -(frame?.size.height ?? 0), width: self.view.frame.size.width, height: frame?.size.height ?? 0)
+            UIView.animate(withDuration: 1.0, delay:0, options:.transitionFlipFromTop, animations:{
+                self.segmentBgView?.frame  = CGRect(x: 0, y: -5, width: self.view.frame.size.width, height: frame?.size.height ?? 0)
+                self.customRangeBar?.frame = CGRect(x: 10, y: 15, width: self.view.frame.size.width - 20, height: 35)
+                self.headerView?.frame     = CGRect(x: 0, y: (frame?.size.height ?? 0) - 20, width: self.headerView?.frame.size.width ?? 0, height: self.headerView?.frame.size.height ?? 0)
+            },completion:nil)
         }
     }
 
     func hideSegmentView() {
-        if self.segmentBgView.alpha == 1.0 {
-
-            let frame:CGRect = self.segmentBgView.frame
-
-            self.segmentBgView.frame = CGRectMake(0, 0, frame.size.width, frame.size.height)
-
-            UIView.animateWithDuration(1.0,
-                                  delay:0,
-                                options:UIViewAnimationOptionTransitionFlipFromBottom,
-
-                             animations:{
-                                 self.segmentBgView.frame = CGRectMake(0, -frame.size.height, frame.size.width, frame.size.height)
-                                 self.segmentBgView.alpha = 0.0
-                                 self.headerView.frame = CGRectMake(0, 0, self.headerView.frame.size.width, self.headerView.frame.size.height)
-
-                                 self.bookmarkBtn.enabled = true
-
-                                 if self.bookMarkArr.count == 20 {
-                                     self.bookmarkBtn.enabled = false
-                                 }
-                             },
-                             completion:nil)
+        if self.segmentBgView?.alpha == 1.0 {
+            let frame = self.segmentBgView?.frame
+            self.segmentBgView?.frame = CGRect(x: 0, y: 0, width: frame?.size.width ?? 0, height: frame?.size.height ?? 0)
+            UIView.animate(withDuration: 1.0,delay:0,options:.transitionFlipFromBottom, animations:{
+                self.segmentBgView?.frame = CGRect(x: 0, y: -(frame?.size.height ?? 0), width: frame?.size.width ?? 0, height: frame?.size.height ?? 0)
+                self.segmentBgView?.alpha = 0.0
+                self.headerView?.frame = CGRect(x: 0, y: 0, width: self.headerView?.frame.size.width ?? 0, height: self.headerView?.frame.size.height ?? 0)
+                self.bookmarkBtn?.isEnabled = true
+                if self.bookMarkArr?.count == 20 {
+                    self.bookmarkBtn?.isEnabled = false
+                }
+             }, completion:nil)
         }
     }
     
     func showPartialDeleteView() {
         self.didFinishOverwrite()
 
-        UIView.animateWithDuration(1.0, delay:0, options:UIViewAnimationOptionTransitionFlipFromBottom, animations:{
+        UIView.animateWithDuration(1.0, delay:0, options:.transitionFlipFromBottom, animations:{
 
              self.recordCtrlsView.frame = CGRectMake(0, self.partialDelView.frame.origin.y + self.partialDelView.frame.size.height, self.pageScrollView.frame.size.width, 80)
 
@@ -5318,8 +5278,8 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
     func showOverwriteView() {
         self.hidePartialDeleteView()
-        let newTime:CMTime = CMTimeMake(0, 1)
-        self.thePlayer.seekToTime(newTime)
+        let newTime:CMTime = CMTime(0, 1)
+        self.thePlayer?.seekToTime(newTime)
 
         self.playAudioPlayer()
 
@@ -5365,7 +5325,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     func hideOverwriteView() {
             UIView.animateWithDuration(1.0,
                                   delay:0,
-                                options:UIViewAnimationOptionTransitionFlipFromTop,
+                                       options:.transitionFlipFromTop,
 
                              animations:{
 
@@ -5466,7 +5426,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
             UIView.animateWithDuration(1.0,
                                   delay:0,
-                                options:UIViewAnimationOptionTransitionFlipFromTop,
+                                       options:.transitionFlipFromTop,
 
                              animations:{
 
@@ -5543,9 +5503,9 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         }
     
     func showAutoSaveAlert() {
-        let saveAlert:UIAlertView! = UIAlertView(title:"PTS Dictate", message:"Auto File Saving has reached. Please save your file.", delegate:self, cancelButtonTitle:"OK", otherButtonTitles:nil)
-        saveAlert.tag = TAG_AUTO_SAVE_ALERT_TAG
-        saveAlert.show()
+//        let saveAlert:UIAlertView! = UIAlertView(title:"PTS Dictate", message:"Auto File Saving has reached. Please save your file.", delegate:self, cancelButtonTitle:"OK", otherButtonTitles:nil)
+//        saveAlert.tag = TAG_AUTO_SAVE_ALERT_TAG
+//        saveAlert.show()
     }
 
     func textTospeech(text:String!) {
@@ -5557,15 +5517,9 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         session.setCategory(AVAudioSessionCategoryPlayAndRecord, error:&setCategoryError)
         session.setActive(true, error:&setCategoryError)
 
-        if (setCategoryError != nil) {
-            NSLog("setCategoryError : %@", setCategoryError.description())
-        }
-
+    
         session.overrideOutputAudioPort(AVAudioSessionPortOverrideSpeaker, error:&setOverrideError)
 
-        if (setOverrideError != nil) {
-            NSLog("setOverrideError :%@", setOverrideError.description())
-        }
 
         let synthesizer:AVSpeechSynthesizer! = AVSpeechSynthesizer()
         let utterance:AVSpeechUtterance! = AVSpeechUtterance.speechUtteranceWithString(text)
@@ -5592,13 +5546,13 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             utterance.pitchMultiplier = pitchMultiplier
         }
 
-        synthesizer.speakUtterance(utterance)
+        synthesizer.speak(utterance)
     }
 
     func callAutoSave() {
         NSLog("callAutoSave")
 
-        if self.audio_Recorder.recording {
+        if self.audio_Recorder?.recording {
 
             autoSaveIsOn = true
 
@@ -5607,7 +5561,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
             isPausedFromTab = true
 
-            self.audio_Recorder.pause()
+            self.audio_Recorder?.pause()
 
             self.stopRecordingTimer()
 
@@ -5616,27 +5570,27 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             let timing:UILabel! = self.view.viewWithTag(TAG_TIMING_LBL)
 
             if isRecording == FIRSTTIME {
-                timing.text = self.timeFormatted(lroundf(self.audio_Recorder.currentTime))
+                timing.text = self.timeFormatted(lroundf(self.audio_Recorder?.currentTime))
             }
             else{
 
-                if playerCurrentTime != 0  && self.segmentedControl.selectedSegmentIndex == 2 {
+                if playerCurrentTime != 0  && self.segmentedControl?.selectedSegmentIndex == 2 {
 
-                    if self.recordedFileDuration < (self.audio_Recorder.currentTime + playerCurrentTime) {
+                    if self.recordedFileDuration < (self.audio_Recorder?.currentTime + playerCurrentTime) {
 
-                        timing.text = self.timeFormatted((lroundf(self.audio_Recorder.currentTime) + lroundf(playerCurrentTime)))
+                        timing.text = self.timeFormatted((lroundf(self.audio_Recorder?.currentTime) + lroundf(playerCurrentTime)))
 
                         overWrite.text = ""
 
                     }
                     else
                     {
-                        overWrite.text = self.timeFormatted((lroundf(self.audio_Recorder.currentTime) + lroundf(playerCurrentTime)))
+                        overWrite.text = self.timeFormatted((lroundf(self.audio_Recorder?.currentTime) + lroundf(playerCurrentTime)))
                         timing.text = self.timeFormatted(lroundf(self.recordedFileDuration))
                     }
                 }
 
-                else if self.segmentedControl.selectedSegmentIndex == 1 {
+                else if self.segmentedControl?.selectedSegmentIndex == 1 {
 
                     overWrite.text = self.timeFormatted((lroundf(self.audio_Recorder.currentTime) + lroundf(insertingTime)))
                     timing.text = self.timeFormatted((lroundf(self.audio_Recorder.currentTime + self.recordedFileDuration)))
@@ -5693,7 +5647,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
         print("partialDeleteComplete COMING @@@@@@@@@@@@@@")
 
-        self.recordBtn.enabled = self.stopBtn.enabled = FALSE
+        self.recordBtn.enabled = self.stopBtn.enabled = false
 
         self.recordBtn.setImage(K_SETIMAGE("record_record_btn_disable.png"), forState:.disabled)
     }
@@ -5701,17 +5655,14 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     // MARK: -
     // MARK: NSNOTIFICATION
     @objc func batteryChanged(notification:NSNotification!) {
-        let device:UIDevice! = UIDevice.currentDevice
-
+        let device = UIDevice.currentDevice
         print("=====>>>>> batteryChanged <=====")
-
-        print("State: %li Charge: %f", (device.batteryState as! long), device.batteryLevel * 100)
 
         if device.batteryLevel * 100 <= 10 {
 
             if device.batteryState == .unplugged {
 
-                if self.audio_Recorder.isRecording{
+                if self.audio_Recorder?.isRecording{
 
                     isPausedFromTab = true
 
@@ -5744,7 +5695,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                             isPausedFromTab = false
 
-                            NSNotificationCenter.default.removeObserver(self, name:UIDeviceBatteryLevelDidChangeNotification, object:nil)
+                            NotificationCenter.default.removeObserver(self, name:UIDevice.batteryLevelDidChangeNotification, object:nil)
 
                             let saveAlert:UIAlertView! = UIAlertView(title:K_KEY_APP_TITLE, message:"Your device battery percentage is getting very low. Please save your file first & you can edit later", delegate:self, cancelButtonTitle:"OK", otherButtonTitles: nil)
                             saveAlert.tag = TAG_ALERT_ALREADY_PAUSED_TAG
@@ -5799,6 +5750,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     }
     
     // MARK: - Gestures Interaction
+    
     func gestureRecognizer(_ gestureRecognizer:UIGestureRecognizer!, shouldRecognizeSimultaneouslyWith otherGestureRecognizer:UIGestureRecognizer!) -> Bool {
         return true
     }
@@ -5872,21 +5824,10 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                     let success:Bool = NSFileManager.defaultManager().removeItemAtPath(dataPath, error:nil)
 
-                    dispatch_async(dispatch_get_main_queue(), {
-
-                        if success {
-
-                        }
-                    })
+                    
                 })
 
-
-                // YES
-                NSLog(K_YES)
-
                 if !editRecording {
-
-                    NSLog("YES 1")
 
                     if !editRecording {
 
@@ -5927,24 +5868,16 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                     if (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_AUTO_SAVING) == K_SWITCH_ON) {
 
                         if isSaving == SECONDTIME {
-
                             self.showLoading()
+                            let filePath = self.getDocumentDirectory().appendingPathComponent("EditRecord").appendingPathComponent(self.fileNameLbl?.text ?? "")
 
-                            let filePath:String! = self.getDocumentDirectory().stringByAppendingPathComponent("EditRecord").stringByAppendingPathComponent(self.fileNameLbl?.text)
-
-                            NSLog("filePath ========>>>>>>>>>>>:%@", filePath)
-
-                            let fileDuration:String! = self.audioDuration(filePath: filePath)
+                            let fileDuration = self.audioDuration(filePath: filePath)
 
                             var error:NSError!
-                            let fileDictionary:NSDictionary! = NSFileManager.defaultManager().attributesOfItemAtPath(filePath, error: &error)
+                            let fileDictionary = FileManager.default.attributesOfItem(atPath: filePath)
                             let size:NSNumber! = fileDictionary.objectForKey(NSFileSize)
 
                             let fileSize:String! = String(format:"%.2f",(size.floatValue()/1024.0/1024.0)).stringByAppendingString(" Mb")
-
-                            NSLog("fileSize ========>>>>>>>>>>>:%@", fileSize)
-
-                            NSLog("fileDuration ========>>>>>>>>>>>:%@", fileDuration)
 
                             var bookmarks:String!
 
@@ -5955,8 +5888,8 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                                 
                                 for var i in 0..<result.count {
                                     if i == 0 {
-                                        print("[result objectAtIndex:0] == > %@", result.objectAtIndex(0))
-                                        bookmarks = result.objectAtIndex(i)
+                                        print("[result objectAtIndex:0] == > %@", result.object(at: 0))
+                                        bookmarks = result.object(at: i) as! String
                                     } else {
                                         bookmarks = bookmarks.stringByAppendingString(",")
                                         bookmarks = bookmarks.stringByAppendingString(result.objectAtIndex(i))
@@ -6126,28 +6059,25 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     }
     
     // MARK: AVAUDIO RECORDER DELEGATES
-    func audioRecorderDidFinishRecording(_ avrecorder:AVAudioRecorder!, successfully flag:Bool) {
+    func audioRecorderDidFinishRecording(_ avrecorder:AVAudioRecorder, successfully flag:Bool) {
         // NSLog(@"audioRecorderDidFinishRecording");
         if avrecorder == self.audio_Recorder {
             // NSLog(@"NORMAL AUDIO RECORDER COMPLETED");
             APPDELEGATE.userDefaults().setBool(true, forKey:K_KEY_IS_RECORD_STOPPED)
         }
-        else {
-            //   NSLog(@"TEMP AUDIO RECORDER COMPLETED");
-        }
     }
 
-    func audioRecorderBeginInterruption(_ recorder:AVAudioRecorder!) {
+    func audioRecorderBeginInterruption(_ recorder:AVAudioRecorder) {
         isPausedFromTab = true
         NSLog("audioRecorderBeginInterruption")
-        self.recordStopButtonTapped(false, button:self.stopBtn)
+        self.recordStopButtonTapped(show: false, button:self.stopBtn)
         let saveAlert:UIAlertView! = UIAlertView(title:K_KEY_APP_TITLE, message:"Due to some interruption, the recording has been auto saved. Please go back to Existing Dictations screen, and choose Edit/Append to continue recording.", delegate:self, cancelButtonTitle:"OK", otherButtonTitles:nil)
         saveAlert.tag = 7
         saveAlert.show()
     }
 
     // MARK:  AVAUDIOPLAYER DELEGATE
-    func audioPlayerDidFinishPlaying(_ player:AVAudioPlayer!, successfully flag:Bool) {
+    func audioPlayerDidFinishPlaying(_ player:AVAudioPlayer, successfully flag:Bool) {
 
         player.stop()
         player.prepareToPlay()
@@ -6157,13 +6087,13 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         self.waveformView.progressTime = CMTimeMakeWithSeconds(lroundf(self.recordedFileDuration), 10000)
 
         if !isRecordStopTapped {
-            self.recordBtn.enabled = self.stopBtn.enabled = true
+            self.recordBtn.enabled = self.stopBtn?.enabled = true
         }
 
         let currentTime:UILabel! = self.view.viewWithTag(TAG_CURRENTTIME_LBL)
         currentTime.text = String(format:"%@ | %@", self.timeFormatted(lroundf(self.recordedFileDuration)),self.timeFormatted(lroundf(self.recordedFileDuration)))
 
-        self.waveFormSlider.setValue(lroundf(self.recordedFileDuration), animated:true)
+        self.waveFormSlider?.setValue(lroundf(self.recordedFileDuration), animated:true)
     }
 
 }
