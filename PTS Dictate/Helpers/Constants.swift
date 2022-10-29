@@ -118,7 +118,7 @@ let K_KEY_IS_WELCOME_USER = "welcome_user"
 
 let K_KEY_IS_REMEMBER_ME = "remember_me"
 
-let K_NOTICATION_RECORDING = "is_recording"
+let K_NOTICATION_RECORDING = NSNotification.Name(rawValue: "is_recording")
 let K_NOTICATION_UPLOAD_STATUS = "upload_status-notification"
 let K_NOTICATION_ARCHIVE_STARTED = "archive_started"
 let K_NOTICATION_ARCHIVE_END = "archive_end"
