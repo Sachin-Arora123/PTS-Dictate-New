@@ -144,3 +144,5 @@ let K_BACK_BUTTON_HIGHLIGHTED_IMAGE = "shared_icon_navigation_back.png"
 let K_FONT_NAVIGATION_TITLE_FONT_SIZE = 16.5
 let K_TABBAR_HEIGHT = 60
 let TRANSFORM_END = 1.00
+let K_COLOR_WHITE_COLOR = UIColor.white
+

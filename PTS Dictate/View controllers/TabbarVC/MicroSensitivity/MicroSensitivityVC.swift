@@ -37,6 +37,9 @@ class MicroSensitivityVC: BaseViewController {
         setTitleWithoutImage("Microphone Sensitivity")
         self.slider.value = Float(CoreData.shared.microSensitivityValue)
     }
+    
+    //K_KEY_MICROPHONE_SENSITIVITY set the value in this user defaults
+    //to be used in Record VC
 
 
 }
