@@ -157,36 +157,36 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     private var isRecording = 0
     private var isErasing = 0
     private var isOverwriting = 0
-    private var isEdit : Bool?
+    private var isEdit : Bool = false
     private var isAlertShown : Bool?
     private var isFirstTime : Bool?
-    private var isRecordAtBeginning : Bool?
+    private var isRecordAtBeginning : Bool = false
     private var fileCountInt = 0
     private var previousFilelength = 0.0
     private var bookMarTapCount = 0
     private var sliderValue = 0.0
     private var trimCount = 0
-    private var autoSaveIsOn : Bool?
-    private var isPaused : Bool?
-    private var isPausedFromTab : Bool?
-    private var isSaveAutoSaveFile : Bool?
-    private var isUploadWarning : Bool?
-    private var isLimitReached : Bool?
-    private var isRecordStopTapped : Bool?
-    private var isRecordStarted : Bool?
-    private var isVoiceActivation : Bool?
-    private var isAppend : Bool?
+    private var autoSaveIsOn : Bool = false
+    private var isPaused : Bool = false
+    private var isPausedFromTab : Bool = false
+    private var isSaveAutoSaveFile : Bool = false
+    private var isUploadWarning : Bool = false
+    private var isLimitReached : Bool = false
+    private var isRecordStopTapped : Bool = false
+    private var isRecordStarted : Bool = false
+    private var isVoiceActivation : Bool = false
+    private var isAppend : Bool = false
     private var isSaving = 0.0
-    private var isLoadingShowing : Bool?
-    private var isBookMarkTap : Bool?
+    private var isLoadingShowing : Bool = false
+    private var isBookMarkTap : Bool = false
     private var editMode = 0
     private var startPointTime = 0
     private var endPointTime = 0
-    private var isFirstTimeInEditing : Bool?
-    private var isAppendPopupShowed : Bool?
-    private var isEditButtonTapped : Bool?
-    private var isAppendWithOverwriting : Bool?
-    private var isStopBtnTappedWhileOverwriting : Bool?
+    private var isFirstTimeInEditing : Bool = false
+    private var isAppendPopupShowed : Bool = false
+    private var isEditButtonTapped : Bool = false
+    private var isAppendWithOverwriting : Bool = false
+    private var isStopBtnTappedWhileOverwriting : Bool = false
     private var pageScrollView : UIScrollView?
     private var headerView : UIView?
     private var segmentBgView : UIView?
@@ -1096,30 +1096,30 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
             let btnWidth:Float = 90
 
-            let editRecord:UIButton! = UIButton.buttonWithType(UIButtonTypeCustom)
+            let editRecord:UIButton! = UIButton.buttonWithType(.custom)
             editRecord.frame = CGRectMake(self.bottomView.frame.size.width * 0.5 - btnWidth * 0.5, 15  , btnWidth,  30)
             editRecord.tag = TAG_EDIT_RECORD_BTN
-            editRecord.addTarget(self, action:Selector("action:"), forControlEvents:UIControlEventTouchUpInside)
+            editRecord.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
             editRecord.backgroundColor = K_COLOR_CLEAR_COLOR
-            editRecord.setImage(K_SETIMAGE("record_edit_btn_normal.png"), forState:UIControlStateNormal)
-            editRecord.setImage(K_SETIMAGE("record_edit_btn_disable.png"), forState:UIControlStateHighlighted)
+            editRecord.setImage(K_SETIMAGE("record_edit_btn_normal.png"), forState:.normal)
+            editRecord.setImage(K_SETIMAGE("record_edit_btn_disable.png"), forState:.highlighted)
             self.bottomView.addSubview(editRecord)
 
-            let saveBtn:UIButton! = UIButton.buttonWithType(UIButtonTypeCustom)
+            let saveBtn:UIButton! = UIButton.buttonWithType(.custom)
             saveBtn.frame = CGRectMake(editRecord.frame.origin.x - btnWidth - 10, 15, btnWidth,  30)
             saveBtn.tag = TAG_SAVE_BTN
-            saveBtn.addTarget(self, action:Selector("action:"), forControlEvents:UIControlEventTouchUpInside)
-            saveBtn.setImage(K_SETIMAGE("record_save_btn_normal.png"), forState:UIControlStateNormal)
-            saveBtn.setImage(K_SETIMAGE("record_save_btn_highlighted.png"), forState:UIControlStateHighlighted)
+            saveBtn.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
+            saveBtn.setImage(K_SETIMAGE("record_save_btn_normal.png"), forState:.normal)
+            saveBtn.setImage(K_SETIMAGE("record_save_btn_highlighted.png"), forState:.highlighted)
             self.bottomView.addSubview(saveBtn)
 
-            let discardBtn:UIButton! = UIButton.buttonWithType(UIButtonTypeCustom)
+            let discardBtn:UIButton! = UIButton.buttonWithType(.custom)
             discardBtn.frame = CGRectMake(editRecord.frame.origin.x + btnWidth + 10, saveBtn.frame.origin.y  , btnWidth,  30)
             discardBtn.backgroundColor = K_COLOR_CLEAR_COLOR
             discardBtn.tag = TAG_DISCARD_BTN
-            discardBtn.addTarget(self, action:Selector("action:"), forControlEvents:UIControlEventTouchUpInside)
-            discardBtn.setImage(K_SETIMAGE("discard_btn_normal.png"), forState:UIControlStateNormal)
-            discardBtn.setImage(K_SETIMAGE("discard_btn_highlighted.png"), forState:UIControlStateHighlighted)
+            discardBtn.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
+            discardBtn.setImage(K_SETIMAGE("discard_btn_normal.png"), forState:.normal)
+            discardBtn.setImage(K_SETIMAGE("discard_btn_highlighted.png"), forState:.highlighted)
             self.bottomView.addSubview(discardBtn)
 
             isEdit = false
@@ -1151,19 +1151,19 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 editMode = 0
 
-                let thePlayerduration:Float = CMTimeGetSeconds(self.thePlayerItem.asset.duration)
-                self.recordedFileDuration = lroundf(thePlayerduration)
-                self.waveFormSlider.alpha = 1.0
+            let thePlayerduration = Float(CMTimeGetSeconds(self.thePlayerItem?.asset.duration))
+            self.recordedFileDuration = Double(lroundf(thePlayerduration))
+            self.waveFormSlider?.alpha = 1.0
 
-                self.waveFormSlider.maximumValue = lroundf(thePlayerduration)
-                self.waveformView.progressTime = CMTimeMakeWithSeconds(lroundf(thePlayerduration), 10000)
-                self.waveFormSlider.setValue(lroundf(thePlayerduration), animated:true)
+            self.waveFormSlider?.maximumValue = Float(lroundf(thePlayerduration))
+            self.waveformView?.progressTime = CMTimeMakeWithSeconds(Float64(lroundf(thePlayerduration)), preferredTimescale: 10000)
+            self.waveFormSlider?.setValue(Float(lroundf(thePlayerduration)), animated:true)
 
-                let currentTime:UILabel! = self.view.viewWithTag(TAG_CURRENTTIME_LBL)
-                currentTime.text = String(format:"%@ | %@", self.timeFormatted(lroundf(thePlayerduration)),self.timeFormatted(lroundf(thePlayerduration)))
+            let currentTime = self.view.viewWithTag(TAG_CURRENTTIME_LBL)
+            currentTime.text = String(format:"%@ | %@", self.timeFormatted(totalSeconds: lroundf(thePlayerduration)),self.timeFormatted(totalSeconds: lroundf(thePlayerduration)))
 
                 let delayInSeconds:Double = 0.5
-                let popTime:dispatch_time_t = dispatch_time(DISPATCH_TIME_NOW, ((delayInSeconds * NSEC_PER_SEC) as! int64_t))
+            let popTime = dispatch_time(.now(), ((delayInSeconds * NSEC_PER_SEC) as! int64_t))
                 dispatch_after(popTime, dispatch_get_main_queue(), { ($(TypeName)) in
                    self.pauseAudioPlayer()
                 })
@@ -1173,9 +1173,9 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                // [self.waveFormSlider setValue:1 animated:YES];
                 if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_DISABLE_POPUP) == K_SWITCH_OFF) {
 
-                    self.customRangeBar.alpha = 0.0
+                    self.customRangeBar?.alpha = 0.0
 
-                    let alert:UIAlertView! = UIAlertView(title:"Append", message:"When the append function is selected, the cursor will automatically move to the end of the original recording. If you want the Append to start at a different point, move the cursor to a desired point and tap the orange Record button to start the Append function.", delegate:self, cancelButtonTitle:"OK", otherButtonTitles:nil, nil)
+                    let alert = UIAlertView(title:"Append", message:"When the append function is selected, the cursor will automatically move to the end of the original recording. If you want the Append to start at a different point, move the cursor to a desired point and tap the orange Record button to start the Append function.", delegate:self, cancelButtonTitle:"OK", otherButtonTitles:nil, nil)
                     alert.tag = TAG_EDIT_APPEND
                     alert.show()
                 }
@@ -1188,7 +1188,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                     let disbleAlert:UIAlertView! = UIAlertView(title:"Microphone Access Denied", message:"This app requires access to your device's Microphone.\n\nPlease enable Microphone access for this app in Settings / Privacy / Microphone", delegate:nil, cancelButtonTitle:"OK", otherButtonTitles:nil)
                     disbleAlert.tag = TAG_RECORD_PERMISSION_DENIED
                     disbleAlert.show()
-                    segmentedControl.selectedSegmentIndex = -1
+                    segmentedControl?.selectedSegmentIndex = -1
                     return
                 }
 
@@ -1197,7 +1197,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                     self.showOverwriteView()
                 } else {
 
-                    let alert:UIAlertView! = UIAlertView(title:"Insert", message:"To start insert, tap the Start Point button marker whilst listening to the audio. Tap the Start Inserting button to initiate the insert. The insert will end when the orange Stop button is tapped.", delegate:self, cancelButtonTitle:"OK", otherButtonTitles:nil, nil)
+                    let alert = UIAlertView(title:"Insert", message:"To start insert, tap the Start Point button marker whilst listening to the audio. Tap the Start Inserting button to initiate the insert. The insert will end when the orange Stop button is tapped.", delegate:self, cancelButtonTitle:"OK", otherButtonTitles:nil, nil)
                     alert.tag = TAG_EDIT_INSERT
                     alert.show()
                 }
@@ -1210,7 +1210,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                     let disbleAlert:UIAlertView! = UIAlertView(title:"Microphone Access Denied", message:"This app requires access to your device's Microphone.\n\nPlease enable Microphone access for this app in Settings / Privacy / Microphone", delegate:nil, cancelButtonTitle:"OK", otherButtonTitles:nil)
                     disbleAlert.tag = TAG_RECORD_PERMISSION_DENIED
                     disbleAlert.show()
-                    segmentedControl.selectedSegmentIndex = -1
+                    segmentedControl?.selectedSegmentIndex = -1
                     return
                 }
 
@@ -1252,45 +1252,45 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     // MARK: -
     // MARK: UILongPressGestureRecognizer CALL BACKS
 
-    func rewindTouchUpInside(sender:AnyObject!) {
-        self.rewindTimer.invalidate()
+    func rewindTouchUpInside(sender:AnyObject) {
+        self.rewindTimer?.invalidate()
         self.rewindTimer = nil
         self.rewindFunctionality()
     }
 
-    func fastRewindTouchUpInside(sender:AnyObject!) {
-        self.fastRewindTimer.invalidate()
+    func fastRewindTouchUpInside(sender:AnyObject) {
+        self.fastRewindTimer?.invalidate()
         self.fastRewindTimer = nil
         self.fastRewindFunctionality()
     }
 
-    func forwardTouchUpinSide(sender:AnyObject!) {
-        self.forwardTimer.invalidate()
+    func forwardTouchUpinSide(sender:AnyObject) {
+        self.forwardTimer?.invalidate()
         self.forwardTimer = nil
         self.forwardFunctionality()
     }
 
-    func fastForwardTouchUpinSide(sender:AnyObject!) {
-        self.fastForwardTimer.invalidate()
+    func fastForwardTouchUpinSide(sender:AnyObject) {
+        self.fastForwardTimer?.invalidate()
         self.fastForwardTimer = nil
         self.fastForwardFunctionality()
     }
 
     func rewindFunctionality() {
 
-        self.rewindTapped(self.rewindBtn)
+        self.rewindTapped(sender: self.rewindBtn)
     }
 
     func fastRewindFunctionality() {
-        self.fastRewindTapped(self.fastRewindBtn)
+        self.fastRewindTapped(sender: self.fastRewindBtn)
     }
 
     func forwardFunctionality() {
-        self.forwardTapped(self.forwardBtn)
+        self.forwardTapped(sender: self.forwardBtn)
     }
 
     func fastForwardFunctionality() {
-        self.fastForwardTapped(self.fastForwardBtn)
+        self.fastForwardTapped(sender: self.fastForwardBtn)
     }
 
     func handleBtnLongPressgesture(recognizer:UILongPressGestureRecognizer!) {
@@ -1299,14 +1299,14 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
             //as you hold the button this would fire
 
-            if recognizer.state == UIGestureRecognizerStateBegan {
+            if recognizer.state == .began {
                 self.rewindTimer = NSTimer.scheduledTimerWithTimeInterval(0.1,  target:self, selector:Selector("rewindFunctionality"), userInfo:nil, repeats:true)
             }
 
             //as you release the button this would fire
 
-            if recognizer.state == UIGestureRecognizerStateEnded {
-                self.rewindTimer.invalidate()
+            if recognizer.state == .ended {
+                self.rewindTimer?.invalidate()
                 self.rewindTimer = nil
             }
         }
@@ -1315,15 +1315,15 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
             //as you hold the button this would fire
 
-            if recognizer.state == UIGestureRecognizerStateBegan {
+            if recognizer.state == .began {
                 self.fastRewindTimer = NSTimer.scheduledTimerWithTimeInterval(0.1,  target:self, selector:Selector("fastRewindFunctionality"),
                                                                       userInfo:nil, repeats:true)
             }
 
             //as you release the button this would fire
 
-            if recognizer.state == UIGestureRecognizerStateEnded {
-                self.fastRewindTimer.invalidate()
+            if recognizer.state == .ended {
+                self.fastRewindTimer?.invalidate()
                 self.fastRewindTimer = nil
             }
         }
@@ -1332,15 +1332,15 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
             //as you hold the button this would fire
 
-            if recognizer.state == UIGestureRecognizerStateBegan {
+            if recognizer.state == .began {
                 self.forwardTimer = NSTimer.scheduledTimerWithTimeInterval(0.1, target:self, selector:Selector("forwardFunctionality"),
                                                                    userInfo:nil, repeats:true)
             }
 
             //as you release the button this would fire
 
-            if recognizer.state == UIGestureRecognizerStateEnded {
-                self.forwardTimer.invalidate()
+            if recognizer.state == .ended {
+                self.forwardTimer?.invalidate()
                 self.forwardTimer = nil
             }
 
@@ -1350,15 +1350,14 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
             //as you hold the button this would fire
 
-            if recognizer.state == UIGestureRecognizerStateBegan {
+            if recognizer.state == .began {
                 self.fastForwardTimer = NSTimer.scheduledTimerWithTimeInterval(0.1,  target:self, selector:Selector("fastForwardFunctionality"),
                                                                        userInfo:nil, repeats:true)
             }
 
             //as you release the button this would fire
-
-            if recognizer.state == UIGestureRecognizerStateEnded {
-                self.fastForwardTimer.invalidate()
+            if recognizer.state == .ended {
+                self.fastForwardTimer?.invalidate()
                 self.fastForwardTimer = nil
             }
         }
@@ -1412,19 +1411,19 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 break
 
             case TAG_ERASE_BTN:
-                self.eraseBtnTapped(sender)
+            self.eraseBtnTapped(sender: sender)
                 break
 
             case TAG_START_POINT_BTN:
-                self.startPointBtnTapped(sender)
+            self.startPointBtnTapped(sender: sender)
                 break
 
             case TAG_END_POINT_BTN:
-                self.endPointBtnTapped(sender)
+            self.endPointBtnTapped(sender: sender)
                 break
 
             case TAG_START_OVERWRITE_BTN:
-                self.startOverwriteBtnTapped(sender)
+            self.startOverwriteBtnTapped(sender: sender)
                 break
 
             case TAG_SAVE_BTN:
@@ -1448,11 +1447,11 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 break
 
             case TAG_CLEAR_INDEX_BTN:
-                self.clearButtonTapped(sender)
+            self.clearButtonTapped(sender: sender)
                 break
 
             case TAG_EDIT_RECORD_BTN:
-                self.editRecordButtonTapped(sender)
+            self.editRecordButtonTapped(sender: sender)
                 break
 
 
@@ -1462,14 +1461,14 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     }
 
     func editRecordButtonTapped(sender:UIButton!) {
-        self.segmentedControl.selectedSegmentIndex = UISegmentedControlNoSegment
+        self.segmentedControl?.selectedSegmentIndex = UISegmentedControlNoSegment
 
         isEditButtonTapped = true
 
         PTSHELPER.buttonAnimation = sender
 
-        self.recordBtn.enabled = false
-        self.stopBtn.enabled = true
+        self.recordBtn?.enabled = false
+        self.stopBtn?.enabled = true
 
         //NSLog(@"=======> editRecordButtonTapped <========");
         self.stopAudioPlayer()
@@ -1480,544 +1479,329 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         self.hideSaveBottomView()
     }
 
-    func clearButtonTapped(sender:UIButton!) {
-        NSLog("=======> TAG_CLEAR_INDEX_BTN <========")
-
-        if sliderValue == BOOKMARK_1 {
-            NSLog("=======> BOOKMARK_1 <========")
-            self.bookMarkArr.removeObjectAtIndex(0)
+    func clearButtonTapped(sender:UIButton) {
+        if Int(sliderValue) == BOOKMARK_1 {
+            self.bookMarkArr?.removeObject(at: 0)
+        }else if Int(sliderValue) == BOOKMARK_2{
+            self.bookMarkArr?.removeObject(at: 1)
+        }else if Int(sliderValue) == BOOKMARK_3{
+            self.bookMarkArr?.removeObject(at: 2)
+        }else if Int(sliderValue) == BOOKMARK_4{
+            self.bookMarkArr?.removeObject(at: 3)
+        }else if Int(sliderValue) == BOOKMARK_5 {
+            self.bookMarkArr?.removeObject(at: 4)
+        }else if Int(sliderValue) == BOOKMARK_6{
+            self.bookMarkArr?.removeObject(at: 5)
+        }else if Int(sliderValue) == BOOKMARK_7{
+            self.bookMarkArr?.removeObject(at: 6)
+        }else if Int(sliderValue) == BOOKMARK_8{
+            self.bookMarkArr?.removeObject(at: 7)
+        }else if Int(sliderValue) == BOOKMARK_9{
+            self.bookMarkArr?.removeObject(at: 8)
+        }else if Int(sliderValue) == BOOKMARK_10{
+            self.bookMarkArr?.removeObject(at: 9)
+        } else if Int(sliderValue) == BOOKMARK_11{
+            self.bookMarkArr?.removeObject(at: 10)
+        }else if Int(sliderValue) == BOOKMARK_12{
+            self.bookMarkArr?.removeObject(at: 11)
+        }else if Int(sliderValue) == BOOKMARK_13{
+            self.bookMarkArr?.removeObject(at: 12)
+        }else if Int(sliderValue) == BOOKMARK_14{
+            self.bookMarkArr?.removeObject(at: 13)
+        }else if Int(sliderValue) == BOOKMARK_15{
+            self.bookMarkArr?.removeObject(at: 14)
+        }else if Int(sliderValue) == BOOKMARK_16{
+            self.bookMarkArr?.removeObject(at: 15)
+        }else if Int(sliderValue) == BOOKMARK_17{
+            self.bookMarkArr?.removeObject(at: 16)
+        }else if Int(sliderValue) == BOOKMARK_18 {
+            self.bookMarkArr?.removeObject(at: 17)
+        }else if Int(sliderValue) == BOOKMARK_19{
+            self.bookMarkArr?.removeObject(at: 18)
+        }else if Int(sliderValue) == BOOKMARK_20{
+            self.bookMarkArr?.removeObject(at: 19)
         }
-        else if sliderValue == BOOKMARK_2
-        {
-            NSLog("=======> BOOKMARK_2 <========")
-            self.bookMarkArr.removeObjectAtIndex(1)
-        }
-        else if sliderValue == BOOKMARK_3
-        {
-            NSLog("=======> BOOKMARK_3 <========")
-            self.bookMarkArr.removeObjectAtIndex(2)
-        }
-        else if sliderValue == BOOKMARK_4
-        {
-            NSLog("=======> BOOKMARK_4 <========")
-            self.bookMarkArr.removeObjectAtIndex(3)
-        }
-        else if sliderValue == BOOKMARK_5 {
-            NSLog("=======> BOOKMARK_5 <========")
-            self.bookMarkArr.removeObjectAtIndex(4)
-        }
-        else if sliderValue == BOOKMARK_6
-        {
-            NSLog("=======> BOOKMARK_6 <========")
-            self.bookMarkArr.removeObjectAtIndex(5)
-        }
-        else if sliderValue == BOOKMARK_7
-        {
-            NSLog("=======> BOOKMARK_7 <========")
-            self.bookMarkArr.removeObjectAtIndex(6)
-        }
-        else if sliderValue == BOOKMARK_8
-        {
-            NSLog("=======> BOOKMARK_8 <========")
-            self.bookMarkArr.removeObjectAtIndex(7)
-        }
-        else if sliderValue == BOOKMARK_9
-        {
-            NSLog("=======> BOOKMARK_9 <========")
-            self.bookMarkArr.removeObjectAtIndex(8)
-        }
-        else if sliderValue == BOOKMARK_10
-        {
-            NSLog("=======> BOOKMARK_9 <========")
-            self.bookMarkArr.removeObjectAtIndex(9)
-        } else if sliderValue == BOOKMARK_11
-        {
-            NSLog("=======> BOOKMARK_9 <========")
-            self.bookMarkArr.removeObjectAtIndex(10)
-        }
-        else if sliderValue == BOOKMARK_12
-        {
-            NSLog("=======> BOOKMARK_9 <========")
-            self.bookMarkArr.removeObjectAtIndex(11)
-        }
-        else if sliderValue == BOOKMARK_13
-        {
-            NSLog("=======> BOOKMARK_9 <========")
-            self.bookMarkArr.removeObjectAtIndex(12)
-        }
-        else if sliderValue == BOOKMARK_14
-        {
-            NSLog("=======> BOOKMARK_9 <========")
-            self.bookMarkArr.removeObjectAtIndex(13)
-        }
-        else if sliderValue == BOOKMARK_15
-        {
-            NSLog("=======> BOOKMARK_9 <========")
-            self.bookMarkArr.removeObjectAtIndex(14)
-        }
-        else if sliderValue == BOOKMARK_16
-        {
-            NSLog("=======> BOOKMARK_9 <========")
-            self.bookMarkArr.removeObjectAtIndex(15)
-        }
-        else if sliderValue == BOOKMARK_17
-        {
-            NSLog("=======> BOOKMARK_9 <========")
-            self.bookMarkArr.removeObjectAtIndex(16)
-        }
-        else if sliderValue == BOOKMARK_18
-        {
-            NSLog("=======> BOOKMARK_9 <========")
-            self.bookMarkArr.removeObjectAtIndex(17)
-        }
-        else if sliderValue == BOOKMARK_19
-        {
-            NSLog("=======> BOOKMARK_9 <========")
-            self.bookMarkArr.removeObjectAtIndex(18)
-        }
-        else if sliderValue == BOOKMARK_20
-        {
-            NSLog("=======> BOOKMARK_9 <========")
-            self.bookMarkArr.removeObjectAtIndex(19)
-        }
-
+        
         self.createBookMarKDivider()
-
     }
 
-
     func bookMarkBackWardButtonTapped() {
-        self.bookmarkFordwardBtn.enabled = true
+        self.bookmarkFordwardBtn?.isEnabled = true
+        self.pauseArr?.removeAllObjects()
 
-        self.pauseArr.removeAllObjects()
+        var currentTime = 0.0
 
-        var currentTime:Float
-
-        if sliderValue == BOOKMARK_1 {
-
+        if Int(sliderValue) == BOOKMARK_1 {
             sliderValue = 0
-
-            self.bookmarkBackwardBtn.enabled = false
-
-            self.showBookMark(0)
-
-            currentTime = 0
-
+            self.bookmarkBackwardBtn?.isEnabled = false
+            self.showBookMark(flag: 0)
+            currentTime = 0.0
+        }else if Int(sliderValue) == BOOKMARK_2 {
+            sliderValue = 1
+            self.showBookMark(flag: 1)
+//            currentTime = self.convertSecs(string: self.bookMarkArr?.object(at: 0))
+        }else if Int(sliderValue) == BOOKMARK_3 {
+            sliderValue = 2
+            self.showBookMark(flag: 2)
+//            currentTime = self.convertSecs(string: self.bookMarkArr?.object(at: 1)).floatValue
+        }else if Int(sliderValue) == BOOKMARK_4 {
+            sliderValue = 3
+            self.showBookMark(flag: 3)
+//            currentTime = self.convertSecs(string: self.bookMarkArr?.object(at: 2)).floatValue
+        }else if Int(sliderValue) == BOOKMARK_5 {
+            sliderValue = 4
+            self.showBookMark(flag: 4)
+//            currentTime = self.convertSecs(string: self.bookMarkArr?.object(at: 3)).floatValue
+        }else if Int(sliderValue) == BOOKMARK_6 {
+            sliderValue = 5
+            self.showBookMark(flag: 5)
+//            currentTime = self.convertSecs(string: self.bookMarkArr?.object(at: 4)).floatValue
+        }else if Int(sliderValue) == BOOKMARK_7 {
+            sliderValue = 6
+//            currentTime = self.convertSecs(string: self.bookMarkArr?.object(at: 5)).floatValue
+            self.showBookMark(flag: 6)
+        }else if Int(sliderValue) == BOOKMARK_8 {
+            sliderValue = 7
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(6)).floatValue()
+            self.showBookMark(flag: 7)
+        }else  if Int(sliderValue) == BOOKMARK_9 {
+            sliderValue = 8
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(7)).floatValue()
+            self.showBookMark(flag: 8)
+        }else if Int(sliderValue) == BOOKMARK_10 {
+            sliderValue = 9
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(8)).floatValue()
+            self.showBookMark(flag: 9)
+        }else  if Int(sliderValue) == BOOKMARK_11 {
+            sliderValue = 10
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(9)).floatValue()
+            self.showBookMark(flag: 10)
+        }else if Int(sliderValue) == BOOKMARK_12 {
+            sliderValue = 11
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(10)).floatValue()
+            self.showBookMark(flag: 11)
+        }else if Int(sliderValue) == BOOKMARK_13 {
+            sliderValue = 12
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(11)).floatValue()
+            self.showBookMark(flag: 12)
+        }else if Int(sliderValue) == BOOKMARK_14 {
+            sliderValue = 13
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(12)).floatValue()
+            self.showBookMark(flag: 13)
+        }else if Int(sliderValue) == BOOKMARK_15 {
+            sliderValue = 14
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(13)).floatValue()
+            self.showBookMark(flag: 14)
+        }else if Int(sliderValue) == BOOKMARK_16 {
+            sliderValue = 15
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(14)).floatValue()
+            self.showBookMark(flag: 15)
+        }else if Int(sliderValue) == BOOKMARK_17 {
+            sliderValue = 16
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(15)).floatValue()
+            self.showBookMark(flag: 16)
+        }else  if Int(sliderValue) == BOOKMARK_18 {
+            sliderValue = 17
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(16)).floatValue()
+            self.showBookMark(flag: 17)
         }
-        else  if sliderValue == BOOKMARK_2 {
-
-            sliderValue = BOOKMARK_1
-
-            self.showBookMark(1)
-
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(0)).floatValue()
-
-        }
-        else  if sliderValue == BOOKMARK_3 {
-
-            sliderValue = BOOKMARK_2
-
-            self.showBookMark(2)
-
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(1)).floatValue()
-
-        }
-        else  if sliderValue == BOOKMARK_4 {
-            sliderValue = BOOKMARK_3
-
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(2)).floatValue()
-
-            self.showBookMark(3)
-        }
-        else  if sliderValue == BOOKMARK_5 {
-
-            sliderValue = BOOKMARK_4
-
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(3)).floatValue()
-
-            self.showBookMark(4)
-        }
-        else  if sliderValue == BOOKMARK_6 {
-
-            sliderValue = BOOKMARK_5
-
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(4)).floatValue()
-
-            self.showBookMark(5)
-        }
-        else  if sliderValue == BOOKMARK_7 {
-
-            sliderValue = BOOKMARK_6
-
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(5)).floatValue()
-
-            self.showBookMark(6)
-        }
-        else  if sliderValue == BOOKMARK_8 {
-
-            sliderValue = BOOKMARK_7
-
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(6)).floatValue()
-
-            self.showBookMark(7)
-        }
-        else  if sliderValue == BOOKMARK_9 {
-
-            sliderValue = BOOKMARK_8
-
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(7)).floatValue()
-
-            self.showBookMark(8)
-        }
-        else  if sliderValue == BOOKMARK_10 {
-
-            sliderValue = BOOKMARK_9
-
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(8)).floatValue()
-            self.showBookMark(9)
-        }
-        else  if sliderValue == BOOKMARK_11 {
-
-            sliderValue = BOOKMARK_10
-
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(9)).floatValue()
-            self.showBookMark(10)
-        }
-        else  if sliderValue == BOOKMARK_12 {
-
-            sliderValue = BOOKMARK_11
-
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(10)).floatValue()
-            self.showBookMark(11)
-        }
-        else  if sliderValue == BOOKMARK_13 {
-
-            sliderValue = BOOKMARK_12
-
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(11)).floatValue()
-            self.showBookMark(12)
-        }
-        else  if sliderValue == BOOKMARK_14 {
-
-            sliderValue = BOOKMARK_13
-
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(12)).floatValue()
-            self.showBookMark(13)
-        }
-        else  if sliderValue == BOOKMARK_15 {
-
-            sliderValue = BOOKMARK_14
-
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(13)).floatValue()
-            self.showBookMark(14)
-        }
-        else  if sliderValue == BOOKMARK_16 {
-
-            sliderValue = BOOKMARK_15
-
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(14)).floatValue()
-            self.showBookMark(15)
-        }
-        else  if sliderValue == BOOKMARK_17 {
-
-            sliderValue = BOOKMARK_16
-
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(15)).floatValue()
-            self.showBookMark(16)
-        }
-        else  if sliderValue == BOOKMARK_18 {
-
-            sliderValue = BOOKMARK_17
-
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(16)).floatValue()
-            self.showBookMark(17)
-        }
-        else  if sliderValue == BOOKMARK_19 {
-
-            sliderValue = BOOKMARK_18
-
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(17)).floatValue()
-            self.showBookMark(18)
-        }
-        else  if sliderValue == BOOKMARK_20 {
-
-            sliderValue = BOOKMARK_19
-
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(18)).floatValue()
-            self.showBookMark(19)
+        else if Int(sliderValue) == BOOKMARK_19 {
+            sliderValue = 18
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(17)).floatValue()
+            self.showBookMark(flag: 18)
+        }else if Int(sliderValue) == BOOKMARK_20 {
+            sliderValue = 19
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(18)).floatValue()
+            self.showBookMark(flag: 19)
         }
 
-        let newTime:CMTime = CMTimeMakeWithSeconds(currentTime, 1)
+        let newTime:CMTime = CMTimeMakeWithSeconds(currentTime, preferredTimescale: 1)
 
-        self.updateTime(newTime)
+        self.updateTime(newTime: newTime)
 
     }
 
 
     func bookMarkForWardButtonTapped() {
-        self.bookmarkBackwardBtn.enabled = true
+        self.bookmarkBackwardBtn?.isEnabled = true
+        self.pauseArr?.removeAllObjects()
+        self.clearIndex?.isEnabled = true
 
-        self.pauseArr.removeAllObjects()
-
-        self.clearIndex.enabled = true
-
-        var currentTime:Float
+        var currentTime = 0.0
 
         if sliderValue == 0 {
-            sliderValue = BOOKMARK_1
-            if self.bookMarkArr.count == 1 {
-                self.bookmarkFordwardBtn.enabled = false
+            sliderValue = 1
+            if self.bookMarkArr?.count == 1 {
+                self.bookmarkFordwardBtn?.isEnabled = false
             }
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(0)).floatValue()
-            self.showBookMark(1)
-        }
-
-        else  if sliderValue == BOOKMARK_1 {
-            sliderValue = BOOKMARK_2
-            if self.bookMarkArr.count == 2 {
-                self.bookmarkFordwardBtn.enabled = false
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(0)).floatValue()
+            self.showBookMark(flag: 1)
+        }else if sliderValue == 1 {
+            sliderValue = 2
+            if self.bookMarkArr?.count == 2 {
+                self.bookmarkFordwardBtn?.isEnabled = false
             }
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(1)).floatValue()
-            self.showBookMark(2)
-        }
-        else  if sliderValue == BOOKMARK_2 {
-            sliderValue = BOOKMARK_3
-            if self.bookMarkArr.count == 3 {
-                self.bookmarkFordwardBtn.enabled = false
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(1)).floatValue()
+            self.showBookMark(flag: 2)
+        }else if sliderValue == 2 {
+            sliderValue = 3
+            if self.bookMarkArr?.count == 3 {
+                self.bookmarkFordwardBtn?.isEnabled = false
             }
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(2)).floatValue()
-            self.showBookMark(3)
-        }
-        else  if sliderValue == BOOKMARK_3 {
-            sliderValue = BOOKMARK_4
-            if self.bookMarkArr.count == 4 {
-                self.bookmarkFordwardBtn.enabled = false
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(2)).floatValue()
+            self.showBookMark(flag: 3)
+        }else if sliderValue == 3 {
+            sliderValue = 4
+            if self.bookMarkArr?.count == 4 {
+                self.bookmarkFordwardBtn?.isEnabled = false
             }
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(3)).floatValue()
-            self.showBookMark(4)
-        }
-        else  if sliderValue == BOOKMARK_4 {
-
-            sliderValue = BOOKMARK_5
-
-            if self.bookMarkArr.count == 5 {
-                self.bookmarkFordwardBtn.enabled = false
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(3)).floatValue()
+            self.showBookMark(flag: 4)
+        }else if sliderValue == 4 {
+            sliderValue = 5
+            if self.bookMarkArr?.count == 5 {
+                self.bookmarkFordwardBtn?.isEnabled = false
             }
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(4)).floatValue()
+            self.showBookMark(flag: 5)
 
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(4)).floatValue()
-            self.showBookMark(5)
-
-        }
-        else  if sliderValue == BOOKMARK_5 {
-
-            sliderValue = BOOKMARK_6
-
-            if self.bookMarkArr.count == 6 {
-                self.bookmarkFordwardBtn.enabled = false
+        }else if sliderValue == 5 {
+            sliderValue = 6
+            if self.bookMarkArr?.count == 6 {
+                self.bookmarkFordwardBtn?.isEnabled = false
             }
 
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(5)).floatValue()
-            self.showBookMark(6)
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(5)).floatValue()
+            self.showBookMark(flag: 6)
+        }else if sliderValue == 6 {
+            sliderValue = 7
+            if self.bookMarkArr?.count == 7 {
+                self.bookmarkFordwardBtn?.isEnabled = false
+            }
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(6)).floatValue()
+            self.showBookMark(flag: 7)
 
-        }
-        else  if sliderValue == BOOKMARK_6 {
+        }else if sliderValue == 7 {
+            sliderValue = 8
+            if self.bookMarkArr?.count == 8 {
+                self.bookmarkFordwardBtn?.isEnabled = false
+            }
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(7)).floatValue()
+            self.showBookMark(flag: 8)
 
-            sliderValue = BOOKMARK_7
-
-            if self.bookMarkArr.count == 7 {
-                self.bookmarkFordwardBtn.enabled = false
+        }else if sliderValue == 8 {
+            sliderValue = 9
+            if self.bookMarkArr?.count == 9 {
+                self.bookmarkFordwardBtn?.isEnabled = false
+            }
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(8)).floatValue()
+            self.showBookMark(flag: 9)
+        }else if sliderValue == 9 {
+            sliderValue = 10
+            if self.bookMarkArr?.count == 10 {
+                self.bookmarkFordwardBtn?.isEnabled = false
             }
 
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(6)).floatValue()
-            self.showBookMark(7)
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(9)).floatValue()
+            self.showBookMark(flag: 10)
 
-        }
-        else  if sliderValue == BOOKMARK_7 {
-
-            sliderValue = BOOKMARK_8
-
-            if self.bookMarkArr.count == 8 {
-                self.bookmarkFordwardBtn.enabled = false
+        }else if sliderValue == 10 {
+            sliderValue = 11
+            if self.bookMarkArr?.count == 11 {
+                self.bookmarkFordwardBtn?.isEnabled = false
             }
 
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(7)).floatValue()
-            self.showBookMark(8)
-
-        }
-        else  if sliderValue == BOOKMARK_8 {
-
-            sliderValue = BOOKMARK_9
-
-            if self.bookMarkArr.count == 9 {
-                self.bookmarkFordwardBtn.enabled = false
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(10)).floatValue()
+            self.showBookMark(flag: 11)
+        }else if sliderValue == 11 {
+            sliderValue = 12
+            if self.bookMarkArr?.count == 12 {
+                self.bookmarkFordwardBtn?.isEnabled = false
             }
 
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(8)).floatValue()
-            self.showBookMark(9)
-
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(11)).floatValue()
+            self.showBookMark(flag: 12)
+        }else if sliderValue == 12 {
+            sliderValue = 13
+            if self.bookMarkArr?.count == 13 {
+                self.bookmarkFordwardBtn?.isEnabled = false
+            }
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(12)).floatValue()
+            self.showBookMark(flag: 13)
+        }else if sliderValue == 13 {
+            sliderValue = 14
+            if self.bookMarkArr?.count == 14 {
+                self.bookmarkFordwardBtn?.isEnabled = false
+            }
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(13)).floatValue()
+            self.showBookMark(flag: 14)
+        }else if sliderValue == 14 {
+            sliderValue = 15
+            if self.bookMarkArr?.count == 15 {
+                self.bookmarkFordwardBtn?.isEnabled = false
+            }
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(14)).floatValue()
+            self.showBookMark(flag: 15)
+        }else if sliderValue == 15 {
+            sliderValue = 16
+            if self.bookMarkArr?.count == 16 {
+                self.bookmarkFordwardBtn?.isEnabled = false
+            }
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(15)).floatValue()
+            self.showBookMark(flag: 16)
         }
-        else  if sliderValue == BOOKMARK_9 {
-
-            sliderValue = BOOKMARK_10
-
-            if self.bookMarkArr.count == 10 {
-                self.bookmarkFordwardBtn.enabled = false
+        else if sliderValue == 16 {
+            sliderValue = 17
+            if self.bookMarkArr?.count == 17 {
+                self.bookmarkFordwardBtn?.isEnabled = false
             }
 
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(9)).floatValue()
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(16)).floatValue()
 
-            self.showBookMark(10)
+            self.showBookMark(flag: 17)
 
-        }
-        else  if sliderValue == BOOKMARK_10 {
-
-            sliderValue = BOOKMARK_11
-
-            if self.bookMarkArr.count == 11 {
-                self.bookmarkFordwardBtn.enabled = false
+        }else if sliderValue == 17 {
+            sliderValue = 18
+            if self.bookMarkArr?.count == 18 {
+                self.bookmarkFordwardBtn?.isEnabled = false
             }
 
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(10)).floatValue()
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(17)).floatValue()
+            self.showBookMark(flag: 18)
 
-            self.showBookMark(11)
-
-        }
-        else  if sliderValue == BOOKMARK_11 {
-
-            sliderValue = BOOKMARK_12
-
-            if self.bookMarkArr.count == 12 {
-                self.bookmarkFordwardBtn.enabled = false
+        }else if sliderValue == 18 {
+            sliderValue = 19
+            if self.bookMarkArr?.count == 19 {
+                self.bookmarkFordwardBtn?.isEnabled = false
             }
-
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(11)).floatValue()
-
-            self.showBookMark(12)
-
-        }
-        else  if sliderValue == BOOKMARK_12 {
-
-            sliderValue = BOOKMARK_13
-
-            if self.bookMarkArr.count == 13 {
-                self.bookmarkFordwardBtn.enabled = false
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(18)).floatValue()
+            self.showBookMark(flag: 19)
+        }else if sliderValue == 19 {
+            sliderValue = 20
+            if self.bookMarkArr?.count == 20 {
+                self.bookmarkFordwardBtn?.isEnabled = false
             }
-
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(12)).floatValue()
-
-            self.showBookMark(13)
-
-        }
-        else  if sliderValue == BOOKMARK_13 {
-
-            sliderValue = BOOKMARK_14
-
-            if self.bookMarkArr.count == 14 {
-                self.bookmarkFordwardBtn.enabled = false
-            }
-
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(13)).floatValue()
-
-            self.showBookMark(14)
-
-        }
-        else  if sliderValue == BOOKMARK_14 {
-
-            sliderValue = BOOKMARK_15
-
-            if self.bookMarkArr.count == 15 {
-                self.bookmarkFordwardBtn.enabled = false
-            }
-
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(14)).floatValue()
-
-            self.showBookMark(15)
-
-        }
-        else  if sliderValue == BOOKMARK_15 {
-
-            sliderValue = BOOKMARK_16
-
-            if self.bookMarkArr.count == 16 {
-                self.bookmarkFordwardBtn.enabled = false
-            }
-
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(15)).floatValue()
-
-            self.showBookMark(16)
-
-        }
-        else  if sliderValue == BOOKMARK_16 {
-
-            sliderValue = BOOKMARK_17
-
-            if self.bookMarkArr.count == 17 {
-                self.bookmarkFordwardBtn.enabled = false
-            }
-
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(16)).floatValue()
-
-            self.showBookMark(17)
-
-        }
-        else  if sliderValue == BOOKMARK_17 {
-
-            sliderValue = BOOKMARK_18
-
-            if self.bookMarkArr.count == 18 {
-                self.bookmarkFordwardBtn.enabled = false
-            }
-
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(17)).floatValue()
-
-            self.showBookMark(18)
-
-        }
-        else  if sliderValue == BOOKMARK_18 {
-
-            sliderValue = BOOKMARK_19
-
-            if self.bookMarkArr.count == 19 {
-                self.bookmarkFordwardBtn.enabled = false
-            }
-
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(18)).floatValue()
-
-            self.showBookMark(19)
-
-        }
-        else  if sliderValue == BOOKMARK_19 {
-
-            sliderValue = BOOKMARK_20
-
-            if self.bookMarkArr.count == 20 {
-                self.bookmarkFordwardBtn.enabled = false
-            }
-
-            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(19)).floatValue()
-
-            self.showBookMark(20)
-
+//            currentTime = self.convertSecs(self.bookMarkArr.objectAtIndex(19)).floatValue()
+            self.showBookMark(flag: 20)
         }
 
-        let newTime:CMTime = CMTimeMakeWithSeconds(currentTime, 1)
-        self.updateTime(newTime)
+        let newTime:CMTime = CMTimeMakeWithSeconds(currentTime, preferredTimescale: 1)
+        self.updateTime(newTime: newTime)
 
     }
     
     func bookMarkButtonTapped(sender:UIButton!) {
             isBookMarkTap = true
-
-            bookMarTapCount++
+            bookMarTapCount += 1
 
             if bookMarTapCount == 20 {
-                self.bookmarkBtn.enabled = false
+                self.bookmarkBtn?.isEnabled = false
             }
 
-            let timing:UILabel! = self.view.viewWithTag(TAG_TIMING_LBL)
-            let currentTimeLabel:UILabel! = self.view.viewWithTag(TAG_CURRENTTIME_LBL)
-            let overWrite:UILabel! = self.view.viewWithTag(TAG_OVERWRITE_LBL)
-            let playerTime:UILabel! = UILabel()
+            let timing = self.view.viewWithTag(TAG_TIMING_LBL)
+            let currentTimeLabel = self.view.viewWithTag(TAG_CURRENTTIME_LBL)
+            let overWrite = self.view.viewWithTag(TAG_OVERWRITE_LBL)
+            let playerTime = UILabel()
 
             let bookTime:String! = String(format:"%@",self.timeFormatted(lroundf(playerCurrentTime)))
 
@@ -2026,7 +1810,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             if self.isPlaying()
             {
                 NSLog("INDEXING WHILE PLAYING  @@@@@@@@@@@")
-                let time:CMTime = self.thePlayer.currentItem.currentTime
+                let time:CMTime = self.thePlayer?.currentItem.currentTime
                 let durationInSeconds:Double = CMTimeGetSeconds(time)
 
                 //NSLog(@"CURRENT TIME ==> %f", CMTimeGetSeconds(time));
@@ -4399,7 +4183,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             return String(format:"%02d:%02d:%02d",hours, minutes, seconds)
         }
 
-        func convertSecs(string:String!) -> NSNumber! {
+        func convertSecs(string:String) -> NSNumber! {
 
             let components:[AnyObject]! = string.componentsSeparatedByString(":")
 
@@ -4746,69 +4530,62 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
         }
 
-        func getDocumentDirectory() -> String! {
-            let paths:[AnyObject]! = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true)
-            return paths.objectAtIndex(0)
-        }
+    func getDocumentDirectory() -> URL {
+        let paths = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
+        let  documentsDirectory = paths[0]
+        return documentsDirectory
+    }
 
-        func getRecordedFile() -> String! {
-            return self.getDocumentDirectory().stringByAppendingPathComponent("Record").stringByAppendingPathComponent(String(format:"%@%d%@",RECORDED_FILE,trimCount,".m4a"))
-        }
+    func getRecordedFile() -> String {
+        return self.getDocumentDirectory().appendingPathComponent("Record").appendingPathComponent(String(format:"%@%d%@",RECORDED_FILE,trimCount,".m4a"))
+    }
     
-    func getExistingFolder() -> String! {
-            if !editRecording {
-                return  self.getDocumentDirectory().stringByAppendingPathComponent("Existing")
+    func getExistingFolder() -> String {
+        if !editRecording {
+            return  self.getDocumentDirectory().appendingPathComponent("Existing")
+        }
+        return  self.getDocumentDirectory().appendingPathComponent("Record")
+    }
+
+    func getEditRecordFolder() -> String {
+        return  self.getDocumentDirectory().appendingPathComponent("EditRecord")
+    }
+
+    func createFolder(folderName:String) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), {
+            let dataPath:String! = self.getDocumentDirectory().appendingPathComponent(String(format:"%@/", folderName))
+            DispatchQueue.main.async {
+                if !FileManager.default.fileExists(atPath: dataPath){
+                    FileManager.default.createDirectory(atPath: dataPath, withIntermediateDirectories: false)
+                }
             }
-            return  self.getDocumentDirectory().stringByAppendingPathComponent("Record")
-        }
+        })
+    }
 
-        func getEditRecordFolder() -> String! {
-            return  self.getDocumentDirectory().stringByAppendingPathComponent("EditRecord")
-        }
-
-        func createFolder(folderName:String!) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), {
-                let dataPath:String! = self.getDocumentDirectory().stringByAppendingPathComponent(String(format:"%@/", folderName))
-                dispatch_async(dispatch_get_main_queue(), {
-                    if !NSFileManager.defaultManager().fileExistsAtPath(dataPath)
-                    {
-                        NSFileManager.defaultManager().createDirectoryAtPath(dataPath, withIntermediateDirectories:false, attributes:nil, error:nil)
-                    }
-                })
-            })
-        }
-
-        func createFolderInDocuments(folderName:String!) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), {
-                let dataPath:String! = self.getDocumentDirectory().stringByAppendingPathComponent(String(format:"%@/", folderName))
-                let success:Bool = NSFileManager.defaultManager().removeItemAtPath(dataPath, error:nil)
-                dispatch_async(dispatch_get_main_queue(), {
-                    if success {
-                        // NSLog(@"FOLDER DELETED");
-                    }
-                    if !NSFileManager.defaultManager().fileExistsAtPath(dataPath)
-                        {NSFileManager.defaultManager().createDirectoryAtPath(dataPath, withIntermediateDirectories:false, attributes:nil, error:nil)}
-                    // NSLog(@"FOLDER CREATED");
-
-                })
-            })
-        }
-
-        func deleteParticularFileInFolder(filepath:String!) {
-            let fileManager:NSFileManager! = NSFileManager.defaultManager()
-            let isFileThere:Bool = NSFileManager.defaultManager().fileExistsAtPath(filepath)
-            if isFileThere {
-                fileManager.removeItemAtPath(filepath, error:nil)
+    func createFolderInDocuments(folderName:String!) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), {
+            let dataPath:String! = self.getDocumentDirectory().appendingPathComponent(String(format:"%@/", folderName))
+            let success:Bool = try? FileManager.default.removeItem(atPath: dataPath)
+            DispatchQueue.main.async {
+                if !FileManager.defaul.fileExists(atPath: dataPath){
+                    FileManager.default.createDirectory(atPath: dataPath, withIntermediateDirectories: false)
+                }
             }
+        })
+    }
+
+    func deleteParticularFileInFolder(filepath:String!) {
+        let fileManager = FileManager.default
+        let isFileThere = FileManager.default.fileExists(atPath: dataPath)
+        if isFileThere {
+            fileManager.removeItem(atPath: dataPath)
         }
+    }
 
-        func playRecordedAudio() {
-
-            self.playerButtonsEnable = true
-
-            self.thePlayer.play()
-
-        }
+    func playRecordedAudio() {
+        self.playerButtonsEnable = true
+        self.thePlayer?.play()
+    }
 
         func updateTemprecording() {
 
@@ -5040,15 +4817,15 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     func pauseAudioPlayer() {
             //  NSLog(@"<======= PAUSE AUDIO PLAYER =======>");
 
-            self.thePlayer.pause()
+            self.thePlayer?.pause()
 
             //stop the NSTimer
-            self.playerTimer.invalidate()
+            self.playerTimer?.invalidate()
             self.playerTimer = nil
 
             //PTS-??
-            if self.segmentedControl.selectedSegmentIndex == 3 {
-                self.recordBtn.enabled = self.stopBtn.enabled = false
+            if self.segmentedControl?.selectedSegmentIndex == 3 {
+                self.recordBtn?.enabled = self.stopBtn?.enabled = false
             }
             else {
                 if !isRecordStopTapped {
@@ -5066,7 +4843,6 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         }
 
         func pauseAudioPlayerForBookmark(currentTime:String!) {
-            NSLog("<======= PAUSE AUDIO PLAYER =======>")
 
             self.pauseArr.removeAllObjects()
             self.pauseArr.addObject(currentTime)
@@ -5090,13 +4866,13 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
             self.playRecordedAudio()
 
-            self.playerTimer = NSTimer.scheduledTimerWithTimeInterval(1.0, target:self, selector:Selector("updatePlayerTiming"), userInfo:self.thePlayer, repeats:true)
+            self.playerTimer = Timer.scheduledTimerWithTimeInterval(1.0, target:self, selector:Selector("updatePlayerTiming"), userInfo:self.thePlayer, repeats:true)
 
         }
 
 
         func isPlaying() -> Bool {
-            if self.thePlayer.currentItem && self.thePlayer.rate != 0
+            if self.thePlayer?.currentItem && self.thePlayer?.rate != 0
             {
                 return true
             }
@@ -5104,7 +4880,6 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         }
 
         func playAudioPlayer() {
-            NSLog("<======= PLAY AUDIO PLAYER =======>")
 
             // Setup audio session
             var setOverrideError:NSError!
@@ -5114,25 +4889,16 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             session.setCategory(AVAudioSessionCategoryPlayAndRecord, error:&setCategoryError)
             session.setActive(true, error:&setCategoryError)
 
-            if (setCategoryError != nil) {
-                NSLog("%@", setCategoryError.description())
-            }
-
             session.overrideOutputAudioPort(AVAudioSessionPortOverrideSpeaker, error:&setOverrideError)
 
-
-            if (setOverrideError != nil) {
-                NSLog("%@", setOverrideError.description())
-            }
-
             //stop the NSTimer
-            self.playerTimer.invalidate()
+            self.playerTimer?.invalidate()
             self.playerTimer = nil
 
-            self.eraseBtn.enabled = true
-            self.eraseBtn.alpha = 1.0
+            self.eraseBtn?.enabled = true
+            self.eraseBtn?.alpha = 1.0
 
-            self.recordBtn.enabled = self.stopBtn.enabled = false
+            self.recordBtn?.enabled = self.stopBtn.enabled = false
 
             playBtn.setImage(K_SETIMAGE("existing_controls_pause_btn_normal.png"), forState:UIControlStateNormal)
             playBtn.setImage(K_SETIMAGE("existing_controls_pause_btn_disable.png"), forState:UIControlStateDisabled)
@@ -5143,56 +4909,53 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 NSLog("LAST VALUE @@@@@@@@@@@")
 
-                self.thePlayer.seekToTime(CMTimeMake(0, 1))
+                self.thePlayer?.seek(to: CMTime(value: 0, timescale: 1))
             }
 
-            let playerItem:AVPlayerItem! = self.thePlayer.currentItem
+            let playerItem = self.thePlayer?.currentItem
 
             // Subscribe to the AVPlayerItem's DidPlayToEndTime notification.
-            NSNotificationCenter.defaultCenter().addObserver(self, selector:Selector("itemDidFinishPlaying:"), name:AVPlayerItemDidPlayToEndTimeNotification, object:playerItem)
+            NotificationCenter.default.addObserver(self, selector:Selector("itemDidFinishPlaying:"), name:AVPlayerItemDidPlayToEndTimeNotification, object:playerItem)
 
-            self.playerTimer = NSTimer.scheduledTimerWithTimeInterval(1.0, target:self, selector:Selector("updatePlayerTiming"), userInfo:self.thePlayer, repeats:true)
+            self.playerTimer = Timer.scheduledTimerWithTimeInterval(1.0, target:self, selector:Selector("updatePlayerTiming"), userInfo:self.thePlayer, repeats:true)
 
         }
 
-        func itemDidFinishPlaying(notification:NSNotification!) {
+        func itemDidFinishPlaying(notification:NSNotification) {
             // Will be called when AVPlayer finishes playing playerItem
-
-            NSLog("========> itemDidFinishPlaying <=======")
-
-            self.thePlayer.seekToTime(CMTimeMake(0, 1))
-            self.thePlayer.pause()
+            self.thePlayer?.seek(to: CMTime(value: 0, timescale: 1))
+            self.thePlayer?.pause()
 
             self.stopAllProcess()
 
             self.waveformView.progressTime = CMTimeMakeWithSeconds(lroundf(self.recordedFileDuration), 10000)
 
             if !isRecordStopTapped {
-                self.recordBtn.enabled = self.stopBtn.enabled = true
+                self.recordBtn?.enabled = self.stopBtn?.enabled = true
             }
-            if self.segmentedControl.selectedSegmentIndex == 2 {
-                self.recordBtn.enabled = self.stopBtn.enabled = false
+            if self.segmentedControl?.selectedSegmentIndex == 2 {
+                self.recordBtn?.enabled = self.stopBtn?.enabled = false
             }
 
             let currentTime:UILabel! = self.view.viewWithTag(TAG_CURRENTTIME_LBL)
             currentTime.text = String(format:"%@ | %@", self.timeFormatted(lroundf(self.recordedFileDuration)),self.timeFormatted(lroundf(self.recordedFileDuration)))
 
-            self.waveFormSlider.setValue(lroundf(self.recordedFileDuration), animated:true)
+            self.waveFormSlider?.setValue(lroundf(self.recordedFileDuration), animated:true)
 
-            NSNotificationCenter.defaultCenter().removeObserver(self, name:AVPlayerItemDidPlayToEndTimeNotification, object:nil)
+            NotificationCenter.default.removeObserver(self, name:AVPlayerItemDidPlayToEndTimeNotification, object:nil)
 
         }
     
     func updatePlayerTiming() {
-        let playerItem:AVPlayerItem! = self.thePlayer.currentItem
-        let currentTime:CMTime = playerItem.currentTime
-        let time:Float = CMTimeGetSeconds(currentTime)
+        let playerItem = self.thePlayer?.currentItem
+        let currentTime = playerItem?.currentTime
+        let time = CMTimeGetSeconds(currentTime)
         if !isBookMarkTap {
             if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
                 let current:String! = self.timeFormatted(lroundf(time))
-                if self.bookMarkArr.count > 0 {
-
-                    for var i:Int=0 ; i < self.bookMarkArr.count ; i++ {
+                if self.bookMarkArr?.count > 0 {
+                    
+                    for var i in 0..<self.bookMarkArr.count{
                         switch (i) {
                             case 0:
                                 if (self.bookMarkArr.objectAtIndex(0) == current) {
@@ -5401,12 +5164,12 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 }
             }
         }
-        self.updateTimeForPlayer(self.thePlayer)
+        self.updateTimeForPlayer(p: self.thePlayer)
     }
     
     func stopAllProcess() {
         //stop the NSTimer
-        self.playerTimer.invalidate()
+        self.playerTimer?.invalidate()
         self.playerTimer = nil
         autoSaveIsOn = false
 
@@ -5419,18 +5182,18 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     }
 
     func showWaveForm() {
-        if self.graphView.alpha == 0 {
-            self.graphView.alpha = 1.0
-            if self.customRangeBar.alpha == 1.0 {
-                self.customRangeBar.alpha = 0.0
+        if self.graphView?.alpha == 0 {
+            self.graphView?.alpha = 1.0
+            if self.customRangeBar?.alpha == 1.0 {
+                self.customRangeBar?.alpha = 0.0
             }
         }
     }
 
     func hideWaveForm() {
-        if self.graphView.alpha == 1.0 {
-            self.graphView.alpha = 0
-            self.bookmarkBackwardBtn.enabled = self.bookmarkFordwardBtn.enabled = false
+        if self.graphView?.alpha == 1.0 {
+            self.graphView?.alpha = 0
+            self.bookmarkBackwardBtn?.enabled = self.bookmarkFordwardBtn?.enabled = false
         }
     }
 
@@ -5448,57 +5211,38 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     }
 
     func showSegmentView() {
-        if self.segmentBgView.alpha == 0  {
-
-            self.segmentBgView.alpha = 1.0
-            let frame:CGRect = self.segmentBgView.frame
-            self.segmentBgView.frame = CGRectMake(0, -frame.size.height, self.view.frame.size.width, frame.size.height)
-            //self.segmentedControl.selectedSegmentIndex = 0;
-            //editMode = 0;
-
-            UIView.animateWithDuration(1.0,
-                                  delay:0,
-                                options:UIViewAnimationOptionTransitionFlipFromTop,
-                             animations:{
-                                 self.segmentBgView.frame = CGRectMake(0, -5, self.view.frame.size.width, frame.size.height)
-                                 self.customRangeBar.frame = CGRectMake(10, 15, self.view.frame.size.width - 20, 35)
-                                 self.headerView.frame = CGRectMake(0, frame.size.height - 20, self.headerView.frame.size.width, self.headerView.frame.size.height)
-                             },
-                             completion:{ (finished:Bool) in
-                             })
+        if self.segmentBgView?.alpha == 0{
+            self.segmentBgView?.alpha = 1.0
+            let frame = self.segmentBgView?.frame
+            self.segmentBgView?.frame = CGRect(x: 0, y: -(frame?.size.height ?? 0), width: self.view.frame.size.width, height: frame?.size.height ?? 0)
+            UIView.animate(withDuration: 1.0, delay:0, options:.transitionFlipFromTop, animations:{
+                self.segmentBgView?.frame  = CGRect(x: 0, y: -5, width: self.view.frame.size.width, height: frame?.size.height ?? 0)
+                self.customRangeBar?.frame = CGRect(x: 10, y: 15, width: self.view.frame.size.width - 20, height: 35)
+                self.headerView?.frame     = CGRect(x: 0, y: (frame?.size.height ?? 0) - 20, width: self.headerView?.frame.size.width ?? 0, height: self.headerView?.frame.size.height ?? 0)
+            },completion:nil)
         }
     }
 
     func hideSegmentView() {
-        if self.segmentBgView.alpha == 1.0 {
-
-            let frame:CGRect = self.segmentBgView.frame
-
-            self.segmentBgView.frame = CGRectMake(0, 0, frame.size.width, frame.size.height)
-
-            UIView.animateWithDuration(1.0,
-                                  delay:0,
-                                options:UIViewAnimationOptionTransitionFlipFromBottom,
-
-                             animations:{
-                                 self.segmentBgView.frame = CGRectMake(0, -frame.size.height, frame.size.width, frame.size.height)
-                                 self.segmentBgView.alpha = 0.0
-                                 self.headerView.frame = CGRectMake(0, 0, self.headerView.frame.size.width, self.headerView.frame.size.height)
-
-                                 self.bookmarkBtn.enabled = true
-
-                                 if self.bookMarkArr.count == 20 {
-                                     self.bookmarkBtn.enabled = false
-                                 }
-                             },
-                             completion:nil)
+        if self.segmentBgView?.alpha == 1.0 {
+            let frame = self.segmentBgView?.frame
+            self.segmentBgView?.frame = CGRect(x: 0, y: 0, width: frame?.size.width ?? 0, height: frame?.size.height ?? 0)
+            UIView.animate(withDuration: 1.0,delay:0,options:.transitionFlipFromBottom, animations:{
+                self.segmentBgView?.frame = CGRect(x: 0, y: -(frame?.size.height ?? 0), width: frame?.size.width ?? 0, height: frame?.size.height ?? 0)
+                self.segmentBgView?.alpha = 0.0
+                self.headerView?.frame = CGRect(x: 0, y: 0, width: self.headerView?.frame.size.width ?? 0, height: self.headerView?.frame.size.height ?? 0)
+                self.bookmarkBtn?.isEnabled = true
+                if self.bookMarkArr?.count == 20 {
+                    self.bookmarkBtn?.isEnabled = false
+                }
+             }, completion:nil)
         }
     }
     
     func showPartialDeleteView() {
         self.didFinishOverwrite()
 
-        UIView.animateWithDuration(1.0, delay:0, options:UIViewAnimationOptionTransitionFlipFromBottom, animations:{
+        UIView.animateWithDuration(1.0, delay:0, options:.transitionFlipFromBottom, animations:{
 
              self.recordCtrlsView.frame = CGRectMake(0, self.partialDelView.frame.origin.y + self.partialDelView.frame.size.height, self.pageScrollView.frame.size.width, 80)
 
@@ -5557,8 +5301,8 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
     func showOverwriteView() {
         self.hidePartialDeleteView()
-        let newTime:CMTime = CMTimeMake(0, 1)
-        self.thePlayer.seekToTime(newTime)
+        let newTime:CMTime = CMTime(0, 1)
+        self.thePlayer?.seekToTime(newTime)
 
         self.playAudioPlayer()
 
@@ -5604,7 +5348,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     func hideOverwriteView() {
             UIView.animateWithDuration(1.0,
                                   delay:0,
-                                options:UIViewAnimationOptionTransitionFlipFromTop,
+                                       options:.transitionFlipFromTop,
 
                              animations:{
 
@@ -5705,7 +5449,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
             UIView.animateWithDuration(1.0,
                                   delay:0,
-                                options:UIViewAnimationOptionTransitionFlipFromTop,
+                                       options:.transitionFlipFromTop,
 
                              animations:{
 
@@ -5782,9 +5526,9 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         }
     
     func showAutoSaveAlert() {
-        let saveAlert:UIAlertView! = UIAlertView(title:"PTS Dictate", message:"Auto File Saving has reached. Please save your file.", delegate:self, cancelButtonTitle:"OK", otherButtonTitles:nil)
-        saveAlert.tag = TAG_AUTO_SAVE_ALERT_TAG
-        saveAlert.show()
+//        let saveAlert:UIAlertView! = UIAlertView(title:"PTS Dictate", message:"Auto File Saving has reached. Please save your file.", delegate:self, cancelButtonTitle:"OK", otherButtonTitles:nil)
+//        saveAlert.tag = TAG_AUTO_SAVE_ALERT_TAG
+//        saveAlert.show()
     }
 
     func textTospeech(text:String!) {
@@ -5796,15 +5540,9 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         session.setCategory(AVAudioSessionCategoryPlayAndRecord, error:&setCategoryError)
         session.setActive(true, error:&setCategoryError)
 
-        if (setCategoryError != nil) {
-            NSLog("setCategoryError : %@", setCategoryError.description())
-        }
-
+    
         session.overrideOutputAudioPort(AVAudioSessionPortOverrideSpeaker, error:&setOverrideError)
 
-        if (setOverrideError != nil) {
-            NSLog("setOverrideError :%@", setOverrideError.description())
-        }
 
         let synthesizer:AVSpeechSynthesizer! = AVSpeechSynthesizer()
         let utterance:AVSpeechUtterance! = AVSpeechUtterance.speechUtteranceWithString(text)
@@ -5831,13 +5569,13 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             utterance.pitchMultiplier = pitchMultiplier
         }
 
-        synthesizer.speakUtterance(utterance)
+        synthesizer.speak(utterance)
     }
 
     func callAutoSave() {
         NSLog("callAutoSave")
 
-        if self.audio_Recorder.recording {
+        if self.audio_Recorder?.recording {
 
             autoSaveIsOn = true
 
@@ -5846,7 +5584,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
             isPausedFromTab = true
 
-            self.audio_Recorder.pause()
+            self.audio_Recorder?.pause()
 
             self.stopRecordingTimer()
 
@@ -5855,27 +5593,27 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             let timing:UILabel! = self.view.viewWithTag(TAG_TIMING_LBL)
 
             if isRecording == FIRSTTIME {
-                timing.text = self.timeFormatted(lroundf(self.audio_Recorder.currentTime))
+                timing.text = self.timeFormatted(lroundf(self.audio_Recorder?.currentTime))
             }
             else{
 
-                if playerCurrentTime != 0  && self.segmentedControl.selectedSegmentIndex == 2 {
+                if playerCurrentTime != 0  && self.segmentedControl?.selectedSegmentIndex == 2 {
 
-                    if self.recordedFileDuration < (self.audio_Recorder.currentTime + playerCurrentTime) {
+                    if self.recordedFileDuration < (self.audio_Recorder?.currentTime + playerCurrentTime) {
 
-                        timing.text = self.timeFormatted((lroundf(self.audio_Recorder.currentTime) + lroundf(playerCurrentTime)))
+                        timing.text = self.timeFormatted((lroundf(self.audio_Recorder?.currentTime) + lroundf(playerCurrentTime)))
 
                         overWrite.text = ""
 
                     }
                     else
                     {
-                        overWrite.text = self.timeFormatted((lroundf(self.audio_Recorder.currentTime) + lroundf(playerCurrentTime)))
+                        overWrite.text = self.timeFormatted((lroundf(self.audio_Recorder?.currentTime) + lroundf(playerCurrentTime)))
                         timing.text = self.timeFormatted(lroundf(self.recordedFileDuration))
                     }
                 }
 
-                else if self.segmentedControl.selectedSegmentIndex == 1 {
+                else if self.segmentedControl?.selectedSegmentIndex == 1 {
 
                     overWrite.text = self.timeFormatted((lroundf(self.audio_Recorder.currentTime) + lroundf(insertingTime)))
                     timing.text = self.timeFormatted((lroundf(self.audio_Recorder.currentTime + self.recordedFileDuration)))
@@ -5883,13 +5621,13 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 else
                 {
-                    timing.text = self.timeFormatted((lroundf(self.audio_Recorder.currentTime) + lroundf(recordedFileDuration)))
+                    timing.text = self.timeFormatted(totalSeconds: (lroundf(self.audio_Recorder.currentTime) + lroundf(recordedFileDuration)))
                 }
             }
 
             self.showAutoSaveAlert()
 
-            self.textTospeech("Auto File Saving has reached. Please save your file.")
+            self.textTospeech(text: "Auto File Saving has reached. Please save your file.")
 
             //[self updateRecordedTiming];
 
@@ -5898,13 +5636,13 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         }
         else
         {
-            isFirstTime = !isFirstTime
+            isFirstTime = !(isFirstTime ?? false)
         }
     }
     
     func xPositionFromSliderValue(aSlider:UISlider!) -> Float {
-        let sliderRange:Float = aSlider.frame.size.width - aSlider.currentThumbImage.size.width
-        let sliderOrigin:Float = aSlider.frame.origin.x + (aSlider.currentThumbImage.size.width / 2.0)
+        let sliderRange:Float = aSlider.frame.size.width - aSlider.currentThumbImage?.size.width
+        let sliderOrigin:Float = aSlider.frame.origin.x + (aSlider.currentThumbImage?.size.width / 2.0)
 
         let sliderValueToPixels:Float = (((aSlider.value - aSlider.minimumValue)/(aSlider.maximumValue - aSlider.minimumValue)) * sliderRange) + sliderOrigin
 
@@ -5916,45 +5654,42 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         NSLog("didFinishOverwrite #############")
 
         self.hideOverwriteView()
-        self.startPointView.removeFromSuperview()
-        self.endPointView.removeFromSuperview()
+        self.startPointView?.removeFromSuperview()
+        self.endPointView?.removeFromSuperview()
 
-        self.startOverwriteBtn.alpha = 0
+        self.startOverwriteBtn?.alpha = 0
 
         startPointTime = 0
         endPointTime = 0
 
-        self.lblStartPoint.removeFromSuperview()
-        self.lblEndPoint.removeFromSuperview()
+        self.lblStartPoint?.removeFromSuperview()
+        self.lblEndPoint?.removeFromSuperview()
     }
 
     func partialDeleteComplete() {
 
-        NSLog("partialDeleteComplete COMING @@@@@@@@@@@@@@")
+        print("partialDeleteComplete COMING @@@@@@@@@@@@@@")
 
-        self.recordBtn.enabled = self.stopBtn.enabled = FALSE
+        self.recordBtn.enabled = self.stopBtn.enabled = false
 
-        self.recordBtn.setImage(K_SETIMAGE("record_record_btn_disable.png"), forState:UIControlStateDisabled)
+        self.recordBtn.setImage(K_SETIMAGE("record_record_btn_disable.png"), forState:.disabled)
     }
 
     // MARK: -
     // MARK: NSNOTIFICATION
     @objc func batteryChanged(notification:NSNotification!) {
-        let device:UIDevice! = UIDevice.currentDevice()
-
-        NSLog("=====>>>>> batteryChanged <=====")
-
-        NSLog("State: %li Charge: %f", (device.batteryState as! long), device.batteryLevel * 100)
+        let device = UIDevice.currentDevice
+        print("=====>>>>> batteryChanged <=====")
 
         if device.batteryLevel * 100 <= 10 {
 
-            if device.batteryState == UIDeviceBatteryStateUnplugged {
+            if device.batteryState == .unplugged {
 
-                if self.audio_Recorder.isRecording() {
+                if self.audio_Recorder?.isRecording{
 
                     isPausedFromTab = true
 
-                    self.audio_Recorder.pause()
+                    self.audio_Recorder?.pause()
                     self.stopRecordingTimer()
 
                     let statusLbl:UILabel! = self.view.viewWithTag(TAG_STATUS_LBL)
@@ -5971,25 +5706,25 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                     saveAlert.tag = TAG_ALERT_STOP_RECORD_TAG
                     saveAlert.show()
 
-                    self.textTospeech("10 percentage battery remaining. Please save your file")
+                    self.textTospeech(text: "10 percentage battery remaining. Please save your file")
                 }
                 else {
 
                     if APPDELEGATE.userDefaults.boolForKey(K_KEY_IS_RECORD_STARTED) {
 
-                        if !isLoadingShowing {
+                        if !(isLoadingShowing ?? false) {
 
                             NSLog("=======> ALREADY PAUSED || STOPPED <========")
 
                             isPausedFromTab = false
 
-                            NSNotificationCenter.defaultCenter().removeObserver(self, name:UIDeviceBatteryLevelDidChangeNotification, object:nil)
+                            NotificationCenter.default.removeObserver(self, name:UIDevice.batteryLevelDidChangeNotification, object:nil)
 
                             let saveAlert:UIAlertView! = UIAlertView(title:K_KEY_APP_TITLE, message:"Your device battery percentage is getting very low. Please save your file first & you can edit later", delegate:self, cancelButtonTitle:"OK", otherButtonTitles: nil)
                             saveAlert.tag = TAG_ALERT_ALREADY_PAUSED_TAG
                             saveAlert.show()
 
-                            self.textTospeech("10 percentage battery remaining. Please save your file")
+                            self.textTospeech(text: "10 percentage battery remaining. Please save your file")
 
                         }
                     }
@@ -6001,13 +5736,13 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
     func receiveNotification(notification:NSNotification!) {
 
-        if (notification.name() == K_NOTICATION_RECORDING) {
+        if (notification.name == K_NOTICATION_RECORDING) {
 
-            if self.audio_Recorder.isRecording() {
+            if self.audio_Recorder.isRecording{
 
                 isPausedFromTab = true
 
-                self.audio_Recorder.pause()
+                self.audio_Recorder?.pause()
                 self.stopRecordingTimer()
 
                 let statusLbl:UILabel! = self.view.viewWithTag(TAG_STATUS_LBL)
@@ -6037,14 +5772,13 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         }
     }
     
-    // MARK: - Interaction
-
-    func gestureRecognizer(gestureRecognizer:UIGestureRecognizer!, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer:UIGestureRecognizer!) -> Bool {
+    // MARK: - Gestures Interaction
+    
+    func gestureRecognizer(_ gestureRecognizer:UIGestureRecognizer!, shouldRecognizeSimultaneouslyWith otherGestureRecognizer:UIGestureRecognizer!) -> Bool {
         return true
     }
 
-    func gestureRecognizer(gestureRecognizer:UIGestureRecognizer!, shouldReceiveTouch touch:UITouch!) -> Bool {
-
+    func gestureRecognizer(_ gestureRecognizer:UIGestureRecognizer!, shouldReceive touch:UITouch!) -> Bool {
         if (touch.view is UIScrollView) {
             // prevent recognizing touches on the slider
             return false
@@ -6060,8 +5794,9 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
         if alertView.tag == 0 {
             isEdit = true
-            self.recordProcess(self.recordBtn, flag:false)
-            AppDelegate.sharedInstance().userDefaults.set("1", forKey:K_KEY_IS_EDITING)
+
+            self.recordProcess(sender: self.recordBtn, flag:false)
+            APPDELEGATE.userDefaults().setObject("1", forKey:K_KEY_IS_EDITING)
         }
 
         if alertView.tag == TAG_SAVE_ALERT_TAG {
@@ -6081,12 +5816,12 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                     let arr:NSMutableArray! = AppDelegate.sharedInstance().userDefaults.objectForKey(K_KEY_AUTO_SAVED_FILE_ARRAY).mutableCopy()
 
-                    NSLog("AUTOSAVED ARRAY ELSE ===> %@  %@", arr, self.fileNameLbl.text)
+                    NSLog("AUTOSAVED ARRAY ELSE ===> %@  %@", arr, self.fileNameLbl?.text)
                     
                     for var i in 0..<arr.count{
                         let stringToCheck:String! = arr.objectAtIndex(i)
-                        if (stringToCheck == self.fileNameLbl.text) {
-                            arr.removeObjectAtIndex(i)
+                        if (stringToCheck == self.fileNameLbl?.text) {
+                            arr.removeObject(at: i)
                             NSLog("AUTOSAVED REMOVING ===> %@", arr)
                         }
                      }
@@ -6095,7 +5830,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                     AppDelegate.sharedInstance().userDefaults.synchronize()
                 }
 
-                self.saveIntoDataBase("NO")
+                self.saveIntoDataBase(isAutoSaveFile: "NO")
             }
         }
 
@@ -6113,27 +5848,16 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                     let success:Bool = NSFileManager.defaultManager().removeItemAtPath(dataPath, error:nil)
 
-                    dispatch_async(dispatch_get_main_queue(), {
-
-                        if success {
-
-                        }
-                    })
+                    
                 })
-
-
-                // YES
-                NSLog(K_YES)
 
                 if !editRecording {
 
-                    NSLog("YES 1")
-
                     if !editRecording {
 
-                        let filePath:String! = self.getExistingFolder().stringByAppendingPathComponent(self.fileNameLbl.text)
+                        let filePath:String! = self.getExistingFolder().stringByAppendingPathComponent(self.fileNameLbl?.text)
 
-                        self.deleteParticularFileInFolder(filePath)
+                        self.deleteParticularFileInFolder(filepath: filePath)
 
                     }
 
@@ -6168,24 +5892,16 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                     if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_AUTO_SAVING) == K_SWITCH_ON) {
 
                         if isSaving == SECONDTIME {
-
                             self.showLoading()
+                            let filePath = self.getDocumentDirectory().appendingPathComponent("EditRecord").appendingPathComponent(self.fileNameLbl?.text ?? "")
 
-                            let filePath:String! = self.getDocumentDirectory().stringByAppendingPathComponent("EditRecord").stringByAppendingPathComponent(self.fileNameLbl.text)
-
-                            NSLog("filePath ========>>>>>>>>>>>:%@", filePath)
-
-                            let fileDuration:String! = self.audioDuration(filePath)
+                            let fileDuration = self.audioDuration(filePath: filePath)
 
                             var error:NSError!
-                            let fileDictionary:NSDictionary! = NSFileManager.defaultManager().attributesOfItemAtPath(filePath, error: &error)
+                            let fileDictionary = FileManager.default.attributesOfItem(atPath: filePath)
                             let size:NSNumber! = fileDictionary.objectForKey(NSFileSize)
 
                             let fileSize:String! = String(format:"%.2f",(size.floatValue()/1024.0/1024.0)).stringByAppendingString(" Mb")
-
-                            NSLog("fileSize ========>>>>>>>>>>>:%@", fileSize)
-
-                            NSLog("fileDuration ========>>>>>>>>>>>:%@", fileDuration)
 
                             var bookmarks:String!
 
@@ -6196,8 +5912,8 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                                 
                                 for var i in 0..<result.count {
                                     if i == 0 {
-                                        NSLog("[result objectAtIndex:0] == > %@", result.objectAtIndex(0))
-                                        bookmarks = result.objectAtIndex(i)
+                                        print("[result objectAtIndex:0] == > %@", result.object(at: 0))
+                                        bookmarks = result.object(at: i) as! String
                                     } else {
                                         bookmarks = bookmarks.stringByAppendingString(",")
                                         bookmarks = bookmarks.stringByAppendingString(result.objectAtIndex(i))
@@ -6207,33 +5923,26 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                                 bookmarks = ""
                             }
 
-                           // NSLog(@"bookmarks ==> %@", bookmarks);
+                            let currentRecordingFilePath = self.getDocumentDirectory().stringByAppendingPathComponent("Existing").stringByAppendingPathComponent(self.fileNameLbl.text)
 
-
-                          //  NSLog(@"AUDIO FILE DURATION 22222 ========>>>>>>>>>>>:%@", [self audioDuration:filePath]);
-
-                            let currentRecordingFilePath:String! = self.getDocumentDirectory().stringByAppendingPathComponent("Existing").stringByAppendingPathComponent(self.fileNameLbl.text)
-
-                          //  NSLog(@"currentRecordingFilePath ========>>>>>>>>>>>:%@", currentRecordingFilePath);
-
-
-                            self.deleteParticularFileInFolder(currentRecordingFilePath)
+                            self.deleteParticularFileInFolder(filepath: currentRecordingFilePath)
 
                             var err:NSError!
 
-                            NSFileManager.defaultManager().copyItemAtPath(filePath,
+                            FileManager.default.copyItemAtPath(filePath,
                                                                     toPath:currentRecordingFilePath,
                                                                      error:&err)
 
 
                             let uploadArray:NSMutableArray! = NSMutableArray()
 
-                            uploadArray.addObject(self.editDictionary.valueForKey("comments")) // COMMENTS
-                            uploadArray.addObject(fileDuration)
-                            uploadArray.addObject(fileSize)
-                            uploadArray.addObject(bookmarks) // BOOKMARKS
-                            uploadArray.addObject(self.editDictionary.valueForKey("rowId"))
-                            uploadArray.addObject(AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_LOGIN_USER_ID))
+
+                            uploadArray.add(self.editDictionary.valueForKey("comments")) // COMMENTS
+                            uploadArray.add(fileDuration)
+                            uploadArray.add(fileSize)
+                            uploadArray.add(bookmarks) // BOOKMARKS
+                            uploadArray.add(self.editDictionary.valueForKey("rowId"))
+                            uploadArray.add(APPDELEGATE.userDefaults()
 
                             PTSDATAMANAGER.updateEditRecordDetailsInToUploadFiles(uploadArray)
 
@@ -6259,7 +5968,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 let statusLbl:UILabel! = self.view.viewWithTag(TAG_STATUS_LBL)
                 statusLbl.text = K_STOPPED
 
-                self.recordStopButtonTapped(false, button:self.stopBtn)
+                self.recordStopButtonTapped(show: false, button:self.stopBtn)
             }
             else
             {
@@ -6271,7 +5980,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 //[self initAudioRecorder];
 
-                self.audio_Recorder.record()
+                self.audio_Recorder?.record()
 
                 self.startRecordingTimer()
             }
@@ -6285,7 +5994,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 let statusLbl:UILabel! = self.view.viewWithTag(TAG_STATUS_LBL)
                 statusLbl.text = K_STOPPED
-                self.recordStopButtonTapped(true, button:self.stopBtn)
+                self.recordStopButtonTapped(show: true, button:self.stopBtn)
             }
             else
             {
@@ -6303,7 +6012,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
             isFirstTime = !isFirstTime
 
-            self.recordStopButtonTapped(false, button:self.autoSaveBtn)
+            self.recordStopButtonTapped(show: false, button:self.autoSaveBtn)
 
             //  [self recordStopButtonTapped:NO];
         }
@@ -6313,18 +6022,18 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             // Commented to fix PTS-17
             //[self initAudioRecorder];
 
-            self.audio_Recorder.record()
+            self.audio_Recorder?.record()
             self.startRecordingTimer()
             let statusLbl:UILabel! = self.view.viewWithTag(TAG_STATUS_LBL)
             statusLbl.text = K_RECORDING
         }
 
         if alertView.tag == TAG_WARNING_ALERT_TWO {
-            self.recordStopButtonTapped(false, button:self.stopBtn)
+            self.recordStopButtonTapped(show: false, button:self.stopBtn)
         }
 
         if alertView.tag == TAG_FILE_SAVED_ALERT {
-            self.recordBtn.enabled = self.stopBtn.enabled = self.segmentedControl.userInteractionEnabled = true
+            self.recordBtn?.enabled = self.stopBtn?.enabled = self.segmentedControl?.userInteractionEnabled = true
         }
 
         if alertView.tag == TAG_START_OVERWRITE_BTN || alertView.tag == TAG_EDIT_INSERT || alertView.tag == TAG_EDIT_PARTIAL_DELETE {
@@ -6334,7 +6043,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         if alertView.tag == TAG_EDIT_APPEND {
            // [self didFinishOverwrite];
 
-            self.customRangeBar.alpha = 0.0
+            self.customRangeBar?.alpha = 0.0
             //[self showWaveForm]
             //[self recordProcess:self.recordBtn flag:YES];
            // [self recordButtonTapped:self.recordBtn flag:YES];
@@ -6342,7 +6051,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
         if alertView.tag == TAG_END_OVERWRITE_BTN {
 
-            self.thePlayer.play()
+            self.thePlayer?.play()
         }
 
         if alertView.tag == TAG_EDIT_OVERWRITE {
@@ -6364,7 +6073,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         if alertView.tag == 7 {
             let editing:Bool = AppDelegate.sharedInstance().userDefaults.boolForKey(K_KEY_EDIT_RECORD_FILE)
             if !editing {
-                NSLog("AUTO SAVE NOT EDITING @@@@@@@@@@@@@")
+                print("AUTO SAVE NOT EDITING @@@@@@@@@@@@@")
                 let filecountString:String! = String(format:"%@",fileCountStr)
                 AppDelegate.sharedInstance().userDefaults.set(filecountString, forKey:K_KEY_RECORD_FILE_COUNT)
                 AppDelegate.sharedInstance().userDefaults.synchronize()
@@ -6375,28 +6084,25 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     }
     
     // MARK: AVAUDIO RECORDER DELEGATES
-    func audioRecorderDidFinishRecording(avrecorder:AVAudioRecorder!, successfully flag:Bool) {
+    func audioRecorderDidFinishRecording(_ avrecorder:AVAudioRecorder, successfully flag:Bool) {
         // NSLog(@"audioRecorderDidFinishRecording");
         if avrecorder == self.audio_Recorder {
             // NSLog(@"NORMAL AUDIO RECORDER COMPLETED");
             AppDelegate.sharedInstance().userDefaults.setBool(true, forKey:K_KEY_IS_RECORD_STOPPED)
         }
-        else {
-            //   NSLog(@"TEMP AUDIO RECORDER COMPLETED");
-        }
     }
 
-    func audioRecorderBeginInterruption(recorder:AVAudioRecorder!) {
+    func audioRecorderBeginInterruption(_ recorder:AVAudioRecorder) {
         isPausedFromTab = true
         NSLog("audioRecorderBeginInterruption")
-        self.recordStopButtonTapped(false, button:self.stopBtn)
+        self.recordStopButtonTapped(show: false, button:self.stopBtn)
         let saveAlert:UIAlertView! = UIAlertView(title:K_KEY_APP_TITLE, message:"Due to some interruption, the recording has been auto saved. Please go back to Existing Dictations screen, and choose Edit/Append to continue recording.", delegate:self, cancelButtonTitle:"OK", otherButtonTitles:nil)
         saveAlert.tag = 7
         saveAlert.show()
     }
 
     // MARK:  AVAUDIOPLAYER DELEGATE
-    func audioPlayerDidFinishPlaying(player:AVAudioPlayer!, successfully flag:Bool) {
+    func audioPlayerDidFinishPlaying(_ player:AVAudioPlayer, successfully flag:Bool) {
 
         player.stop()
         player.prepareToPlay()
@@ -6406,13 +6112,13 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         self.waveformView.progressTime = CMTimeMakeWithSeconds(lroundf(self.recordedFileDuration), 10000)
 
         if !isRecordStopTapped {
-            self.recordBtn.enabled = self.stopBtn.enabled = true
+            self.recordBtn.enabled = self.stopBtn?.enabled = true
         }
 
         let currentTime:UILabel! = self.view.viewWithTag(TAG_CURRENTTIME_LBL)
         currentTime.text = String(format:"%@ | %@", self.timeFormatted(lroundf(self.recordedFileDuration)),self.timeFormatted(lroundf(self.recordedFileDuration)))
 
-        self.waveFormSlider.setValue(lroundf(self.recordedFileDuration), animated:true)
+        self.waveFormSlider?.setValue(lroundf(self.recordedFileDuration), animated:true)
     }
 
 }
