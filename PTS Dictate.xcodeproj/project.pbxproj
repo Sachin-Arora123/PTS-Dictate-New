@@ -54,7 +54,6 @@
 		28A4F5CF28B510DE0035137B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 28A4F5CE28B510DE0035137B /* Assets.xcassets */; };
 		28A4F5D228B510DE0035137B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 28A4F5D028B510DE0035137B /* LaunchScreen.storyboard */; };
 		28A4F5DE28B51D750035137B /* Extension+Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5DD28B51D750035137B /* Extension+Navigation.swift */; };
-		28B457B3290BE31300D14BAC /* RecordVCNew.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28B457B2290BE31300D14BAC /* RecordVCNew.swift */; };
 		4BFCB13CEA7E06C3217E3512 /* Pods_PTS_Dictate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7801E7DB3243DA4B1EF6CD0C /* Pods_PTS_Dictate.framework */; };
 		6139A90A290C2E1B00D4C1DD /* RecordVCNew.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6139A909290C2E1B00D4C1DD /* RecordVCNew.swift */; };
 		6139A90C290C327400D4C1DD /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6139A90B290C327400D4C1DD /* Constants.swift */; };
@@ -394,6 +393,7 @@
 				28A4F5C328B510D90035137B /* Products */,
 				97719E97C8011AC41905B41C /* Pods */,
 				018EE1CAA31721738B3C8A4D /* Frameworks */,
+				28B457B5290D0B9700D14BAC /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -464,6 +464,14 @@
 				6139A90B290C327400D4C1DD /* Constants.swift */,
 			);
 			path = Helpers;
+			sourceTree = "<group>";
+		};
+		28B457B5290D0B9700D14BAC /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				28B457B2290BE31300D14BAC /* RecordVCNew.swift */,
+			);
+			name = "Recovered References";
 			sourceTree = "<group>";
 		};
 		6139A914290C41C100D4C1DD /* ScWaveFormView */ = {
@@ -667,7 +675,6 @@
 				616E4A45290AB9550011ABF2 /* Extension+UIColor.swift in Sources */,
 				18DF4BD728BE7B5D002FC063 /* ApiHandler.swift in Sources */,
 				1854B88C28B958530039A96E /* UploadListCell.swift in Sources */,
-				28B457B3290BE31300D14BAC /* RecordVCNew.swift in Sources */,
 				28A4F5C628B510D90035137B /* AppDelegate.swift in Sources */,
 				182BE0B628BD3B6000327094 /* MicroSensitivityVC.swift in Sources */,
 				1855435828C36494008AFBC2 /* AboutInfoCell.swift in Sources */,

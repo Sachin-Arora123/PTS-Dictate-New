@@ -3037,13 +3037,13 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                             }
 
                             self.insert(1, button:sender)
-                        }else if self.segmentedControl.selectedSegmentIndex == 2 {
+                        }else if self.segmentedControl?.selectedSegmentIndex == 2 {
                             print(" OVERWRITE ")
                             if !isStopBtnTappedWhileOverwriting
                                 {isStopBtnTappedWhileOverwriting = true}
                             self.updateRecordedTiming()
-                            self.overwrite(1, button:sender)
-                        }else if self.segmentedControl.selectedSegmentIndex == 0 {
+                            self.overwrite(flag: 1, button:sender)
+                        }else if self.segmentedControl?.selectedSegmentIndex == 0 {
                             print(" APPENDING ")
 
                             if isAppendWithOverwriting {
@@ -3079,7 +3079,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             if sender == self.stopBtn {
                 self.showSaveBottomView()
             }else{
-                self.goToSaveTheAutoSaveFile("")
+                self.goToSaveTheAutoSaveFile(filePath: "")
             }
 
             return
@@ -3095,46 +3095,46 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     func fastRewindTapped(sender:UIButton!) {
         PTSHELPER.buttonAnimation = sender
 
-        let playerItem:AVPlayerItem! = self.thePlayer.currentItem
-        let currentTime:CMTime = playerItem.currentTime
+        let playerItem:AVPlayerItem! = self.thePlayer?.currentItem
+        let currentTime:CMTime = playerItem.currentTime()
         let time:Int = lroundf(CMTimeGetSeconds(currentTime))
         let duration:Int = lroundf(recordedFileDuration)
         var newTime:CMTime
 
         if self.stringsAreEqual() {
-            newTime = CMTimeMake(duration - 1, 1)
+            newTime = CMTime(duration - 1, 1)
             if time == 1 || time == 2 {
-                newTime = CMTimeMake(0, 1)
+                newTime = CMTime(0, 1)
             }
             else {
-                newTime = CMTimeMake(duration - 3, 1)
+                newTime = CMTime(duration - 3, 1)
             }
         }else if time > 0 {
             if time == 1 || time == 2 {
-                newTime = CMTimeMake(0, 1)
+                newTime = CMTime(0, 1)
             }else {
-                newTime = CMTimeMake(time - 3, 1)
+                newTime = CMTime(time - 3, 1)
             }
         }else {
-            newTime = CMTimeMake(0, 1)
+            newTime = CMTime(0, 1)
         }
         self.updateTimeLabels(newTime)
     }
 
-    func fastForwardTapped(sender:UIButton!) {
+    func fastForwardTapped(sender:UIButton) {
         if self.stringsAreEqual() { return }
 
         PTSHELPER.buttonAnimation = sender
 
-        let playerItem:AVPlayerItem! = self.thePlayer.currentItem
-        let currentTime:CMTime = playerItem.currentTime
+        let playerItem  = self.thePlayer?.currentItem
+        let currentTime = playerItem?.currentTime()
         let time:Int = lroundf(CMTimeGetSeconds(currentTime))
         let duration:Int = lroundf(recordedFileDuration)
         var newTime:CMTime
         if (time == duration - 1) || (time == duration - 2)  {
-            newTime = CMTimeMake(duration, 1)
+            newTime = CMTime(duration, 1)
         }else{
-            newTime = CMTimeMake(time + 3, 1)
+            newTime = CMTime(time + 3, 1)
         }
 
         if time >= 0  && (time <= recordedFileDuration) {
@@ -3142,86 +3142,70 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         }
     }
 
-    func rewindTapped(sender:UIButton!) {
+    func rewindTapped(sender:UIButton) {
         PTSHELPER.buttonAnimation = sender
-        let playerItem:AVPlayerItem! = self.thePlayer.currentItem
-        let currentTime:CMTime = playerItem.currentTime
+        let playerItem = self.thePlayer?.currentItem
+        let currentTime = playerItem?.currentTime()
         let time:Int = lroundf(CMTimeGetSeconds(currentTime))
         let duration:Int = lroundf(recordedFileDuration)
         var newTime:CMTime
         if self.stringsAreEqual() {
-            newTime = CMTimeMake(duration - 1, 1)
+            newTime = CMTime(duration - 1, 1)
         }else if time > 0 {
-            newTime = CMTimeMake(time - 1, 1)
+            newTime = CMTime(value: time - 1, timescale: 1)
         }else {
-            newTime = CMTimeMake(0, 1)
+            newTime = CMTime(value: 0, timescale: 1)
         }
-        self.updateTimeLabels(newTime)
+        self.updateTimeLabels(newTime: newTime)
     }
     
     func forwardTapped(sender:UIButton!) {
-            if self.stringsAreEqual() {
+        if self.stringsAreEqual() { return }
 
-                // NSLog(@"stringsAreEqual");
-                return
-            }
+        PTSHELPER.buttonAnimation = sender
 
-            PTSHELPER.buttonAnimation = sender
+        let playerItem = self.thePlayer?.currentItem
+        let currentTime = playerItem?.currentTime()
+        let time = lroundf(Float(CMTimeGetSeconds(currentTime)))
+        let newTime = CMTime(time + 1, 1)
+        self.updateTime(newTime: newTime)
+    }
 
-            let playerItem:AVPlayerItem! = self.thePlayer.currentItem
+    func sliderTapped(gestureRecognizer : UIGestureRecognizer) {
+        let slider = gestureRecognizer.view as! UISlider
+        if slider.isHighlighted { return } // tap on thumb, let slider deal with it
 
-            let currentTime:CMTime = playerItem.currentTime
-
-            let time:Int = lroundf(CMTimeGetSeconds(currentTime))
-
-            let newTime:CMTime = CMTimeMake(time + 1, 1)
-
-            self.updateTime(newTime)
-        }
-
-        func sliderTapped(gestureRecognizer:UIGestureRecognizer!) {
-
-            let slider:UISlider! = gestureRecognizer.view
-            if slider.highlighted
-                {return} // tap on thumb, let slider deal with it
-
-            if (slider != nil) {
-                let pt:CGPoint = gestureRecognizer.locationInView(slider)
-                let percentage:CGFloat = pt.x / slider.bounds.size.width
-                let delta:CGFloat = percentage * (slider.maximumValue - slider.minimumValue)
-
-                let valueSlider:Float = slider.minimumValue + delta
-
-                let time:Int = lroundf(valueSlider)
-
-                slider.setValue(time, animated:true)
-
-                let newTime:CMTime = CMTimeMake(time, 1)
-
-                self.updateTime(newTime)
-
-            }
-        }
-
-        func handlePanGesture(recognizer:UIPanGestureRecognizer!) {
-            let slider:UISlider! = recognizer.view
-            if slider.highlighted
-                {return} // tap on thumb, let slider deal with it
-
-            let pt:CGPoint = recognizer.locationInView(slider)
+        if (slider != nil) {
+            let pt:CGPoint = gestureRecognizer.location(in: slider)
             let percentage:CGFloat = pt.x / slider.bounds.size.width
             let delta:CGFloat = percentage * (slider.maximumValue - slider.minimumValue)
             let valueSlider:Float = slider.minimumValue + delta
-
-            let time:Int = lroundf(valueSlider)
-
+            let time = lroundf(valueSlider)
             slider.setValue(time, animated:true)
-
-            let newTime:CMTime = CMTimeMake(time, 1)
-
-            self.updateTime(newTime)
+            let newTime:CMTime = CMTime(time, 1)
+            self.updateTime(newTime: newTime)
 
         }
+    }
+
+    func handlePanGesture(recognizer : UIPanGestureRecognizer!) {
+        let slider = recognizer.view as! UISlider
+        if slider.isHighlighted { return } // tap on thumb, let slider deal with it
+
+        let pt:CGPoint = recognizer.location(in: slider)
+        let percentage:CGFloat = pt.x / slider.bounds.size.width
+        let delta:CGFloat = percentage * (slider.maximumValue - slider.minimumValue)
+        let valueSlider:Float = slider.minimumValue + delta
+
+        let time:Int = lroundf(valueSlider)
+
+        slider.setValue(time, animated:true)
+
+        let newTime:CMTime = CMTimeMake(time, 1)
+
+        self.updateTime(newTime)
+
+    }
 
 
         func sliderValueChanged(sender:AnyObject!) {
