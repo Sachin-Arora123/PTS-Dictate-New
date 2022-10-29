@@ -29,6 +29,9 @@ class MicroSensitivityVC: BaseViewController {
         hideLeftButton()
         setTitleWithoutImage("Microphone Sensitivity")
     }
+    
+    //K_KEY_MICROPHONE_SENSITIVITY set the value in this user defaults
+    //to be used in Record VC
 
 
 }

@@ -142,6 +142,12 @@ let BOOKMARK_18:Int = 18
 let BOOKMARK_19:Int = 19
 let BOOKMARK_20:Int = 20
 
+let FIRSTTIME:Int = 0
+let SECONDTIME:Int = 1
+
+
+
+
 
 class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDelegate, UIGestureRecognizerDelegate {
     
@@ -247,6 +253,8 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     private var thirtySecondPauseCounter = 0
     private var microPhoneSensitivityIndex = 0
     private var eraseStartTime = 0.0
+    private var editRecording:Bool = false
+    private var editDictionary:String = ""
 
     //MARK: View Life Cycle
     override func viewDidLoad() {
@@ -257,18 +265,23 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
         self.view.frame = UIScreen.main.bounds
         self.view.backgroundColor = K_COLOR_WHITE_COLOR
-
-        PTSNAVIGATION.setNavigationTitle("Record", andTitleImage:"title_record_normal.png", viewController:self)
-
+        //PTSNAVIGATION.setNavigationTitle("Record", andTitleImage:"title_record_normal.png", viewController:self)
+        self.title = "Record"
+        let logo = UIImage(named: "title_record_normal.png")
+        let imageView = UIImageView(image:logo)
+        self.navigationItem.titleView = imageView
+        
         self.initAudioRecorder()
 
         self.createFolder(folderName: "Existing")
 
         trimCount = 1
-        APPDELEGATE.userDefaults.setInteger(trimCount, forKey:K_KEY_IS_TRIMCOUNT)
+        
+        AppDelegate.sharedInstance().userDefaults.set(trimCount, forKey:K_KEY_IS_TRIMCOUNT)
         isRecording = FIRSTTIME
-        APPDELEGATE.userDefaults().setObject("0", forKey:K_KEY_IS_RECORDING)
-        isErasing = isSaving = isOverwriting = FIRSTTIME
+        AppDelegate.sharedInstance().userDefaults.set("0", forKey:K_KEY_IS_RECORDING)
+        //isErasing = isSaving = isOverwriting = FIRSTTIME
+        isSaving = isErasing = isOverwriting = FIRSTTIME
         bookMarTapCount = 0
         sliderValue = 0
         autoSaveIsOn = false
@@ -285,26 +298,26 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         isStopBtnTappedWhileOverwriting = false
         self.thirtySecondPauseCounter = 0
 
-        microPhoneSensitivityIndex = APPDELEGATE.userDefaults().valueForKey(K_KEY_MICROPHONE_SENSITIVITY).intValue()
+        microPhoneSensitivityIndex = AppDelegate.sharedInstance().userDefaults.integer(forKey: K_KEY_MICROPHONE_SENSITIVITY)
 
-        let sensitivity = APPDELEGATE.userDefaults().valueForKey(K_KEY_MICROPHONE_SENSITIVITY)
+        let sensitivity = AppDelegate.sharedInstance().userDefaults.value(forKey: K_KEY_MICROPHONE_SENSITIVITY)
 
         if sensitivity.count == 0 {
             microPhoneSensitivityIndex = 5
         }
 
-        let indexing:String! = APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_INDEXING)
+        let indexing:String! = AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_INDEXING)
 
         if indexing.count == 0 {
             //NSLog(@"indexing == 0");
-            APPDELEGATE.userDefaults().setObject(K_SWITCH_OFF, forKey:K_KEY_SWITCH_INDEXING)
+            AppDelegate.sharedInstance().userDefaults.set(K_SWITCH_OFF, forKey:K_KEY_SWITCH_INDEXING)
         }
 
-        let disablePopUp = APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_DISABLE_POPUP)
+        let disablePopUp = AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_DISABLE_POPUP)
 
         if disablePopUp.count == 0 {
             //NSLog(@"indexing == 0");
-            APPDELEGATE.userDefaults().setObject(K_SWITCH_OFF, forKey:K_KEY_SWITCH_DISABLE_POPUP)
+            AppDelegate.sharedInstance().userDefaults.set(K_SWITCH_OFF, forKey:K_KEY_SWITCH_DISABLE_POPUP)
         }
 
         self.bookMarkArr = NSMutableArray()
@@ -329,18 +342,20 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             let filePath:String! = self.getRecordedFile()
 
             isRecording = SECONDTIME
-            APPDELEGATE.userDefaults().setObject("1", forKey:K_KEY_IS_RECORDING)
+            AppDelegate.sharedInstance().userDefaults.set("1", forKey:K_KEY_IS_RECORDING)
+            self.setAllSettings(filePath: filePath)
 
-            self.allSettings = filePath
+           // self.allSettings = filePath
 
             //[PTSHELPER showLoadingIndicator:self];
 
-            self.performSelector(Selector("updateWaveForm:"), withObject:filePath, afterDelay:0.5)
+            self.perform(Selector("updateWaveForm:"), with:filePath, afterDelay:0.5)
 
             self.waveFormSlider?.setValue(Float(recordedFileDuration), animated:true)
             self.fileNameLbl?.text = self.editDictionary.valueForKey("filename")
+            
 
-            APPDELEGATE.userDefaults().setObject(self.editDictionary.valueForKey("rowId"), forKey:K_KEY_IS_ROW_ID)
+            AppDelegate.sharedInstance().userDefaults.set(self.editDictionary.valueForKey("rowId"), forKey:K_KEY_IS_ROW_ID)
 
             self.waveformView.progressTime = CMTimeMakeWithSeconds(recordedFileDuration, 10000)
 
@@ -359,7 +374,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
             // NSLog(@" self.bookMarkArr :%@", self.bookMarkArr);
 
-            if (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_OFF) {
+            if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_OFF) {
 
                 if IS_IPHONE_5 {
                     self.pageScrollView.contentSize = CGSizeMake(0, self.headerView.frame.size.height - 40)
@@ -396,7 +411,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             }  */
         }
 
-        APPDELEGATE.userDefaults().setBool(editRecording, forKey:K_KEY_EDIT_RECORD_FILE)
+        AppDelegate.sharedInstance().userDefaults.setBool(editRecording, forKey:K_KEY_EDIT_RECORD_FILE)
 
         //[self textTospeech:@"Your current recording going to saved."];
     }
@@ -404,10 +419,13 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.createFolder(folderName: "Record")
-        NotificationCenter.default.addObserver(self,
+        NotificationCenter.default.addObserver(self, selector: #selector("appHasTreminated"), name: UIApplication.willTerminateNotification, object: nil)
+        //NotificationCenter.default.addObserver(self,
                                                selector:#selector("appHasTreminated"),
                                                name:UIApplication.willTerminateNotification, object:nil)
-        NotificationCenter.default.addObserver(self,
+        NotificationCenter.default.addObserver(self, selector: #selector("appInBackgroundFunction"), name: UIApplication.didEnterBackgroundNotification, object: nil)
+
+       // NotificationCenter.default.addObserver(self,
                                                  selector:#selector("appInBackgroundFunction"),
                                                name:UIApplication.didEnterBackgroundNotification, object:nil)
     }
@@ -422,8 +440,12 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
     override func viewWillDisappear(_ animated:Bool) {
         super.viewWillDisappear(animated)
-        NSNotificationCenter.default.removeObserver(self, name:K_NOTICATION_RECORDING, object:nil)
-        NSNotificationCenter.default.removeObserver(self, name:UIDeviceBatteryLevelDidChangeNotification, object:nil)
+        NotificationCenter.default.removeObserver(self, forKeyPath:K_NOTICATION_RECORDING, context:nil)
+        
+       // NSNotificationCenter.default.removeObserver(self, name:K_NOTICATION_RECORDING, object:nil)
+        NotificationCenter.default.removeObserver(self, name:UIDevice.batteryLevelDidChangeNotification, object:nil)
+
+        //NSNotificationCenter.default.removeObserver(self, name:UIDeviceBatteryLevelDidChangeNotification, object:nil)
 
         self.stopAllProcess()
     }
@@ -441,7 +463,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
         isSaveAutoSaveFile = true
 
-        if (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_AUTO_SAVING) == K_SWITCH_ON) {
+        if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_AUTO_SAVING) == K_SWITCH_ON) {
 
             if self.isRecordStarted ?? false {
 
@@ -451,18 +473,18 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 let currentTime:CMTime = playerItem.currentTime()
 
-                let time:Float = CMTimeGetSeconds(currentTime)
+                let time:Float = Float(CMTimeGetSeconds(currentTime))
 
-                APPDELEGATE.userDefaults().setObject(self.getRecordedFile(), forKey:K_KEY_IS_PLAYER_FILE)
-                APPDELEGATE.userDefaults.setFloat(time, forKey:K_KEY_IS_PLAYER_CURRENT_TIME)
-                APPDELEGATE.userDefaults().setBool(true, forKey:K_KEY_AUTO_SAVE_FILE)
+                AppDelegate.sharedInstance().userDefaults.set(self.getRecordedFile(), forKey:K_KEY_IS_PLAYER_FILE)
+                AppDelegate.sharedInstance().setFloat(time, forKey:K_KEY_IS_PLAYER_CURRENT_TIME)
+                AppDelegate.sharedInstance().userDefaults.set(true, forKey:K_KEY_AUTO_SAVE_FILE)
 
                 if !editRecording {
-                    let filecountString:String! = String(format:"%@",fileCountStr)
-                    APPDELEGATE.userDefaults().setObject(filecountString, forKey:K_KEY_RECORD_FILE_COUNT)
+                    let filecountString:String! = String(format:"%@",fileCountStr as! CVarArg)
+                    AppDelegate.sharedInstance().userDefaults.set(filecountString, forKey:K_KEY_RECORD_FILE_COUNT)
                 }
 
-                NSUserDefaults.standardUserDefaults().synchronize()
+                NSUserDefaults.standardUserDefaults.synchronize()
 
                 //  NSLog(@"=======> appHasTreminated <=====");
 
@@ -510,7 +532,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             self.pageScrollView.scrollsToTop = false
             self.pageScrollView.contentSize = CGSizeMake(0, self.headerView.frame.size.height)
 
-            if (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
+            if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
 
                 if IS_IPHONE_4 {
                     self.pageScrollView.contentSize = CGSizeMake(0, self.headerView.frame.size.height + 60)
@@ -538,8 +560,9 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 self.customRangeBar.minLimit = -100
                 self.customRangeBar.maxLimit = -10
                 self.customRangeBar.normalBarColor = K_COLOR_PRIMARY_COLOR
-                self.customRangeBar.warningBarColor = DO_RGB(105, 105, 105)
-                self.customRangeBar.dangerBarColor = DO_RGB(211, 211, 211)
+                self.customRangeBar.war
+                self.customRangeBar.warningBarColor = UIColor(red: 105/255.0, green: 105.0/255.0, blue: 105/255.0, alpha: 1)
+                self.customRangeBar.dangerBarColor = UIColor(red: 211/255.0, green: 211/255.0, blue: 211/255.0, alpha: 1)
                 self.customRangeBar.outerBorderColor = UIColor.grayColor()
                 self.customRangeBar.innerBorderColor = UIColor.blackColor()
                 self.pageScrollView.addSubview(self.customRangeBar)
@@ -574,7 +597,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 self.waveformView.backgroundColor = K_COLOR_CLEAR_COLOR
                 self.waveformView.frame = CGRectMake(0, 12.5, self.graphView.frame.size.width, 45)
                 // Setting the waveform colors
-                self.waveformView.normalColor = UIColorFromHEXA(0x80CEFB)
+                self.waveformView.normalColor = hexStringToUIColor(hex: "80CEFB")
                 self.waveformView.progressColor = UIColor.blueColor()
                 self.waveformView.timeRange = CMTimeRangeMake(kCMTimeZero, CMTimeMakeWithSeconds(1, 1))
 
@@ -817,7 +840,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 self.recordCtrlsView = UIView()
 
-                if (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_OFF) {
+                if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_OFF) {
                     self.bookmarkView.hidden = true
                     self.recordCtrlsView.frame = CGRect(0, self.graphView.frame.origin.y + self.graphView.frame.size.height + 10, self.pageScrollView.frame.size.width, 80)
                 }
@@ -833,7 +856,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 var recordBtnFrame:CGRect = CGRectMake(originX , self.recordCtrlsView.frame.size.height * 0.5 - btnSize * 0.5, btnSize, btnSize)
 
-                if PTSHelper.isiPad() & (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
+                if PTSHelper.isiPad() & (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
                     recordBtnFrame.origin.y = self.recordCtrlsView.frame.size.height * 0.5 - btnSize
                 }
 
@@ -849,7 +872,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 var stopBtnFrame:CGRect = CGRectMake(self.recordCtrlsView.frame.size.width - originX - btnSize, self.recordCtrlsView.frame.size.height * 0.5 - btnSize * 0.5, btnSize, btnSize)
 
-                if PTSHelper.isiPad() & (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
+                if PTSHelper.isiPad() & (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
                     stopBtnFrame.origin.y = self.recordCtrlsView.frame.size.height * 0.5 - btnSize
                 }
 
@@ -904,7 +927,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 var playerCtrlsViewFrame:CGRect = CGRectMake(0, self.recordCtrlsView.frame.size.height + self.recordCtrlsView.frame.origin.y, self.view.frame.size.width, 50)
 
-                if PTSHelper.isiPad() & (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
+                if PTSHelper.isiPad() & (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
                     playerCtrlsViewFrame.origin.y = self.recordCtrlsView.frame.size.height + self.recordCtrlsView.frame.origin.y - 45
                 }
 
@@ -984,7 +1007,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 var fileNameTitleLblFrame:CGRect = CGRectMake(7.5, 10 , 75, 20)
 
-                if PTSHelper.isiPad() & (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
+                if PTSHelper.isiPad() & (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
                     fileNameTitleLblFrame.origin.y = 4
                 } else if !PTSHelper.isiPad() {
                     fileNameTitleLblFrame.origin.y = 8
@@ -1000,7 +1023,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 var fileNameLblFrame:CGRect = CGRectMake(fileNameTitleLbl.frame.origin.x + fileNameTitleLbl.frame.size.width , 10, self.detailsView.frame.size.width - (fileNameTitleLbl.frame.origin.x + fileNameTitleLbl.frame.size.width)  , 20)
 
-                if PTSHelper.isiPad() & (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
+                if PTSHelper.isiPad() & (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
                     fileNameLblFrame.origin.y = 4
                 } else if !PTSHelper.isiPad() {
                     fileNameLblFrame.origin.y = 8
@@ -1016,7 +1039,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 var fileSizeTitleLblFrame:CGRect = CGRectMake(fileNameTitleLbl.frame.origin.x, fileNameLbl.frame.origin.y + fileNameLbl.frame.size.height + 5 , 65, 20)
 
-                if PTSHelper.isiPad() & (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
+                if PTSHelper.isiPad() & (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
                     fileSizeTitleLblFrame.origin.y = fileNameLbl.frame.origin.y + fileNameLbl.frame.size.height
                 } else if !PTSHelper.isiPad() {
                     fileSizeTitleLblFrame.origin.y = fileNameLbl.frame.origin.y + fileNameLbl.frame.size.height + 8
@@ -1042,7 +1065,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 var maxFileSizeTitleLblFrame:CGRect = CGRectMake(fileSizeTitleLbl.frame.origin.x, self.fileSizeLbl.frame.origin.y + self.fileNameLbl.frame.size.height + 5 , 132
                                                              , 20)
 
-                if PTSHelper.isiPad() & (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
+                if PTSHelper.isiPad() & (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
                     maxFileSizeTitleLblFrame.origin.y = self.fileSizeLbl.frame.origin.y + self.fileNameLbl.frame.size.height - 1
                 } else if !PTSHelper.isiPad() {
                     maxFileSizeTitleLblFrame.origin.y = self.fileSizeLbl.frame.origin.y + self.fileNameLbl.frame.size.height + 8
@@ -1101,7 +1124,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
             isEdit = false
 
-            APPDELEGATE.userDefaults().setObject("0", forKey:K_KEY_IS_EDITING)
+            AppDelegate.sharedInstance().userDefaults.set("0", forKey:K_KEY_IS_EDITING)
 
         }
     }
@@ -1148,7 +1171,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 self.didFinishOverwrite()
 
                // [self.waveFormSlider setValue:1 animated:YES];
-                if (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_DISABLE_POPUP) == K_SWITCH_OFF) {
+                if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_DISABLE_POPUP) == K_SWITCH_OFF) {
 
                     self.customRangeBar.alpha = 0.0
 
@@ -1170,7 +1193,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 }
 
                 editMode = 1
-                if (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_DISABLE_POPUP) == K_SWITCH_ON) {
+                if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_DISABLE_POPUP) == K_SWITCH_ON) {
                     self.showOverwriteView()
                 } else {
 
@@ -1192,7 +1215,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 }
 
                 editMode = 2
-                if (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_DISABLE_POPUP) == K_SWITCH_ON) {
+                if (AppDelegate.sharedInstance().userDefaults.string(K_KEY_SWITCH_DISABLE_POPUP) == K_SWITCH_ON) {
                     self.showOverwriteView()
                 } else {
                     //[APPDELEGATE.userDefaults setBool:YES forKey:K_OVERWRITING];
@@ -1209,7 +1232,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 // [self showPartialDeleteView];
                 editMode = 3
-                if (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_DISABLE_POPUP) == K_SWITCH_ON) {
+                if (AppDelegate.sharedInstance().userDefaults.string(K_KEY_SWITCH_DISABLE_POPUP) == K_SWITCH_ON) {
                     self.showOverwriteView()
                 } else {
                     let alert:UIAlertView! = UIAlertView(title:"Partial Delete", message:"To start partial delete, tap the Start Point and End Point button markers whilst listening to the audio. The End Point button determines where the partial delete finishes. Tap the Start Deleting button to initiate the partial delete. The partial delete will end when the End Point marker is reached.", delegate:self, cancelButtonTitle:"OK", otherButtonTitles:nil, nil)
@@ -2336,7 +2359,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             }
             else
             {
-                APPDELEGATE.userDefaults().setBool(true, forKey:K_KEY_IS_RECORD_STARTED)
+                AppDelegate.sharedInstance().userDefaults.setBool(true, forKey:K_KEY_IS_RECORD_STARTED)
 
                 self.showLoading()
 
@@ -2382,7 +2405,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                                     isEdit = false
 
-                                    APPDELEGATE.userDefaults().setObject("0", forKey:K_KEY_IS_EDITING)
+                                    AppDelegate.sharedInstance().userDefaults.set("0", forKey:K_KEY_IS_EDITING)
 
                                     dispatch_async(dispatch_get_main_queue(), {
 
@@ -2391,7 +2414,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                                         self.hideLoading()
 
                                         isRecording = FIRSTTIME
-                                        APPDELEGATE.userDefaults().setObject("0", forKey:K_KEY_IS_RECORDING)
+                                        AppDelegate.sharedInstance().userDefaults.set("0", forKey:K_KEY_IS_RECORDING)
 
                                         let timing:UILabel! = self.view.viewWithTag(TAG_TIMING_LBL)
                                         timing.text = K_START_TIME
@@ -2499,10 +2522,10 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         isRecordStarted = true
 
         // FOR AUTOSAVING .. Testing
-        APPDELEGATE.userDefaults().setObject(self.fileNameLbl.text, forKey:K_KEY_IS_FILE_NAME)
-        APPDELEGATE.userDefaults().setBool(true, forKey:K_KEY_IS_RECORD_STARTED)
-        APPDELEGATE.userDefaults().setBool(false, forKey:K_KEY_IS_RECORD_STOPPED)
-        APPDELEGATE.userDefaults().synchronize()
+        AppDelegate.sharedInstance().userDefaults.set(self.fileNameLbl.text, forKey:K_KEY_IS_FILE_NAME)
+        AppDelegate.sharedInstance().userDefaults.setBool(true, forKey:K_KEY_IS_RECORD_STARTED)
+        AppDelegate.sharedInstance().userDefaults.setBool(false, forKey:K_KEY_IS_RECORD_STOPPED)
+        AppDelegate.sharedInstance().userDefaults.synchronize()
 
         self.stopBtn.enabled =  true
 
@@ -2510,7 +2533,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
             self.pageScrollView.contentSize = CGSizeMake(0, self.headerView.frame.size.height + 30)
 
-            if (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
+            if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
                 self.pageScrollView.contentSize = CGSizeMake(0, self.headerView.frame.size.height + 95)
             }
         }
@@ -2527,7 +2550,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
             isRecordAtBeginning = true
 
-            APPDELEGATE.userDefaults().setBool(true, forKey:K_KEY_INSERT_AT_BEGINNING)
+            AppDelegate.sharedInstance().userDefaults.setBool(true, forKey:K_KEY_INSERT_AT_BEGINNING)
 
             //self.segmentedControl.selectedSegmentIndex = 1;
             //NSLog(@"FIRST LOOP ########");
@@ -2626,12 +2649,12 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 if self.segmentBgView.alpha == 0  {
                     self.showSegmentView()
                     isEdit = true
-                    APPDELEGATE.userDefaults().setObject("1", forKey:K_KEY_IS_EDITING)
+                    AppDelegate.sharedInstance().userDefaults.set("1", forKey:K_KEY_IS_EDITING)
                 }
                 else
                 {
                     isEdit = true
-                    APPDELEGATE.userDefaults().setObject("1", forKey:K_KEY_IS_EDITING)
+                    AppDelegate.sharedInstance().userDefaults.set("1", forKey:K_KEY_IS_EDITING)
                     if self.segmentedControl.selectedSegmentIndex == 0
                     {
                         previousFilelength = self.fSize * lroundf(currentTime) / lroundf(thePlayerDuration)
@@ -2652,7 +2675,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                         isErasing = FIRSTTIME
                         isEdit = true
-                        APPDELEGATE.userDefaults().setObject("1", forKey:K_KEY_IS_EDITING)
+                        AppDelegate.sharedInstance().userDefaults.set("1", forKey:K_KEY_IS_EDITING)
                     }
                     self.recordProcess(self.recordBtn, flag:temp)
                 }
@@ -2709,9 +2732,9 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
             isFirstTime = !isFirstTime
 
-            if (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_AUTO_SAVING) == K_SWITCH_ON) {
+            if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_AUTO_SAVING) == K_SWITCH_ON) {
 
-                let index:Int = APPDELEGATE.userDefaults().valueForKey(K_KEY_AUTO_SAVING).integerValue()
+                let index:Int = AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_AUTO_SAVING).integerValue()
 
                 var delay:Int
 
@@ -2746,8 +2769,8 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
             if self.segmentedControl.selectedSegmentIndex == 1 {
 
-                APPDELEGATE.userDefaults().setObject("INSERT", forKey:K_KEY_IS_SEGMENT_SELECTED_INDEX)
-                APPDELEGATE.userDefaults().synchronize()
+                AppDelegate.sharedInstance().userDefaults.set("INSERT", forKey:K_KEY_IS_SEGMENT_SELECTED_INDEX)
+                AppDelegate.sharedInstance().userDefaults.synchronize()
 
                 isPaused = false
 
@@ -2831,8 +2854,8 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                     return;
                 } */
 
-                APPDELEGATE.userDefaults().setObject("OVERWRITE", forKey:K_KEY_IS_SEGMENT_SELECTED_INDEX)
-                APPDELEGATE.userDefaults().synchronize()
+                AppDelegate.sharedInstance().userDefaults.set("OVERWRITE", forKey:K_KEY_IS_SEGMENT_SELECTED_INDEX)
+                AppDelegate.sharedInstance().userDefaults.synchronize()
 
                 // CHECK FOR OVERWRITE -- IF YES , it will be return
 
@@ -2909,8 +2932,8 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             }
             else if self.segmentedControl.selectedSegmentIndex ==  0
             {
-                APPDELEGATE.userDefaults().setObject("APPENDING", forKey:K_KEY_IS_SEGMENT_SELECTED_INDEX)
-                APPDELEGATE.userDefaults().synchronize()
+                AppDelegate.sharedInstance().userDefaults.set("APPENDING", forKey:K_KEY_IS_SEGMENT_SELECTED_INDEX)
+                AppDelegate.sharedInstance().userDefaults.synchronize()
 
                 isPaused = false
 
@@ -3128,7 +3151,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                     isRecording = SECONDTIME
 
-                    APPDELEGATE.userDefaults().setObject("1", forKey:K_KEY_IS_RECORDING)
+                    AppDelegate.sharedInstance().userDefaults.set("1", forKey:K_KEY_IS_RECORDING)
 
                 }
                 else if isRecording == SECONDTIME {
@@ -3160,7 +3183,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
         isRecordStopTapped = true
 
-        APPDELEGATE.userDefaults().setBool(true, forKey:K_KEY_IS_RECORD_STOPPED)
+        AppDelegate.sharedInstance().userDefaults.setBool(true, forKey:K_KEY_IS_RECORD_STOPPED)
 
         self.recordBtn.setImage(K_SETIMAGE("record_record_btn_normal.png"), forState:UIControlStateNormal)
         self.recordBtn.setImage(K_SETIMAGE("record_record_btn_disable.png"), forState:UIControlStateDisabled)
@@ -3485,7 +3508,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         // Define the recorder setting
         var Error:NSError!
 
-        let index:Int = APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_RECORDING_FORMAT).integerValue()
+        let index:Int = AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_RECORDING_FORMAT).integerValue()
 
         var sampleRateKey:Int
 
@@ -3779,7 +3802,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 if isSaving == FIRSTTIME {
 
-                    uploadArray.addObject(APPDELEGATE.userDefaults().valueForKey(K_KEY_LOGIN_USER_ID))
+                    uploadArray.addObject(AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_LOGIN_USER_ID))
                     uploadArray.addObject(self.fileNameLbl.text)
                     uploadArray.addObject(timing.text)
                     uploadArray.addObject(self.fileSizeLbl.text)
@@ -3787,7 +3810,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                     uploadArray.addObject("") // COMMENTS
                     uploadArray.addObject(bookmarks) // BOOKMARKS
 
-                    if (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_COMMENTS_SCREEN) == K_SWITCH_ON) {
+                    if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_COMMENTS_SCREEN) == K_SWITCH_ON) {
 
                         uploadArray.addObject("YES")
                     } else {
@@ -3815,14 +3838,14 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                     uploadArray.addObject(self.fileSizeLbl.text)
                     uploadArray.addObject(bookmarks) // BOOKMARKS
                     uploadArray.addObject(rowId)
-                    uploadArray.addObject(APPDELEGATE.userDefaults().valueForKey(K_KEY_LOGIN_USER_ID))
+                    uploadArray.addObject(AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_LOGIN_USER_ID))
 
                     PTSDATAMANAGER.updateEditRecordDetailsInToUploadFiles(uploadArray)
                 }
             }
             else
             {
-                if (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_AUTO_SAVING) == K_SWITCH_ON) {
+                if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_AUTO_SAVING) == K_SWITCH_ON) {
                     isSaving = SECONDTIME
                 }
 
@@ -3833,7 +3856,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 uploadArray.addObject(self.fileSizeLbl.text)
                 uploadArray.addObject(bookmarks) // BOOKMARKS
                 uploadArray.addObject(self.editDictionary.valueForKey("rowId"))
-                uploadArray.addObject(APPDELEGATE.userDefaults().valueForKey(K_KEY_LOGIN_USER_ID))
+                uploadArray.addObject(AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_LOGIN_USER_ID))
 
                 PTSDATAMANAGER.updateEditRecordDetailsInToUploadFiles(uploadArray)
             }
@@ -3917,7 +3940,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                     self.hideLoading()
 
-                        let autoSaveFile:Bool = APPDELEGATE.userDefaults().boolForKey(K_KEY_AUTO_SAVE_FILE)
+                        let autoSaveFile:Bool = AppDelegate.sharedInstance().userDefaults.boolForKey(K_KEY_AUTO_SAVE_FILE)
 
                         if editRecording {
 
@@ -3939,7 +3962,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                                 PTSHELPER.showTabBar()
                                 APPDELEGATE.tabBar.tabButtonTapped(APPDELEGATE.tabBar.existingTabBtn)
                             } else {
-                                if (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_COMMENTS_SCREEN) == K_SWITCH_ON) {
+                                if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_COMMENTS_SCREEN) == K_SWITCH_ON) {
 
                                     self.goToCommentsScreen()
                                 } else {
@@ -4013,7 +4036,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         }
 
         func startTempRecorderAndTimer() {
-            if (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_VOICE_ACTIVATION) == K_SWITCH_ON) {
+            if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_VOICE_ACTIVATION) == K_SWITCH_ON) {
 
                 if isVoiceActivation {
 
@@ -4047,18 +4070,18 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             formatter.dateFormat = "dd/MM/yy"
 
             let strCurrentDate:String! = formatter.stringFromDate(NSDate.date())
-            let strEventDate:String! = APPDELEGATE.userDefaults().valueForKey(K_KEY_RECORD_DATE)
+            let strEventDate:String! = AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_RECORD_DATE)
 
             switch (strCurrentDate.compare(strEventDate)){
 
                 case NSOrderedSame:
-                    fileCountInt = APPDELEGATE.userDefaults().valueForKey(K_KEY_RECORD_FILE_COUNT).intValue() + 1
+                    fileCountInt = AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_RECORD_FILE_COUNT).intValue() + 1
                     self.fileCountStr = String(format:"%03d",fileCountInt)
                     break
                 default:
-                    APPDELEGATE.userDefaults().setObject(nil, forKey:K_KEY_RECORD_FILE_COUNT)
-                    APPDELEGATE.userDefaults().setObject(strCurrentDate, forKey:K_KEY_RECORD_DATE)
-                    APPDELEGATE.userDefaults().synchronize();;
+                    AppDelegate.sharedInstance().userDefaults.set(nil, forKey:K_KEY_RECORD_FILE_COUNT)
+                    AppDelegate.sharedInstance().userDefaults.set(strCurrentDate, forKey:K_KEY_RECORD_DATE)
+                    AppDelegate.sharedInstance().userDefaults.synchronize();;
                     fileCountInt = 1
                     self.fileCountStr = String(format:"%03d",fileCountInt)
                     break
@@ -4067,15 +4090,15 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             let today:NSDate! = NSDate.date()
             let dateFormatter:NSDateFormatter! = NSDateFormatter()
 
-            let fileFormatStr:String! = APPDELEGATE.userDefaults().valueForKey(K_KEY_FILE_FORMAT)
+            let fileFormatStr:String! = AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_FILE_FORMAT)
 
             if fileFormatStr.length == 0 {
                 dateFormatter.dateFormat = "ddMMyyyy"
             }else{
-                dateFormatter.dateFormat = APPDELEGATE.userDefaults().valueForKey(K_KEY_FILE_FORMAT)
+                dateFormatter.dateFormat = AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_FILE_FORMAT)
             }
 
-            self.fileNameLbl.text = String(format:"%@_%@_File_%@.m4a", APPDELEGATE.userDefaults().objectForKey(K_KEY_LOGIN_PROFILE_NAME), dateFormatter.stringFromDate(today),self.fileCountStr)
+            self.fileNameLbl.text = String(format:"%@_%@_File_%@.m4a", AppDelegate.sharedInstance().userDefaults.objectForKey(K_KEY_LOGIN_PROFILE_NAME), dateFormatter.stringFromDate(today),self.fileCountStr)
         }
     
     func overwrite(flag:Int, button:UIButton!) {
@@ -4336,7 +4359,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                                                               self.showSegmentView()
                                                               isEdit = false
-                                                              APPDELEGATE.userDefaults().setObject("0", forKey:K_KEY_IS_EDITING)
+                                                              AppDelegate.sharedInstance().userDefaults.set("0", forKey:K_KEY_IS_EDITING)
 
                                                           }
                                                       },
@@ -4595,7 +4618,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         }
     
     func setupAudioPlayer(filePath:String!) {
-            self.allSettings = filePath
+        self.setAllSettings(filePath: filePath)
 
             self.updateWaveForm(filePath)
 
@@ -4988,7 +5011,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 }
             }
 
-            if (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_VOICE_ACTIVATION) == K_SWITCH_ON) {
+            if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_VOICE_ACTIVATION) == K_SWITCH_ON) {
 
                 NSLog(" <========== SWITCH_VOICE_ACTIVATION ON ==========> ")
 
@@ -5165,7 +5188,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         let currentTime:CMTime = playerItem.currentTime
         let time:Float = CMTimeGetSeconds(currentTime)
         if !isBookMarkTap {
-            if (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
+            if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
                 let current:String! = self.timeFormatted(lroundf(time))
                 if self.bookMarkArr.count > 0 {
 
@@ -5590,7 +5613,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                                      self.bookmarkView.alpha = 1.0
                                  }
 
-                                 if (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_OFF) {
+                                 if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_OFF) {
 
                                      if editMode == 0 || editMode == 3 {
 
@@ -5692,7 +5715,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                                  }
 
 
-                                 if (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_OFF) {
+                                 if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_OFF) {
 
                                      self.recordCtrlsView.frame = CGRectMake(0, self.graphView.frame.origin.y + self.graphView.frame.size.height + 10, self.pageScrollView.frame.size.width, 80)
 
@@ -6038,7 +6061,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         if alertView.tag == 0 {
             isEdit = true
             self.recordProcess(self.recordBtn, flag:false)
-            APPDELEGATE.userDefaults().setObject("1", forKey:K_KEY_IS_EDITING)
+            AppDelegate.sharedInstance().userDefaults.set("1", forKey:K_KEY_IS_EDITING)
         }
 
         if alertView.tag == TAG_SAVE_ALERT_TAG {
@@ -6050,13 +6073,13 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 if !editRecording {
 
                     let filecountString:String! = String(format:"%@",fileCountStr)
-                    APPDELEGATE.userDefaults().setObject(filecountString, forKey:K_KEY_RECORD_FILE_COUNT)
-                    APPDELEGATE.userDefaults().synchronize()
+                    AppDelegate.sharedInstance().userDefaults.set(filecountString, forKey:K_KEY_RECORD_FILE_COUNT)
+                    AppDelegate.sharedInstance().userDefaults.synchronize()
                 }
 
                 if isAutoSavedFile {
 
-                    let arr:NSMutableArray! = APPDELEGATE.userDefaults().objectForKey(K_KEY_AUTO_SAVED_FILE_ARRAY).mutableCopy()
+                    let arr:NSMutableArray! = AppDelegate.sharedInstance().userDefaults.objectForKey(K_KEY_AUTO_SAVED_FILE_ARRAY).mutableCopy()
 
                     NSLog("AUTOSAVED ARRAY ELSE ===> %@  %@", arr, self.fileNameLbl.text)
                     
@@ -6068,8 +6091,8 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                         }
                      }
 
-                    APPDELEGATE.userDefaults().setObject(arr, forKey:K_KEY_AUTO_SAVED_FILE_ARRAY)
-                    APPDELEGATE.userDefaults().synchronize()
+                    AppDelegate.sharedInstance().userDefaults.set(arr, forKey:K_KEY_AUTO_SAVED_FILE_ARRAY)
+                    AppDelegate.sharedInstance().userDefaults.synchronize()
                 }
 
                 self.saveIntoDataBase("NO")
@@ -6114,7 +6137,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                     }
 
-                    if (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_AUTO_SAVING) == K_SWITCH_ON) {
+                    if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_AUTO_SAVING) == K_SWITCH_ON) {
 
                         if isSaving == SECONDTIME {
 
@@ -6123,12 +6146,12 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                             //Deleting file name row from database
                             PTSDATAMANAGER.deleteFile(rowId)
 
-                            fileCountInt = APPDELEGATE.userDefaults().valueForKey(K_KEY_RECORD_FILE_COUNT).intValue() - 1
+                            fileCountInt = AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_RECORD_FILE_COUNT).intValue() - 1
                             self.fileCountStr = String(format:"%03d",fileCountInt)
 
                             let filecountString:String! = String(format:"%@",fileCountStr)
-                            APPDELEGATE.userDefaults().setObject(filecountString, forKey:K_KEY_RECORD_FILE_COUNT)
-                            APPDELEGATE.userDefaults().synchronize()
+                            AppDelegate.sharedInstance().userDefaults.set(filecountString, forKey:K_KEY_RECORD_FILE_COUNT)
+                            AppDelegate.sharedInstance().userDefaults.synchronize()
                         }
                     }
 
@@ -6142,7 +6165,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                     NSLog("YES 2")
 
-                    if (APPDELEGATE.userDefaults().valueForKey(K_KEY_SWITCH_AUTO_SAVING) == K_SWITCH_ON) {
+                    if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_AUTO_SAVING) == K_SWITCH_ON) {
 
                         if isSaving == SECONDTIME {
 
@@ -6210,7 +6233,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                             uploadArray.addObject(fileSize)
                             uploadArray.addObject(bookmarks) // BOOKMARKS
                             uploadArray.addObject(self.editDictionary.valueForKey("rowId"))
-                            uploadArray.addObject(APPDELEGATE.userDefaults().valueForKey(K_KEY_LOGIN_USER_ID))
+                            uploadArray.addObject(AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_LOGIN_USER_ID))
 
                             PTSDATAMANAGER.updateEditRecordDetailsInToUploadFiles(uploadArray)
 
@@ -6275,8 +6298,8 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             NSLog("TAG_AUTO_SAVE_ALERT_TAG")
 
             let filecountString:String! = String(format:"%@",fileCountStr)
-            APPDELEGATE.userDefaults().setObject(filecountString, forKey:K_KEY_RECORD_FILE_COUNT)
-            APPDELEGATE.userDefaults().synchronize()
+            AppDelegate.sharedInstance().userDefaults.set(filecountString, forKey:K_KEY_RECORD_FILE_COUNT)
+            AppDelegate.sharedInstance().userDefaults.synchronize()
 
             isFirstTime = !isFirstTime
 
@@ -6339,14 +6362,14 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         }
 
         if alertView.tag == 7 {
-            let editing:Bool = APPDELEGATE.userDefaults().boolForKey(K_KEY_EDIT_RECORD_FILE)
+            let editing:Bool = AppDelegate.sharedInstance().userDefaults.boolForKey(K_KEY_EDIT_RECORD_FILE)
             if !editing {
                 NSLog("AUTO SAVE NOT EDITING @@@@@@@@@@@@@")
                 let filecountString:String! = String(format:"%@",fileCountStr)
-                APPDELEGATE.userDefaults().setObject(filecountString, forKey:K_KEY_RECORD_FILE_COUNT)
-                APPDELEGATE.userDefaults().synchronize()
+                AppDelegate.sharedInstance().userDefaults.set(filecountString, forKey:K_KEY_RECORD_FILE_COUNT)
+                AppDelegate.sharedInstance().userDefaults.synchronize()
             }
-            APPDELEGATE.userDefaults().setBool(true, forKey:K_KEY_AUTO_SAVE_FILE)
+            AppDelegate.sharedInstance().userDefaults.setBool(true, forKey:K_KEY_AUTO_SAVE_FILE)
             self.goToSaveTheAutoSaveFile("")
         }
     }
@@ -6356,7 +6379,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         // NSLog(@"audioRecorderDidFinishRecording");
         if avrecorder == self.audio_Recorder {
             // NSLog(@"NORMAL AUDIO RECORDER COMPLETED");
-            APPDELEGATE.userDefaults().setBool(true, forKey:K_KEY_IS_RECORD_STOPPED)
+            AppDelegate.sharedInstance().userDefaults.setBool(true, forKey:K_KEY_IS_RECORD_STOPPED)
         }
         else {
             //   NSLog(@"TEMP AUDIO RECORDER COMPLETED");
