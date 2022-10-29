@@ -532,15 +532,15 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             self.pageScrollView.scrollsToTop = false
             self.pageScrollView.contentSize = CGSizeMake(0, self.headerView.frame.size.height)
 
-            if (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_INDEXING == K_SWITCH_ON) {
-
-                if IS_IPHONE_4 {
-                    self.pageScrollView.contentSize = CGSizeMake(0, self.headerView.frame.size.height + 60)
-                }
-                if IS_IPHONE_5 {
-                    self.pageScrollView.contentSize = CGSizeMake(0, self.headerView.frame.size.height)
-                }
-            }
+//            if (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_INDEXING == K_SWITCH_ON) {
+//
+//                if IS_IPHONE_4 {
+//                    self.pageScrollView.contentSize = CGSizeMake(0, self.headerView.frame.size.height + 60)
+//                }
+//                if IS_IPHONE_5 {
+//                    self.pageScrollView.contentSize = CGSizeMake(0, self.headerView.frame.size.height)
+//                }
+//            }
 
             self.pageScrollView.setContentOffset(CGPointMake(0, self.pageScrollView.contentOffset.y), animated: true)
             self.pageScrollView.backgroundColor = K_COLOR_CLEAR_COLOR
@@ -5559,11 +5559,11 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     func callAutoSave() {
         NSLog("callAutoSave")
 
-        if self.audio_Recorder?.recording {
+        if ((self.audio_Recorder?.recording) != nil) {
 
             autoSaveIsOn = true
 
-            let statusLbl:UILabel! = self.view.viewWithTag(TAG_STATUS_LBL)
+            let statusLbl = self.view.viewWithTag(TAG_STATUS_LBL)
             statusLbl.text = "AutoSave"
 
             isPausedFromTab = true
@@ -5599,13 +5599,13 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 else if self.segmentedControl?.selectedSegmentIndex == 1 {
 
-                    overWrite.text = self.timeFormatted((lroundf(self.audio_Recorder.currentTime) + lroundf(insertingTime)))
-                    timing.text = self.timeFormatted((lroundf(self.audio_Recorder.currentTime + self.recordedFileDuration)))
+                    overWrite.text = self.timeFormatted((lroundf(self.audio_Recorder?.currentTime) + lroundf(insertingTime)))
+                    timing.text = self.timeFormatted((lroundf(self.audio_Recorder?.currentTime + self.recordedFileDuration)))
                 }
 
                 else
                 {
-                    timing.text = self.timeFormatted(totalSeconds: (lroundf(self.audio_Recorder.currentTime) + lroundf(recordedFileDuration)))
+                    timing.text = self.timeFormatted(totalSeconds: (lroundf(self.audio_Recorder?.currentTime) + lroundf(recordedFileDuration)))
                 }
             }
 
@@ -5615,8 +5615,8 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
             //[self updateRecordedTiming];
 
-            self.recordBtn.setImage(K_SETIMAGE("record_record_btn_normal.png"), forState:UIControlStateNormal)
-            self.recordBtn.setImage(K_SETIMAGE("record_record_btn_disable.png"), forState:UIControlStateDisabled)
+            self.recordBtn.setImage(K_SETIMAGE("record_record_btn_normal.png"), forState:.normal)
+            self.recordBtn.setImage(K_SETIMAGE("record_record_btn_disable.png"), forState:.disabled)
         }
         else
         {
@@ -5625,8 +5625,8 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     }
     
     func xPositionFromSliderValue(aSlider:UISlider!) -> Float {
-        let sliderRange:Float = aSlider.frame.size.width - aSlider.currentThumbImage?.size.width
-        let sliderOrigin:Float = aSlider.frame.origin.x + (aSlider.currentThumbImage?.size.width / 2.0)
+        let sliderRange = Float(aSlider.frame.size.width - (aSlider.currentThumbImage?.size.width ?? 0))
+        let sliderOrigin = Float(aSlider.frame.origin.x + ((aSlider.currentThumbImage?.size.width ?? 0) / 2.0))
 
         let sliderValueToPixels:Float = (((aSlider.value - aSlider.minimumValue)/(aSlider.maximumValue - aSlider.minimumValue)) * sliderRange) + sliderOrigin
 
@@ -5634,9 +5634,6 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     }
 
     func didFinishOverwrite() {
-
-        NSLog("didFinishOverwrite #############")
-
         self.hideOverwriteView()
         self.startPointView?.removeFromSuperview()
         self.endPointView?.removeFromSuperview()
@@ -5651,26 +5648,17 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     }
 
     func partialDeleteComplete() {
-
-        print("partialDeleteComplete COMING @@@@@@@@@@@@@@")
-
-        self.recordBtn.enabled = self.stopBtn.enabled = false
-
-        self.recordBtn.setImage(K_SETIMAGE("record_record_btn_disable.png"), forState:.disabled)
+        self.recordBtn?.enabled = (self.stopBtn?.enabled == false)
+        self.recordBtn?.setImage(K_SETIMAGE("record_record_btn_disable.png"), forState:.disabled)
     }
 
-    // MARK: -
-    // MARK: NSNOTIFICATION
+    // MARK: - NSNOTIFICATION
     @objc func batteryChanged(notification:NSNotification!) {
-        let device = UIDevice.currentDevice
-        print("=====>>>>> batteryChanged <=====")
-
+        let device = UIDevice.current
         if device.batteryLevel * 100 <= 10 {
-
             if device.batteryState == .unplugged {
 
-                if self.audio_Recorder?.isRecording{
-
+                if ((self.audio_Recorder?.isRecording) != nil){
                     isPausedFromTab = true
 
                     self.audio_Recorder?.pause()
@@ -5696,7 +5684,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                     if APPDELEGATE.userDefaults.boolForKey(K_KEY_IS_RECORD_STARTED) {
 
-                        if !(isLoadingShowing ?? false) {
+                        if !isLoadingShowing {
 
                             NSLog("=======> ALREADY PAUSED || STOPPED <========")
 
@@ -5720,9 +5708,9 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
     func receiveNotification(notification:NSNotification!) {
 
-        if (notification.name == K_NOTICATION_RECORDING) {
+        if (notification.name == NSNotification.Name.init(K_NOTICATION_RECORDING)) {
 
-            if self.audio_Recorder.isRecording{
+            if ((self.audio_Recorder?.isRecording) != nil){
 
                 isPausedFromTab = true
 
@@ -5774,335 +5762,335 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     // MARK: UIAlertView Delegate Methods
 
 
-    func alertView(alertView:UIAlertView!, clickedButtonAtIndex buttonIndex:Int) {
-
-        if alertView.tag == 0 {
-            isEdit = true
-
-            self.recordProcess(sender: self.recordBtn, flag:false)
-            APPDELEGATE.userDefaults().setObject("1", forKey:K_KEY_IS_EDITING)
-        }
-
-        if alertView.tag == TAG_SAVE_ALERT_TAG {
-
-            if buttonIndex == 0 {
-
-                NSNotificationCenter.defaultCenter().removeObserver(self, name:K_NOTICATION_RECORDING, object:nil)
-
-                if !editRecording {
-
-                    let filecountString:String! = String(format:"%@",fileCountStr)
-                    AppDelegate.sharedInstance().userDefaults.set(filecountString, forKey:K_KEY_RECORD_FILE_COUNT)
-                    AppDelegate.sharedInstance().userDefaults.synchronize()
-                }
-
-                if isAutoSavedFile {
-
-                    let arr:NSMutableArray! = AppDelegate.sharedInstance().userDefaults.objectForKey(K_KEY_AUTO_SAVED_FILE_ARRAY).mutableCopy()
-
-                    NSLog("AUTOSAVED ARRAY ELSE ===> %@  %@", arr, self.fileNameLbl?.text)
-                    
-                    for var i in 0..<arr.count{
-                        let stringToCheck:String! = arr.objectAtIndex(i)
-                        if (stringToCheck == self.fileNameLbl?.text) {
-                            arr.removeObject(at: i)
-                            NSLog("AUTOSAVED REMOVING ===> %@", arr)
-                        }
-                     }
-
-                    AppDelegate.sharedInstance().userDefaults.set(arr, forKey:K_KEY_AUTO_SAVED_FILE_ARRAY)
-                    AppDelegate.sharedInstance().userDefaults.synchronize()
-                }
-
-                self.saveIntoDataBase(isAutoSaveFile: "NO")
-            }
-        }
-
-        if alertView.tag == TAG_DISCARD_ALERT_TAG {
-
-            if buttonIndex == 0 {
-
-                APPDELEGATE.userDefaults.setBool(false, forKey:K_KEY_IS_RECORD_STARTED)
-
-                NSNotificationCenter.defaultCenter().removeObserver(self, name:K_NOTICATION_RECORDING, object:nil)
-
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), {
-
-                    let dataPath:String! = self.getDocumentDirectory().stringByAppendingPathComponent("/Record")
-
-                    let success:Bool = NSFileManager.defaultManager().removeItemAtPath(dataPath, error:nil)
-
-                    
-                })
-
-                if !editRecording {
-
-                    if !editRecording {
-
-                        let filePath:String! = self.getExistingFolder().stringByAppendingPathComponent(self.fileNameLbl?.text)
-
-                        self.deleteParticularFileInFolder(filepath: filePath)
-
-                    }
-
-                    if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_AUTO_SAVING) == K_SWITCH_ON) {
-
-                        if isSaving == SECONDTIME {
-
-                            let rowId:String! = PTSDATAMANAGER.getLastRowId("select id from upload_log ORDER BY id DESC LIMIT 1")
-
-                            //Deleting file name row from database
-                            PTSDATAMANAGER.deleteFile(rowId)
-
-                            fileCountInt = AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_RECORD_FILE_COUNT).intValue() - 1
-                            self.fileCountStr = String(format:"%03d",fileCountInt)
-
-                            let filecountString:String! = String(format:"%@",fileCountStr)
-                            AppDelegate.sharedInstance().userDefaults.set(filecountString, forKey:K_KEY_RECORD_FILE_COUNT)
-                            AppDelegate.sharedInstance().userDefaults.synchronize()
-                        }
-                    }
-
-                    APPDELEGATE.tabBar.previouslySelectedTabBtn = APPDELEGATE.tabBar.logoutTabBtn
-                    APPDELEGATE.tabBar.tabButtonTapped(APPDELEGATE.tabBar.recordTabBtn)
-
-                    PTSHELPER.showTabBar()
-
-                }
-                else {
-
-                    NSLog("YES 2")
-
-                    if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_AUTO_SAVING) == K_SWITCH_ON) {
-
-                        if isSaving == SECONDTIME {
-                            self.showLoading()
-                            let filePath = self.getDocumentDirectory().appendingPathComponent("EditRecord").appendingPathComponent(self.fileNameLbl?.text ?? "")
-
-                            let fileDuration = self.audioDuration(filePath: filePath)
-
-                            var error:NSError!
-                            let fileDictionary = FileManager.default.attributesOfItem(atPath: filePath)
-                            let size:NSNumber! = fileDictionary.objectForKey(NSFileSize)
-
-                            let fileSize:String! = String(format:"%.2f",(size.floatValue()/1024.0/1024.0)).stringByAppendingString(" Mb")
-
-                            var bookmarks:String!
-
-                            let result:NSMutableArray! = self.bookMarkArr
-
-                            if result.count > 0 {
-                                bookmarks = ""
-                                
-                                for var i in 0..<result.count {
-                                    if i == 0 {
-                                        print("[result objectAtIndex:0] == > %@", result.object(at: 0))
-                                        bookmarks = result.object(at: i) as! String
-                                    } else {
-                                        bookmarks = bookmarks.stringByAppendingString(",")
-                                        bookmarks = bookmarks.stringByAppendingString(result.objectAtIndex(i))
-                                    }
-                                }
-                            }else{
-                                bookmarks = ""
-                            }
-
-                            let currentRecordingFilePath = self.getDocumentDirectory().stringByAppendingPathComponent("Existing").stringByAppendingPathComponent(self.fileNameLbl.text)
-
-                            self.deleteParticularFileInFolder(filepath: currentRecordingFilePath)
-
-                            var err:NSError!
-
-                            FileManager.default.copyItemAtPath(filePath,
-                                                                    toPath:currentRecordingFilePath,
-                                                                     error:&err)
-
-
-                            let uploadArray:NSMutableArray! = NSMutableArray()
-
-
-                            uploadArray.add(self.editDictionary.valueForKey("comments")) // COMMENTS
-                            uploadArray.add(fileDuration)
-                            uploadArray.add(fileSize)
-                            uploadArray.add(bookmarks) // BOOKMARKS
-                            uploadArray.add(self.editDictionary.valueForKey("rowId"))
-                            uploadArray.add(APPDELEGATE.userDefaults()
-
-                            PTSDATAMANAGER.updateEditRecordDetailsInToUploadFiles(uploadArray)
-
-                            self.hideLoading()
-                        }
-                    }
-
-                    APPDELEGATE.tabBar.previouslySelectedTabBtn = APPDELEGATE.tabBar.logoutTabBtn
-                    APPDELEGATE.tabBar.tabButtonTapped(APPDELEGATE.tabBar.existingTabBtn)
-
-                    PTSHELPER.showTabBar()
-
-                }
-            }
-        }
-
-        if alertView.tag == TAG_ALERT_STOP_RECORD_TAG {
-
-            if buttonIndex == 0 {
-
-                // NSLog(@"======> YES <=====");
-                isPausedFromTab = true
-                let statusLbl:UILabel! = self.view.viewWithTag(TAG_STATUS_LBL)
-                statusLbl.text = K_STOPPED
-
-                self.recordStopButtonTapped(show: false, button:self.stopBtn)
-            }
-            else
-            {
-                let statusLbl:UILabel! = self.view.viewWithTag(TAG_STATUS_LBL)
-                statusLbl.text = K_RECORDING
-
-                self.recordBtn.setImage(K_SETIMAGE("record_pause_btn_normal.png"), forState:UIControlStateNormal)
-                self.recordBtn.setImage(K_SETIMAGE("record_pause_btn_disable.png"), forState:UIControlStateDisabled)
-
-                //[self initAudioRecorder];
-
-                self.audio_Recorder?.record()
-
-                self.startRecordingTimer()
-            }
-        }
-
-        if alertView.tag == TAG_ALERT_ALREADY_PAUSED_TAG {
-
-            if buttonIndex == 0 {
-
-                isPausedFromTab = false
-
-                let statusLbl:UILabel! = self.view.viewWithTag(TAG_STATUS_LBL)
-                statusLbl.text = K_STOPPED
-                self.recordStopButtonTapped(show: true, button:self.stopBtn)
-            }
-            else
-            {
-                // [self recordStopButtonTapped];
-            }
-        }
-
-        if alertView.tag == TAG_AUTO_SAVE_ALERT_TAG {
-
-            NSLog("TAG_AUTO_SAVE_ALERT_TAG")
-
-            let filecountString:String! = String(format:"%@",fileCountStr)
-            AppDelegate.sharedInstance().userDefaults.set(filecountString, forKey:K_KEY_RECORD_FILE_COUNT)
-            AppDelegate.sharedInstance().userDefaults.synchronize()
-
-            isFirstTime = !isFirstTime
-
-            self.recordStopButtonTapped(show: false, button:self.autoSaveBtn)
-
-            //  [self recordStopButtonTapped:NO];
-        }
-
-        if alertView.tag == TAG_WARNING_ALERT_ONE {
-
-            // Commented to fix PTS-17
-            //[self initAudioRecorder];
-
-            self.audio_Recorder?.record()
-            self.startRecordingTimer()
-            let statusLbl:UILabel! = self.view.viewWithTag(TAG_STATUS_LBL)
-            statusLbl.text = K_RECORDING
-        }
-
-        if alertView.tag == TAG_WARNING_ALERT_TWO {
-            self.recordStopButtonTapped(show: false, button:self.stopBtn)
-        }
-
-        if alertView.tag == TAG_FILE_SAVED_ALERT {
-            self.recordBtn?.enabled = self.stopBtn?.enabled = self.segmentedControl?.userInteractionEnabled = true
-        }
-
-        if alertView.tag == TAG_START_OVERWRITE_BTN || alertView.tag == TAG_EDIT_INSERT || alertView.tag == TAG_EDIT_PARTIAL_DELETE {
-            self.showOverwriteView()
-        }
-
-        if alertView.tag == TAG_EDIT_APPEND {
-           // [self didFinishOverwrite];
-
-            self.customRangeBar?.alpha = 0.0
-            //[self showWaveForm]
-            //[self recordProcess:self.recordBtn flag:YES];
-           // [self recordButtonTapped:self.recordBtn flag:YES];
-        }
-
-        if alertView.tag == TAG_END_OVERWRITE_BTN {
-
-            self.thePlayer?.play()
-        }
-
-        if alertView.tag == TAG_EDIT_OVERWRITE {
-
-            //[self didFinishOverwrite];
-
-            if !isStopBtnTappedWhileOverwriting {
-                self.recordStopButtonTapped(false, button:self.stopBtn)
-            } else {
-                isStopBtnTappedWhileOverwriting = false
-            }
-        }
-
-        if alertView.tag == TAG_EDIT_PARTIAL_DELETE_ALERT {
-            //NSLog(@"TAG_EDIT_PARTIAL_DELETE_ALERT ##########");
-            //[self recordStopButtonTapped:NO button:self.stopBtn];
-        }
-
-        if alertView.tag == 7 {
-            let editing:Bool = AppDelegate.sharedInstance().userDefaults.boolForKey(K_KEY_EDIT_RECORD_FILE)
-            if !editing {
-                print("AUTO SAVE NOT EDITING @@@@@@@@@@@@@")
-                let filecountString:String! = String(format:"%@",fileCountStr)
-                AppDelegate.sharedInstance().userDefaults.set(filecountString, forKey:K_KEY_RECORD_FILE_COUNT)
-                AppDelegate.sharedInstance().userDefaults.synchronize()
-            }
-            AppDelegate.sharedInstance().userDefaults.setBool(true, forKey:K_KEY_AUTO_SAVE_FILE)
-            self.goToSaveTheAutoSaveFile("")
-        }
-    }
+//    func alertView(alertView:UIAlertView!, clickedButtonAtIndex buttonIndex:Int) {
+//
+//        if alertView.tag == 0 {
+//            isEdit = true
+//
+//            self.recordProcess(sender: self.recordBtn, flag:false)
+//            APPDELEGATE.userDefaults().setObject("1", forKey:K_KEY_IS_EDITING)
+//        }
+//
+//        if alertView.tag == TAG_SAVE_ALERT_TAG {
+//
+//            if buttonIndex == 0 {
+//
+//                NSNotificationCenter.defaultCenter().removeObserver(self, name:K_NOTICATION_RECORDING, object:nil)
+//
+//                if !editRecording {
+//
+//                    let filecountString:String! = String(format:"%@",fileCountStr)
+//                    AppDelegate.sharedInstance().userDefaults.set(filecountString, forKey:K_KEY_RECORD_FILE_COUNT)
+//                    AppDelegate.sharedInstance().userDefaults.synchronize()
+//                }
+//
+//                if isAutoSavedFile {
+//
+//                    let arr:NSMutableArray! = AppDelegate.sharedInstance().userDefaults.objectForKey(K_KEY_AUTO_SAVED_FILE_ARRAY).mutableCopy()
+//
+//                    NSLog("AUTOSAVED ARRAY ELSE ===> %@  %@", arr, self.fileNameLbl?.text)
+//
+//                    for var i in 0..<arr.count{
+//                        let stringToCheck:String! = arr.objectAtIndex(i)
+//                        if (stringToCheck == self.fileNameLbl?.text) {
+//                            arr.removeObject(at: i)
+//                            NSLog("AUTOSAVED REMOVING ===> %@", arr)
+//                        }
+//                     }
+//
+//                    AppDelegate.sharedInstance().userDefaults.set(arr, forKey:K_KEY_AUTO_SAVED_FILE_ARRAY)
+//                    AppDelegate.sharedInstance().userDefaults.synchronize()
+//                }
+//
+//                self.saveIntoDataBase(isAutoSaveFile: "NO")
+//            }
+//        }
+//
+//        if alertView.tag == TAG_DISCARD_ALERT_TAG {
+//
+//            if buttonIndex == 0 {
+//
+//                APPDELEGATE.userDefaults.setBool(false, forKey:K_KEY_IS_RECORD_STARTED)
+//
+//                NSNotificationCenter.defaultCenter().removeObserver(self, name:K_NOTICATION_RECORDING, object:nil)
+//
+//                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), {
+//
+//                    let dataPath:String! = self.getDocumentDirectory().stringByAppendingPathComponent("/Record")
+//
+//                    let success:Bool = NSFileManager.defaultManager().removeItemAtPath(dataPath, error:nil)
+//
+//
+//                })
+//
+//                if !editRecording {
+//
+//                    if !editRecording {
+//
+//                        let filePath:String! = self.getExistingFolder().stringByAppendingPathComponent(self.fileNameLbl?.text)
+//
+//                        self.deleteParticularFileInFolder(filepath: filePath)
+//
+//                    }
+//
+//                    if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_AUTO_SAVING) == K_SWITCH_ON) {
+//
+//                        if isSaving == SECONDTIME {
+//
+//                            let rowId:String! = PTSDATAMANAGER.getLastRowId("select id from upload_log ORDER BY id DESC LIMIT 1")
+//
+//                            //Deleting file name row from database
+//                            PTSDATAMANAGER.deleteFile(rowId)
+//
+//                            fileCountInt = AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_RECORD_FILE_COUNT).intValue() - 1
+//                            self.fileCountStr = String(format:"%03d",fileCountInt)
+//
+//                            let filecountString:String! = String(format:"%@",fileCountStr)
+//                            AppDelegate.sharedInstance().userDefaults.set(filecountString, forKey:K_KEY_RECORD_FILE_COUNT)
+//                            AppDelegate.sharedInstance().userDefaults.synchronize()
+//                        }
+//                    }
+//
+//                    APPDELEGATE.tabBar.previouslySelectedTabBtn = APPDELEGATE.tabBar.logoutTabBtn
+//                    APPDELEGATE.tabBar.tabButtonTapped(APPDELEGATE.tabBar.recordTabBtn)
+//
+//                    PTSHELPER.showTabBar()
+//
+//                }
+//                else {
+//
+//                    NSLog("YES 2")
+//
+//                    if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_AUTO_SAVING) == K_SWITCH_ON) {
+//
+//                        if isSaving == SECONDTIME {
+//                            self.showLoading()
+//                            let filePath = self.getDocumentDirectory().appendingPathComponent("EditRecord").appendingPathComponent(self.fileNameLbl?.text ?? "")
+//
+//                            let fileDuration = self.audioDuration(filePath: filePath)
+//
+//                            var error:NSError!
+//                            let fileDictionary = FileManager.default.attributesOfItem(atPath: filePath)
+//                            let size:NSNumber! = fileDictionary.objectForKey(NSFileSize)
+//
+//                            let fileSize:String! = String(format:"%.2f",(size.floatValue()/1024.0/1024.0)).stringByAppendingString(" Mb")
+//
+//                            var bookmarks:String!
+//
+//                            let result:NSMutableArray! = self.bookMarkArr
+//
+//                            if result.count > 0 {
+//                                bookmarks = ""
+//
+//                                for var i in 0..<result.count {
+//                                    if i == 0 {
+//                                        print("[result objectAtIndex:0] == > %@", result.object(at: 0))
+//                                        bookmarks = result.object(at: i) as! String
+//                                    } else {
+//                                        bookmarks = bookmarks.stringByAppendingString(",")
+//                                        bookmarks = bookmarks.stringByAppendingString(result.objectAtIndex(i))
+//                                    }
+//                                }
+//                            }else{
+//                                bookmarks = ""
+//                            }
+//
+//                            let currentRecordingFilePath = self.getDocumentDirectory().stringByAppendingPathComponent("Existing").stringByAppendingPathComponent(self.fileNameLbl.text)
+//
+//                            self.deleteParticularFileInFolder(filepath: currentRecordingFilePath)
+//
+//                            var err:NSError!
+//
+//                            FileManager.default.copyItemAtPath(filePath,
+//                                                                    toPath:currentRecordingFilePath,
+//                                                                     error:&err)
+//
+//
+//                            let uploadArray:NSMutableArray! = NSMutableArray()
+//
+//
+//                            uploadArray.add(self.editDictionary.valueForKey("comments")) // COMMENTS
+//                            uploadArray.add(fileDuration)
+//                            uploadArray.add(fileSize)
+//                            uploadArray.add(bookmarks) // BOOKMARKS
+//                            uploadArray.add(self.editDictionary.valueForKey("rowId"))
+//                            uploadArray.add(APPDELEGATE.userDefaults())
+//
+//                            PTSDATAMANAGER.updateEditRecordDetailsInToUploadFiles(uploadArray)
+//
+//                            self.hideLoading()
+//                        }
+//                    }
+//
+//                    APPDELEGATE.tabBar.previouslySelectedTabBtn = APPDELEGATE.tabBar.logoutTabBtn
+//                    APPDELEGATE.tabBar.tabButtonTapped(APPDELEGATE.tabBar.existingTabBtn)
+//
+//                    PTSHELPER.showTabBar()
+//
+//                }
+//            }
+//        }
+//
+//        if alertView.tag == TAG_ALERT_STOP_RECORD_TAG {
+//
+//            if buttonIndex == 0 {
+//
+//                // NSLog(@"======> YES <=====");
+//                isPausedFromTab = true
+//                let statusLbl:UILabel! = self.view.viewWithTag(TAG_STATUS_LBL)
+//                statusLbl.text = K_STOPPED
+//
+//                self.recordStopButtonTapped(show: false, button:self.stopBtn)
+//            }
+//            else
+//            {
+//                let statusLbl:UILabel! = self.view.viewWithTag(TAG_STATUS_LBL)
+//                statusLbl.text = K_RECORDING
+//
+//                self.recordBtn.setImage(K_SETIMAGE("record_pause_btn_normal.png"), forState:UIControlStateNormal)
+//                self.recordBtn.setImage(K_SETIMAGE("record_pause_btn_disable.png"), forState:UIControlStateDisabled)
+//
+//                //[self initAudioRecorder];
+//
+//                self.audio_Recorder?.record()
+//
+//                self.startRecordingTimer()
+//            }
+//        }
+//
+//        if alertView.tag == TAG_ALERT_ALREADY_PAUSED_TAG {
+//
+//            if buttonIndex == 0 {
+//
+//                isPausedFromTab = false
+//
+//                let statusLbl:UILabel! = self.view.viewWithTag(TAG_STATUS_LBL)
+//                statusLbl.text = K_STOPPED
+//                self.recordStopButtonTapped(show: true, button:self.stopBtn)
+//            }
+//            else
+//            {
+//                // [self recordStopButtonTapped];
+//            }
+//        }
+//
+//        if alertView.tag == TAG_AUTO_SAVE_ALERT_TAG {
+//
+//            NSLog("TAG_AUTO_SAVE_ALERT_TAG")
+//
+//            let filecountString:String! = String(format:"%@",fileCountStr)
+//            AppDelegate.sharedInstance().userDefaults.set(filecountString, forKey:K_KEY_RECORD_FILE_COUNT)
+//            AppDelegate.sharedInstance().userDefaults.synchronize()
+//
+//            isFirstTime = !isFirstTime
+//
+//            self.recordStopButtonTapped(show: false, button:self.autoSaveBtn)
+//
+//            //  [self recordStopButtonTapped:NO];
+//        }
+//
+//        if alertView.tag == TAG_WARNING_ALERT_ONE {
+//
+//            // Commented to fix PTS-17
+//            //[self initAudioRecorder];
+//
+//            self.audio_Recorder?.record()
+//            self.startRecordingTimer()
+//            let statusLbl:UILabel! = self.view.viewWithTag(TAG_STATUS_LBL)
+//            statusLbl.text = K_RECORDING
+//        }
+//
+//        if alertView.tag == TAG_WARNING_ALERT_TWO {
+//            self.recordStopButtonTapped(show: false, button:self.stopBtn)
+//        }
+//
+//        if alertView.tag == TAG_FILE_SAVED_ALERT {
+//            self.recordBtn?.enabled = self.stopBtn?.enabled = self.segmentedControl?.userInteractionEnabled = true
+//        }
+//
+//        if alertView.tag == TAG_START_OVERWRITE_BTN || alertView.tag == TAG_EDIT_INSERT || alertView.tag == TAG_EDIT_PARTIAL_DELETE {
+//            self.showOverwriteView()
+//        }
+//
+//        if alertView.tag == TAG_EDIT_APPEND {
+//           // [self didFinishOverwrite];
+//
+//            self.customRangeBar?.alpha = 0.0
+//            //[self showWaveForm]
+//            //[self recordProcess:self.recordBtn flag:YES];
+//           // [self recordButtonTapped:self.recordBtn flag:YES];
+//        }
+//
+//        if alertView.tag == TAG_END_OVERWRITE_BTN {
+//
+//            self.thePlayer?.play()
+//        }
+//
+//        if alertView.tag == TAG_EDIT_OVERWRITE {
+//
+//            //[self didFinishOverwrite];
+//
+//            if !isStopBtnTappedWhileOverwriting {
+//                self.recordStopButtonTapped(false, button:self.stopBtn)
+//            } else {
+//                isStopBtnTappedWhileOverwriting = false
+//            }
+//        }
+//
+//        if alertView.tag == TAG_EDIT_PARTIAL_DELETE_ALERT {
+//            //NSLog(@"TAG_EDIT_PARTIAL_DELETE_ALERT ##########");
+//            //[self recordStopButtonTapped:NO button:self.stopBtn];
+//        }
+//
+//        if alertView.tag == 7 {
+//            let editing:Bool = AppDelegate.sharedInstance().userDefaults.boolForKey(K_KEY_EDIT_RECORD_FILE)
+//            if !editing {
+//                print("AUTO SAVE NOT EDITING @@@@@@@@@@@@@")
+//                let filecountString:String! = String(format:"%@",fileCountStr)
+//                AppDelegate.sharedInstance().userDefaults.set(filecountString, forKey:K_KEY_RECORD_FILE_COUNT)
+//                AppDelegate.sharedInstance().userDefaults.synchronize()
+//            }
+//            AppDelegate.sharedInstance().userDefaults.setBool(true, forKey:K_KEY_AUTO_SAVE_FILE)
+//            self.goToSaveTheAutoSaveFile("")
+//        }
+//    }
     
     // MARK: AVAUDIO RECORDER DELEGATES
     func audioRecorderDidFinishRecording(_ avrecorder:AVAudioRecorder, successfully flag:Bool) {
         // NSLog(@"audioRecorderDidFinishRecording");
-        if avrecorder == self.audio_Recorder {
-            // NSLog(@"NORMAL AUDIO RECORDER COMPLETED");
-            AppDelegate.sharedInstance().userDefaults.setBool(true, forKey:K_KEY_IS_RECORD_STOPPED)
-        }
+//        if avrecorder == self.audio_Recorder {
+//            // NSLog(@"NORMAL AUDIO RECORDER COMPLETED");
+//            AppDelegate.sharedInstance().userDefaults.setBool(true, forKey:K_KEY_IS_RECORD_STOPPED)
+//        }
     }
 
     func audioRecorderBeginInterruption(_ recorder:AVAudioRecorder) {
-        isPausedFromTab = true
-        NSLog("audioRecorderBeginInterruption")
-        self.recordStopButtonTapped(show: false, button:self.stopBtn)
-        let saveAlert:UIAlertView! = UIAlertView(title:K_KEY_APP_TITLE, message:"Due to some interruption, the recording has been auto saved. Please go back to Existing Dictations screen, and choose Edit/Append to continue recording.", delegate:self, cancelButtonTitle:"OK", otherButtonTitles:nil)
-        saveAlert.tag = 7
-        saveAlert.show()
+//        isPausedFromTab = true
+//        NSLog("audioRecorderBeginInterruption")
+//        self.recordStopButtonTapped(show: false, button:self.stopBtn)
+//        let saveAlert:UIAlertView! = UIAlertView(title:K_KEY_APP_TITLE, message:"Due to some interruption, the recording has been auto saved. Please go back to Existing Dictations screen, and choose Edit/Append to continue recording.", delegate:self, cancelButtonTitle:"OK", otherButtonTitles:nil)
+//        saveAlert.tag = 7
+//        saveAlert.show()
     }
 
     // MARK:  AVAUDIOPLAYER DELEGATE
+    
     func audioPlayerDidFinishPlaying(_ player:AVAudioPlayer, successfully flag:Bool) {
-
         player.stop()
         player.prepareToPlay()
-
         self.stopAllProcess()
-
-        self.waveformView.progressTime = CMTimeMakeWithSeconds(lroundf(self.recordedFileDuration), 10000)
+        self.waveformView?.progressTime = CMTimeMakeWithSeconds(self.recordedFileDuration, preferredTimescale: 10000)
+//        self.waveformView?.progressTime = CMTimeMakeWithSeconds(lroundf(self.recordedFileDuration), 10000)
 
         if !isRecordStopTapped {
-            self.recordBtn.enabled = self.stopBtn?.enabled = true
+            self.recordBtn?.isEnabled = (self.stopBtn?.isEnabled == true)
         }
 
-        let currentTime:UILabel! = self.view.viewWithTag(TAG_CURRENTTIME_LBL)
-        currentTime.text = String(format:"%@ | %@", self.timeFormatted(lroundf(self.recordedFileDuration)),self.timeFormatted(lroundf(self.recordedFileDuration)))
+        let currentTime  = self.view.viewWithTag(TAG_CURRENTTIME_LBL)
+        currentTime.text = String(format:"%@ | %@", self.timeFormatted(totalSeconds: lroundf(self.recordedFileDuration)),self.timeFormatted(lroundf(self.recordedFileDuration)))
 
-        self.waveFormSlider?.setValue(lroundf(self.recordedFileDuration), animated:true)
+//        self.waveFormSlider?.setValue(lroundf(Float(self.recordedFileDuration)), animated:true)
+        self.waveFormSlider?.setValue(Float(self.recordedFileDuration), animated: true)
     }
 
 }
