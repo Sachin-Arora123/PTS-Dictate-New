@@ -302,9 +302,9 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVCNew.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1885"
-            endingLineNumber = "1885"
-            landmarkName = "startPointBtnTapped(sender:)"
+            startingLineNumber = "1869"
+            endingLineNumber = "1869"
+            landmarkName = "bookMarkButtonTapped(sender:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
