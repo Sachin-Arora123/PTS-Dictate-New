@@ -144,6 +144,91 @@ let BOOKMARK_20:Int = 20
 
 let FIRSTTIME:Int = 0
 let SECONDTIME:Int = 1
+let TAG_EDIT_PARTIAL_DELETE_ALERT = 131
+let TAG_STATUS_LBL = 104
+let TAG_BOOKMARK_1 = 1001
+let TAG_BOOKMARK_2 = 1002
+let TAG_BOOKMARK_3 = 1003
+let TAG_BOOKMARK_4 = 1004
+let TAG_BOOKMARK_5 = 1005
+let TAG_BOOKMARK_6 = 1006
+let TAG_BOOKMARK_7 = 1007
+let TAG_BOOKMARK_8 = 1008
+let TAG_BOOKMARK_9 = 1009
+let TAG_BOOKMARK_10 = 1010
+let TAG_BOOKMARK_11 = 1011
+let TAG_BOOKMARK_12 = 1012
+let TAG_BOOKMARK_13 = 1013
+let TAG_BOOKMARK_14 = 1014
+let TAG_BOOKMARK_15 = 1015
+let TAG_BOOKMARK_16 = 1016
+let TAG_BOOKMARK_17 = 1017
+let TAG_BOOKMARK_18 = 1018
+let TAG_BOOKMARK_19 = 1019
+let TAG_BOOKMARK_20 = 1020
+let TAG_RECORD_BTN = 101
+let TAG_STOP_BTN = 102
+let TAG_TIMING_LBL = 103
+let TAG_PLAY_BTN = 105
+let TAG_FILENAME_LBL = 106
+let TAG_FILESIZE_LBL = 107
+let TAG_BOOKMARK_BTN = 108
+let TAG_BOOKMARK_BACKWARD_BTN = 109
+let TAG_BOOKMARK_FORWARD_BTN = 110
+let TAG_CURRENTTIME_LBL = 111
+let TAG_DURATION_LBL = 112
+let TAG_ERASE_BTN = 113
+let TAG_START_POINT_BTN = 123
+let TAG_END_POINT_BTN = 124
+let TAG_START_OVERWRITE_BTN = 125
+let TAG_END_OVERWRITE_BTN = 126
+let TAG_DISCARD_BTN = 114
+let TAG_SAVE_BTN = 115
+let TAG_CLEAR_INDEX_BTN = 116
+let TAG_EDIT_RECORD_BTN = 117
+let TAG_OVERWRITE_LBL = 118
+let TAG_SAVE_ALERT_TAG = 104
+let TAG_DISCARD_ALERT_TAG = 105
+let TAG_AUTO_SAVE_ALERT_TAG = 106
+let TAG_ALERT_STOP_RECORD_TAG = 107
+let TAG_ALERT_ALREADY_PAUSED_TAG = 108
+let TAG_ALERT_ALREADY_STOPPED_TAG = 109
+let TAG_FILE_SAVED_ALERT = 110
+let TAG_BATTERY_FILE_SAVED_ALERT_PAUSED = 111
+let TAG_BATTERY_FILE_SAVED_ALERT_STOPPED = 112
+
+let TAG_WARNING_ALERT_ONE = 1001
+let TAG_WARNING_ALERT_TWO = 1002
+let TAG_RECORD_PERMISSION_DENIED = 115
+let RECORDED_FILE = "/Player"
+let TAG_REWIND_BTN = 119
+let TAG_FAST_REWIND_BTN = 120
+let TAG_FORWARD_BTN = 121
+let TAG_FAST_FORWARD_BTN = 122
+
+let TAG_EDIT_OVERWRITE = 127
+
+let TAG_EDIT_APPEND = 128
+let TAG_EDIT_INSERT = 129
+let TAG_EDIT_PARTIAL_DELETE = 130
+let K_OPERATION_INTERRUPTED = "Operation Interrupted"
+let K_RECORDING = "Recording"
+let K_PAUSED = "Paused"
+let K_OVERWRITING = "Overwriting"
+let K_STOPPED = "Stopped"
+let K_STOP_CURRENT_RECORD_ALERT = "Do you want to stop the current Recording ?"
+let K_SAVE_CURRENT_RECORD_ALERT = "Do you want to save the current Recording ?"
+let K_YES = "YES"
+let K_NO = "NO"
+let K_OK = "OK"
+let K_APPEND = "Append"
+let K_INSERT = "Insert"
+let K_OVERWRITE = "Overwrite"
+let K_PARTIAL_DELETE = "Partial Delete"
+let K_START_TIME = "00:00:00"
+
+
+
 
 
 
@@ -281,7 +366,9 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         isRecording = FIRSTTIME
         AppDelegate.sharedInstance().userDefaults.set("0", forKey:K_KEY_IS_RECORDING)
         //isErasing = isSaving = isOverwriting = FIRSTTIME
-        isSaving = isErasing = isOverwriting = FIRSTTIME
+        isOverwriting = FIRSTTIME
+        isErasing = isOverwriting
+        isSaving = Double(isErasing)
         bookMarTapCount = 0
         sliderValue = 0
         autoSaveIsOn = false
@@ -315,7 +402,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
         let disablePopUp = AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_DISABLE_POPUP)
 
-        if disablePopUp.count == 0 {
+        if disablePopUp?.count == 0 {
             //NSLog(@"indexing == 0");
             AppDelegate.sharedInstance().userDefaults.set(K_SWITCH_OFF, forKey:K_KEY_SWITCH_DISABLE_POPUP)
         }
@@ -330,8 +417,9 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 //        NotificationCenter.default.addObserver(self, selector:#selector(("batteryChanged:")), name:UIDevice.batteryLevelDidChangeNotification, object:device)
 
 //        NotificationCenter.default.addObserver(self, selector: #selector(batteryChanged(notification: <#T##NSNotification!#>)), name: UIDevice.batteryLevelDidChangeNotification, object: device)
+        NotificationCenter.default.addObserver(self, selector: #selector("receiveNotification"), name: K_NOTICATION_RECORDING , object: nil)
 
-        NSNotificationCenter.default.addObserver(self, selector:Selector("receiveNotification:"), name:K_NOTICATION_RECORDING, object:nil)
+        //NSNotificationCenter.default.addObserver(self, selector:Selector("receiveNotification:"), name:K_NOTICATION_RECORDING, object:nil)
 
         self.setupView()
 
@@ -357,15 +445,15 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
             AppDelegate.sharedInstance().userDefaults.set(self.editDictionary.valueForKey("rowId"), forKey:K_KEY_IS_ROW_ID)
 
-            self.waveformView.progressTime = CMTimeMakeWithSeconds(recordedFileDuration, 10000)
+            self.waveformView?.progressTime = CMTimeMakeWithSeconds(recordedFileDuration, preferredTimescale: 10000)
 
             let bookmarks:String! = self.editDictionary.valueForKey("bookmarks")
 
-            if bookmarks.length != 0 {
+            if bookmarks.count != 0 {
 
                 //NSLog(@" ============= > HAVING DATAS <=============");
-                self.bookMarkArr = bookmarks.componentsSeparatedByString(",").mutableCopy()
-                self.bookmarkFordwardBtn.enabled = true
+                self.bookMarkArr = bookmarks.split(separator: ",") //bookmarks.componentsSeparatedByString(",").mutableCopy()
+                self.bookmarkFordwardBtn?.isEnabled = true
 
                 self.createBookMarKDivider()
             }
@@ -377,29 +465,31 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             if (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_INDEXING) == K_SWITCH_OFF) {
 
                 if IS_IPHONE_5 {
-                    self.pageScrollView.contentSize = CGSizeMake(0, self.headerView.frame.size.height - 40)
+                    self.pageScrollView?.contentSize = CGSize(width: 0, height: (self.headerView?.frame.size.height ?? 0) - 40)
                 }
                 else if IS_IPHONE_4 {
-                    self.pageScrollView.contentSize = CGSizeMake(0, self.headerView.frame.size.height + 40)
+                    self.pageScrollView?.contentSize = CGSize(width: 0, height: (self.headerView?.frame.size.height ?? 0) + 40)
 
                 }
             }
             else
             {
                 if IS_IPHONE_5 {
-                    self.pageScrollView.contentSize = CGSizeMake(0, self.headerView.frame.size.height)
+                    self.pageScrollView?.contentSize = CGSize(width: 0, height: self.headerView?.frame.size.height ?? 0)
                 }
                 else if IS_IPHONE_4 {
-                    self.pageScrollView.contentSize = CGSizeMake(0, self.headerView.frame.size.height + 105)
+                    self.pageScrollView?.contentSize = CGSize(width: 0, height: (self.headerView?.frame.size.height ?? 0) + 105)
                 }
             }
 
-            self.recordBtn.isEnabled = false
+            self.recordBtn?.isEnabled = false
+            self.recordBtn?.setImage(UIImage(named: "record_record_btn_disable.png"), for: .disabled)
 
-            self.recordBtn.setImage(K_SETIMAGE("record_record_btn_disable.png"), forState:UIControlStateDisabled)
+          //  self.recordBtn.setImage(K_SETIMAGE("record_record_btn_disable.png"), forState:UIControlStateDisabled)
 
-            self.stopBtn.isEnabled = true
-            self.stopBtn.setImage(K_SETIMAGE("record_stop_btn_normal.png"), forState:UIControlStateNormal)
+            self.stopBtn?.isEnabled = true
+            self.stopBtn?.setImage(UIImage(named: "record_stop_btn_normal.png"), for: .normal)
+            //self.stopBtn.setImage(K_SETIMAGE("record_stop_btn_normal.png"), forState:UIControlStateNormal)
 
             isEditButtonTapped = true
 
@@ -411,7 +501,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             }  */
         }
 
-        AppDelegate.sharedInstance().userDefaults.setBool(editRecording, forKey:K_KEY_EDIT_RECORD_FILE)
+        AppDelegate.sharedInstance().userDefaults.set(editRecording, forKey:K_KEY_EDIT_RECORD_FILE)
 
         //[self textTospeech:@"Your current recording going to saved."];
     }
@@ -420,9 +510,9 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         super.viewWillAppear(animated)
         self.createFolder(folderName: "Record")
         NotificationCenter.default.addObserver(self, selector: #selector("appHasTreminated"), name: UIApplication.willTerminateNotification, object: nil)
-        //NotificationCenter.default.addObserver(self,
-                                               selector:#selector("appHasTreminated"),
-                                               name:UIApplication.willTerminateNotification, object:nil)
+//        NotificationCenter.default.addObserver(self,
+//                                               selector:#selector("appHasTreminated"),
+//                                               name:UIApplication.willTerminateNotification, object:nil)
         NotificationCenter.default.addObserver(self, selector: #selector("appInBackgroundFunction"), name: UIApplication.didEnterBackgroundNotification, object: nil)
 
        // NotificationCenter.default.addObserver(self,
@@ -455,7 +545,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         self.pauseAudioPlayer()
     }
     
-    func appHasTreminated() {
+    @objc func appHasTreminated() {
         self.audio_Recorder?.stop()
 
         let session:AVAudioSession! = AVAudioSession.sharedInstance()
@@ -4650,7 +4740,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
         //        self.fileSizeLbl.text = [[NSString stringWithFormat:@"%.2f",((float)[NSData dataWithContentsOfURL:[NSURL URLWithString:recordingFileUrl.relativeString]].length/1024.0f/1024.0f)] stringByAppendingString:@" Mb"];
 
-                let fileName:String! = recordingFileUrl.relativeString.substringWithRange(NSMakeRange(7, recordingFileUrl.relativeString.length()-7))
+                let fileName:String! = recordingFileUrl?.relativeString.substringWithRange(NSMakeRange(7, (recordingFileUrl?.relativeString.count ?? 0)-7))
 
                 NSLog("Record File : %@)",fileName)
 
@@ -5193,14 +5283,17 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     func hideWaveForm() {
         if self.graphView?.alpha == 1.0 {
             self.graphView?.alpha = 0
-            self.bookmarkBackwardBtn?.enabled = self.bookmarkFordwardBtn?.enabled = false
+            self.bookmarkBackwardBtn?.isEnabled = false
+            self.bookmarkFordwardBtn?.isEnabled = false
         }
     }
 
     func showLoading() {
         isLoadingShowing = true
         PTSHELPER.showLoadingIndicatorWithStatus("Processing...", controller:self)
-        APPDELEGATE.tabBar.userInteractionEnabled =  self.navigationController.navigationBar.userInteractionEnabled = self.view.userInteractionEnabled = false
+                APPDELEGATE.tabBar.userInteractionEnabled = false
+                self.navigationController?.navigationBar.isUserInteractionEnabled = false
+                self.view.isUserInteractionEnabled = false
 
     }
 
@@ -5734,11 +5827,11 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     }
 
 
-    func receiveNotification(notification:NSNotification!) {
+     @objc func receiveNotification(notification:NSNotification!) {
 
         if (notification.name == K_NOTICATION_RECORDING) {
 
-            if self.audio_Recorder.isRecording{
+            if self.audio_Recorder?.isRecording{
 
                 isPausedFromTab = true
 
@@ -6071,7 +6164,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         }
 
         if alertView.tag == 7 {
-            let editing:Bool = AppDelegate.sharedInstance().userDefaults.boolForKey(K_KEY_EDIT_RECORD_FILE)
+            let editing:Bool = AppDelegate.sharedInstance().userDefaults.bool(forKey: K_KEY_EDIT_RECORD_FILE)
             if !editing {
                 print("AUTO SAVE NOT EDITING @@@@@@@@@@@@@")
                 let filecountString:String! = String(format:"%@",fileCountStr)
