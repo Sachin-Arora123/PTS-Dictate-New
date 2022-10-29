@@ -374,7 +374,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
             // NSLog(@" self.bookMarkArr :%@", self.bookMarkArr);
 
-            if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_OFF) {
+            if (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_INDEXING) == K_SWITCH_OFF) {
 
                 if IS_IPHONE_5 {
                     self.pageScrollView.contentSize = CGSizeMake(0, self.headerView.frame.size.height - 40)
@@ -532,7 +532,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             self.pageScrollView.scrollsToTop = false
             self.pageScrollView.contentSize = CGSizeMake(0, self.headerView.frame.size.height)
 
-            if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
+            if (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_INDEXING == K_SWITCH_ON) {
 
                 if IS_IPHONE_4 {
                     self.pageScrollView.contentSize = CGSizeMake(0, self.headerView.frame.size.height + 60)
@@ -840,7 +840,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 self.recordCtrlsView = UIView()
 
-                if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_OFF) {
+                if (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_INDEXING) == K_SWITCH_OFF) {
                     self.bookmarkView.hidden = true
                     self.recordCtrlsView.frame = CGRect(0, self.graphView.frame.origin.y + self.graphView.frame.size.height + 10, self.pageScrollView.frame.size.width, 80)
                 }
@@ -856,7 +856,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 var recordBtnFrame:CGRect = CGRectMake(originX , self.recordCtrlsView.frame.size.height * 0.5 - btnSize * 0.5, btnSize, btnSize)
 
-                if PTSHelper.isiPad() & (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
+                if PTSHelper.isiPad() & (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
                     recordBtnFrame.origin.y = self.recordCtrlsView.frame.size.height * 0.5 - btnSize
                 }
 
@@ -872,7 +872,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 var stopBtnFrame:CGRect = CGRectMake(self.recordCtrlsView.frame.size.width - originX - btnSize, self.recordCtrlsView.frame.size.height * 0.5 - btnSize * 0.5, btnSize, btnSize)
 
-                if PTSHelper.isiPad() & (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
+                if PTSHelper.isiPad() & (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
                     stopBtnFrame.origin.y = self.recordCtrlsView.frame.size.height * 0.5 - btnSize
                 }
 
@@ -927,7 +927,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 var playerCtrlsViewFrame:CGRect = CGRectMake(0, self.recordCtrlsView.frame.size.height + self.recordCtrlsView.frame.origin.y, self.view.frame.size.width, 50)
 
-                if PTSHelper.isiPad() & (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
+                if PTSHelper.isiPad() & (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
                     playerCtrlsViewFrame.origin.y = self.recordCtrlsView.frame.size.height + self.recordCtrlsView.frame.origin.y - 45
                 }
 
@@ -1007,7 +1007,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 var fileNameTitleLblFrame:CGRect = CGRectMake(7.5, 10 , 75, 20)
 
-                if PTSHelper.isiPad() & (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
+                if PTSHelper.isiPad() & (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
                     fileNameTitleLblFrame.origin.y = 4
                 } else if !PTSHelper.isiPad() {
                     fileNameTitleLblFrame.origin.y = 8
@@ -1023,7 +1023,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 var fileNameLblFrame:CGRect = CGRectMake(fileNameTitleLbl.frame.origin.x + fileNameTitleLbl.frame.size.width , 10, self.detailsView.frame.size.width - (fileNameTitleLbl.frame.origin.x + fileNameTitleLbl.frame.size.width)  , 20)
 
-                if PTSHelper.isiPad() & (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
+                if PTSHelper.isiPad() & (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
                     fileNameLblFrame.origin.y = 4
                 } else if !PTSHelper.isiPad() {
                     fileNameLblFrame.origin.y = 8
@@ -1039,7 +1039,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 var fileSizeTitleLblFrame:CGRect = CGRectMake(fileNameTitleLbl.frame.origin.x, fileNameLbl.frame.origin.y + fileNameLbl.frame.size.height + 5 , 65, 20)
 
-                if PTSHelper.isiPad() & (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
+                if PTSHelper.isiPad() & (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
                     fileSizeTitleLblFrame.origin.y = fileNameLbl.frame.origin.y + fileNameLbl.frame.size.height
                 } else if !PTSHelper.isiPad() {
                     fileSizeTitleLblFrame.origin.y = fileNameLbl.frame.origin.y + fileNameLbl.frame.size.height + 8
@@ -1065,7 +1065,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 var maxFileSizeTitleLblFrame:CGRect = CGRectMake(fileSizeTitleLbl.frame.origin.x, self.fileSizeLbl.frame.origin.y + self.fileNameLbl.frame.size.height + 5 , 132
                                                              , 20)
 
-                if PTSHelper.isiPad() & (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
+                if PTSHelper.isiPad() & (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
                     maxFileSizeTitleLblFrame.origin.y = self.fileSizeLbl.frame.origin.y + self.fileNameLbl.frame.size.height - 1
                 } else if !PTSHelper.isiPad() {
                     maxFileSizeTitleLblFrame.origin.y = self.fileSizeLbl.frame.origin.y + self.fileNameLbl.frame.size.height + 8
@@ -2317,7 +2317,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
             self.pageScrollView.contentSize = CGSizeMake(0, self.headerView.frame.size.height + 30)
 
-            if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
+            if (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
                 self.pageScrollView.contentSize = CGSizeMake(0, self.headerView.frame.size.height + 95)
             }
         }
@@ -4951,7 +4951,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         let currentTime = playerItem?.currentTime
         let time = CMTimeGetSeconds(currentTime)
         if !isBookMarkTap {
-            if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
+            if (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
                 let current:String! = self.timeFormatted(lroundf(time))
                 if self.bookMarkArr?.count > 0 {
                     
@@ -5357,7 +5357,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                                      self.bookmarkView.alpha = 1.0
                                  }
 
-                                 if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_OFF) {
+                                 if (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_INDEXING) == K_SWITCH_OFF) {
 
                                      if editMode == 0 || editMode == 3 {
 
@@ -5459,23 +5459,23 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                                  }
 
 
-                                 if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_INDEXING) == K_SWITCH_OFF) {
+                                 if (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_INDEXING) == K_SWITCH_OFF) {
 
-                                     self.recordCtrlsView.frame = CGRectMake(0, self.graphView.frame.origin.y + self.graphView.frame.size.height + 10, self.pageScrollView.frame.size.width, 80)
+                                     self.recordCtrlsView?.frame = CGRect(x: 0, y: (self.graphView?.frame.origin.y ?? 0.0) + (self.graphView?.frame.size.height ?? 0.0)  + 10, width: (self.pageScrollView?.frame.size.width ?? 0.0), height: 80)
 
                                      if IS_IPHONE_5 {
-                                         self.pageScrollView.contentSize = CGSizeMake(0, self.headerView.frame.size.height - 40)
+                                         self.pageScrollView?.contentSize = CGSize(width: 0, height: self.headerView?.frame.size.height ?? 0.0 - 40)
                                      }
                                      else if IS_IPHONE_4 {
-                                         self.pageScrollView.contentSize = CGSizeMake(0, self.headerView.frame.size.height + 40)
+                                         self.pageScrollView?.contentSize = CGSize(width: 0, height: (self.headerView?.frame.size.height ?? 0.0) + 40)
                                      }
                                  }
                                  else
                                  {
-                                     self.recordBtn.enabled = true
-                                     self.stopBtn.enabled = true
+                                     self.recordBtn?.isEnabled = true
+                                     self.stopBtn?.isEnabled = true
 
-                                     self.recordCtrlsView.frame = CGRectMake(0, self.bookmarkView.frame.origin.y + self.bookmarkView.frame.size.height, self.pageScrollView.frame.size.width, 80)
+                                     self.recordCtrlsView?.frame = CGRect(x: 0, y: (self.bookmarkView?.frame.origin.y ?? 0.0) + self.bookmarkView.frame.size.height, width: (self.pageScrollView?.frame.size.width ?? 0.0), height: 80)
 
                                      if IS_IPHONE_5 {
                                          self.pageScrollView.contentSize = CGSizeMake(0, self.headerView.frame.size.height)
