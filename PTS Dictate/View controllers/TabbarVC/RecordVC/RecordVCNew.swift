@@ -234,7 +234,7 @@ let K_START_TIME = "00:00:00"
 
 
 
-class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDelegate, UIGestureRecognizerDelegate {
+class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDelegate, UIGestureRecognizerDelegate, UIAlertViewDelegate {
     
     private var progressIn = 0.0
     private var playerCurrentTime = 0.0
@@ -339,7 +339,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     private var microPhoneSensitivityIndex = 0
     private var eraseStartTime = 0.0
     private var editRecording:Bool = false
-    private var editDictionary:String = ""
+    private var editDictionary:[String:String] = [:]
 
     //MARK: View Life Cycle
     override func viewDidLoad() {
@@ -387,9 +387,9 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
         microPhoneSensitivityIndex = AppDelegate.sharedInstance().userDefaults.integer(forKey: K_KEY_MICROPHONE_SENSITIVITY)
 
-        let sensitivity = AppDelegate.sharedInstance().userDefaults.value(forKey: K_KEY_MICROPHONE_SENSITIVITY)
+        let sensitivity = AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_MICROPHONE_SENSITIVITY)
 
-        if sensitivity.count == 0 {
+        if sensitivity?.count == 0 {
             microPhoneSensitivityIndex = 5
         }
 
@@ -417,6 +417,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 //        NotificationCenter.default.addObserver(self, selector:#selector(("batteryChanged:")), name:UIDevice.batteryLevelDidChangeNotification, object:device)
 
 //        NotificationCenter.default.addObserver(self, selector: #selector(batteryChanged(notification: <#T##NSNotification!#>)), name: UIDevice.batteryLevelDidChangeNotification, object: device)
+        
         NotificationCenter.default.addObserver(self, selector: #selector("receiveNotification"), name: K_NOTICATION_RECORDING , object: nil)
 
         //NSNotificationCenter.default.addObserver(self, selector:Selector("receiveNotification:"), name:K_NOTICATION_RECORDING, object:nil)
@@ -440,14 +441,14 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             self.perform(Selector("updateWaveForm:"), with:filePath, afterDelay:0.5)
 
             self.waveFormSlider?.setValue(Float(recordedFileDuration), animated:true)
-            self.fileNameLbl?.text = self.editDictionary.valueForKey("filename")
+            self.fileNameLbl?.text = self.editDictionary["filename"] as? String
             
 
-            AppDelegate.sharedInstance().userDefaults.set(self.editDictionary.valueForKey("rowId"), forKey:K_KEY_IS_ROW_ID)
+            AppDelegate.sharedInstance().userDefaults.set(self.editDictionary["rowId"], forKey:K_KEY_IS_ROW_ID)
 
             self.waveformView?.progressTime = CMTimeMakeWithSeconds(recordedFileDuration, preferredTimescale: 10000)
 
-            let bookmarks:String! = self.editDictionary.valueForKey("bookmarks")
+            let bookmarks:String! = self.editDictionary["bookmarks"] as? String
 
             if bookmarks.count != 0 {
 
@@ -509,14 +510,14 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.createFolder(folderName: "Record")
-        NotificationCenter.default.addObserver(self, selector: #selector("appHasTreminated"), name: UIApplication.willTerminateNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.appHasTreminated()), name: UIApplication.willTerminateNotification, object: nil)
 //        NotificationCenter.default.addObserver(self,
 //                                               selector:#selector("appHasTreminated"),
 //                                               name:UIApplication.willTerminateNotification, object:nil)
-        NotificationCenter.default.addObserver(self, selector: #selector("appInBackgroundFunction"), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.appInBackgroundFunction(), name: UIApplication.didEnterBackgroundNotification, object: nil)
 
        // NotificationCenter.default.addObserver(self,
-                                                 selector:#selector("appInBackgroundFunction"),
+                                                 selector:#selector(appInBackgroundFunction"),
                                                name:UIApplication.didEnterBackgroundNotification, object:nil)
     }
     
@@ -530,7 +531,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
     override func viewWillDisappear(_ animated:Bool) {
         super.viewWillDisappear(animated)
-        NotificationCenter.default.removeObserver(self, forKeyPath:K_NOTICATION_RECORDING, context:nil)
+        NotificationCenter.default.removeObserver(self, forKeyPath:"is_recording", context:nil)
         
        // NSNotificationCenter.default.removeObserver(self, name:K_NOTICATION_RECORDING, object:nil)
         NotificationCenter.default.removeObserver(self, name:UIDevice.batteryLevelDidChangeNotification, object:nil)
@@ -541,7 +542,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     }
     
 
-    func appInBackgroundFunction() {
+    @objc func appInBackgroundFunction() {
         self.pauseAudioPlayer()
     }
     
@@ -553,7 +554,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
         isSaveAutoSaveFile = true
 
-        if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_AUTO_SAVING) == K_SWITCH_ON) {
+        if (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_AUTO_SAVING) == K_SWITCH_ON) {
 
             if self.isRecordStarted ?? false {
 
@@ -566,7 +567,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 let time:Float = Float(CMTimeGetSeconds(currentTime))
 
                 AppDelegate.sharedInstance().userDefaults.set(self.getRecordedFile(), forKey:K_KEY_IS_PLAYER_FILE)
-                AppDelegate.sharedInstance().setFloat(time, forKey:K_KEY_IS_PLAYER_CURRENT_TIME)
+                AppDelegate.sharedInstance().userDefaults.set(time, forKey:K_KEY_IS_PLAYER_CURRENT_TIME)
                 AppDelegate.sharedInstance().userDefaults.set(true, forKey:K_KEY_AUTO_SAVE_FILE)
 
                 if !editRecording {
@@ -574,7 +575,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                     AppDelegate.sharedInstance().userDefaults.set(filecountString, forKey:K_KEY_RECORD_FILE_COUNT)
                 }
 
-                NSUserDefaults.standardUserDefaults.synchronize()
+                UserDefaults.standard.synchronize()
 
                 //  NSLog(@"=======> appHasTreminated <=====");
 
@@ -1254,14 +1255,16 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 let delayInSeconds:Double = 0.5
             let popTime = dispatch_time(.now(), ((delayInSeconds * NSEC_PER_SEC) as! int64_t))
-                dispatch_after(popTime, dispatch_get_main_queue(), { ($(TypeName)) in
-                   self.pauseAudioPlayer()
+            dispatch_after(popTime, dispatch_get_main_queue(), { ($arg1) in
+                
+                let (TypeName) = arg1
+                self.pauseAudioPlayer()
                 })
 
                 self.didFinishOverwrite()
 
                // [self.waveFormSlider setValue:1 animated:YES];
-                if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_DISABLE_POPUP) == K_SWITCH_OFF) {
+                if (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_DISABLE_POPUP) == K_SWITCH_OFF) {
 
                     self.customRangeBar?.alpha = 0.0
 
@@ -1283,7 +1286,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 }
 
                 editMode = 1
-                if (AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_SWITCH_DISABLE_POPUP) == K_SWITCH_ON) {
+                if (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_DISABLE_POPUP) == K_SWITCH_ON) {
                     self.showOverwriteView()
                 } else {
 
@@ -1305,7 +1308,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 }
 
                 editMode = 2
-                if (AppDelegate.sharedInstance().userDefaults.string(K_KEY_SWITCH_DISABLE_POPUP) == K_SWITCH_ON) {
+            if (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_DISABLE_POPUP) == K_SWITCH_ON) {
                     self.showOverwriteView()
                 } else {
                     //[APPDELEGATE.userDefaults setBool:YES forKey:K_OVERWRITING];
@@ -1322,7 +1325,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 // [self showPartialDeleteView];
                 editMode = 3
-                if (AppDelegate.sharedInstance().userDefaults.string(K_KEY_SWITCH_DISABLE_POPUP) == K_SWITCH_ON) {
+            if (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_DISABLE_POPUP) == K_SWITCH_ON) {
                     self.showOverwriteView()
                 } else {
                     let alert:UIAlertView! = UIAlertView(title:"Partial Delete", message:"To start partial delete, tap the Start Point and End Point button markers whilst listening to the audio. The End Point button determines where the partial delete finishes. Tap the Start Deleting button to initiate the partial delete. The partial delete will end when the End Point marker is reached.", delegate:self, cancelButtonTitle:"OK", otherButtonTitles:nil, nil)
@@ -1385,12 +1388,12 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
     func handleBtnLongPressgesture(recognizer:UILongPressGestureRecognizer!) {
 
-        if recognizer.view.tag == TAG_REWIND_BTN {
+                if recognizer.view?.tag == TAG_REWIND_BTN {
 
             //as you hold the button this would fire
 
             if recognizer.state == .began {
-                self.rewindTimer = NSTimer.scheduledTimerWithTimeInterval(0.1,  target:self, selector:Selector("rewindFunctionality"), userInfo:nil, repeats:true)
+                self.rewindTimer = Timer.scheduledTimerWithTimeInterval(0.1,  target:self, selector:Selector("rewindFunctionality"), userInfo:nil, repeats:true)
             }
 
             //as you release the button this would fire
@@ -1406,7 +1409,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             //as you hold the button this would fire
 
             if recognizer.state == .began {
-                self.fastRewindTimer = NSTimer.scheduledTimerWithTimeInterval(0.1,  target:self, selector:Selector("fastRewindFunctionality"),
+                self.fastRewindTimer = Timer.scheduledTimer(timeInterval: 0.1,  target:self, selector:Selector("fastRewindFunctionality"),
                                                                       userInfo:nil, repeats:true)
             }
 
@@ -1418,12 +1421,12 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             }
         }
 
-        if recognizer.view.tag == TAG_FORWARD_BTN {
+                if recognizer.view?.tag == TAG_FORWARD_BTN {
 
             //as you hold the button this would fire
 
             if recognizer.state == .began {
-                self.forwardTimer = NSTimer.scheduledTimerWithTimeInterval(0.1, target:self, selector:Selector("forwardFunctionality"),
+                self.forwardTimer = Timer.scheduledTimer(timeInterval: 0.1, target:self, selector:Selector("forwardFunctionality"),
                                                                    userInfo:nil, repeats:true)
             }
 
@@ -1436,12 +1439,12 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
         }
 
-        if recognizer.view.tag == TAG_FAST_FORWARD_BTN {
+                if recognizer.view?.tag == TAG_FAST_FORWARD_BTN {
 
             //as you hold the button this would fire
 
             if recognizer.state == .began {
-                self.fastForwardTimer = NSTimer.scheduledTimerWithTimeInterval(0.1,  target:self, selector:Selector("fastForwardFunctionality"),
+                self.fastForwardTimer = Timer.scheduledTimerWithTimeInterval(0.1,  target:self, selector:Selector("fastForwardFunctionality"),
                                                                        userInfo:nil, repeats:true)
             }
 
@@ -3239,13 +3242,13 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
         PTSHELPER.buttonAnimation = sender
 
-        let playerItem:AVPlayerItem! = self.thePlayer.currentItem
+                let playerItem:AVPlayerItem! = self.thePlayer?.currentItem
         let currentTime:CMTime = playerItem.currentTime
-        let time:Int = lroundf(CMTimeGetSeconds(currentTime))
+                let time:Int = lroundf(Float(CMTimeGetSeconds(currentTime)))
         let duration:Int = lroundf(recordedFileDuration)
         var newTime:CMTime
         if (time == duration - 1) || (time == duration - 2)  {
-            newTime = CMTimeMake(duration, 1)
+            newTime = CMTimeMake(Int64(duration)value: duration, timescale: 1)
         }else{
             newTime = CMTimeMake(time + 3, 1)
         }
@@ -3434,9 +3437,9 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         let secondUrl:NSURL! = NSURL.fileURLWithPathComponents(pathComponentsTemp)
 
         self.tempRecorder = AVAudioRecorder(URL:secondUrl, settings:recordSetting, error:nil)
-        self.tempRecorder.delegate = self
-        self.tempRecorder.prepareToRecord()
-        self.tempRecorder.meteringEnabled = true
+                self.tempRecorder?.delegate = self
+                self.tempRecorder?.prepareToRecord()
+        self.tempRecorder?.meteringEnabled = true
 
         if session.respondsToSelector(Selector("requestRecordPermission:")) {
             session.performSelector(Selector("requestRecordPermission:"), withObject:{ (granted:Bool) in
@@ -3460,7 +3463,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     }
     func isRecordPermissionGiven() -> Bool {
         var isPermitted:Bool = true
-        switch (AVAudioSession.sharedInstance().recordPermission()) {
+                switch (AVAudioSession.sharedInstance().recordPermission) {
             case AVAudioSessionRecordPermissionGranted:
                 isPermitted = true
                 break
@@ -3488,8 +3491,8 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
         if timeArray.count > 0 {
 
-            let firstString:String! = timeArray.objectAtIndex(0).stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
-            let secondString:String! = timeArray.objectAtIndex(1).stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
+            let firstString:String! = timeArray[0].trimmingCharacters(in: NSCharacterSet.whitespacesAndNewlines)
+            let secondString:String! = timeArray[1].trimmingCharacters(in: NSCharacterSet.whitespacesAndNewlines)
 
             stringsAreEqual = (firstString == secondString)
         } else if timeArray.count == 0 && startPointTime == 0 && endPointTime == 0 {
@@ -3501,68 +3504,74 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     }
     
     func stopAudioPlayer() {
-            self.thePlayer.seekToTime(CMTimeMake(playerCurrentTime, 1))
-            self.thePlayer.pause()
+                self.thePlayer?.seek(to: CMTimeMake(value: Int64(playerCurrentTime), timescale: 1))
+                self.thePlayer?.pause()
 
-            self.playerTimer.invalidate()
+                self.playerTimer?.invalidate()
             self.playerTimer = nil
 
-            self.bookmarkBtn.enabled = FALSE
+            self.bookmarkBtn?.isEnabled = false
+                self.playBtn?.setImage(UIImage(named: "existing_controls_play_btn_normal.png"), for: .normal)
+                self.playBtn?.setImage(UIImage(named: "existing_controls_play_btn_disable.png"), for: .disabled)
 
-            self.playBtn.setImage(K_SETIMAGE("existing_controls_play_btn_normal.png"), forState:UIControlStateNormal)
-            self.playBtn.setImage(K_SETIMAGE("existing_controls_play_btn_disable.png"), forState:UIControlStateDisabled)
         }
 
         func updateTime(newTime:CMTime) {
-            let time:Int = lroundf(CMTimeGetSeconds(newTime))
+                let time:Int = lroundf(Float(CMTimeGetSeconds(newTime)))
 
            // NSLog(@"updateTime PLAYER TIME ===> %d", time);
 
-            if time >= 0  && (time <= recordedFileDuration) {
+                if time >= 0  && (time <= Int(recordedFileDuration)) {
 
-                let new:CMTime = CMTimeMake(time, 1)
+                    let new:CMTime = CMTimeMake(value: Int64(time), timescale: 1)
 
-                self.thePlayer.seekToTime(new)
+                    self.thePlayer?.seek(to: new)
 
-                let currentTimeLabel:UILabel! = self.view.viewWithTag(TAG_CURRENTTIME_LBL)
+                    let currentTimeLabel:UILabel! = self.view.viewWithTag(TAG_CURRENTTIME_LBL) as! UILabel
 
-                playerCurrentTime = time
+                    playerCurrentTime = Double(time)
 
                 insertingTime = playerCurrentTime
 
-                self.waveformView.progressTime = CMTimeMakeWithSeconds((time / recordedFileDuration), 10000)
+                    self.waveformView?.progressTime = CMTimeMakeWithSeconds((Double(time) / recordedFileDuration), preferredTimescale: 10000)
 
-                currentTimeLabel.text = String(format:"%@ | %@", self.timeFormatted(lroundf(time)),self.timeFormatted(lroundf(self.recordedFileDuration)))
+                    currentTimeLabel.text = String(format:"%@ | %@", self.timeFormatted(totalSeconds: lroundf(Float(time))),self.timeFormatted(totalSeconds: lroundf(Float(self.recordedFileDuration))))
 
-                self.waveFormSlider.setValue(time, animated:true)
+                    self.waveFormSlider?.setValue(Float(time), animated:true)
             }
 
             if self.stringsAreEqual() {
-                self.fastForwardBtn.enabled = self.forwardBtn.enabled = false
-                self.rewindBtn.enabled = self.fastRewindBtn.enabled = true
+                self.fastForwardBtn?.isEnabled = false
+                self.forwardBtn?.isEnabled = false
+                self.rewindBtn?.isEnabled = true
+                self.fastRewindBtn?.isEnabled = true
 
             }
             else
             {
-                self.fastForwardBtn.enabled = self.forwardBtn.enabled = true
-                self.rewindBtn.enabled = self.fastRewindBtn.enabled = true
+                self.fastForwardBtn?.isEnabled = true
+                self.forwardBtn?.isEnabled = true
+                self.rewindBtn?.isEnabled = true
+                self.fastRewindBtn?.isEnabled = true
             }
 
             if (self.timeFormatted(lroundf(time)) == K_START_TIME) {
-                self.fastForwardBtn.enabled = self.forwardBtn.enabled = true
-                self.rewindBtn.enabled = self.fastRewindBtn.enabled = false
+                self.fastForwardBtn?.isEnabled = true
+                self.forwardBtn?.isEnabled = true
+                self.rewindBtn?.isEnabled = false
+                self.fastRewindBtn?.isEnabled = false
             }
 
         }
 
         func updateTimeLabels(newTime:CMTime) {
-            self.thePlayer.seekToTime(newTime)
+                self.thePlayer?.seekToTime(newTime)
 
-            let timeUpdated:Int = lroundf(CMTimeGetSeconds(newTime))
+                let timeUpdated:Int = lroundf(Float(CMTimeGetSeconds(newTime)))
 
             let currentTimeLabel:UILabel! = self.view.viewWithTag(TAG_CURRENTTIME_LBL)
 
-            playerCurrentTime = timeUpdated
+                playerCurrentTime = Double(timeUpdated)
 
             insertingTime = playerCurrentTime
 
@@ -3575,18 +3584,24 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             self.waveFormSlider.setValue(timeUpdated, animated:true)
 
             if self.stringsAreEqual() {
-                self.fastForwardBtn.enabled = self.forwardBtn.enabled = false
-                self.rewindBtn.enabled = self.fastRewindBtn.enabled = true
+                self.fastForwardBtn?.isEnabled = false
+                self.forwardBtn?.isEnabled = false
+                self.rewindBtn?.isEnabled = true
+                self.fastRewindBtn?.isEnabled = true
             }
             else
             {
-                self.fastForwardBtn.enabled = self.forwardBtn.enabled = true
-                self.rewindBtn.enabled = self.fastRewindBtn.enabled = true
+                self.fastForwardBtn?.isEnabled = true
+                self.forwardBtn?.isEnabled = true
+                self.rewindBtn?.isEnabled = true
+                self.fastRewindBtn?.isEnabled = true
             }
 
-            if (self.timeFormatted(lroundf(timeUpdated)) == K_START_TIME) {
-                self.fastForwardBtn.enabled = self.forwardBtn.enabled = true
-                self.rewindBtn.enabled = self.fastRewindBtn.enabled = false
+                if (self.timeFormatted(lroundf(Float(timeUpdated))) == K_START_TIME) {
+                self.fastForwardBtn?.isEnabled = true
+                self.forwardBtn?.isEnabled = true
+                self.rewindBtn?.isEnabled = false
+                self.fastRewindBtn?.isEnabled = false
             }
 
         }
@@ -3595,42 +3610,48 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
             let playerItem:AVPlayerItem! = p.currentItem
 
-            let currentTime:CMTime = playerItem.currentTime
+                let currentTime:CMTime = playerItem.currentTime()
 
-            let time:Int = lroundf(CMTimeGetSeconds(currentTime))
+                let time:Int = lroundf(Float(CMTimeGetSeconds(currentTime)))
 
-            let currentTimeLabel:UILabel! = self.view.viewWithTag(TAG_CURRENTTIME_LBL)
+                let currentTimeLabel:UILabel! = self.view.viewWithTag(TAG_CURRENTTIME_LBL) as! UILabel
 
-            playerCurrentTime = time
+                playerCurrentTime = Double(time)
 
             insertingTime = playerCurrentTime
 
-            self.waveformView.progressTime = CMTimeMakeWithSeconds((time / recordedFileDuration), 10000)
+                self.waveformView?.progressTime = CMTimeMakeWithSeconds((Double(time) / recordedFileDuration), preferredTimescale: 10000)
 
-            currentTimeLabel.text = String(format:"%@ | %@", self.timeFormatted(time),self.timeFormatted(lroundf(self.recordedFileDuration)))
+                currentTimeLabel.text = String(format:"%@ | %@", self.timeFormatted(totalSeconds: time),self.timeFormatted(totalSeconds: lroundf(Float(self.recordedFileDuration))))
 
             //float x = [self xPositionFromSliderValue:self.waveFormSlider];
 
            // NSLog(@"PLAYER TIME ===> %d", time);
 
-            self.waveFormSlider.continuous = true
-            self.waveFormSlider.setValue(time, animated:true)
+                self.waveFormSlider?.isContinuous = true
+                self.waveFormSlider?.setValue(Float(time), animated:true)
 
             //NSLog(@"updateTimeForPlayer ===> %f", self.waveFormSlider.value);
 
             if self.stringsAreEqual() {
-                self.fastForwardBtn.enabled = self.forwardBtn.enabled = false
-                self.rewindBtn.enabled = self.fastRewindBtn.enabled = true
+                self.fastForwardBtn?.isEnabled = false
+                self.forwardBtn?.isEnabled = false
+                self.rewindBtn?.isEnabled = false
+                self.fastRewindBtn?.isEnabled = true
             }
             else
             {
-                self.fastForwardBtn.enabled = self.forwardBtn.enabled = true
-                self.rewindBtn.enabled = self.fastRewindBtn.enabled = true
+                self.fastForwardBtn?.isEnabled = true
+                self.forwardBtn?.isEnabled = true
+                self.rewindBtn?.isEnabled = true
+                self.fastRewindBtn?.isEnabled = true
             }
 
-            if (self.timeFormatted(lroundf(time)) == K_START_TIME) {
-                self.fastForwardBtn.enabled = self.forwardBtn.enabled = true
-                self.rewindBtn.enabled = self.fastRewindBtn.enabled = false
+                if (self.timeFormatted(totalSeconds: lroundf(Float(time))) == K_START_TIME) {
+                self.fastForwardBtn?.isEnabled = true
+                self.forwardBtn?.isEnabled = true
+                self.rewindBtn?.isEnabled = false
+                self.fastRewindBtn?.isEnabled = false
             }
 
         }
@@ -3725,17 +3746,17 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 //@"update upload_log set description='%@',file_duration='%@',file_size='%@', bookmarks='%@'  where id='%@' and user_id=%@"
 
-                uploadArray.addObject(self.editDictionary.valueForKey("comments")) // COMMENTS
-                uploadArray.addObject(timing.text)
-                uploadArray.addObject(self.fileSizeLbl.text)
-                uploadArray.addObject(bookmarks) // BOOKMARKS
-                uploadArray.addObject(self.editDictionary.valueForKey("rowId"))
-                uploadArray.addObject(AppDelegate.sharedInstance().userDefaults.valueForKey(K_KEY_LOGIN_USER_ID))
+                uploadArray.add(self.editDictionary["comments"]) // COMMENTS
+                uploadArray.add(timing.text)
+                uploadArray.add(self.fileSizeLbl?.text)
+                uploadArray.add(bookmarks) // BOOKMARKS
+                uploadArray.add(self.editDictionary["rowId"])
+                uploadArray.add(AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_LOGIN_USER_ID))
 
                 PTSDATAMANAGER.updateEditRecordDetailsInToUploadFiles(uploadArray)
             }
 
-            self.saveFileToDocuments(isAutoSaveFile)
+                self.saveFileToDocuments(isAutoSaveFile: isAutoSaveFile)
 
         }
     
@@ -6208,10 +6229,10 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             self.recordBtn.enabled = self.stopBtn?.enabled = true
         }
 
-        let currentTime:UILabel! = self.view.viewWithTag(TAG_CURRENTTIME_LBL)
-        currentTime.text = String(format:"%@ | %@", self.timeFormatted(lroundf(self.recordedFileDuration)),self.timeFormatted(lroundf(self.recordedFileDuration)))
-
-        self.waveFormSlider?.setValue(lroundf(self.recordedFileDuration), animated:true)
+                                let currentTime:UILabel! = self.view.viewWithTag(TAG_CURRENTTIME_LBL)
+                                currentTime.text = String(format:"%@ | %@", self.timeFormatted(lroundf(self.recordedFileDuration)),self.timeFormatted(lroundf(self.recordedFileDuration)))
+                                
+                                self.waveFormSlider?.setValue(Float(lroundf(self.recordedFileDuration)), animated:true)
     }
 
 }
