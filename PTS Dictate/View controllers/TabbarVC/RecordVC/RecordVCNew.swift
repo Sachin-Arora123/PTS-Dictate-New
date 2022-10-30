@@ -316,7 +316,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     private var fileNameLbl : UILabel?
     private var fileSizeLbl : UILabel?
     private var fileCountStr : String?
-    private var bookMarkArr : NSMutableArray?
+    private var bookMarkArr : [String]?
     private var pauseArr : NSMutableArray?
     private var panRecognizer : UIPanGestureRecognizer?
 //    private var _soundWaveView : FVSoundWaveView?
@@ -360,7 +360,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         trimCount = 1
         
         AppDelegate.sharedInstance().userDefaults.set(trimCount, forKey:K_KEY_IS_TRIMCOUNT)
-        isRecording = FIRSTTIME
+        isRecording = (FIRSTTIME != 0)
         AppDelegate.sharedInstance().userDefaults.set("0", forKey:K_KEY_IS_RECORDING)
         //isErasing = isSaving = isOverwriting = FIRSTTIME
         isOverwriting = FIRSTTIME
@@ -405,8 +405,8 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             AppDelegate.sharedInstance().userDefaults.set(K_SWITCH_OFF, forKey:K_KEY_SWITCH_DISABLE_POPUP)
         }
 
-        self.bookMarkArr = NSMutableArray()
-        self.pauseArr = NSMutableArray()
+        self.bookMarkArr = []
+        self.pauseArr = []
 
         // MONITORING BATTETY LEVEL
         let device = UIDevice.current
@@ -415,8 +415,9 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 //        NotificationCenter.default.addObserver(self, selector:#selector(("batteryChanged:")), name:UIDevice.batteryLevelDidChangeNotification, object:device)
 
 //        NotificationCenter.default.addObserver(self, selector: #selector(batteryChanged(notification: <#T##NSNotification!#>)), name: UIDevice.batteryLevelDidChangeNotification, object: device)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector("receiveNotification"), name: K_NOTICATION_RECORDING , object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.receiveNotification(notification:)), name: K_NOTICATION_RECORDING, object: nil)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(self.receiveNotification(notification:)), name: K_NOTICATION_RECORDING , object: nil)
 
 
         //NSNotificationCenter.default.addObserver(self, selector:Selector("receiveNotification:"), name:K_NOTICATION_RECORDING, object:nil)
@@ -429,15 +430,15 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
             let filePath:String! = self.getRecordedFile()
 
-            isRecording = SECONDTIME
+            isRecording = (SECONDTIME != 0)
             AppDelegate.sharedInstance().userDefaults.set("1", forKey:K_KEY_IS_RECORDING)
             self.setAllSettings(filePath: filePath)
 
            // self.allSettings = filePath
 
             //[PTSHELPER showLoadingIndicator:self];
+            self.perform(#selector(self.updateWaveForm(filePath:)), with: filePath, afterDelay: 0.5)
 
-            self.perform(Selector("updateWaveForm:"), with:filePath, afterDelay:0.5)
 
             self.waveFormSlider?.setValue(Float(recordedFileDuration), animated:true)
             self.fileNameLbl?.text = self.editDictionary["filename"] as? String
@@ -452,7 +453,8 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             if bookmarks.count != 0 {
 
                 //NSLog(@" ============= > HAVING DATAS <=============");
-                self.bookMarkArr = bookmarks.split(separator: ",") //bookmarks.componentsSeparatedByString(",").mutableCopy()
+                
+                self.bookMarkArr = bookmarks.components(separatedBy: ",") //bookmarks.componentsSeparatedByString(",").mutableCopy()
                 self.bookmarkFordwardBtn?.isEnabled = true
 
                 self.createBookMarKDivider()
@@ -461,7 +463,6 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
             self.showSegmentView()
 
-            // NSLog(@" self.bookMarkArr :%@", self.bookMarkArr);
 
             if (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_INDEXING) == K_SWITCH_OFF) {
 
@@ -503,15 +504,12 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.createFolder(folderName: "Record")
-        NotificationCenter.default.addObserver(self, selector: #selector(self.appHasTreminated()), name: UIApplication.willTerminateNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.appHasTreminated(notification:)), name: UIApplication.willTerminateNotification, object: nil)
 //        NotificationCenter.default.addObserver(self,
 //                                               selector:#selector("appHasTreminated"),
 //                                               name:UIApplication.willTerminateNotification, object:nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.appInBackgroundFunction(), name: UIApplication.didEnterBackgroundNotification, object: nil)
-
-       // NotificationCenter.default.addObserver(self,
-                                                 selector:#selector(appInBackgroundFunction"),
-                                               name:UIApplication.didEnterBackgroundNotification, object:nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.appInBackgroundFunction(notification:)), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        //NotificationCenter.default.addObserver(self, selector: #selector(self.appInBackgroundFunction(notification:), name: UIApplication.didEnterBackgroundNotification, object: nil))
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -535,15 +533,19 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     }
     
 
-    @objc func appInBackgroundFunction() {
+    @objc func appInBackgroundFunction(notification: Notification) {
         self.pauseAudioPlayer()
     }
     
-    @objc func appHasTreminated() {
+    @objc func appHasTreminated(notification: Notification){
         self.audio_Recorder?.stop()
 
         let session:AVAudioSession! = AVAudioSession.sharedInstance()
-        session.setActive(false)
+        do{
+         try session.setActive(false)
+        }catch{
+            debugPrint(error)
+        }
 
         isSaveAutoSaveFile = true
 
@@ -583,295 +585,283 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
     func setupView() {
 
-        { // SEGMENT VIEW
-            self.segmentBgView = UIView(frame:CGRectMake(0, 0, self.view.frame.size.width, 50))
-            self.segmentBgView.backgroundColor = K_COLOR_CLEAR_COLOR
-            self.view.addSubview(self.segmentBgView)
+         // SEGMENT VIEW
+        self.segmentBgView = UIView(frame:CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: 50))
+        self.segmentBgView?.backgroundColor = K_COLOR_CLEAR_COLOR
+        self.view.addSubview(self.segmentBgView ?? UIView())
 
-            { // SEGEMENT CONTROL
-                self.segmentedControl = UISegmentedControl(items:[K_APPEND,K_INSERT,K_OVERWRITE,K_PARTIAL_DELETE])
-                self.segmentedControl.frame = CGRectMake(5, 10, self.view.frame.size.width - 10, 30)
-                self.segmentedControl.addTarget(self, action:Selector("segmentedControlValueDidChange:"), forControlEvents:UIControlEventValueChanged)
-                //[self.segmentedControl setSelectedSegmentIndex:0];
-                self.segmentedControl.backgroundColor = .clear
-                let font:UIFont! = UIFont.fontWithName(FONT_NORMAL, size:10)
-                let attributes:NSDictionary! = NSDictionary.dictionaryWithObject(font,
-                                                                       forKey:NSFontAttributeName)
-                self.segmentedControl.setTitleTextAttributes(attributes,
-                                                     forState:UIControlStateNormal)
-                self.segmentBgView.addSubview(self.segmentedControl)
-                UISegmentedControl.appearance().tintColor = K_COLOR_PRIMARY_COLOR
-            }
-            self.segmentBgView.alpha = 0
+        // SEGEMENT CONTROL
+        self.segmentedControl = UISegmentedControl(items:[K_APPEND,K_INSERT,K_OVERWRITE,K_PARTIAL_DELETE])
+        self.segmentedControl?.frame = CGRect(x: 5, y: 10, width: self.view.frame.size.width - 10, height: 30)
+        self.segmentedControl?.addTarget(self, action: #selector(self.segmentedControlValueDidChange(segment:)), for: .valueChanged)
+        //[self.segmentedControl setSelectedSegmentIndex:0];
+        self.segmentedControl?.backgroundColor = .clear
+        let font = UIFont(name: FONT_NORMAL, size:10)
+        let attributes = NSDictionary(object: font,forKey:NSAttributedString.Key.font as NSCopying)
+        self.segmentedControl?.setTitleTextAttributes(attributes as! [NSAttributedString.Key : Any], for: .normal)
+        self.segmentBgView?.addSubview(self.segmentedControl ?? UIView())
+        UISegmentedControl.appearance().tintColor = hexStringToUIColor(hex: "F74118")
+        self.segmentBgView?.alpha = 0
+        
+
+         // HEADER VIEW
+        self.headerView = UIView(frame:CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.size.height - 60 - CGFloat(K_TABBAR_HEIGHT)))
+        self.headerView?.backgroundColor = K_COLOR_CLEAR_COLOR
+        self.view.addSubview(self.headerView ?? UIView())
+        self.pageScrollView = UIScrollView(frame:CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: self.headerView?.frame.size.height ?? 0.0))
+        // define the scroll view content size and enable paging
+        self.pageScrollView?.isPagingEnabled = false
+        self.pageScrollView?.scrollsToTop = false
+        self.pageScrollView?.contentSize = CGSize(width: (self.headerView?.frame.size.width ?? 0.0), height: (self.headerView?.frame.size.height ?? 0.0))
+        self.pageScrollView?.setContentOffset(CGPoint(x: 0, y: self.pageScrollView?.contentOffset.y ?? 0.0), animated: true)
+        self.pageScrollView?.backgroundColor = K_COLOR_CLEAR_COLOR
+        self.pageScrollView?.isUserInteractionEnabled = true
+        self.pageScrollView?.panGestureRecognizer.delaysTouchesBegan = ((self.pageScrollView?.delaysContentTouches) != nil)
+        self.headerView?.addSubview(self.pageScrollView ?? UIView())
+
+
+        //RANGE BAR
+        var customRangeBarFrame = CGRect(x: 10, y: 10, width: self.view.frame.size.width - 20, height: 35)
+        //TBC
+//        if PTSHelper.isiPad() {
+//            customRangeBarFrame = CGRect(10, 5, self.view.frame.size.width - 20, 35)
+//        }
+        self.customRangeBar = F3BarGauge(frame:customRangeBarFrame)
+        self.customRangeBar?.backgroundColor = UIColor.white
+        self.customRangeBar?.numBars = 30
+        self.customRangeBar?.minLimit = -100
+        self.customRangeBar?.maxLimit = -10
+        self.customRangeBar?.normalBarColor = hexStringToUIColor(hex: "F74118")
+        self.customRangeBar?.warningBarColor = UIColor(red: 105/255.0, green: 105.0/255.0, blue: 105/255.0, alpha: 1)
+        self.customRangeBar?.dangerBarColor = UIColor(red: 211/255.0, green: 211/255.0, blue: 211/255.0, alpha: 1)
+        self.customRangeBar?.outerBorderColor = UIColor.gray
+        self.customRangeBar?.innerBorderColor = UIColor.black
+        self.pageScrollView?.addSubview(self.customRangeBar ?? UIView())
+
+        if !editRecording {
+            self.customRangeBar?.alpha = 1.0
+        } else {
+            self.customRangeBar?.alpha = 0.0
         }
+            
+        
+        // WAVE FORM BG VIEW
+        self.graphView = UIView(frame:CGRect(x: 10, y: 10, width: self.pageScrollView?.frame.size.width ?? 0.0 - 20, height: 45))
+        self.graphView?.backgroundColor = K_COLOR_CLEAR_COLOR
+        self.pageScrollView?.addSubview(self.graphView ?? UIView())
+        
+        playerCurrentTime = 0.0
+        
+        let originX:CGFloat = 50
+        let LblHgt:CGFloat = 15
 
-        { // HEADER VIEW
-            self.headerView = UIView(frame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - 60 - K_TABBAR_HEIGHT))
-            self.headerView.backgroundColor = K_COLOR_CLEAR_COLOR
-            self.view.addSubview(self.headerView)
+        let currentTimeLbl = UILabel(frame:CGRect(x: 0, y: 0, width: self.graphView?.frame.size.width ?? 0.0, height: LblHgt))
+        currentTimeLbl.textColor = K_COLOR_DARK_COLOR
+        //currentTimeLbl.text = @"00:18";
+        currentTimeLbl.tag = TAG_CURRENTTIME_LBL
+        currentTimeLbl.textAlignment = .right
+        currentTimeLbl.font = UIFont(name: FONT_BOLD, size:12)
+        currentTimeLbl.backgroundColor = K_COLOR_CLEAR_COLOR
+        self.graphView?.addSubview(currentTimeLbl ?? UIView())
+        
+        self.waveformView = SCWaveformView()
+        self.waveformView?.backgroundColor = K_COLOR_CLEAR_COLOR
+        self.waveformView?.frame = CGRect(x:0, y:12.5, width:self.graphView?.frame.size.width ?? 0.0, height:45)
+        // Setting the waveform colors
+        self.waveformView?.normalColor = hexStringToUIColor(hex: "80CEFB")
+        self.waveformView?.progressColor = UIColor.blue
+        self.waveformView?.timeRange = CMTimeRangeMake(start: CMTime.zero, duration: CMTimeMakeWithSeconds(1, preferredTimescale: 1))
+        
+        // Access the waveformView from there
+        // Set the precision, 1 being the maximum
+        self.waveformView?.precision = 0.9 // We are going to render one line per four pixels
+        // Set the lineWidth so we have some space between the lines
+        self.waveformView?.lineWidthRatio = 0.75
+        // Add some padding between the channels
+        self.waveformView?.channelsPadding = 5
+        self.waveformView?.channelEndIndex = 0
+        self.graphView?.addSubview(self.waveformView ?? UIView())
 
-            self.pageScrollView = UIScrollView(frame:CGRectMake(0, 0, self.view.frame.size.width, self.headerView.frame.size.height))
-            // define the scroll view content size and enable paging
-            self.pageScrollView.pagingEnabled = false
-            self.pageScrollView.scrollsToTop = false
-            self.pageScrollView.contentSize = CGSizeMake(0, self.headerView.frame.size.height)
+        let frame = CGRect(x: 0, y: 17.5, width: (self.graphView?.frame.width ?? 0.0), height:35.0)
+        self.waveFormSlider = UISlider(frame:frame)
+        self.waveFormSlider?.addTarget(self, action:#selector(self.sliderValueChanged(sender:)), for:.valueChanged)
+        self.waveFormSlider?.backgroundColor = K_COLOR_CLEAR_COLOR
+        self.waveFormSlider?.minimumValue = 0.0
+                self.waveFormSlider?.thumbTintColor = K_COLOR_BLACK_COLOR
+        self.waveFormSlider?.isContinuous = true
+                let sliderImage = UIImage(named: "slider.png")
+                let myIcon = PTSHELPER.imageWithImage(sliderImage, scaledToSize:CGSizeMake(3, 40))
+        self.waveFormSlider?.setThumbImage(myIcon, forState:.normal)
+        self.waveFormSlider?.setThumbImage(myIcon, forState:.highlighted)
+        self.waveFormSlider?.setMinimumTrackImage(UIImage(), for:.normal)
+        self.waveFormSlider?.setMaximumTrackImage(UIImage(), for:.normal)
 
-//            if (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_INDEXING == K_SWITCH_ON) {
-//
-//                if IS_IPHONE_4 {
-//                    self.pageScrollView.contentSize = CGSizeMake(0, self.headerView.frame.size.height + 60)
-//                }
-//                if IS_IPHONE_5 {
-//                    self.pageScrollView.contentSize = CGSizeMake(0, self.headerView.frame.size.height)
-//                }
-//            }
+        self.graphView?.addSubview(self.waveFormSlider ?? UIView())
 
-            self.pageScrollView.setContentOffset(CGPointMake(0, self.pageScrollView.contentOffset.y), animated: true)
-            self.pageScrollView.backgroundColor = K_COLOR_CLEAR_COLOR
-            self.pageScrollView.userInteractionEnabled = true
-            self.pageScrollView.panGestureRecognizer.delaysTouchesBegan = self.pageScrollView.delaysContentTouches
-            self.headerView.addSubview(self.pageScrollView)
+                self.waveFormSlider?.alpha = 0
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.sliderTapped(gestureRecognizer:)))
+                self.waveFormSlider?.addGestureRecognizer(tapGestureRecognizer)
 
+                self.panRecognizer = UIPanGestureRecognizer(target:self, action:#selector(self.handlePanGesture(recognizer:)))
+        self.panRecognizer?.delegate = self
+        self.waveFormSlider?.addGestureRecognizer(self.panRecognizer)
 
-            { //RANGE BAR
-                var customRangeBarFrame:CGRect = CGRectMake(10, 10, self.view.frame.size.width - 20, 35)
-                if PTSHelper.isiPad() {
-                    customRangeBarFrame = CGRectMake(10, 5, self.view.frame.size.width - 20, 35)
-                }
-                self.customRangeBar = F3BarGauge(frame:customRangeBarFrame)
-                self.customRangeBar.backgroundColor = UIColor.whiteColor()
-                self.customRangeBar.numBars = 30
-                self.customRangeBar.minLimit = -100
-                self.customRangeBar.maxLimit = -10
-                self.customRangeBar.normalBarColor = K_COLOR_PRIMARY_COLOR
-                self.customRangeBar.war
-                self.customRangeBar.warningBarColor = UIColor(red: 105/255.0, green: 105.0/255.0, blue: 105/255.0, alpha: 1)
-                self.customRangeBar.dangerBarColor = UIColor(red: 211/255.0, green: 211/255.0, blue: 211/255.0, alpha: 1)
-                self.customRangeBar.outerBorderColor = UIColor.grayColor()
-                self.customRangeBar.innerBorderColor = UIColor.blackColor()
-                self.pageScrollView.addSubview(self.customRangeBar)
+        self.imgSlider = UIImageView(frame:CGRect(x: self.waveform?.frame.origin.x ?? 0.0 + self.waveform?.frame.size.width ?? 0.0 , y: self.waveform?.frame.origin.y, width: sliderImage.size.width, height: sliderImage.size.height + 2.5))
+        self.imgSlider?.image = sliderImage
+        self.imgSlider?.alpha = 0.0
+        self.graphView?.addSubview(self.imgSlider ?? UIView())
 
-                if !editRecording {
-                    self.customRangeBar.alpha = 1.0
-                } else {
-                    self.customRangeBar.alpha = 0.0
-                }
-            }
+        self.imgSliderStart = UIImageView(frame:CGRect(x: self.waveform?.frame.origin.x + self.waveform.frame.size.width , y: self.waveform.frame.origin.y, width: sliderImage.size.width, height: sliderImage.size.height + 2.5))
+        self.imgSliderStart?.image = sliderImage
+        self.imgSliderStart?.alpha = 0.0
+        self.graphView?.addSubview(self.imgSliderStart)
 
-            { // WAVE FORM BG VIEW
-                self.graphView = UIView(frame:CGRectMake(10, 10, self.pageScrollView.frame.size.width - 20, 45))
-                self.graphView.backgroundColor = K_COLOR_CLEAR_COLOR
-                self.pageScrollView.addSubview(self.graphView)
+        self.imgSliderEnd = UIImageView(frame:CGRect(self.waveform.frame.origin.x + self.waveform.frame.size.width , self.waveform.frame.origin.y, sliderImage.size.width, sliderImage.size.height + 2.5))
+        self.imgSliderEnd?.image = sliderImage
+        self.imgSliderEnd?.alpha = 0.0
+        self.graphView?.addSubview(self.imgSliderEnd)
 
-                playerCurrentTime = 0.0
-
-                let originX:CGFloat = 50
-                let LblHgt:CGFloat = 15
-
-                let currentTimeLbl:UILabel! = UILabel(frame:CGRectMake(0, 0, self.graphView.frame.size.width, LblHgt))
-                currentTimeLbl.textColor = K_COLOR_DARK_COLOR
-                //currentTimeLbl.text = @"00:18";
-                currentTimeLbl.tag = TAG_CURRENTTIME_LBL
-                currentTimeLbl.textAlignment = NSTextAlignmentRight
-                currentTimeLbl.font = UIFont.fontWithName(FONT_BOLD, size:12)
-                currentTimeLbl.backgroundColor = K_COLOR_CLEAR_COLOR
-                self.graphView.addSubview(currentTimeLbl)
-
-                self.waveformView = SCWaveformView()
-                self.waveformView.backgroundColor = K_COLOR_CLEAR_COLOR
-                self.waveformView.frame = CGRectMake(0, 12.5, self.graphView.frame.size.width, 45)
-                // Setting the waveform colors
-                self.waveformView.normalColor = hexStringToUIColor(hex: "80CEFB")
-                self.waveformView.progressColor = UIColor.blueColor()
-                self.waveformView.timeRange = CMTimeRangeMake(kCMTimeZero, CMTimeMakeWithSeconds(1, 1))
-
-                // Access the waveformView from there
-                // Set the precision, 1 being the maximum
-                self.waveformView.precision = 0.9 // We are going to render one line per four pixels
-                // Set the lineWidth so we have some space between the lines
-                self.waveformView.lineWidthRatio = 0.75
-                // Add some padding between the channels
-                self.waveformView.channelsPadding = 5
-                self.waveformView.channelEndIndex = 0
-                self.graphView.addSubview(self.waveformView)
-
-                let frame:CGRect = CGRectMake(0, 17.5, CGRectGetWidth(self.graphView.frame), 35.0)
-                self.waveFormSlider = UISlider(frame:frame)
-                self.waveFormSlider.addTarget(self, action:Selector("sliderValueChanged:"), forControlEvents:.valueChanged)
-                self.waveFormSlider.backgroundColor = K_COLOR_CLEAR_COLOR
-                self.waveFormSlider.minimumValue = 0.0
-                self.waveFormSlider.thumbTintColor = K_COLOR_BLACK_COLOR
-                self.waveFormSlider.continuous = true
-                let sliderImage:UIImage! = K_SETIMAGE("slider")
-                let myIcon:UIImage! = PTSHELPER.imageWithImage(sliderImage, scaledToSize:CGSizeMake(3, 40))
-                self.waveFormSlider.setThumbImage(myIcon, forState:.normal)
-                self.waveFormSlider.setThumbImage(myIcon, forState:.highlighted)
-                self.waveFormSlider.setMinimumTrackImage(UIImage(), forState:.normal)
-                self.waveFormSlider.setMaximumTrackImage(UIImage(), forState:.normal)
-
-                self.graphView.addSubview(self.waveFormSlider)
-
-                self.waveFormSlider.alpha = 0
-
-                let tapGestureRecognizer:UITapGestureRecognizer! = UITapGestureRecognizer(target:self, action:Selector("sliderTapped:"))
-                self.waveFormSlider.addGestureRecognizer(tapGestureRecognizer)
-
-                self.panRecognizer = UIPanGestureRecognizer(target:self, action:Selector("handlePanGesture:"))
-                self.panRecognizer.delegate = self
-                self.waveFormSlider.addGestureRecognizer(self.panRecognizer)
-
-                self.imgSlider = UIImageView(frame:CGRectMake(self.waveform.frame.origin.x + self.waveform.frame.size.width , self.waveform.frame.origin.y, sliderImage.size.width, sliderImage.size.height + 2.5))
-                self.imgSlider.image = sliderImage
-                self.imgSlider.alpha = 0.0
-                self.graphView.addSubview(self.imgSlider)
-
-                self.imgSliderStart = UIImageView(frame:CGRectMake(self.waveform.frame.origin.x + self.waveform.frame.size.width , self.waveform.frame.origin.y, sliderImage.size.width, sliderImage.size.height + 2.5))
-                self.imgSliderStart.image = sliderImage
-                self.imgSliderStart.alpha = 0.0
-                self.graphView.addSubview(self.imgSliderStart)
-
-                self.imgSliderEnd = UIImageView(frame:CGRectMake(self.waveform.frame.origin.x + self.waveform.frame.size.width , self.waveform.frame.origin.y, sliderImage.size.width, sliderImage.size.height + 2.5))
-                self.imgSliderEnd.image = sliderImage
-                self.imgSliderEnd.alpha = 0.0
-                self.graphView.addSubview(self.imgSliderEnd)
-
-                let durationLbl:UILabel! = UILabel(frame:CGRectMake(self.waveform.frame.origin.x + self.waveform.frame.size.width + 4, self.graphView.frame.size.height * 0.5 - LblHgt * 0.5 , originX - 4, LblHgt))
+        let durationLbl:UILabel! = UILabel(frame:CGRect(x: self.waveform.frame.origin.x + self.waveform.frame.size.width + 4, y: self.graphView.frame.size.height * 0.5 - LblHgt * 0.5 , width: originX - 4, height: ??LblHgt))
                 durationLbl.textColor = K_COLOR_DARK_COLOR
                 durationLbl.text = "05:18"
                 durationLbl.tag = TAG_CURRENTTIME_LBL
                 durationLbl.textAlignment = .left
-                durationLbl.font = UIFont.fontWithName(FONT_NORMAL, size:12)
+        durationLbl.font = UIFont(name: FONT_NORMAL, size:12)
                 //[graphView addSubview:durationLbl];
-            }
+            
 
-            { // BOOKMARK VIEW
-                self.partialDelView = UIView(frame:CGRectMake(0, self.graphView.frame.origin.y + self.graphView.frame.size.height + 20, self.pageScrollView.frame.size.width, 50))
-                self.partialDelView.backgroundColor = K_COLOR_CLEAR_COLOR
-                self.pageScrollView.addSubview(self.partialDelView)
-                self.partialDelView.alpha = 0.0
+             // BOOKMARK VIEW
+        self.partialDelView = UIView(frame:CGRect(x: 0, y: self.graphView.frame.origin.y + self.graphView.frame.size.height + 20, width: self.pageScrollView.frame.size.width, height: ??50))
+        self.partialDelView?.backgroundColor = K_COLOR_CLEAR_COLOR
+        self.pageScrollView?.addSubview(self.partialDelView ?? UIView())
+        self.partialDelView?.alpha = 0.0
 
                 let btnSize:CGFloat = 120
-                let originX:CGFloat = self.partialDelView.frame.size.width * 0.5 - btnSize * 0.5
+        originX = self.partialDelView?.frame.size.width * 0.5 - btnSize * 0.5
 
-                self.eraseBtn = UIButton.buttonWithType(.custom)
-                self.eraseBtn.frame = CGRectMake(originX , 5, btnSize, 40)
-                self.eraseBtn.addTarget(self, action:Selector("action:"), forControlEvents:UIControlEventTouchUpInside)
-                self.eraseBtn.backgroundColor = K_COLOR_CLEAR_COLOR
-                self.eraseBtn.tag = TAG_ERASE_BTN
-                self.eraseBtn.setImage(K_SETIMAGE("start_erase_btn_normal.png"), forState:UIControlStateNormal)
-                self.eraseBtn.setImage(K_SETIMAGE("start_erase_btn_disable.png"), forState:UIControlStateHighlighted)
-                self.eraseBtn.setImage(K_SETIMAGE("start_erase_btn_disable.png"), forState:UIControlStateDisabled)
+        self.eraseBtn = UIButton(type: .custom)
+        self.eraseBtn?.frame = CGRect(x: originX , y: 5, width: btnSize, height: 40)
+        self.eraseBtn.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
+        self.eraseBtn?.backgroundColor = K_COLOR_CLEAR_COLOR
+        self.eraseBtn?.tag = TAG_ERASE_BTN
+        self.eraseBtn?.setImage(UIImage(named: "start_erase_btn_normal.png"), for: .normal)
+        self.eraseBtn?.setImage(UIImage(named: "start_erase_btn_disable.png"), for: .highlighted)
+        self.eraseBtn?.setImage(UIImage(named: "start_erase_btn_disable.png"), for: .disabled)
+
                // [self.partialDelView addSubview:self.eraseBtn];
-            }
+            
 
-            { // OVERWRITE VIEW
+            // OVERWRITE VIEW
 
-                self.overWriteView = UIView(frame:CGRectMake(0, self.graphView.frame.origin.y + self.graphView.frame.size.height + 20, self.pageScrollView.frame.size.width, 50))
-                self.overWriteView.backgroundColor = K_COLOR_CLEAR_COLOR
-                self.pageScrollView.addSubview(self.overWriteView)
-                self.overWriteView.alpha = 0.0
-
-                let btnSize:CGFloat = 120
-                let originX:CGFloat = self.overWriteView.frame.size.width * 0.5 - btnSize * 0.5
-
-                self.startPointBtn = UIButton.buttonWithType(.custom)
-                self.startPointBtn.frame = CGRectMake(originX , 10, btnSize, 30)
-                self.startPointBtn.backgroundColor = K_COLOR_CLEAR_COLOR
-                self.startPointBtn.tag = TAG_START_POINT_BTN
-                self.startPointBtn.setImage(K_SETIMAGE("btn_start_point_normal.png"), forState:UIControlStateNormal)
-                self.startPointBtn.setImage(K_SETIMAGE("btn_start_point_highlight.png"), forState: .highlighted)
-                self.startPointBtn.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
+        self.overWriteView = UIView(frame:CGRect(x: 0, y: self.graphView.frame.origin.y + self.graphView.frame.size.height + 20, width: self.pageScrollView.frame.size.width, height: ?50))
+        self.overWriteView?.backgroundColor = K_COLOR_CLEAR_COLOR
+        self.pageScrollView.addSubview(self.overWriteView)
+        self.overWriteView?.alpha = 0.0
+        
+        let btnSize:CGFloat = 120
+        let originX:CGFloat = self.overWriteView.frame.size.width * 0.5 - btnSize * 0.5
+        
+        self.startPointBtn = UIButton.buttonWithType(.custom)
+        self.startPointBtn.frame = CGRect(originX , 10, btnSize, 30)
+        self.startPointBtn.backgroundColor = K_COLOR_CLEAR_COLOR
+        self.startPointBtn.tag = TAG_START_POINT_BTN
+        self.startPointBtn.setImage(K_SETIMAGE("btn_start_point_normal.png"), forState:UIControlStateNormal)
+        self.startPointBtn.setImage(K_SETIMAGE("btn_start_point_highlight.png"), forState: .highlighted)
+        self.startPointBtn.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
                 //[self.startPointBtn setTitle:@"Start Point" forState:UIControlStateNormal];
                 // [self.overWriteBtn setImage:K_SETIMAGE(@"start_erase_btn_normal.png") forState:UIControlStateNormal];
                 // [self.overWriteBtn setImage:K_SETIMAGE(@"start_erase_btn_disable.png") forState:UIControlStateHighlighted];
                 //[self.overWriteBtn setImage:K_SETIMAGE(@"start_erase_btn_disable.png") forState:UIControlStateDisabled];
-                self.overWriteView.addSubview(self.startPointBtn)
+        self.overWriteView.addSubview(self.startPointBtn)
+        
+        self.endPointBtn = UIButton(type: .custom)
+        self.endPointBtn?.frame = CGRect(x: originX , y: 10, width: btnSize, height: 30)
+        self.endPointBtn?.backgroundColor = K_COLOR_CLEAR_COLOR
+        self.endPointBtn?.tag = TAG_END_POINT_BTN
+        self.endPointBtn?.alpha = 0
+        self.endPointBtn?.setImage(UIImage(named: "btn_end_point_normal.png"), for: .normal)
 
-                self.endPointBtn = UIButton.buttonWithType(.custom)
-                self.endPointBtn.frame = CGRectMake(originX , 10, btnSize, 30)
-                self.endPointBtn.backgroundColor = K_COLOR_CLEAR_COLOR
-                self.endPointBtn.tag = TAG_END_POINT_BTN
-                self.endPointBtn.alpha = 0
-                self.endPointBtn.setImage(K_SETIMAGE("btn_end_point_normal.png"), forState:.normal)
-                self.endPointBtn.setImage(K_SETIMAGE("btn_end_point_highlight.png"), forState: .highlighted)
-                self.endPointBtn.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
+        self.endPointBtn?.setImage(UIImage(named: "btn_end_point_highlight.png"), for: .highlighted)
+
+        self.endPointBtn?.addTarget(self, action: Selector("action:"), forControlEvents:.touchUpInside)
                 // [self.overWriteBtn setImage:K_SETIMAGE(@"start_erase_btn_normal.png") forState:UIControlStateNormal];
                 // [self.overWriteBtn setImage:K_SETIMAGE(@"start_erase_btn_disable.png") forState:UIControlStateHighlighted];
                 //[self.overWriteBtn setImage:K_SETIMAGE(@"start_erase_btn_disable.png") forState:UIControlStateDisabled];
-                self.overWriteView.addSubview(self.endPointBtn)
-
-                startPointTime = 0; endPointTime = 0
-
-                self.startOverwriteBtn = UIButton.buttonWithType(.custom)
-                self.startOverwriteBtn.frame = CGRectMake(originX , 10, btnSize, 30)
-                self.startOverwriteBtn.backgroundColor = K_COLOR_CLEAR_COLOR
-                self.startOverwriteBtn.tag = TAG_START_OVERWRITE_BTN
-                self.startOverwriteBtn.alpha = 0
-                self.startOverwriteBtn.setImage(K_SETIMAGE("btn_start_overwriting_normal.png"), forState:.normal)
-                self.startOverwriteBtn.setImage(K_SETIMAGE("btn_start_overwriting_highlight.png"), forState: .highlighted)
-                self.startOverwriteBtn.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
+        self.overWriteView?.addSubview(self.endPointBtn ?? UIView())
+        
+        startPointTime = 0
+        endPointTime = 0
+        
+        self.startOverwriteBtn = UIButton(type: .custom)
+        self.startOverwriteBtn?.frame = CGRect(x: originX , y: 10, width: btnSize, height: 30)
+        self.startOverwriteBtn?.backgroundColor = K_COLOR_CLEAR_COLOR
+        self.startOverwriteBtn?.tag = TAG_START_OVERWRITE_BTN
+        self.startOverwriteBtn?.alpha = 0
+        self.startOverwriteBtn.setImage(K_SETIMAGE("btn_start_overwriting_normal.png"), forState:.normal)
+        self.startOverwriteBtn.setImage(K_SETIMAGE("btn_start_overwriting_highlight.png"), forState: .highlighted)
+        self.startOverwriteBtn.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
                 //[self.startOverwriteBtn setTitle:@"Start Overwriting" forState:UIControlStateNormal];
                 // [self.overWriteBtn setImage:K_SETIMAGE(@"start_erase_btn_normal.png") forState:UIControlStateNormal];
                 // [self.overWriteBtn setImage:K_SETIMAGE(@"start_erase_btn_disable.png") forState:UIControlStateHighlighted];
                 //[self.overWriteBtn setImage:K_SETIMAGE(@"start_erase_btn_disable.png") forState:UIControlStateDisabled];
-                self.overWriteView.addSubview(self.startOverwriteBtn)
-
-                self.endOverwriteBtn = UIButton.buttonWithType(.roundedRect)
-                self.endOverwriteBtn.frame = CGRectMake(originX , 5, btnSize, 40)
-                self.endOverwriteBtn.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
-                self.endOverwriteBtn.backgroundColor = K_COLOR_CLEAR_COLOR
-                self.endOverwriteBtn.tag = TAG_START_OVERWRITE_BTN
-                self.endOverwriteBtn.alpha = 0
-                self.endOverwriteBtn.setTitle("End Overwrite", forState:.normal)
+        self.overWriteView.addSubview(self.startOverwriteBtn)
+        
+        self.endOverwriteBtn = UIButton.buttonWithType(.roundedRect)
+        self.endOverwriteBtn.frame = CGRect(originX , 5, btnSize, 40)
+        self.endOverwriteBtn.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
+        self.endOverwriteBtn.backgroundColor = K_COLOR_CLEAR_COLOR
+        self.endOverwriteBtn.tag = TAG_START_OVERWRITE_BTN
+        self.endOverwriteBtn.alpha = 0
+        self.endOverwriteBtn.setTitle("End Overwrite", forState:.normal)
                 // [self.overWriteBtn setImage:K_SETIMAGE(@"start_erase_btn_normal.png") forState:UIControlStateNormal];
                 // [self.overWriteBtn setImage:K_SETIMAGE(@"start_erase_btn_disable.png") forState:UIControlStateHighlighted];
                 //[self.overWriteBtn setImage:K_SETIMAGE(@"start_erase_btn_disable.png") forState:UIControlStateDisabled];
                 self.overWriteView.addSubview(self.endOverwriteBtn)
 
-            }
+            
 
-            {
+            
                 // BOOKMARK VIEW
-                self.bookmarkView = UIView(frame:CGRectMake(0, self.graphView.frame.origin.y + self.graphView.frame.size.height + 10, self.view.frame.size.width, 120))
-                self.bookmarkView.backgroundColor = K_COLOR_CLEAR_COLOR
-                self.pageScrollView.addSubview(self.bookmarkView)
-                self.bookmarkView.alpha = 1.0
+        self.bookmarkView = UIView(frame:CGRect(0, self.graphView.frame.origin.y + self.graphView.frame.size.height + 10, self.view.frame.size.width, 120))
+        self.bookmarkView.backgroundColor = K_COLOR_CLEAR_COLOR
+        self.pageScrollView.addSubview(self.bookmarkView)
+        self.bookmarkView.alpha = 1.0
 
-                let frame:CGRect = CGRectMake(10.0, 10, CGRectGetWidth(self.bookmarkView.frame) - 20.0, 10.0)
-                self.bookmarkSlider = UISlider(frame:frame)
-                self.bookmarkSlider.addTarget(self, action:Selector("sliderValueChanged:"), forControlEvents:.valueChanged)
-                self.bookmarkSlider.backgroundColor = .clear
-                self.bookmarkSlider.minimumValue = 0.0
-                self.bookmarkSlider.maximumValue = 20.0
-                self.bookmarkSlider.thumbTintColor = .black
-                self.bookmarkSlider.continuous = true
-                let sliderImage:UIImage! = K_SETIMAGE("slider")
-                self.bookmarkSlider.setThumbImage(sliderImage, forState:.normal)
-                self.bookmarkSlider.setThumbImage(sliderImage, forState:.highlighted)
+        let frame:CGRect = CGRect(10.0, 10, CGRectGetWidth(self.bookmarkView.frame) - 20.0, 10.0)
+        self.bookmarkSlider = UISlider(frame:frame)
+        self.bookmarkSlider.addTarget(self, action:Selector("sliderValueChanged:"), forControlEvents:.valueChanged)
+        self.bookmarkSlider.backgroundColor = .clear
+        self.bookmarkSlider.minimumValue = 0.0
+        self.bookmarkSlider.maximumValue = 20.0
+        self.bookmarkSlider.thumbTintColor = .black
+        self.bookmarkSlider.continuous = true
+        let sliderImage:UIImage! = K_SETIMAGE("slider")
+        self.bookmarkSlider.setThumbImage(sliderImage, forState:.normal)
+        self.bookmarkSlider.setThumbImage(sliderImage, forState:.highlighted)
 
-                self.bookmarkSlider.minimumTrackTintColor = .lightGray
-                // [slider setMaximumTrackTintColor:[UIColor clearColor]];
-                self.bookmarkView.addSubview(self.bookmarkSlider)
-
-                self.bookmarkSlider.userInteractionEnabled = false
-
-                var btnSize:CGFloat = 40
-                var originX:CGFloat = 20
-
-                self.bookmarkBackwardBtn = UIButton.buttonWithType(.custom)
-                var bookmarkBackwardBtnFrame = CGRect(originX , btnSize - 5, btnSize, btnSize)
+        self.bookmarkSlider.minimumTrackTintColor = .lightGray
+        // [slider setMaximumTrackTintColor:[UIColor clearColor]];
+        self.bookmarkView.addSubview(self.bookmarkSlider)
+        
+        self.bookmarkSlider.userInteractionEnabled = false
+        
+        var btnSize:CGFloat = 40
+        var originX:CGFloat = 20
+        
+        self.bookmarkBackwardBtn = UIButton.buttonWithType(.custom)
+        var bookmarkBackwardBtnFrame = CGRect(originX , btnSize - 5, btnSize, btnSize)
                 
-                if PTSHelper.isiPad(){
-                    bookmarkBackwardBtnFrame.origin.y = btnSize - 15
-                }
-                self.bookmarkBackwardBtn.frame = bookmarkBackwardBtnFrame
-                self.bookmarkBackwardBtn.tag = TAG_BOOKMARK_BACKWARD_BTN
-                self.bookmarkBackwardBtn.setImage(K_SETIMAGE("record_bookmark_backward_btn_normal.png"), forState:UIControlStateNormal)
-                self.bookmarkBackwardBtn.setImage(K_SETIMAGE("record_bookmark_backward_btn_disable.png"), forState:UIControlStateDisabled)
-                self.bookmarkBackwardBtn.addTarget(self, action:Selector("action:"), forControlEvents:UIControlEventTouchUpInside)
-                self.bookmarkBackwardBtn.backgroundColor = K_COLOR_CLEAR_COLOR
-                self.bookmarkBackwardBtn.tag = TAG_BOOKMARK_BACKWARD_BTN
-                self.bookmarkView.addSubview(self.bookmarkBackwardBtn)
+        if PTSHelper.isiPad(){
+            bookmarkBackwardBtnFrame.origin.y = btnSize - 15
+        }
+        self.bookmarkBackwardBtn.frame = bookmarkBackwardBtnFrame
+        self.bookmarkBackwardBtn.tag = TAG_BOOKMARK_BACKWARD_BTN
+        self.bookmarkBackwardBtn.setImage(K_SETIMAGE("record_bookmark_backward_btn_normal.png"), forState:UIControlStateNormal)
+        self.bookmarkBackwardBtn.setImage(K_SETIMAGE("record_bookmark_backward_btn_disable.png"), forState:UIControlStateDisabled)
+        self.bookmarkBackwardBtn.addTarget(self, action:Selector("action:"), forControlEvents:UIControlEventTouchUpInside)
+        self.bookmarkBackwardBtn.backgroundColor = K_COLOR_CLEAR_COLOR
+        self.bookmarkBackwardBtn.tag = TAG_BOOKMARK_BACKWARD_BTN
+        self.bookmarkView.addSubview(self.bookmarkBackwardBtn)
 
                 self.bookmarkBtn = UIButton.buttonWithType(UIButtonTypeCustom)
                 var bookmarkBtnFrame:CGRect = CGRect(self.bookmarkView.frame.size.width * 0.5 - btnSize * 0.5 , btnSize - 5, btnSize, btnSize)
@@ -907,7 +897,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 let originY:Float = self.bookmarkBtn.frame.origin.y + self.bookmarkBtn.frame.size.height
 
                 self.clearIndex = UIButton.buttonWithType(.custom)
-                self.clearIndex.frame = CGRectMake(originX , originY, btnSize, 40)
+                self.clearIndex.frame = CGRect(originX , originY, btnSize, 40)
                 self.clearIndex.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
                 self.clearIndex.backgroundColor = K_COLOR_CLEAR_COLOR
                 self.clearIndex.tag = TAG_CLEAR_INDEX_BTN
@@ -918,9 +908,9 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 self.bookmarkBackwardBtn.enabled = self.bookmarkBtn.enabled = self.bookmarkFordwardBtn.enabled = self.clearIndex.enabled = false
 
-            }
+            
 
-            { // RECORD CONTROLS VIEW
+            // RECORD CONTROLS VIEW
 
                 self.recordCtrlsView = UIView()
 
@@ -938,7 +928,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 let btnSize:CGFloat = 55
                 let originX:CGFloat = 20
 
-                var recordBtnFrame:CGRect = CGRectMake(originX , self.recordCtrlsView.frame.size.height * 0.5 - btnSize * 0.5, btnSize, btnSize)
+                var recordBtnFrame:CGRect = CGRect(originX , self.recordCtrlsView.frame.size.height * 0.5 - btnSize * 0.5, btnSize, btnSize)
 
                 if PTSHelper.isiPad() & (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
                     recordBtnFrame.origin.y = self.recordCtrlsView.frame.size.height * 0.5 - btnSize
@@ -954,7 +944,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 self.recordBtn.layer.cornerRadius = self.recordBtn.frame.size.width * 0.5
                 self.recordCtrlsView.addSubview(self.recordBtn)
 
-                var stopBtnFrame:CGRect = CGRectMake(self.recordCtrlsView.frame.size.width - originX - btnSize, self.recordCtrlsView.frame.size.height * 0.5 - btnSize * 0.5, btnSize, btnSize)
+                var stopBtnFrame:CGRect = CGRect(self.recordCtrlsView.frame.size.width - originX - btnSize, self.recordCtrlsView.frame.size.height * 0.5 - btnSize * 0.5, btnSize, btnSize)
 
                 if PTSHelper.isiPad() & (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
                     stopBtnFrame.origin.y = self.recordCtrlsView.frame.size.height * 0.5 - btnSize
@@ -1005,11 +995,11 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 // HIDDEN
                 statusLbl.alpha = 0.0
 
-            }
+            
 
-            { // PLAYER CONTROLS VIEW
+             // PLAYER CONTROLS VIEW
 
-                var playerCtrlsViewFrame:CGRect = CGRectMake(0, self.recordCtrlsView.frame.size.height + self.recordCtrlsView.frame.origin.y, self.view.frame.size.width, 50)
+                var playerCtrlsViewFrame:CGRect = CGRect(0, self.recordCtrlsView.frame.size.height + self.recordCtrlsView.frame.origin.y, self.view.frame.size.width, 50)
 
                 if PTSHelper.isiPad() & (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
                     playerCtrlsViewFrame.origin.y = self.recordCtrlsView.frame.size.height + self.recordCtrlsView.frame.origin.y - 45
@@ -1021,7 +1011,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 self.pageScrollView.addSubview(self.playerCtrlsView)
 
                 self.playBtn = UIButton.buttonWithType(.custom)
-                self.playBtn.frame = CGRectMake(self.playerCtrlsView.frame.size.width * 0.5 - self.playerCtrlsView.frame.size.height * 0.5 , 0, self.playerCtrlsView.frame.size.height, self.playerCtrlsView.frame.size.height)
+                self.playBtn.frame = CGRect(self.playerCtrlsView.frame.size.width * 0.5 - self.playerCtrlsView.frame.size.height * 0.5 , 0, self.playerCtrlsView.frame.size.height, self.playerCtrlsView.frame.size.height)
                 self.playBtn.backgroundColor = K_COLOR_CLEAR_COLOR
                 self.playBtn.tag = TAG_PLAY_BTN
                 self.playBtn.setImage(K_SETIMAGE("existing_controls_play_btn_normal.png"), forState:.normal)
@@ -1068,7 +1058,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 self.forwardBtn.addGestureRecognizer(forwardBtn_LongPress_gesture)
 
                 self.fastForwardBtn = UIButton.buttonWithType(.custom)
-                self.fastForwardBtn.frame = CGRectMake(self.forwardBtn.frame.origin.x + 15 + self.forwardBtn.frame.size.width, self.playerCtrlsView.frame.size.height * 0.5 - btnSize * 0.5, btnSize, btnSize)
+                self.fastForwardBtn.frame = CGRect(self.forwardBtn.frame.origin.x + 15 + self.forwardBtn.frame.size.width, self.playerCtrlsView.frame.size.height * 0.5 - btnSize * 0.5, btnSize, btnSize)
                 self.fastForwardBtn.tag = TAG_FAST_FORWARD_BTN
                 self.fastForwardBtn.backgroundColor = K_COLOR_CLEAR_COLOR
                 self.fastForwardBtn.setImage(K_SETIMAGE("existing_forward_fast_normal.png"), forState:.normal)
@@ -1081,15 +1071,13 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 self.playerButtonsEnable = false
 
-            }
-
-            {
+            
                 // DETAILS VIEW
-                self.detailsView = UIView(frame:CGRectMake(0, self.playerCtrlsView.frame.size.height + self.playerCtrlsView.frame.origin.y - 7.5, self.view.frame.size.width, self.headerView.frame.size.height - (self.playerCtrlsView.frame.size.height + self.playerCtrlsView.frame.origin.y)))
+                self.detailsView = UIView(frame:CGRect(0, self.playerCtrlsView.frame.size.height + self.playerCtrlsView.frame.origin.y - 7.5, self.view.frame.size.width, self.headerView.frame.size.height - (self.playerCtrlsView.frame.size.height + self.playerCtrlsView.frame.origin.y)))
                 self.detailsView.backgroundColor = K_COLOR_CLEAR_COLOR
                 self.pageScrollView.addSubview(self.detailsView)
 
-                var fileNameTitleLblFrame:CGRect = CGRectMake(7.5, 10 , 75, 20)
+                var fileNameTitleLblFrame:CGRect = CGRect(7.5, 10 , 75, 20)
 
                 if PTSHelper.isiPad() & (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
                     fileNameTitleLblFrame.origin.y = 4
@@ -1105,7 +1093,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 fileNameTitleLbl.backgroundColor = K_COLOR_CLEAR_COLOR
                 self.detailsView.addSubview(fileNameTitleLbl)
 
-                var fileNameLblFrame:CGRect = CGRectMake(fileNameTitleLbl.frame.origin.x + fileNameTitleLbl.frame.size.width , 10, self.detailsView.frame.size.width - (fileNameTitleLbl.frame.origin.x + fileNameTitleLbl.frame.size.width)  , 20)
+                var fileNameLblFrame:CGRect = CGRect(fileNameTitleLbl.frame.origin.x + fileNameTitleLbl.frame.size.width , 10, self.detailsView.frame.size.width - (fileNameTitleLbl.frame.origin.x + fileNameTitleLbl.frame.size.width)  , 20)
 
                 if PTSHelper.isiPad() & (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
                     fileNameLblFrame.origin.y = 4
@@ -1121,7 +1109,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 self.fileNameLbl.backgroundColor = K_COLOR_CLEAR_COLOR
                 self.detailsView.addSubview(self.fileNameLbl)
 
-                var fileSizeTitleLblFrame:CGRect = CGRectMake(fileNameTitleLbl.frame.origin.x, fileNameLbl.frame.origin.y + fileNameLbl.frame.size.height + 5 , 65, 20)
+                var fileSizeTitleLblFrame:CGRect = CGRect(fileNameTitleLbl.frame.origin.x, fileNameLbl.frame.origin.y + fileNameLbl.frame.size.height + 5 , 65, 20)
 
                 if PTSHelper.isiPad() & (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
                     fileSizeTitleLblFrame.origin.y = fileNameLbl.frame.origin.y + fileNameLbl.frame.size.height
@@ -1137,7 +1125,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 fileSizeTitleLbl.backgroundColor = K_COLOR_CLEAR_COLOR
                 self.detailsView.addSubview(fileSizeTitleLbl)
 
-                self.fileSizeLbl = UILabel(frame:CGRectMake(fileSizeTitleLbl.frame.origin.x + fileSizeTitleLbl.frame.size.width, fileSizeTitleLbl.frame.origin.y , self.detailsView.frame.size.width - (fileNameTitleLbl.frame.origin.x + fileNameTitleLbl.frame.size.width) , 20))
+                self.fileSizeLbl = UILabel(frame:CGRect(fileSizeTitleLbl.frame.origin.x + fileSizeTitleLbl.frame.size.width, fileSizeTitleLbl.frame.origin.y , self.detailsView.frame.size.width - (fileNameTitleLbl.frame.origin.x + fileNameTitleLbl.frame.size.width) , 20))
                 self.fileSizeLbl.textColor = K_COLOR_DARK_COLOR
                 self.fileSizeLbl.text = "0.00 Mb"
                 self.fileSizeLbl.tag = TAG_FILENAME_LBL
@@ -1146,7 +1134,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 self.fileSizeLbl.backgroundColor = K_COLOR_CLEAR_COLOR
                 self.detailsView.addSubview(self.fileSizeLbl)
 
-                var maxFileSizeTitleLblFrame:CGRect = CGRectMake(fileSizeTitleLbl.frame.origin.x, self.fileSizeLbl.frame.origin.y + self.fileNameLbl.frame.size.height + 5 , 132
+                var maxFileSizeTitleLblFrame = CGRect(fileSizeTitleLbl.frame.origin.x, self.fileSizeLbl.frame.origin.y + self.fileNameLbl.frame.size.height + 5 , 132
                                                              , 20)
 
                 if PTSHelper.isiPad() & (AppDelegate.sharedInstance().userDefaults.string(forKey: K_KEY_SWITCH_INDEXING) == K_SWITCH_ON) {
@@ -1163,16 +1151,16 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 maxFileSizeTitleLbl.backgroundColor = K_COLOR_CLEAR_COLOR
                 self.detailsView.addSubview(maxFileSizeTitleLbl)
 
-                let maxFileSizeLbl:UILabel! = UILabel(frame:CGRectMake(maxFileSizeTitleLbl.frame.origin.x + maxFileSizeTitleLbl.frame.size.width , maxFileSizeTitleLbl.frame.origin.y , self.detailsView.frame.size.width - (fileNameTitleLbl.frame.origin.x + fileNameTitleLbl.frame.size.width) , 20))
+                let maxFileSizeLbl:UILabel! = UILabel(frame:CGRect(maxFileSizeTitleLbl.frame.origin.x + maxFileSizeTitleLbl.frame.size.width , maxFileSizeTitleLbl.frame.origin.y , self.detailsView.frame.size.width - (fileNameTitleLbl.frame.origin.x + fileNameTitleLbl.frame.size.width) , 20))
                 maxFileSizeLbl.textColor = K_COLOR_DARK_COLOR
                 maxFileSizeLbl.text = "80 Mb"
                 maxFileSizeLbl.textAlignment = NSTextAlignmentLeft
                 maxFileSizeLbl.font = UIFont.fontWithName(FONT_NORMAL, size:12)
                 maxFileSizeLbl.backgroundColor = K_COLOR_CLEAR_COLOR
                 self.detailsView.addSubview(maxFileSizeLbl)
-            }
+            
 
-            self.bottomView = UIView(frame:CGRectMake(0, self.view.frame.size.height - K_TABBAR_HEIGHT, self.view.frame.size.width, K_TABBAR_HEIGHT))
+            self.bottomView = UIView(frame:CGRect(0, self.view.frame.size.height - K_TABBAR_HEIGHT, self.view.frame.size.width, K_TABBAR_HEIGHT))
             self.bottomView.backgroundColor = K_COLOR_SETTINGS_BACKGROUND_COLOR
             self.view.addSubview(self.bottomView)
 
@@ -1181,7 +1169,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             let btnWidth:Float = 90
 
             let editRecord:UIButton! = UIButton.buttonWithType(.custom)
-            editRecord.frame = CGRectMake(self.bottomView.frame.size.width * 0.5 - btnWidth * 0.5, 15  , btnWidth,  30)
+            editRecord.frame = CGRect(self.bottomView.frame.size.width * 0.5 - btnWidth * 0.5, 15  , btnWidth,  30)
             editRecord.tag = TAG_EDIT_RECORD_BTN
             editRecord.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
             editRecord.backgroundColor = K_COLOR_CLEAR_COLOR
@@ -1190,7 +1178,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             self.bottomView.addSubview(editRecord)
 
             let saveBtn:UIButton! = UIButton.buttonWithType(.custom)
-            saveBtn.frame = CGRectMake(editRecord.frame.origin.x - btnWidth - 10, 15, btnWidth,  30)
+            saveBtn.frame = CGRect(editRecord.frame.origin.x - btnWidth - 10, 15, btnWidth,  30)
             saveBtn.tag = TAG_SAVE_BTN
             saveBtn.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
             saveBtn.setImage(K_SETIMAGE("record_save_btn_normal.png"), forState:.normal)
@@ -1198,7 +1186,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             self.bottomView.addSubview(saveBtn)
 
             let discardBtn:UIButton! = UIButton.buttonWithType(.custom)
-            discardBtn.frame = CGRectMake(editRecord.frame.origin.x + btnWidth + 10, saveBtn.frame.origin.y  , btnWidth,  30)
+            discardBtn.frame = CGRect(editRecord.frame.origin.x + btnWidth + 10, saveBtn.frame.origin.y  , btnWidth,  30)
             discardBtn.backgroundColor = K_COLOR_CLEAR_COLOR
             discardBtn.tag = TAG_DISCARD_BTN
             discardBtn.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
@@ -1209,15 +1197,13 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             isEdit = false
 
             AppDelegate.sharedInstance().userDefaults.set("0", forKey:K_KEY_IS_EDITING)
-
-        }
     }
 
 
     // MARK: -
     // MARK: UISEGMENT CONTROL EVENT METHODS
 
-    func segmentedControlValueDidChange(segment:UISegmentedControl!) {
+    @objc func segmentedControlValueDidChange(segment:UISegmentedControl) {
         isStopBtnTappedWhileOverwriting = false
         switch (segment.selectedSegmentIndex) {
 
@@ -1567,45 +1553,45 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
     func clearButtonTapped(sender:UIButton) {
         if Int(sliderValue) == BOOKMARK_1 {
-            self.bookMarkArr?.removeObject(at: 0)
+            self.bookMarkArr?.remove(at: 0)
         }else if Int(sliderValue) == BOOKMARK_2{
-            self.bookMarkArr?.removeObject(at: 1)
+            self.bookMarkArr?.remove(at: 1)
         }else if Int(sliderValue) == BOOKMARK_3{
-            self.bookMarkArr?.removeObject(at: 2)
+            self.bookMarkArr?.remove(at: 2)
         }else if Int(sliderValue) == BOOKMARK_4{
-            self.bookMarkArr?.removeObject(at: 3)
+            self.bookMarkArr?.remove(at: 3)
         }else if Int(sliderValue) == BOOKMARK_5 {
-            self.bookMarkArr?.removeObject(at: 4)
+            self.bookMarkArr?.remove(at: 4)
         }else if Int(sliderValue) == BOOKMARK_6{
-            self.bookMarkArr?.removeObject(at: 5)
+            self.bookMarkArr?.remove(at: 5)
         }else if Int(sliderValue) == BOOKMARK_7{
-            self.bookMarkArr?.removeObject(at: 6)
+            self.bookMarkArr?.remove(at: 6)
         }else if Int(sliderValue) == BOOKMARK_8{
-            self.bookMarkArr?.removeObject(at: 7)
+            self.bookMarkArr?.remove(at: 7)
         }else if Int(sliderValue) == BOOKMARK_9{
-            self.bookMarkArr?.removeObject(at: 8)
+            self.bookMarkArr?.remove(at: 8)
         }else if Int(sliderValue) == BOOKMARK_10{
-            self.bookMarkArr?.removeObject(at: 9)
+            self.bookMarkArr?.remove(at: 9)
         } else if Int(sliderValue) == BOOKMARK_11{
-            self.bookMarkArr?.removeObject(at: 10)
+            self.bookMarkArr?.remove(at: 10)
         }else if Int(sliderValue) == BOOKMARK_12{
-            self.bookMarkArr?.removeObject(at: 11)
+            self.bookMarkArr?.remove(at: 11)
         }else if Int(sliderValue) == BOOKMARK_13{
-            self.bookMarkArr?.removeObject(at: 12)
+            self.bookMarkArr?.remove(at: 12)
         }else if Int(sliderValue) == BOOKMARK_14{
-            self.bookMarkArr?.removeObject(at: 13)
+            self.bookMarkArr?.remove(at: 13)
         }else if Int(sliderValue) == BOOKMARK_15{
-            self.bookMarkArr?.removeObject(at: 14)
+            self.bookMarkArr?.remove(at: 14)
         }else if Int(sliderValue) == BOOKMARK_16{
-            self.bookMarkArr?.removeObject(at: 15)
+            self.bookMarkArr?.remove(at: 15)
         }else if Int(sliderValue) == BOOKMARK_17{
-            self.bookMarkArr?.removeObject(at: 16)
+            self.bookMarkArr?.remove(at: 16)
         }else if Int(sliderValue) == BOOKMARK_18 {
-            self.bookMarkArr?.removeObject(at: 17)
+            self.bookMarkArr?.remove(at: 17)
         }else if Int(sliderValue) == BOOKMARK_19{
-            self.bookMarkArr?.removeObject(at: 18)
+            self.bookMarkArr?.remove(at: 18)
         }else if Int(sliderValue) == BOOKMARK_20{
-            self.bookMarkArr?.removeObject(at: 19)
+            self.bookMarkArr?.remove(at: 19)
         }
         
         self.createBookMarKDivider()
@@ -2019,13 +2005,13 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             if startPointTime == 0
                 {startPointTime = 1}
 
-            startPointView = UIView(frame:CGRectMake(x, 2, 2, 35))
+            startPointView = UIView(frame:CGRect(x, 2, 2, 35))
             startPointView.backgroundColor = UIColor.darkGrayColor()
             self.waveformView.addSubview(startPointView)
 
             let  origin:Float = startPointView.frame.origin.x - 15
 
-            lblStartPoint = UILabel(frame:CGRectMake(origin, startPointView.frame.origin.y + startPointView.frame.size.height - 3, 30, 15))
+            lblStartPoint = UILabel(frame:CGRect(origin, startPointView.frame.origin.y + startPointView.frame.size.height - 3, 30, 15))
             lblStartPoint.backgroundColor = K_COLOR_CLEAR_COLOR
             lblStartPoint.textColor = K_COLOR_DARK_COLOR
 
@@ -2099,13 +2085,13 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             return
         }
         
-        endPointView = UIView(frame:CGRectMake(x, 2, 2, 35))
+        endPointView = UIView(frame:CGRect(x, 2, 2, 35))
         endPointView.backgroundColor = UIColor.darkGrayColor()
         self.waveformView.addSubview(endPointView)
         
         let  origin:Float = endPointView.frame.origin.x - 15
         
-        lblEndPoint = UILabel(frame:CGRectMake(origin, endPointView.frame.origin.y + endPointView.frame.size.height - 3, 30, 15))
+        lblEndPoint = UILabel(frame:CGRect(origin, endPointView.frame.origin.y + endPointView.frame.size.height - 3, 30, 15))
         lblEndPoint.backgroundColor = K_COLOR_CLEAR_COLOR
         lblEndPoint.textColor = K_COLOR_DARK_COLOR
         if PTSHelper.isiPad() {
@@ -2149,7 +2135,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     func startOverwriteBtnTapped(sender:UIButton!) {
 
     //    [PTSHELPER setFloatingAnimation:self.startOverwriteBtn float:0.9f];
-        //self.graphView.frame = CGRectMake(10, 40, self.pageScrollView.frame.size.width - 20, 45);
+        //self.graphView.frame = CGRect(10, 40, self.pageScrollView.frame.size.width - 20, 45);
 
         self.recordButtonTapped(self.recordBtn, flag:true)
 
@@ -2824,7 +2810,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                         //playerCurrentTime = 0.0;
                         progressIn = 0.0
 
-                        self.imgSlider.frame = CGRectMake(self.waveform.frame.origin.x + self.waveform.frame.size.width , self.waveform.frame.origin.y,  self.imgSlider.frame.size.width,  self.imgSlider.frame.size.height)
+                        self.imgSlider.frame = CGRect(self.waveform.frame.origin.x + self.waveform.frame.size.width , self.waveform.frame.origin.y,  self.imgSlider.frame.size.width,  self.imgSlider.frame.size.height)
 
                         self.waveform.progressSamples = 0
 
@@ -3281,7 +3267,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         self.updateTime(newTime: newTime)
     }
 
-    func sliderTapped(gestureRecognizer : UIGestureRecognizer) {
+    @objc func sliderTapped(gestureRecognizer : UIGestureRecognizer) {
         let slider = gestureRecognizer.view as! UISlider
         if slider.isHighlighted { return } // tap on thumb, let slider deal with it
 
@@ -3298,7 +3284,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         }
     }
 
-    func handlePanGesture(recognizer : UIPanGestureRecognizer!) {
+   @objc func handlePanGesture(recognizer : UIPanGestureRecognizer!) {
         let slider = recognizer.view as! UISlider
         if slider.isHighlighted { return } // tap on thumb, let slider deal with it
 
@@ -3318,7 +3304,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     }
 
 
-        func sliderValueChanged(sender:AnyObject!) {
+        @objc func sliderValueChanged(sender:AnyObject) {
 
             let slider:UISlider! = sender
 
@@ -3636,8 +3622,8 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
         func saveIntoDataBase(isAutoSaveFile:String!) {
             if (isAutoSaveFile == "NO") {
-                APPDELEGATE.userDefaults.setBool(false, forKey:K_KEY_IS_RECORD_STARTED)
-                NSNotificationCenter.defaultCenter().removeObserver(self, name:K_NOTICATION_RECORDING, object:nil)
+                AppDelegate.sharedInstance().userDefaults.set(false, forKey:K_KEY_IS_RECORD_STARTED)
+                NotificationCenter.default.removeObserver(self, name:K_NOTICATION_RECORDING, object:nil)
             }
 
             var bookmarks:String!
@@ -3648,7 +3634,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 bookmarks = ""
 
-                for var i:Int=0 ; i < result.count() ; i++ {
+                for i in 0..<result.count{
 
                     if i == 0 {
                         NSLog("[result objectAtIndex:0] == > %@", result.objectAtIndex(0))
@@ -3901,8 +3887,8 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                                      let frame:CGRect = timingLbl.frame
 
-                                     timingLbl.frame = CGRectMake(frame.origin.x, frame.origin.y, frame.size.width, frame.size.height - 20)
-                                     statusLbl.frame = CGRectMake(statusLbl.frame.origin.x, frame.origin.y + timingLbl.frame.size.height, frame.size.width, statusLbl.frame.size.height)
+                                     timingLbl.frame = CGRect(frame.origin.x, frame.origin.y, frame.size.width, frame.size.height - 20)
+                                     statusLbl.frame = CGRect(statusLbl.frame.origin.x, frame.origin.y + timingLbl.frame.size.height, frame.size.width, statusLbl.frame.size.height)
                                  },
                                  completion:nil)
             }
@@ -4167,7 +4153,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
     func showSaveBottomView() {
             let frame:CGRect = APPDELEGATE.tabBar.frame
 
-            APPDELEGATE.tabBar.frame = CGRectMake(frame.origin.x, frame.origin.y, frame.size.width, frame.size.height)
+            APPDELEGATE.tabBar.frame = CGRect(frame.origin.x, frame.origin.y, frame.size.width, frame.size.height)
 
             UIView.animateWithDuration(1.0,
                                   delay:0,
@@ -4175,7 +4161,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                              animations:{
 
-                                 APPDELEGATE.tabBar.frame = CGRectMake(frame.origin.x, frame.origin.y + frame.size.height + 10, frame.size.width, frame.size.height)
+                                 APPDELEGATE.tabBar.frame = CGRect(frame.origin.x, frame.origin.y + frame.size.height + 10, frame.size.width, frame.size.height)
 
                                  if self.bottomView.alpha == 0.0 {
 
@@ -4185,7 +4171,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                                                       animations:{
 
-                                                          self.bottomView.frame = CGRectMake(frame.origin.x, frame.origin.y - 64 , frame.size.width, self.bottomView.frame.size.height)
+                                                          self.bottomView.frame = CGRect(frame.origin.x, frame.origin.y - 64 , frame.size.width, self.bottomView.frame.size.height)
 
                                                           self.bottomView.alpha = 1.0
 
@@ -4218,7 +4204,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                                                       animations:{
 
-                                                          self.bottomView.frame = CGRectMake(self.bottomView.frame.origin.x, self.bottomView.frame.origin.y + 64 , self.bottomView.frame.size.width, self.bottomView.frame.size.height)
+                                                          self.bottomView.frame = CGRect(self.bottomView.frame.origin.x, self.bottomView.frame.origin.y + 64 , self.bottomView.frame.size.width, self.bottomView.frame.size.height)
 
                                                           self.bottomView.alpha = 0.0
 
@@ -4519,7 +4505,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 self.dividerBgView.removeFromSuperview()
             }
 
-            self.dividerBgView = UIView(frame:CGRectMake(20, 0, self.view.frame.size.width - 40, 40))
+            self.dividerBgView = UIView(frame:CGRect(20, 0, self.view.frame.size.width - 40, 40))
             self.dividerBgView.backgroundColor = K_COLOR_CLEAR_COLOR
             self.bookmarkView.addSubview(self.dividerBgView)
 
@@ -4528,7 +4514,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             // DIVIDER
             for var i:Int=0 ; i < self.bookMarkArr.count ; i++ {
 
-                let divider:UIView! = UIView(frame:CGRectMake(originX * (i), 2, 2, 25))
+                let divider:UIView! = UIView(frame:CGRect(originX * (i), 2, 2, 25))
                 divider.backgroundColor = UIColor.grayColor()
 
                 if i == 0 {
@@ -4577,7 +4563,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 let  origin:Float = divider.frame.origin.x - 15
 
-                let timeLbl:UILabel! = UILabel(frame:CGRectMake(origin, divider.frame.origin.y + divider.frame.size.height, 30, 15))
+                let timeLbl:UILabel! = UILabel(frame:CGRect(origin, divider.frame.origin.y + divider.frame.size.height, 30, 15))
                 timeLbl.backgroundColor = K_COLOR_CLEAR_COLOR
                 timeLbl.textColor = K_COLOR_DARK_COLOR
                 timeLbl.tag = i + 21
@@ -4606,7 +4592,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         }
 
 
-        func updateWaveForm(filePath:String!) {
+       @objc func updateWaveForm(filePath:String!) {
             let overWrite:UILabel! = self.view.viewWithTag(TAG_OVERWRITE_LBL)
             overWrite.text = ""
 
@@ -4987,13 +4973,15 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             let playerItem = self.thePlayer?.currentItem
 
             // Subscribe to the AVPlayerItem's DidPlayToEndTime notification.
-            NotificationCenter.default.addObserver(self, selector:Selector("itemDidFinishPlaying:"), name:AVPlayerItemDidPlayToEndTimeNotification, object:playerItem)
+            NotificationCenter.default.addObserver(self, selector: #selector(self.itemDidFinishPlaying(notification:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: playerItem)
 
-            self.playerTimer = Timer.scheduledTimerWithTimeInterval(1.0, target:self, selector:Selector("updatePlayerTiming"), userInfo:self.thePlayer, repeats:true)
+            //NotificationCenter.default.addObserver(self, selector:Selector("itemDidFinishPlaying:"), name:AVPlayerItemDidPlayToEndTimeNotification, object:playerItem)
+
+            self.playerTimer = Timer.scheduledTimer(timeInterval: 1.0, target:self, selector:Selector("updatePlayerTiming"), userInfo:self.thePlayer, repeats:true)
 
         }
 
-        func itemDidFinishPlaying(notification:NSNotification) {
+        @objc func itemDidFinishPlaying(notification:NSNotification) {
             // Will be called when AVPlayer finishes playing playerItem
             self.thePlayer?.seek(to: CMTime(value: 0, timescale: 1))
             self.thePlayer?.pause()
@@ -5319,11 +5307,11 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
         UIView.animateWithDuration(1.0, delay:0, options:.transitionFlipFromBottom, animations:{
 
-             self.recordCtrlsView.frame = CGRectMake(0, self.partialDelView.frame.origin.y + self.partialDelView.frame.size.height, self.pageScrollView.frame.size.width, 80)
+             self.recordCtrlsView.frame = CGRect(0, self.partialDelView.frame.origin.y + self.partialDelView.frame.size.height, self.pageScrollView.frame.size.width, 80)
 
-             self.playerCtrlsView.frame = CGRectMake(0, self.recordCtrlsView.frame.size.height + self.recordCtrlsView.frame.origin.y, self.view.frame.size.width, 50)
+             self.playerCtrlsView.frame = CGRect(0, self.recordCtrlsView.frame.size.height + self.recordCtrlsView.frame.origin.y, self.view.frame.size.width, 50)
 
-             self.detailsView.frame = CGRectMake(0, self.playerCtrlsView.frame.size.height + self.playerCtrlsView.frame.origin.y, self.view.frame.size.width, self.headerView.frame.size.height - (self.playerCtrlsView.frame.size.height + self.playerCtrlsView.frame.origin.y))
+             self.detailsView.frame = CGRect(0, self.playerCtrlsView.frame.size.height + self.playerCtrlsView.frame.origin.y, self.view.frame.size.width, self.headerView.frame.size.height - (self.playerCtrlsView.frame.size.height + self.playerCtrlsView.frame.origin.y))
 
              if self.partialDelView.alpha == 0.0 {
 
@@ -5385,15 +5373,15 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
              customRangeBar.alpha = 0.0
 
-             self.graphView.frame = CGRectMake(10, customRangeBar.frame.origin.y + customRangeBar.frame.size.height - 20, self.pageScrollView.frame.size.width - 20, 45)
+             self.graphView.frame = CGRect(10, customRangeBar.frame.origin.y + customRangeBar.frame.size.height - 20, self.pageScrollView.frame.size.width - 20, 45)
 
-             self.overWriteView.frame = CGRectMake(0, self.graphView.frame.origin.y + self.graphView.frame.size.height + 20, self.pageScrollView.frame.size.width, 50)
+             self.overWriteView.frame = CGRect(0, self.graphView.frame.origin.y + self.graphView.frame.size.height + 20, self.pageScrollView.frame.size.width, 50)
 
-             self.recordCtrlsView.frame = CGRectMake(0, self.overWriteView.frame.origin.y + self.overWriteView.frame.size.height, self.pageScrollView.frame.size.width, 80)
+             self.recordCtrlsView.frame = CGRect(0, self.overWriteView.frame.origin.y + self.overWriteView.frame.size.height, self.pageScrollView.frame.size.width, 80)
 
-             self.playerCtrlsView.frame = CGRectMake(0, self.recordCtrlsView.frame.size.height + self.recordCtrlsView.frame.origin.y, self.view.frame.size.width, 50)
+             self.playerCtrlsView.frame = CGRect(0, self.recordCtrlsView.frame.size.height + self.recordCtrlsView.frame.origin.y, self.view.frame.size.width, 50)
 
-             self.detailsView.frame = CGRectMake(0, self.playerCtrlsView.frame.size.height + self.playerCtrlsView.frame.origin.y, self.view.frame.size.width, self.headerView.frame.size.height - (self.playerCtrlsView.frame.size.height + self.playerCtrlsView.frame.origin.y))
+             self.detailsView.frame = CGRect(0, self.playerCtrlsView.frame.size.height + self.playerCtrlsView.frame.origin.y, self.view.frame.size.width, self.headerView.frame.size.height - (self.playerCtrlsView.frame.size.height + self.playerCtrlsView.frame.origin.y))
 
              if self.overWriteView.alpha == 0.0 {
 
@@ -5436,14 +5424,14 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                                      if editMode == 0 || editMode == 3 {
 
-                                         self.graphView.frame = CGRectMake(10, 10, self.pageScrollView.frame.size.width - 20, 45)
+                                         self.graphView.frame = CGRect(10, 10, self.pageScrollView.frame.size.width - 20, 45)
                                      } else {
-                                         self.graphView.frame = CGRectMake(10, customRangeBar.frame.origin.y + customRangeBar.frame.size.height + 5, self.pageScrollView.frame.size.width - 20, 45)
+                                         self.graphView.frame = CGRect(10, customRangeBar.frame.origin.y + customRangeBar.frame.size.height + 5, self.pageScrollView.frame.size.width - 20, 45)
                                      }
 
-                                     self.overWriteView.frame = CGRectMake(0, self.graphView.frame.origin.y + self.graphView.frame.size.height + 20, self.pageScrollView.frame.size.width, 50)
+                                     self.overWriteView.frame = CGRect(0, self.graphView.frame.origin.y + self.graphView.frame.size.height + 20, self.pageScrollView.frame.size.width, 50)
 
-                                     self.recordCtrlsView.frame = CGRectMake(0, self.graphView.frame.origin.y + self.graphView.frame.size.height + 20, self.pageScrollView.frame.size.width, 80)
+                                     self.recordCtrlsView.frame = CGRect(0, self.graphView.frame.origin.y + self.graphView.frame.size.height + 20, self.pageScrollView.frame.size.width, 80)
 
                                      if IS_IPHONE_5 {
                                          self.pageScrollView.contentSize = CGSizeMake(0, self.headerView.frame.size.height - 40)
@@ -5455,28 +5443,28 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                                  }
                                  else
                                  {
-                                    // self.graphView.frame = CGRectMake(10, customRangeBar.frame.origin.y + customRangeBar.frame.size.height + 5, self.pageScrollView.frame.size.width - 20, 45);
+                                    // self.graphView.frame = CGRect(10, customRangeBar.frame.origin.y + customRangeBar.frame.size.height + 5, self.pageScrollView.frame.size.width - 20, 45);
 
                                      if editMode == 0 || editMode == 3 {
 
-                                         self.graphView.frame = CGRectMake(10, 10, self.pageScrollView.frame.size.width - 20, 45)
+                                         self.graphView.frame = CGRect(10, 10, self.pageScrollView.frame.size.width - 20, 45)
                                      } else {
-                                         self.graphView.frame = CGRectMake(10, customRangeBar.frame.origin.y + customRangeBar.frame.size.height + 5, self.pageScrollView.frame.size.width - 20, 45)
+                                         self.graphView.frame = CGRect(10, customRangeBar.frame.origin.y + customRangeBar.frame.size.height + 5, self.pageScrollView.frame.size.width - 20, 45)
                                      }
 
-                                     self.bookmarkView.frame = CGRectMake(0, self.graphView.frame.origin.y + self.graphView.frame.size.height + 10, self.pageScrollView.frame.size.width, 120)
+                                     self.bookmarkView.frame = CGRect(0, self.graphView.frame.origin.y + self.graphView.frame.size.height + 10, self.pageScrollView.frame.size.width, 120)
 
-                                     self.overWriteView.frame = CGRectMake(0, self.bookmarkView.frame.origin.y + self.bookmarkView.frame.size.height + 20, self.pageScrollView.frame.size.width, 50)
+                                     self.overWriteView.frame = CGRect(0, self.bookmarkView.frame.origin.y + self.bookmarkView.frame.size.height + 20, self.pageScrollView.frame.size.width, 50)
 
                                      if isFirstTimeInEditing && PTSHelper.isiPad() {
 
                                          NSLog("RECORD CONTROL FIRST @@@@@@@@@@@@@ %@", NSStringFromCGRect(self.bookmarkView.frame))
 
-                                         self.recordCtrlsView.frame = CGRectMake(0, self.bookmarkView.frame.origin.y + self.bookmarkView.frame.size.height + 10, self.pageScrollView.frame.size.width, 50)
+                                         self.recordCtrlsView.frame = CGRect(0, self.bookmarkView.frame.origin.y + self.bookmarkView.frame.size.height + 10, self.pageScrollView.frame.size.width, 50)
 
                                      } else {
                                          //NSLog(@"RECORD CONTROL SECOND @@@@@@@@@@@@@");
-                                        self.recordCtrlsView.frame = CGRectMake(0, self.bookmarkView.frame.origin.y + self.bookmarkView.frame.size.height + 10, self.pageScrollView.frame.size.width, 80)
+                                        self.recordCtrlsView.frame = CGRect(0, self.bookmarkView.frame.origin.y + self.bookmarkView.frame.size.height + 10, self.pageScrollView.frame.size.width, 80)
                                      }
 
                                      if IS_IPHONE_5 {
@@ -5487,9 +5475,9 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                                      }
                                  }
 
-                                 self.playerCtrlsView.frame = CGRectMake(0, self.recordCtrlsView.frame.size.height + self.recordCtrlsView.frame.origin.y, self.view.frame.size.width, 50)
+                                 self.playerCtrlsView.frame = CGRect(0, self.recordCtrlsView.frame.size.height + self.recordCtrlsView.frame.origin.y, self.view.frame.size.width, 50)
 
-                                 self.detailsView.frame = CGRectMake(0, self.playerCtrlsView.frame.size.height + self.playerCtrlsView.frame.origin.y, self.view.frame.size.width, self.headerView.frame.size.height - (self.playerCtrlsView.frame.size.height + self.playerCtrlsView.frame.origin.y))
+                                 self.detailsView.frame = CGRect(0, self.playerCtrlsView.frame.size.height + self.playerCtrlsView.frame.origin.y, self.view.frame.size.width, self.headerView.frame.size.height - (self.playerCtrlsView.frame.size.height + self.playerCtrlsView.frame.origin.y))
 
                              },
                              completion:{ (finished:Bool) in
@@ -5563,22 +5551,22 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                                          let btnSize:CGFloat = 55
                                          let originX:CGFloat = 20
 
-                                         let recordBtnFrame:CGRect = CGRectMake(originX , self.recordCtrlsView.frame.size.height * 0.5 - btnSize * 0.85, btnSize, btnSize)
+                                         let recordBtnFrame:CGRect = CGRect(originX , self.recordCtrlsView.frame.size.height * 0.5 - btnSize * 0.85, btnSize, btnSize)
                                          self.recordBtn.frame = recordBtnFrame
-                                         let stopBtnFrame:CGRect = CGRectMake(self.recordCtrlsView.frame.size.width - originX - btnSize, self.recordCtrlsView.frame.size.height * 0.5 - btnSize * 0.85, btnSize, btnSize)
+                                         let stopBtnFrame:CGRect = CGRect(self.recordCtrlsView.frame.size.width - originX - btnSize, self.recordCtrlsView.frame.size.height * 0.5 - btnSize * 0.85, btnSize, btnSize)
                                          self.stopBtn.frame = stopBtnFrame
 
                                          let timingLbl:UILabel! = self.view.viewWithTag(TAG_TIMING_LBL)
-                                         timingLbl.frame = CGRectMake((self.recordBtn.frame.origin.x + self.recordBtn.frame.size.width), self.recordBtn.frame.origin.y + 15, self.recordCtrlsView.frame.size.width - ((self.recordBtn.frame.origin.x + self.recordBtn.frame.size.width) + originX + btnSize) , btnSize)
+                                         timingLbl.frame = CGRect((self.recordBtn.frame.origin.x + self.recordBtn.frame.size.width), self.recordBtn.frame.origin.y + 15, self.recordCtrlsView.frame.size.width - ((self.recordBtn.frame.origin.x + self.recordBtn.frame.size.width) + originX + btnSize) , btnSize)
 
                                          let statusLbl:UILabel! = self.view.viewWithTag(TAG_STATUS_LBL)
-                                         statusLbl.frame = CGRectMake(timingLbl.frame.origin.x, timingLbl.frame.origin.y + timingLbl.frame.size.height , timingLbl.frame.size.width, 15)
+                                         statusLbl.frame = CGRect(timingLbl.frame.origin.x, timingLbl.frame.origin.y + timingLbl.frame.size.height , timingLbl.frame.size.width, 15)
                                      }
                                  }
 
-                                 self.playerCtrlsView.frame = CGRectMake(0, self.recordCtrlsView.frame.size.height + self.recordCtrlsView.frame.origin.y, self.view.frame.size.width, 50)
+                                 self.playerCtrlsView.frame = CGRect(0, self.recordCtrlsView.frame.size.height + self.recordCtrlsView.frame.origin.y, self.view.frame.size.width, 50)
 
-                                 self.detailsView.frame = CGRectMake(0, self.playerCtrlsView.frame.size.height + self.playerCtrlsView.frame.origin.y, self.view.frame.size.width, self.headerView.frame.size.height - (self.playerCtrlsView.frame.size.height + self.playerCtrlsView.frame.origin.y))
+                                 self.detailsView.frame = CGRect(0, self.playerCtrlsView.frame.size.height + self.playerCtrlsView.frame.origin.y, self.view.frame.size.width, self.headerView.frame.size.height - (self.playerCtrlsView.frame.size.height + self.playerCtrlsView.frame.origin.y))
 
                              },
                              completion:{ (finished:Bool) in
@@ -5799,8 +5787,9 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         }
     }
 
+                                    
 
-     @objc func receiveNotification(notification:NSNotification!) {
+     @objc func receiveNotification(notification:Notification) {
 
          if (notification.name == NSNotification.Name.init(K_NOTICATION_RECORDING.rawValue)) {
             if ((self.audio_Recorder?.isRecording) != nil){

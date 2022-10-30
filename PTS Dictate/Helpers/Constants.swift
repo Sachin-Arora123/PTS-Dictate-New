@@ -146,3 +146,9 @@ let K_TABBAR_HEIGHT = 60
 let TRANSFORM_END = 1.00
 let K_COLOR_WHITE_COLOR = UIColor.white
 
+let K_COLOR_DARK_COLOR = UIColor.darkGray
+
+// COMMON UI COLORS
+let K_COLOR_CLEAR_COLOR = UIColor.clear
+let K_COLOR_BLACK_COLOR = UIColor.black
+let K_COLOR_GRAY_COLOR = UIColor.gray
