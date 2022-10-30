@@ -704,34 +704,34 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 self.panRecognizer = UIPanGestureRecognizer(target:self, action:#selector(self.handlePanGesture(recognizer:)))
         self.panRecognizer?.delegate = self
-        self.waveFormSlider?.addGestureRecognizer(self.panRecognizer)
+        self.waveFormSlider?.addGestureRecognizer(self.panRecognizer ?? UIPanGestureRecognizer())
 
-        self.imgSlider = UIImageView(frame:CGRect(x: self.waveform?.frame.origin.x ?? 0.0 + self.waveform?.frame.size.width ?? 0.0 , y: self.waveform?.frame.origin.y, width: sliderImage.size.width, height: sliderImage.size.height + 2.5))
+        self.imgSlider = UIImageView(frame:CGRect(x: self.waveform?.frame.origin.x ?? 0.0 + (self.waveform?.frame.size.width ?? 0.0) , y: self.waveform?.frame.origin.y ?? 0.0, width: sliderImage?.size.width ?? 0.0, height: sliderImage?.size.height ?? 0.0 + 2.5))
         self.imgSlider?.image = sliderImage
         self.imgSlider?.alpha = 0.0
         self.graphView?.addSubview(self.imgSlider ?? UIView())
 
-        self.imgSliderStart = UIImageView(frame:CGRect(x: self.waveform?.frame.origin.x + self.waveform.frame.size.width , y: self.waveform.frame.origin.y, width: sliderImage.size.width, height: sliderImage.size.height + 2.5))
+        self.imgSliderStart = UIImageView(frame:CGRect(x: self.waveform?.frame.origin.x ?? 0.0 + self.waveform?.frame.size.width ?? 0.0 , y: self.waveform.frame.origin.y, width: sliderImage?.size.width ?? 0.0, height: sliderImage?.size.height ?? 0.0 + 2.5))
         self.imgSliderStart?.image = sliderImage
         self.imgSliderStart?.alpha = 0.0
-        self.graphView?.addSubview(self.imgSliderStart)
+        self.graphView?.addSubview(self.imgSliderStart ?? UIView())
 
-        self.imgSliderEnd = UIImageView(frame:CGRect(self.waveform.frame.origin.x + self.waveform.frame.size.width , self.waveform.frame.origin.y, sliderImage.size.width, sliderImage.size.height + 2.5))
+        self.imgSliderEnd = UIImageView(frame:CGRect(x: self.waveform?.frame.origin.x ?? 0.0 + self.waveform?.frame.size.width ?? 0.0, y: self.waveform?.frame.origin.y ?? 0.0, width: sliderImage?.size.width ?? 0.0, height: sliderImage?.size.height ?? 0.0+ 2.5))
         self.imgSliderEnd?.image = sliderImage
         self.imgSliderEnd?.alpha = 0.0
-        self.graphView?.addSubview(self.imgSliderEnd)
+        self.graphView?.addSubview(self.imgSliderEnd ?? UIView())
 
-        let durationLbl:UILabel! = UILabel(frame:CGRect(x: self.waveform.frame.origin.x + self.waveform.frame.size.width + 4, y: self.graphView.frame.size.height * 0.5 - LblHgt * 0.5 , width: originX - 4, height: ??LblHgt))
-                durationLbl.textColor = K_COLOR_DARK_COLOR
-                durationLbl.text = "05:18"
-                durationLbl.tag = TAG_CURRENTTIME_LBL
-                durationLbl.textAlignment = .left
-        durationLbl.font = UIFont(name: FONT_NORMAL, size:12)
+        let durationLbl = UILabel(frame:CGRect(x: self.waveform?.frame.origin.x ?? 0.0 + self.waveform?.frame.size.width ?? 0.0 + 4, y: self.graphView?.frame.size.height ?? 0.0 * 0.5 - LblHgt * 0.5 , width: originX - 4, height: LblHgt))
+        durationLbl?.textColor = K_COLOR_DARK_COLOR
+        durationLbl?.text = "05:18"
+        durationLbl?.tag = TAG_CURRENTTIME_LBL
+        durationLbl?.textAlignment = .left
+        durationLbl?.font = UIFont(name: FONT_NORMAL, size:12)
                 //[graphView addSubview:durationLbl];
             
 
              // BOOKMARK VIEW
-        self.partialDelView = UIView(frame:CGRect(x: 0, y: self.graphView.frame.origin.y + self.graphView.frame.size.height + 20, width: self.pageScrollView.frame.size.width, height: ??50))
+        self.partialDelView = UIView(frame:CGRect(x: 0, y: self.graphView?.frame.origin.y ?? 0.0 + self.graphView?.frame.size.height ?? 0.0 + 20, width: self.pageScrollView?.frame.size.width ?? 0.0, height: ??50))
         self.partialDelView?.backgroundColor = K_COLOR_CLEAR_COLOR
         self.pageScrollView?.addSubview(self.partialDelView ?? UIView())
         self.partialDelView?.alpha = 0.0
@@ -753,26 +753,26 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
             // OVERWRITE VIEW
 
-        self.overWriteView = UIView(frame:CGRect(x: 0, y: self.graphView.frame.origin.y + self.graphView.frame.size.height + 20, width: self.pageScrollView.frame.size.width, height: ?50))
+        self.overWriteView = UIView(frame:CGRect(x: 0, y: self.graphView.frame.origin.y + self.graphView?.frame.size.height ?? 0.0 + 20, width: self.pageScrollView?.frame.size.width ?? 0.0, height: ?50))
         self.overWriteView?.backgroundColor = K_COLOR_CLEAR_COLOR
-        self.pageScrollView.addSubview(self.overWriteView)
+        self.pageScrollView.addSubview(self.overWriteView ?? UIView())
         self.overWriteView?.alpha = 0.0
         
         let btnSize:CGFloat = 120
-        let originX:CGFloat = self.overWriteView.frame.size.width * 0.5 - btnSize * 0.5
+        let originX:CGFloat = self.overWriteView?.frame.size.width ?? 0.0 * 0.5 - btnSize * 0.5
         
         self.startPointBtn = UIButton.buttonWithType(.custom)
         self.startPointBtn.frame = CGRect(originX , 10, btnSize, 30)
         self.startPointBtn.backgroundColor = K_COLOR_CLEAR_COLOR
         self.startPointBtn.tag = TAG_START_POINT_BTN
-        self.startPointBtn.setImage(K_SETIMAGE("btn_start_point_normal.png"), forState:UIControlStateNormal)
-        self.startPointBtn.setImage(K_SETIMAGE("btn_start_point_highlight.png"), forState: .highlighted)
+        self.startPointBtn?.setImage(UIImage(named: "btn_start_point_normal.png"), for: .normal)
+        self.startPointBtn?.setImage(UIImage(named: "btn_start_point_highlight.png"), for: .highlighted)
         self.startPointBtn.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
                 //[self.startPointBtn setTitle:@"Start Point" forState:UIControlStateNormal];
                 // [self.overWriteBtn setImage:K_SETIMAGE(@"start_erase_btn_normal.png") forState:UIControlStateNormal];
                 // [self.overWriteBtn setImage:K_SETIMAGE(@"start_erase_btn_disable.png") forState:UIControlStateHighlighted];
                 //[self.overWriteBtn setImage:K_SETIMAGE(@"start_erase_btn_disable.png") forState:UIControlStateDisabled];
-        self.overWriteView.addSubview(self.startPointBtn)
+        self.overWriteView.addSubview(self.startPointBtn ?? UIView())
         
         self.endPointBtn = UIButton(type: .custom)
         self.endPointBtn?.frame = CGRect(x: originX , y: 10, width: btnSize, height: 30)
@@ -797,22 +797,22 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         self.startOverwriteBtn?.backgroundColor = K_COLOR_CLEAR_COLOR
         self.startOverwriteBtn?.tag = TAG_START_OVERWRITE_BTN
         self.startOverwriteBtn?.alpha = 0
-        self.startOverwriteBtn.setImage(K_SETIMAGE("btn_start_overwriting_normal.png"), forState:.normal)
-        self.startOverwriteBtn.setImage(K_SETIMAGE("btn_start_overwriting_highlight.png"), forState: .highlighted)
+        self.startOverwriteBtn?.setImage(UIImage(named: "btn_start_overwriting_normal.png"), for: .normal)
+        self.startOverwriteBtn?.setImage(UIImage(named: "btn_start_overwriting_highlight.png"), for: .highlighted)
         self.startOverwriteBtn.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
                 //[self.startOverwriteBtn setTitle:@"Start Overwriting" forState:UIControlStateNormal];
                 // [self.overWriteBtn setImage:K_SETIMAGE(@"start_erase_btn_normal.png") forState:UIControlStateNormal];
                 // [self.overWriteBtn setImage:K_SETIMAGE(@"start_erase_btn_disable.png") forState:UIControlStateHighlighted];
                 //[self.overWriteBtn setImage:K_SETIMAGE(@"start_erase_btn_disable.png") forState:UIControlStateDisabled];
-        self.overWriteView.addSubview(self.startOverwriteBtn)
+        self.overWriteView.addSubview(self.startOverwriteBtn ?? UIView())
         
         self.endOverwriteBtn = UIButton.buttonWithType(.roundedRect)
-        self.endOverwriteBtn.frame = CGRect(originX , 5, btnSize, 40)
-        self.endOverwriteBtn.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
-        self.endOverwriteBtn.backgroundColor = K_COLOR_CLEAR_COLOR
-        self.endOverwriteBtn.tag = TAG_START_OVERWRITE_BTN
-        self.endOverwriteBtn.alpha = 0
-        self.endOverwriteBtn.setTitle("End Overwrite", forState:.normal)
+        self.endOverwriteBtn?.frame = CGRect(originX , 5, btnSize, 40)
+        self.endOverwriteBtn?.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
+        self.endOverwriteBtn?.backgroundColor = K_COLOR_CLEAR_COLOR
+        self.endOverwriteBtn?.tag = TAG_START_OVERWRITE_BTN
+        self.endOverwriteBtn?.alpha = 0
+        self.endOverwriteBtn?.setTitle("End Overwrite", forState:.normal)
                 // [self.overWriteBtn setImage:K_SETIMAGE(@"start_erase_btn_normal.png") forState:UIControlStateNormal];
                 // [self.overWriteBtn setImage:K_SETIMAGE(@"start_erase_btn_disable.png") forState:UIControlStateHighlighted];
                 //[self.overWriteBtn setImage:K_SETIMAGE(@"start_erase_btn_disable.png") forState:UIControlStateDisabled];
@@ -822,28 +822,28 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
             
                 // BOOKMARK VIEW
-        self.bookmarkView = UIView(frame:CGRect(0, self.graphView.frame.origin.y + self.graphView.frame.size.height + 10, self.view.frame.size.width, 120))
-        self.bookmarkView.backgroundColor = K_COLOR_CLEAR_COLOR
-        self.pageScrollView.addSubview(self.bookmarkView)
-        self.bookmarkView.alpha = 1.0
+        self.bookmarkView = UIView(frame:CGRect(0, self.graphView?.frame.origin.y ?? 0.0 + self.graphView?.frame.size.height ?? 0.0 + 10, self.view.frame.size.width ?? 0.0, 120))
+        self.bookmarkView?.backgroundColor = K_COLOR_CLEAR_COLOR
+        self.pageScrollView?.addSubview(self.bookmarkView ?? UIView)
+        self.bookmarkView?.alpha = 1.0
 
         let frame:CGRect = CGRect(10.0, 10, CGRectGetWidth(self.bookmarkView.frame) - 20.0, 10.0)
         self.bookmarkSlider = UISlider(frame:frame)
         self.bookmarkSlider.addTarget(self, action:Selector("sliderValueChanged:"), forControlEvents:.valueChanged)
-        self.bookmarkSlider.backgroundColor = .clear
-        self.bookmarkSlider.minimumValue = 0.0
-        self.bookmarkSlider.maximumValue = 20.0
-        self.bookmarkSlider.thumbTintColor = .black
-        self.bookmarkSlider.continuous = true
+        self.bookmarkSlider?.backgroundColor = .clear
+        self.bookmarkSlider?.minimumValue = 0.0
+        self.bookmarkSlider?.maximumValue = 20.0
+        self.bookmarkSlider?.thumbTintColor = .black
+        self.bookmarkSlider?.continuous = true
         let sliderImage:UIImage! = K_SETIMAGE("slider")
-        self.bookmarkSlider.setThumbImage(sliderImage, forState:.normal)
-        self.bookmarkSlider.setThumbImage(sliderImage, forState:.highlighted)
+        self.bookmarkSlider?.setThumbImage(sliderImage, forState:.normal)
+        self.bookmarkSlider?.setThumbImage(sliderImage, forState:.highlighted)
 
-        self.bookmarkSlider.minimumTrackTintColor = .lightGray
+        self.bookmarkSlider?.minimumTrackTintColor = .lightGray
         // [slider setMaximumTrackTintColor:[UIColor clearColor]];
-        self.bookmarkView.addSubview(self.bookmarkSlider)
+        self.bookmarkView?.addSubview(self.bookmarkSlider ?? UIView())
         
-        self.bookmarkSlider.userInteractionEnabled = false
+        self.bookmarkSlider?.isUserInteractionEnabled = false
         
         var btnSize:CGFloat = 40
         var originX:CGFloat = 20
@@ -854,14 +854,14 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         if PTSHelper.isiPad(){
             bookmarkBackwardBtnFrame.origin.y = btnSize - 15
         }
-        self.bookmarkBackwardBtn.frame = bookmarkBackwardBtnFrame
-        self.bookmarkBackwardBtn.tag = TAG_BOOKMARK_BACKWARD_BTN
+        self.bookmarkBackwardBtn?.frame = bookmarkBackwardBtnFrame
+        self.bookmarkBackwardBtn?.tag = TAG_BOOKMARK_BACKWARD_BTN
         self.bookmarkBackwardBtn.setImage(K_SETIMAGE("record_bookmark_backward_btn_normal.png"), forState:UIControlStateNormal)
         self.bookmarkBackwardBtn.setImage(K_SETIMAGE("record_bookmark_backward_btn_disable.png"), forState:UIControlStateDisabled)
         self.bookmarkBackwardBtn.addTarget(self, action:Selector("action:"), forControlEvents:UIControlEventTouchUpInside)
-        self.bookmarkBackwardBtn.backgroundColor = K_COLOR_CLEAR_COLOR
-        self.bookmarkBackwardBtn.tag = TAG_BOOKMARK_BACKWARD_BTN
-        self.bookmarkView.addSubview(self.bookmarkBackwardBtn)
+        self.bookmarkBackwardBtn?.backgroundColor = K_COLOR_CLEAR_COLOR
+        self.bookmarkBackwardBtn?.tag = TAG_BOOKMARK_BACKWARD_BTN
+        self.bookmarkView.addSubview(self.bookmarkBackwardBtn ?? UIView())
 
                 self.bookmarkBtn = UIButton.buttonWithType(UIButtonTypeCustom)
                 var bookmarkBtnFrame:CGRect = CGRect(self.bookmarkView.frame.size.width * 0.5 - btnSize * 0.5 , btnSize - 5, btnSize, btnSize)
