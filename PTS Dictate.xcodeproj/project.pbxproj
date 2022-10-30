@@ -63,6 +63,7 @@
 		6139A94F290C41C100D4C1DD /* NBTouchAndHoldButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 6139A926290C41C100D4C1DD /* NBTouchAndHoldButton.m */; };
 		616E4A43290AB21E0011ABF2 /* F3BarGauge.m in Sources */ = {isa = PBXBuildFile; fileRef = 616E4A41290AB21E0011ABF2 /* F3BarGauge.m */; };
 		616E4A45290AB9550011ABF2 /* Extension+UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616E4A44290AB9550011ABF2 /* Extension+UIColor.swift */; };
+		C60DF5B0290E738A00113458 /* PTSHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C60DF5AF290E738A00113458 /* PTSHelper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -132,6 +133,7 @@
 		616E4A44290AB9550011ABF2 /* Extension+UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+UIColor.swift"; sourceTree = "<group>"; };
 		61736DF3290AA79E006D8065 /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
 		7801E7DB3243DA4B1EF6CD0C /* Pods_PTS_Dictate.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PTS_Dictate.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C60DF5AF290E738A00113458 /* PTSHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PTSHelper.swift; sourceTree = "<group>"; };
 		F2DCF3613E1B667385F2C263 /* Pods-PTS Dictate.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PTS Dictate.release.xcconfig"; path = "Target Support Files/Pods-PTS Dictate/Pods-PTS Dictate.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -462,6 +464,7 @@
 				18DF4BDE28BE872F002FC063 /* CommonFunctions.swift */,
 				61736DF3290AA79E006D8065 /* Bridging-Header.h */,
 				6139A90B290C327400D4C1DD /* Constants.swift */,
+				C60DF5AF290E738A00113458 /* PTSHelper.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -653,6 +656,7 @@
 				186765FB28C4C994006BABDF /* CommentsVC.swift in Sources */,
 				6139A94F290C41C100D4C1DD /* NBTouchAndHoldButton.m in Sources */,
 				616E4A43290AB21E0011ABF2 /* F3BarGauge.m in Sources */,
+				C60DF5B0290E738A00113458 /* PTSHelper.swift in Sources */,
 				6139A949290C41C100D4C1DD /* SCWaveformView.m in Sources */,
 				18DF4BDD28BE7E30002FC063 /* CoreData.swift in Sources */,
 				18DF4BE128BE899D002FC063 /* Extension+UIView.swift in Sources */,

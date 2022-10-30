@@ -741,7 +741,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
         self.eraseBtn = UIButton(type: .custom)
         self.eraseBtn?.frame = CGRect(x: originX , y: 5, width: btnSize, height: 40)
-        self.eraseBtn.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
+        self.eraseBtn?.addTarget(self, action:#selector(self.action(sender:)), for:.touchUpInside)
         self.eraseBtn?.backgroundColor = K_COLOR_CLEAR_COLOR
         self.eraseBtn?.tag = TAG_ERASE_BTN
         self.eraseBtn?.setImage(UIImage(named: "start_erase_btn_normal.png"), for: .normal)
@@ -758,7 +758,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         self.pageScrollView?.addSubview(self.overWriteView ?? UIView())
         self.overWriteView?.alpha = 0.0
         
-        btnSize:CGFloat = 120
+        btnSize = 120
         originX:CGFloat = self.overWriteView?.frame.size.width ?? 0.0 * 0.5 - btnSize * 0.5
         
         self.startPointBtn = UIButton(type: .custom)
@@ -767,7 +767,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         self.startPointBtn?.tag = TAG_START_POINT_BTN
         self.startPointBtn?.setImage(UIImage(named: "btn_start_point_normal.png"), for: .normal)
         self.startPointBtn?.setImage(UIImage(named: "btn_start_point_highlight.png"), for: .highlighted)
-        self.startPointBtn.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
+        self.startPointBtn.addTarget(self, action:#selector(self.action(sender:), forControlEvents:.touchUpInside)
                 //[self.startPointBtn setTitle:@"Start Point" forState:UIControlStateNormal];
                 // [self.overWriteBtn setImage:K_SETIMAGE(@"start_erase_btn_normal.png") forState:UIControlStateNormal];
                 // [self.overWriteBtn setImage:K_SETIMAGE(@"start_erase_btn_disable.png") forState:UIControlStateHighlighted];
@@ -783,7 +783,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
         self.endPointBtn?.setImage(UIImage(named: "btn_end_point_highlight.png"), for: .highlighted)
 
-        self.endPointBtn?.addTarget(self, action: Selector("action:"), for:.touchUpInside)
+        self.endPointBtn?.addTarget(self, action: #selector(self.action(sender:), for:.touchUpInside)
                 // [self.overWriteBtn setImage:K_SETIMAGE(@"start_erase_btn_normal.png") forState:UIControlStateNormal];
                 // [self.overWriteBtn setImage:K_SETIMAGE(@"start_erase_btn_disable.png") forState:UIControlStateHighlighted];
                 //[self.overWriteBtn setImage:K_SETIMAGE(@"start_erase_btn_disable.png") forState:UIControlStateDisabled];
@@ -799,7 +799,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         self.startOverwriteBtn?.alpha = 0
         self.startOverwriteBtn?.setImage(UIImage(named: "btn_start_overwriting_normal.png"), for: .normal)
         self.startOverwriteBtn?.setImage(UIImage(named: "btn_start_overwriting_highlight.png"), for: .highlighted)
-        self.startOverwriteBtn?.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
+        self.startOverwriteBtn?.addTarget(self, action:#selector(self.action(sender:), forControlEvents:.touchUpInside)
                 //[self.startOverwriteBtn setTitle:@"Start Overwriting" forState:UIControlStateNormal];
                 // [self.overWriteBtn setImage:K_SETIMAGE(@"start_erase_btn_normal.png") forState:UIControlStateNormal];
                 // [self.overWriteBtn setImage:K_SETIMAGE(@"start_erase_btn_disable.png") forState:UIControlStateHighlighted];
@@ -808,7 +808,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         
         self.endOverwriteBtn = UIButton(type: .roundedRect)
         self.endOverwriteBtn?.frame = CGRect(x:originX , y:5, width:btnSize, height:40)
-        self.endOverwriteBtn?.addTarget(self, action:Selector("action:"), for:.touchUpInside)
+        self.endOverwriteBtn?.addTarget(self, action:#selector(self.action(sender:), for:.touchUpInside)
         self.endOverwriteBtn?.backgroundColor = K_COLOR_CLEAR_COLOR
         self.endOverwriteBtn?.tag = TAG_START_OVERWRITE_BTN
         self.endOverwriteBtn?.alpha = 0
@@ -858,7 +858,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         self.bookmarkBackwardBtn?.tag = TAG_BOOKMARK_BACKWARD_BTN
         self.bookmarkBackwardBtn.setImage(K_SETIMAGE("record_bookmark_backward_btn_normal.png"), forState:UIControlStateNormal)
         self.bookmarkBackwardBtn.setImage(K_SETIMAGE("record_bookmark_backward_btn_disable.png"), forState:UIControlStateDisabled)
-        self.bookmarkBackwardBtn.addTarget(self, action:Selector("action:"), forControlEvents:UIControlEventTouchUpInside)
+        self.bookmarkBackwardBtn.addTarget(self, action:#selector(self.action(sender:), forControlEvents:UIControlEventTouchUpInside)
         self.bookmarkBackwardBtn?.backgroundColor = K_COLOR_CLEAR_COLOR
         self.bookmarkBackwardBtn?.tag = TAG_BOOKMARK_BACKWARD_BTN
         self.bookmarkView.addSubview(self.bookmarkBackwardBtn ?? UIView())
@@ -871,7 +871,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
         self.bookmarkBtn?.tag = TAG_BOOKMARK_BTN
         self.bookmarkBtn?.setImage(UIImage(named: "record_bookmark_btn_normal.png"), for: .normal)
         self.bookmarkBtn?.setImage(UIImage(named: "record_bookmark_btn_disable.png"), for: .disabled)
-        self.bookmarkBtn.addTarget(self, action:Selector("action:"), forControlEvents:UIControlEventTouchUpInside)
+        self.bookmarkBtn.addTarget(self, action:#selector(self.action(sender:), forControlEvents:UIControlEventTouchUpInside)
         self.bookmarkBtn?.backgroundColor = K_COLOR_CLEAR_COLOR
         self.bookmarkBtn?.tag = TAG_BOOKMARK_BTN
         self.bookmarkView?.addSubview(self.bookmarkBtn ?? UIView())
@@ -886,7 +886,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 self.bookmarkFordwardBtn.tag = TAG_BOOKMARK_FORWARD_BTN
                 self.bookmarkFordwardBtn.setImage(K_SETIMAGE("record_bookmark_forward_btn_normal.png"), forState:UIControlStateNormal)
                 self.bookmarkFordwardBtn.setImage(K_SETIMAGE("record_bookmark_forward_btn_disable.png"), forState:.disabled)
-                self.bookmarkFordwardBtn.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
+                self.bookmarkFordwardBtn.addTarget(self, action:#selector(self.action(sender:), forControlEvents:.touchUpInside)
                 self.bookmarkFordwardBtn.backgroundColor = K_COLOR_CLEAR_COLOR
                 self.bookmarkFordwardBtn.tag = TAG_BOOKMARK_FORWARD_BTN
                 self.bookmarkView.addSubview(self.bookmarkFordwardBtn)
@@ -898,7 +898,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
                 self.clearIndex = UIButton.buttonWithType(.custom)
                 self.clearIndex.frame = CGRect(originX , originY, btnSize, 40)
-                self.clearIndex.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
+                self.clearIndex.addTarget(self, action:#selector(self.action(sender:), forControlEvents:.touchUpInside)
                 self.clearIndex.backgroundColor = K_COLOR_CLEAR_COLOR
                 self.clearIndex.tag = TAG_CLEAR_INDEX_BTN
                 self.clearIndex.setImage(K_SETIMAGE("index_clear_btn_normal.png"), forState:.normal)
@@ -939,7 +939,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 self.recordBtn.tag = TAG_RECORD_BTN
                 self.recordBtn.setImage(K_SETIMAGE("record_record_btn_normal.png"), forState:.normal)
                 self.recordBtn.setImage(K_SETIMAGE("record_record_btn_disable.png"), forState:.disabled)
-                self.recordBtn.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
+                self.recordBtn.addTarget(self, action:#selector(self.action(sender:), forControlEvents:.touchUpInside)
                 self.recordBtn.backgroundColor = K_COLOR_CLEAR_COLOR
                 self.recordBtn.layer.cornerRadius = self.recordBtn.frame.size.width * 0.5
                 self.recordCtrlsView.addSubview(self.recordBtn)
@@ -955,7 +955,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 self.stopBtn.tag = TAG_STOP_BTN
                 self.stopBtn.setImage(K_SETIMAGE("record_stop_btn_normal.png"), forState:.normal)
                 self.stopBtn.setImage(K_SETIMAGE("record_stop_btn_active.png"), forState:.disabled)
-                self.stopBtn.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
+                self.stopBtn.addTarget(self, action:#selector(self.action(sender:), forControlEvents:.touchUpInside)
                 self.stopBtn.backgroundColor = K_COLOR_CLEAR_COLOR
                 self.stopBtn.layer.cornerRadius = self.recordBtn.frame.size.width * 0.5
                 self.recordCtrlsView.addSubview(self.stopBtn)
@@ -1016,7 +1016,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
                 self.playBtn.tag = TAG_PLAY_BTN
                 self.playBtn.setImage(K_SETIMAGE("existing_controls_play_btn_normal.png"), forState:.normal)
                 self.playBtn.setImage(K_SETIMAGE("existing_controls_play_btn_disable.png"), forState:UIControlStateDisabled)
-                self.playBtn.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
+                self.playBtn.addTarget(self, action:#selector(self.action(sender:), forControlEvents:.touchUpInside)
                 self.playerCtrlsView.addSubview(self.playBtn)
 
                 let btnSize:Float = self.playerCtrlsView.frame.size.height - 10
@@ -1171,7 +1171,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             let editRecord:UIButton! = UIButton.buttonWithType(.custom)
             editRecord.frame = CGRect(self.bottomView.frame.size.width * 0.5 - btnWidth * 0.5, 15  , btnWidth,  30)
             editRecord.tag = TAG_EDIT_RECORD_BTN
-            editRecord.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
+            editRecord.addTarget(self, action:#selector(self.action(sender:), forControlEvents:.touchUpInside)
             editRecord.backgroundColor = K_COLOR_CLEAR_COLOR
             editRecord.setImage(K_SETIMAGE("record_edit_btn_normal.png"), forState:.normal)
             editRecord.setImage(K_SETIMAGE("record_edit_btn_disable.png"), forState:.highlighted)
@@ -1180,7 +1180,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             let saveBtn:UIButton! = UIButton.buttonWithType(.custom)
             saveBtn.frame = CGRect(editRecord.frame.origin.x - btnWidth - 10, 15, btnWidth,  30)
             saveBtn.tag = TAG_SAVE_BTN
-            saveBtn.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
+            saveBtn.addTarget(self, action:#selector(self.action(sender:), forControlEvents:.touchUpInside)
             saveBtn.setImage(K_SETIMAGE("record_save_btn_normal.png"), forState:.normal)
             saveBtn.setImage(K_SETIMAGE("record_save_btn_highlighted.png"), forState:.highlighted)
             self.bottomView.addSubview(saveBtn)
@@ -1189,7 +1189,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
             discardBtn.frame = CGRect(editRecord.frame.origin.x + btnWidth + 10, saveBtn.frame.origin.y  , btnWidth,  30)
             discardBtn.backgroundColor = K_COLOR_CLEAR_COLOR
             discardBtn.tag = TAG_DISCARD_BTN
-            discardBtn.addTarget(self, action:Selector("action:"), forControlEvents:.touchUpInside)
+            discardBtn.addTarget(self, action:#selector(self.action(sender:), forControlEvents:.touchUpInside)
             discardBtn.setImage(K_SETIMAGE("discard_btn_normal.png"), forState:.normal)
             discardBtn.setImage(K_SETIMAGE("discard_btn_highlighted.png"), forState:.highlighted)
             self.bottomView.addSubview(discardBtn)
@@ -1437,7 +1437,7 @@ class RecordVCNew: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDeleg
 
     // MARK: -
     // MARK: BUTTON CALL BACKS
-    func action(sender:UIButton!) {
+   @objc func action(sender:UIButton) {
         switch (sender.tag) {
             case TAG_RECORD_BTN:
                 if self.isRecordPermissionGiven() {
