@@ -328,10 +328,12 @@ class ApiHandler: NSObject {
         }
     }
     
-    static func uploadMediaFile<T:Codable>(url: String , withParameters parameters: [String: Any], ofType : T.Type, onSuccess:@escaping (T)->(), onFailure: @escaping (Bool, String)->(), method: ApiMethod, fileUrl: URL, headerPresent: Bool) {
+    static func uploadMediaFile<T:Codable>(url: String , withParameters parameters: [String: Any], ofType : T.Type, onSuccess:@escaping (T)->(), onFailure: @escaping (Bool, String)->(), method: ApiMethod, fileUrl: URL, headerPresent: Bool, fileName: String, description: String, emailNotifications: String) {
         let kMehod: HTTPMethod = .post
-            
-            
+        let uatURL = "https://uat.etranscriptions.com.au/scripts/web_response.php?Case=UploadFile&Login_Name=\(CoreData.shared.userName)&File_Desc=\(description)&From_User=pts&To_User=pts&Email_Notification=\(emailNotifications)"
+        
+        let liveURL = "https://www.etranscriptions.com.au/scripts/web_response.php?Case=UploadFile&Login_Name=\(CoreData.shared.userName)&File_Desc=\(description)&From_User=pts&To_User=pts&Email_Notification=\(emailNotifications)"
+        
         let header : HTTPHeaders = [
             :
         ]
@@ -342,7 +344,7 @@ class ApiHandler: NSObject {
 //                    multipartFormData.append((value as AnyObject).data(using: String.Encoding.utf8.rawValue)!, withName: key)
 //                }
                 
-            }, to: "https://www.etranscriptions.com.au/scripts/web_response.php?Case=UploadFile&Login_Name=\(CoreData.shared.userName)&From_User=PTS&To_User=PTS&Email_Notification=ON", method: kMehod, headers: header).uploadProgress(queue: .main, closure: { progress in
+            }, to: uatURL, method: kMehod, headers: header).uploadProgress(queue: .main, closure: { progress in
                 print("Upload Progress: \(progress.fractionCompleted)")
             }).responseJSON(completionHandler: { data in
                 print("upload finished: \(data)")

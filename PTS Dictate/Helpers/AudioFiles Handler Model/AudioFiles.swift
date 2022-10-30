@@ -15,8 +15,12 @@ enum UpdateAudioFile {
     case canEdit(Bool)
     case createdAt(Date)
     
-    func update(audio: Int) {
+    func update(audioName: String) {
         let instance = AudioFiles.shared
+        var audio = 0
+        for (index, audioFile) in instance.audioFiles.enumerated() where audioName == audioFile.name ?? "" {
+            audio = index
+        }
         switch self {
         case .name(let newValue):
             instance.audioFiles[audio].name = newValue
@@ -46,8 +50,8 @@ class AudioFiles {
         return singleTon.instance
     }
     
-    func deleteAudio(names: [String]) {
-        for (index,audio) in audioFiles.enumerated() where names.contains(audio.name ?? "") {
+    func deleteAudio(name: String) {
+        for (index, audio) in audioFiles.enumerated() where name == audio.name ?? "" {
             audioFiles.remove(at: index)
         }
         updateAudioFilesOnCoreData()
@@ -63,6 +67,13 @@ class AudioFiles {
         updateAudioFilesOnCoreData()
     }
     
+    func getAudioComment(name: String) -> String {
+        for (index,audio) in audioFiles.enumerated() where audio.name == name {
+            let comment = audioFiles[index].fileInfo?.comment
+            return comment ?? ""
+        }
+        return ""
+    }
     func updateAudioFilesOnCoreData() {
         CoreData.shared.audioFiles = audioFiles
         CoreData.shared.dataSave()

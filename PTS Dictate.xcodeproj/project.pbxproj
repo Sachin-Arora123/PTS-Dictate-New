@@ -20,7 +20,6 @@
 		184C5FED28C5239E005A52EB /* RecordVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184C5FEC28C5239E005A52EB /* RecordVC.swift */; };
 		184C964628C7C715004639B3 /* CommonElements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184C964528C7C715004639B3 /* CommonElements.swift */; };
 		1854B88928B94F690039A96E /* UploadProgressVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1854B88828B94F690039A96E /* UploadProgressVC.swift */; };
-		1854B88C28B958530039A96E /* UploadListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1854B88B28B958530039A96E /* UploadListCell.swift */; };
 		1855435628C36474008AFBC2 /* AboutVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1855435528C36474008AFBC2 /* AboutVC.swift */; };
 		1855435828C36494008AFBC2 /* AboutInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1855435728C36494008AFBC2 /* AboutInfoCell.swift */; };
 		185BE70F28BBE539004484CF /* AudioQualityVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 185BE70E28BBE539004484CF /* AudioQualityVC.swift */; };
@@ -49,6 +48,7 @@
 		18E8AAE828F89E0400DF73F4 /* ExistingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E8AAE728F89E0400DF73F4 /* ExistingViewModel.swift */; };
 		2327B8A82907BEB9000BCEDD /* AudioFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2327B8A72907BEB9000BCEDD /* AudioFile.swift */; };
 		2327B8AA2907C049000BCEDD /* AudioFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2327B8A92907C049000BCEDD /* AudioFiles.swift */; };
+		23DCE102290EA54A00117066 /* UploadListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23DCE101290EA54A00117066 /* UploadListCell.swift */; };
 		28A4F5C628B510D90035137B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5C528B510D90035137B /* AppDelegate.swift */; };
 		28A4F5C828B510D90035137B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5C728B510D90035137B /* SceneDelegate.swift */; };
 		28A4F5CA28B510D90035137B /* LoginVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5C928B510D90035137B /* LoginVC.swift */; };
@@ -73,7 +73,6 @@
 		184C5FEC28C5239E005A52EB /* RecordVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordVC.swift; sourceTree = "<group>"; };
 		184C964528C7C715004639B3 /* CommonElements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonElements.swift; sourceTree = "<group>"; };
 		1854B88828B94F690039A96E /* UploadProgressVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadProgressVC.swift; sourceTree = "<group>"; };
-		1854B88B28B958530039A96E /* UploadListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadListCell.swift; sourceTree = "<group>"; };
 		1855435528C36474008AFBC2 /* AboutVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutVC.swift; sourceTree = "<group>"; };
 		1855435728C36494008AFBC2 /* AboutInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutInfoCell.swift; sourceTree = "<group>"; };
 		185BE70E28BBE539004484CF /* AudioQualityVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioQualityVC.swift; sourceTree = "<group>"; };
@@ -102,6 +101,7 @@
 		18E8AAE728F89E0400DF73F4 /* ExistingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExistingViewModel.swift; sourceTree = "<group>"; };
 		2327B8A72907BEB9000BCEDD /* AudioFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFile.swift; sourceTree = "<group>"; };
 		2327B8A92907C049000BCEDD /* AudioFiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFiles.swift; sourceTree = "<group>"; };
+		23DCE101290EA54A00117066 /* UploadListCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadListCell.swift; sourceTree = "<group>"; };
 		28A4F5C228B510D90035137B /* PTS Dictate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PTS Dictate.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		28A4F5C528B510D90035137B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		28A4F5C728B510D90035137B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -160,17 +160,9 @@
 			isa = PBXGroup;
 			children = (
 				1854B88828B94F690039A96E /* UploadProgressVC.swift */,
-				182BE0AA28BD09D700327094 /* UploadProgressCells */,
+				23DCE101290EA54A00117066 /* UploadListCell.swift */,
 			);
 			path = UploadProgressVC;
-			sourceTree = "<group>";
-		};
-		182BE0AA28BD09D700327094 /* UploadProgressCells */ = {
-			isa = PBXGroup;
-			children = (
-				1854B88B28B958530039A96E /* UploadListCell.swift */,
-			);
-			path = UploadProgressCells;
 			sourceTree = "<group>";
 		};
 		182BE0AB28BD09EB00327094 /* SettingVC */ = {
@@ -595,6 +587,7 @@
 				1854B88928B94F690039A96E /* UploadProgressVC.swift in Sources */,
 				2327B8AA2907C049000BCEDD /* AudioFiles.swift in Sources */,
 				185BE70F28BBE539004484CF /* AudioQualityVC.swift in Sources */,
+				23DCE102290EA54A00117066 /* UploadListCell.swift in Sources */,
 				18CDDB0D28B7D683006AB795 /* TabbarVC.swift in Sources */,
 				186765F528C4B803006BABDF /* ExistingFileCell.swift in Sources */,
 				186765F928C4C97E006BABDF /* RenameFileVC.swift in Sources */,
@@ -604,7 +597,6 @@
 				18CDDB0F28B7D96C006AB795 /* Storyboard.swift in Sources */,
 				18DF4BD228BE7B5D002FC063 /* ApiConstant.swift in Sources */,
 				18DF4BD728BE7B5D002FC063 /* ApiHandler.swift in Sources */,
-				1854B88C28B958530039A96E /* UploadListCell.swift in Sources */,
 				28A4F5C628B510D90035137B /* AppDelegate.swift in Sources */,
 				182BE0B628BD3B6000327094 /* MicroSensitivityVC.swift in Sources */,
 				1855435828C36494008AFBC2 /* AboutInfoCell.swift in Sources */,

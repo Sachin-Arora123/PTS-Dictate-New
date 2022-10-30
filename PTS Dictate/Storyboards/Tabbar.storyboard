@@ -431,6 +431,32 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="16g-mG-TXv">
+                                <rect key="frame" x="0.0" y="48" width="414" height="765"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="no_upload_found_icon" translatesAutoresizingMaskIntoConstraints="NO" id="KNN-aR-i4c">
+                                        <rect key="frame" x="137" y="296.5" width="140" height="112"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="140" id="KF8-f3-4ZL"/>
+                                            <constraint firstAttribute="width" secondItem="KNN-aR-i4c" secondAttribute="height" multiplier="1:0.8" id="lYL-1E-tMD"/>
+                                        </constraints>
+                                    </imageView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No uploads found." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bey-Be-5Is">
+                                        <rect key="frame" x="20" y="415.5" width="374" height="29.5"/>
+                                        <fontDescription key="fontDescription" name="Arial-BoldMT" family="Arial" pointSize="26"/>
+                                        <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstItem="bey-Be-5Is" firstAttribute="top" secondItem="KNN-aR-i4c" secondAttribute="bottom" constant="7" id="0OW-1V-rgJ"/>
+                                    <constraint firstItem="KNN-aR-i4c" firstAttribute="centerY" secondItem="16g-mG-TXv" secondAttribute="centerY" constant="-30" id="NS2-8z-jTX"/>
+                                    <constraint firstItem="KNN-aR-i4c" firstAttribute="centerX" secondItem="16g-mG-TXv" secondAttribute="centerX" id="Sh9-hY-qN3"/>
+                                    <constraint firstAttribute="trailing" secondItem="bey-Be-5Is" secondAttribute="trailing" constant="20" id="baI-Mu-8jM"/>
+                                    <constraint firstItem="bey-Be-5Is" firstAttribute="leading" secondItem="16g-mG-TXv" secondAttribute="leading" constant="20" id="gG7-cd-x0z"/>
+                                </constraints>
+                            </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="ZCm-q4-rxv">
                                 <rect key="frame" x="0.0" y="48" width="414" height="765"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -458,25 +484,6 @@
                                                             <color key="textColor" name="BlackTextColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
-                                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="i4h-TC-zcw">
-                                                            <rect key="frame" x="90" y="49" width="294" height="25"/>
-                                                            <subviews>
-                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Uploading Progress: 99%" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sbx-xq-bUg">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="294" height="25"/>
-                                                                    <fontDescription key="fontDescription" name="Arial-BoldMT" family="Arial" pointSize="14"/>
-                                                                    <color key="textColor" systemColor="systemBackgroundColor"/>
-                                                                    <nil key="highlightedColor"/>
-                                                                </label>
-                                                            </subviews>
-                                                            <color key="backgroundColor" name="AppThemeColor"/>
-                                                            <constraints>
-                                                                <constraint firstAttribute="bottom" secondItem="sbx-xq-bUg" secondAttribute="bottom" id="BGG-Il-5zF"/>
-                                                                <constraint firstItem="sbx-xq-bUg" firstAttribute="top" secondItem="i4h-TC-zcw" secondAttribute="top" id="Fi8-jk-Ofb"/>
-                                                                <constraint firstAttribute="height" constant="25" id="PN5-yG-15g"/>
-                                                                <constraint firstAttribute="trailing" secondItem="sbx-xq-bUg" secondAttribute="trailing" id="n2J-1f-QU0"/>
-                                                                <constraint firstItem="sbx-xq-bUg" firstAttribute="leading" secondItem="i4h-TC-zcw" secondAttribute="leading" id="uf1-Sa-Mh4"/>
-                                                            </constraints>
-                                                        </view>
                                                         <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="U74-t4-uvn">
                                                             <rect key="frame" x="90" y="47" width="294" height="18"/>
                                                             <subviews>
@@ -500,6 +507,25 @@
                                                                 </label>
                                                             </subviews>
                                                         </stackView>
+                                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="i4h-TC-zcw">
+                                                            <rect key="frame" x="90" y="49" width="294" height="25"/>
+                                                            <subviews>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Uploading Progress: 99%" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sbx-xq-bUg">
+                                                                    <rect key="frame" x="0.0" y="0.0" width="294" height="25"/>
+                                                                    <fontDescription key="fontDescription" name="Arial-BoldMT" family="Arial" pointSize="14"/>
+                                                                    <color key="textColor" systemColor="systemBackgroundColor"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                            </subviews>
+                                                            <color key="backgroundColor" systemColor="systemGrayColor"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="bottom" secondItem="sbx-xq-bUg" secondAttribute="bottom" id="BGG-Il-5zF"/>
+                                                                <constraint firstItem="sbx-xq-bUg" firstAttribute="top" secondItem="i4h-TC-zcw" secondAttribute="top" id="Fi8-jk-Ofb"/>
+                                                                <constraint firstAttribute="height" constant="25" id="PN5-yG-15g"/>
+                                                                <constraint firstAttribute="trailing" secondItem="sbx-xq-bUg" secondAttribute="trailing" id="n2J-1f-QU0"/>
+                                                                <constraint firstItem="sbx-xq-bUg" firstAttribute="leading" secondItem="i4h-TC-zcw" secondAttribute="leading" id="uf1-Sa-Mh4"/>
+                                                            </constraints>
+                                                        </view>
                                                     </subviews>
                                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                     <constraints>
@@ -542,32 +568,6 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="16g-mG-TXv">
-                                <rect key="frame" x="0.0" y="48" width="414" height="765"/>
-                                <subviews>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="no_upload_found_icon" translatesAutoresizingMaskIntoConstraints="NO" id="KNN-aR-i4c">
-                                        <rect key="frame" x="137" y="296.5" width="140" height="112"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="140" id="KF8-f3-4ZL"/>
-                                            <constraint firstAttribute="width" secondItem="KNN-aR-i4c" secondAttribute="height" multiplier="1:0.8" id="lYL-1E-tMD"/>
-                                        </constraints>
-                                    </imageView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No uploads found." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bey-Be-5Is">
-                                        <rect key="frame" x="20" y="415.5" width="374" height="29.5"/>
-                                        <fontDescription key="fontDescription" name="Arial-BoldMT" family="Arial" pointSize="26"/>
-                                        <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                </subviews>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <constraints>
-                                    <constraint firstItem="bey-Be-5Is" firstAttribute="top" secondItem="KNN-aR-i4c" secondAttribute="bottom" constant="7" id="0OW-1V-rgJ"/>
-                                    <constraint firstItem="KNN-aR-i4c" firstAttribute="centerY" secondItem="16g-mG-TXv" secondAttribute="centerY" constant="-30" id="NS2-8z-jTX"/>
-                                    <constraint firstItem="KNN-aR-i4c" firstAttribute="centerX" secondItem="16g-mG-TXv" secondAttribute="centerX" id="Sh9-hY-qN3"/>
-                                    <constraint firstAttribute="trailing" secondItem="bey-Be-5Is" secondAttribute="trailing" constant="20" id="baI-Mu-8jM"/>
-                                    <constraint firstItem="bey-Be-5Is" firstAttribute="leading" secondItem="16g-mG-TXv" secondAttribute="leading" constant="20" id="gG7-cd-x0z"/>
-                                </constraints>
-                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Wls-yj-wpc"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -1275,6 +1275,9 @@
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemGrayColor">
+            <color red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGroupedBackgroundColor">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

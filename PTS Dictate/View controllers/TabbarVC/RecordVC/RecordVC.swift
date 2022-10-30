@@ -75,7 +75,16 @@ class RecordVC: BaseViewController {
         return CoreData.shared.commentScreenMandatory == 1 ?  true : false
     }
 
-    
+    var editFromExiting: Bool {
+        // getting the value from exiting view controller's variable
+        get {
+            return (self.tabBarController!.viewControllers![0] as! ExistingVC).editFromExiting
+        }
+        // assign the new value to this view controller's variable
+        set {
+            (self.tabBarController!.viewControllers![0] as! ExistingVC).editFromExiting = newValue
+        }
+    }
     // MARK: - View Life-Cycle.
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -111,6 +120,10 @@ class RecordVC: BaseViewController {
         
         audioRecorder = try? AVAudioRecorder(url: audioFileURL, settings: recorderSetting)
         fileURL1 = audioFileURL
+        
+        if editFromExiting {
+            setUpUIForEditing()
+        }
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -502,13 +515,7 @@ class RecordVC: BaseViewController {
         })
     }
     @IBAction func onTapEdit(_ sender: UIButton) {
-        segmentControl.selectedSegmentIndex = -1
-        segmentHeight.constant = 31
-        segmentControl.isHidden = false
-        btnStop.isUserInteractionEnabled = true
-        btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: .normal)
-        CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: true, animation: .transitionFlipFromBottom)
-        self.tabBarController?.setTabBarHidden(false, animated: false)
+        setUpUIForEditing()
     }
     @IBAction func onTapDiscard(_ sender: UIButton) {
         CommonFunctions.showAlert(view: self, title: "PTS Dictate", message: "Do you want to discard the current Recording?", completion: {
@@ -544,6 +551,15 @@ class RecordVC: BaseViewController {
         self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
     }
     
+    func setUpUIForEditing() {
+        segmentControl.selectedSegmentIndex = -1
+        segmentHeight.constant = 31
+        segmentControl.isHidden = false
+        btnStop.isUserInteractionEnabled = true
+        btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: .normal)
+        CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: true, animation: .transitionFlipFromBottom)
+        self.tabBarController?.setTabBarHidden(false, animated: false)
+    }
      func removeDiscardAudio(itemName: String, fileExtension: String) {
 //      let fileManager = NSFileManager.defaultManager()
 //      let nsDocumentDirectory = NSSearchPathDirectory.DocumentDirectory
