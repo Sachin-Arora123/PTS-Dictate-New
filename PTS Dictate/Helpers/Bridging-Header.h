@@ -13,5 +13,4 @@
 #import "SCWaveformView.h"
 #import "SCWaveformCache.h"
 #import "SCScrollableWaveformView.h"
-
 #endif /* Bridging_Header_h */
