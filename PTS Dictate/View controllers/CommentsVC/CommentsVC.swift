@@ -19,6 +19,8 @@ class CommentsVC: BaseViewController {
     // MARK: Properties
     var isCommentsMandotary = false
     var canEditComments = true
+    var updateComment = false
+    var selectedAudio = ""
     var fileName = ""
     var comment = ""
     // MARK: - View Life-Cycle.
@@ -64,12 +66,10 @@ class CommentsVC: BaseViewController {
     }
     
     fileprivate func saveComment() {
-        var audios = AudioFiles.shared.audioFiles
-        audios.append(AudioFile(name: fileName, fileInfo: AudioFileInfo(comment: txtViewComment.text, isUploaded: false, archivedDays: 1, canEdit: false)))
-//        Constants.userDefaults.set(audios, forKey: Constants.UserDefaultKeys.audioFiles)
-        CoreData.shared.audioFiles = audios
-        CoreData.shared.comments[fileName] = txtViewComment.text
-        CoreData.shared.dataSave()
+        if updateComment {
+            UpdateAudioFile.comment(txtViewComment.text ?? "").update(audioName: selectedAudio)
+        }
+        AudioFiles.shared.saveNewAudioFile(name: fileName, comment: txtViewComment.text ?? "")
         let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
         self.setPushTransitionAnimation(VC)
         popToExitingVC()

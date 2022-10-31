@@ -18,21 +18,19 @@ class  ExistingViewModel{
     }
     
     var existingViewController : ExistingVC?
-    
-    func uploadAudio(userName : String, toUser: String, emailNotify: Bool = false, fileUrl: URL) {
-        let params : [String : Any] = [
-            "Login_Name" : userName as Any,
-            "To_User" : toUser as Any,
-            "Email_Notification" : emailNotify as Any
+    var uploadingQueue: [String] = []
+    func uploadAudio(userName : String, toUser: String, emailNotify: Bool = false, fileUrl: URL, fileName: String, description: String, completion: @escaping () -> Void, failure: @escaping (String) -> Void) {
+        let params: [String: String] = [
+            "Login_Name": userName,
+            "To_User": toUser,
+            "Email_Notification": emailNotify ? "ON" : "OFF"
         ]
-        CommonFunctions.showLoader(title: "")
         ApiHandler.uploadMediaFile(url: "\(ApiPath.upload.rawValue)", withParameters: params as [String : AnyObject], ofType: UploadAPI.self, onSuccess: { (UploadAPI) in
-            CommonFunctions.hideLoader()
             print(UploadAPI)
-            
+            completion()
         }, onFailure: { (reload, error) in
-            CommonFunctions.hideLoader()
+            failure(error)
             print(error)
-        }, method: ApiMethod.POST, fileUrl: fileUrl, headerPresent: false)
+        }, method: ApiMethod.POST, fileUrl: fileUrl, headerPresent: false, fileName: fileName, description: description, emailNotifications: emailNotify ? "ON" : "OFF")
     }
 }

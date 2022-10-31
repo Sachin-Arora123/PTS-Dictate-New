@@ -44,7 +44,8 @@ class ExistingVC: BaseViewController {
     var comments: [String: String] {
         return CoreData.shared.comments
     }
-    
+    var uploadingQueue: [String] = []
+    var editFromExiting: Bool = false
     private var audioMeteringLevelTimer: Timer?
     var tag = -1
     private var currentlyPlayingAudio: URL?
@@ -61,14 +62,14 @@ class ExistingVC: BaseViewController {
         // Do any additional setup after loading the view.
         NotificationCenter.default.addObserver(self, selector: #selector(self.newFileSaved(notification:)), name: Notification.Name("FileSaved"), object: nil)
         self.existingViewModel.existingViewController = self
+        self.tabBarController?.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setUpUI()
-        if CoreData.shared.audioFiles.count > 0 {
-            CoreData.shared.audioFiles[0].fileInfo?.comment = "new Comment"
-        }
+        CoreData.shared.audioFiles = []
+        CoreData.shared.dataSave()
         self.setUpWave()
     }
     
@@ -181,11 +182,25 @@ class ExistingVC: BaseViewController {
     
     // MARK: - @IBActions.
     @IBAction func onTapUpload(_ sender: UIButton) {
-        let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let completePath = directoryPath.absoluteString +  self.totalFilesSelected[0]
-        let url = URL(string: completePath)
-        if self.totalFilesSelected[0].count > 0 {
-            self.existingViewModel.uploadAudio(userName: CoreData.shared.userName, toUser: "PTS", emailNotify: false, fileUrl: url!)
+//        let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+//                for file in totalFilesSelected {
+//                    let completePath = directoryPath.absoluteString + file
+//                    let url = URL(string: completePath)
+//                    self.existingViewModel.uploadAudio(userName: CoreData.shared.userName, toUser: "pts", emailNotify: false, fileUrl: url!, fileName: file, description: AudioFiles.shared.getAudioComment(name: file)) {
+//                        print("uploaded successfully")
+//                    } failure: { error in
+//                        print(error)
+//                    }
+//
+//                }
+        self.existingViewModel.uploadingQueue = totalFilesSelected
+        if self.totalFilesSelected.count == 0{
+            CommonFunctions.alertMessage(view: self, title: "PTS Dictate", msg: "Please select atleast one file.", btnTitle: "OK")
+        } else {
+            let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
+            self.setPushTransitionAnimation(VC)
+            self.navigationController?.popViewController(animated: false)
+            self.tabBarController?.selectedIndex = 1
         }
     }
     
@@ -202,6 +217,9 @@ class ExistingVC: BaseViewController {
                         self.removeAudio(itemName: av, fileExtension: "")
                     }
                     //                    self.totalFiles = self.findFilesWith(fileExtension: "m4a")
+                    for file in self.totalFilesSelected {
+                        AudioFiles.shared.deleteAudio(name: file)
+                    }
                     self.totalFiles = self.getSortedAudioList()
                     self.setRightBarItem()
                 }
@@ -279,11 +297,12 @@ class ExistingVC: BaseViewController {
         return ""
     }
     
-    fileprivate func pushToComments(selected audio: String) {
+    fileprivate func pushToComments(selected audio: String, index: Int) {
         let VC = CommentsVC.instantiateFromAppStoryboard(appStoryboard: .Main)
         self.setPushTransitionAnimation(VC)
         VC.hidesBottomBarWhenPushed = true
-        VC.canEditComments = false
+        VC.updateComment = true
+        VC.selectedAudio = audio
         VC.comment = getSelectedAudioComment(selected: audio)
         self.navigationController?.pushViewController(VC, animated: false)
     }
@@ -410,7 +429,7 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
             cell.btnSelection.setImage(UIImage(named: "unchecked_checkbox"), for: .normal)
         }
         cell.isUserInteractionEnabled = true
-        cell.btnEdit.isHidden = true
+        cell.btnEdit.isHidden = false
         cell.lblFileSize.text = fileSize(itemName:  self.totalFiles[indexPath.row])
         cell.btnSelection.tag = indexPath.row
         cell.btnSelection.removeTarget(self, action: nil, for: .touchUpInside)
@@ -496,7 +515,7 @@ extension ExistingVC{
     }
     @objc func openCommentVC(_ sender: UIButton){
         let audioFile = totalFiles[sender.tag]
-        pushToComments(selected: audioFile)
+        pushToComments(selected: audioFile, index: sender.tag)
     }
     
     @objc func openRenameFileVc(){
@@ -504,6 +523,11 @@ extension ExistingVC{
         //            self.setPushTransitionAnimation(VC)
         //        VC.hidesBottomBarWhenPushed = true
         //        self.navigationController?.pushViewController(VC, animated: false)
+        let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
+        self.setPushTransitionAnimation(VC)
+        self.navigationController?.popViewController(animated: false)
+        self.editFromExiting = true
+        self.tabBarController?.selectedIndex = 2
     }
     
     @objc func btnActCheckBox(_ sender : UIButton){
@@ -564,35 +588,48 @@ extension ExistingVC: AVAudioPlayerDelegate {
     }
 }
 
-// MARK: - Extension for FDWaveformViewDelegate
 
-//extension ExistingVC: FDWaveformViewDelegate {
-//    func waveformViewWillRender(_ waveformView: FDWaveformView) {
-//        startRendering = Date()
-//    }
-//
-//    func waveformViewDidRender(_ waveformView: FDWaveformView) {
-//        endRendering = Date()
-//        NSLog("FDWaveformView rendering done, took %0.3f seconds", endRendering.timeIntervalSince(startRendering))
-//        profileResult.append(String(format: " render %0.3f ", endRendering.timeIntervalSince(startRendering)))
-//        UIView.animate(withDuration: 1, animations: {() -> Void in
-//            waveformView.alpha = 1.0
-//            waveformView.progressColor = #colorLiteral(red: 0.2273887992, green: 0.2274999917, blue: 0.9748747945, alpha: 1)
-//        })
-//    }
-//
-//    func waveformViewWillLoad(_ waveformView: FDWaveformView) {
-//        startLoading = Date()
-//    }
-//
-//    func waveformViewDidLoad(_ waveformView: FDWaveformView) {
-//        endLoading = Date()
-//        NSLog("FDWaveformView loading done, took %0.3f seconds", endLoading.timeIntervalSince(startLoading))
-//        profileResult.append(String(format: " load %0.3f ", endLoading.timeIntervalSince(startLoading)))
-//    }
-//}
-
-extension Notification.Name {
-    static let audioPlayerManagerMeteringLevelDidUpdateNotification = Notification.Name("AudioPlayerManagerMeteringLevelDidUpdateNotification")
-    static let audioPlayerManagerMeteringLevelDidFinishNotification = Notification.Name("AudioPlayerManagerMeteringLevelDidFinishNotification")
-}
+extension ExistingVC: UITabBarControllerDelegate {
+    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        if viewController.isKind(of: RecordVC.self as AnyClass) {
+            let recordVC = tabBarController.viewControllers?[2] as! RecordVC
+            recordVC.editFromExiting = false
+        } else if viewController.isKind(of: UploadProgressVC.self as AnyClass) {
+            let uploadVC = tabBarController.viewControllers?[1] as! UploadProgressVC
+           // uploadVC.uploadingQueue = []
+        }
+            return true
+        }
+    }
+    // MARK: - Extension for FDWaveformViewDelegate
+    
+    //extension ExistingVC: FDWaveformViewDelegate {
+    //    func waveformViewWillRender(_ waveformView: FDWaveformView) {
+    //        startRendering = Date()
+    //    }
+    //
+    //    func waveformViewDidRender(_ waveformView: FDWaveformView) {
+    //        endRendering = Date()
+    //        NSLog("FDWaveformView rendering done, took %0.3f seconds", endRendering.timeIntervalSince(startRendering))
+    //        profileResult.append(String(format: " render %0.3f ", endRendering.timeIntervalSince(startRendering)))
+    //        UIView.animate(withDuration: 1, animations: {() -> Void in
+    //            waveformView.alpha = 1.0
+    //            waveformView.progressColor = #colorLiteral(red: 0.2273887992, green: 0.2274999917, blue: 0.9748747945, alpha: 1)
+    //        })
+    //    }
+    //
+    //    func waveformViewWillLoad(_ waveformView: FDWaveformView) {
+    //        startLoading = Date()
+    //    }
+    //
+    //    func waveformViewDidLoad(_ waveformView: FDWaveformView) {
+    //        endLoading = Date()
+    //        NSLog("FDWaveformView loading done, took %0.3f seconds", endLoading.timeIntervalSince(startLoading))
+    //        profileResult.append(String(format: " load %0.3f ", endLoading.timeIntervalSince(startLoading)))
+    //    }
+    //}
+    
+    extension Notification.Name {
+        static let audioPlayerManagerMeteringLevelDidUpdateNotification = Notification.Name("AudioPlayerManagerMeteringLevelDidUpdateNotification")
+        static let audioPlayerManagerMeteringLevelDidFinishNotification = Notification.Name("AudioPlayerManagerMeteringLevelDidFinishNotification")
+    }

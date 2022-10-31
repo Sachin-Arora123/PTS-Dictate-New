@@ -59,6 +59,14 @@ class CoreData: NSObject {
     }
     
     // MARK: - saveLocalData
+//    func openDatabse()
+//        {
+//            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+//            let context = appDelegate.persistentContainer.viewContext
+//            let newUser = NSManagedObject(entity: entity!, insertInto: context)
+//            saveData(UserDBObj:newUser)
+//        }
+    
     func dataSave(){
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let context = appDelegate.persistentContainer.viewContext
@@ -202,22 +210,24 @@ class CoreData: NSObject {
                         self.microSensitivityValue = microSensitivityValue
                         print("data get microSensitivityValue \(microSensitivityValue)")
                     }
-                    if let fileName = result.value(forKey: "fileName") as? String{
-                        self.fileName = fileName
-                        print("data get fileName \(fileName)")
-                        if let comments = result.value(forKey: "comments") as? [String:String] {
-                            self.comments = comments
-                        }
-                        if let audioFiles = result.value(forKey: "audioFiles") as? [AudioFile] {
-                            self.audioFiles = audioFiles
-                            print("data get audio files \(audioFiles)")
-                        }
+//                    if let audioFiles = result.value(forKey: "audioFiles") as? [AudioFile] {
+//                        self.audioFiles = audioFiles
+//                        print("data get audio files \(audioFiles)")
+//                    }
+                    
+                    guard let audioFiles = result.value(forKey: "audioFiles") as? [AudioFile] else {
+                        self.audioFiles = []
+                        print("Failed to load audio files from core data")
+                        return
                     }
+                    self.audioFiles = audioFiles
+                    print("data get audio files \(audioFiles)")
                 }
             }
-            
-        }catch{
-            print("something error during getting data")
+        }
+        catch (let e)
+        {
+            print("something error during getting data \(e)")
         }
     }
     
