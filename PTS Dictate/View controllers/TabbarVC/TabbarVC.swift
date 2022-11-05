@@ -17,8 +17,9 @@ class TabbarVC: UITabBarController, UITabBarControllerDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.delegate = self
         // Do any additional setup after loading the view.
- 
+        
         let thirdItemView = self.tabBar.subviews[2]
         self.thirdTabbarItemImageView = thirdItemView.subviews.first as? UIImageView
         if thirdTabbarItemImageView != nil {
@@ -35,17 +36,16 @@ class TabbarVC: UITabBarController, UITabBarControllerDelegate {
         self.tabBar.addSubview(lineView)
         lineView.layer.masksToBounds = true
         self.tabBar.sendSubviewToBack(lineView)
-//        self.tabBarController?.tabBar.backgroundColor = .white
+        //        self.tabBarController?.tabBar.backgroundColor = .white
     }
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        delegate = self
+        
     }
     
     override func viewWillLayoutSubviews() {
-      
+        
         // access to list of tab bar items
         if let items = self.tabBar.items {
             for (ind, itemt) in items.enumerated() {
@@ -61,7 +61,7 @@ class TabbarVC: UITabBarController, UITabBarControllerDelegate {
                     if let label = viewTabBar?.subviews[1] as? UILabel {
                         label.numberOfLines = 2
                         label.textAlignment = .center
-//                        label.lineBreakMode = .byWordWrapping
+                        //                        label.lineBreakMode = .byWordWrapping
                         DispatchQueue.main.asyncAfter(deadline: .now()) {
                             label.frame = CGRect(x: label.frame.minX, y: label.frame.minY, width: ind == 0 ? UIScreen.main.bounds.width/9.8 : 44, height: 25)
                             label.text = self.tabbarNames[ind]
@@ -74,7 +74,7 @@ class TabbarVC: UITabBarController, UITabBarControllerDelegate {
             }
         }
     }
-
+    
     private var bounceAnimation: CAKeyframeAnimation = {
         let bounceAnimation = CAKeyframeAnimation(keyPath: "transform.scale")
         bounceAnimation.values = [1.0, 1.2, 0.9, 1.1, 1.0]
@@ -151,13 +151,13 @@ extension UIImage {
         //    let rect = CGRect(x: 0.0, y: 0.0, width: 1.0, height: 0.5)
         UIGraphicsBeginImageContext(rect.size)
         let context = UIGraphicsGetCurrentContext()
-
+        
         context!.setFillColor(color.cgColor)
         context!.fill(rect)
-
+        
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-
+        
         return image!
     }
 }
@@ -167,15 +167,15 @@ extension UITabBarController {
         if (tabBar.isHidden == isHidden) {
             completion?()
         }
-
+        
         if !isHidden {
             tabBar.isHidden = false
         }
-
+        
         let height = tabBar.frame.size.height
         let offsetY = view.frame.height - (isHidden ? 0 : height)
         let duration = (animated ? 0.50 : 0.0)
-
+        
         let frame = CGRect(origin: CGPoint(x: tabBar.frame.minX, y: offsetY), size: tabBar.frame.size)
         UIView.animate(withDuration: duration, animations: {
             self.tabBar.frame = frame

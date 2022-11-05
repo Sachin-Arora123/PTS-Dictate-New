@@ -31,6 +31,8 @@
 		1868EAD628BAB2E200216D62 /* GeneralSettingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1868EAD528BAB2E200216D62 /* GeneralSettingCell.swift */; };
 		1868EAD928BAB3BB00216D62 /* RecordingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1868EAD728BAB3BB00216D62 /* RecordingCell.swift */; };
 		1868EADA28BAB3BB00216D62 /* RecordingCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1868EAD828BAB3BB00216D62 /* RecordingCell.xib */; };
+		18804D912912ECB200F56724 /* HpRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18804D902912ECB200F56724 /* HpRecorder.swift */; };
+		18804D932912ED0500F56724 /* AudioInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18804D922912ED0400F56724 /* AudioInput.swift */; };
 		188CEDDB28C3729C0083BAA2 /* ContactUsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 188CEDDA28C3729C0083BAA2 /* ContactUsVC.swift */; };
 		188CEDDD28C372BA0083BAA2 /* ContactUsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 188CEDDC28C372BA0083BAA2 /* ContactUsCell.swift */; };
 		18CDDB0A28B7D493006AB795 /* Tabbar.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 18CDDB0928B7D493006AB795 /* Tabbar.storyboard */; };
@@ -86,6 +88,8 @@
 		1868EAD528BAB2E200216D62 /* GeneralSettingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralSettingCell.swift; sourceTree = "<group>"; };
 		1868EAD728BAB3BB00216D62 /* RecordingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingCell.swift; sourceTree = "<group>"; };
 		1868EAD828BAB3BB00216D62 /* RecordingCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RecordingCell.xib; sourceTree = "<group>"; };
+		18804D902912ECB200F56724 /* HpRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HpRecorder.swift; sourceTree = "<group>"; };
+		18804D922912ED0400F56724 /* AudioInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioInput.swift; sourceTree = "<group>"; };
 		188CEDDA28C3729C0083BAA2 /* ContactUsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactUsVC.swift; sourceTree = "<group>"; };
 		188CEDDC28C372BA0083BAA2 /* ContactUsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactUsCell.swift; sourceTree = "<group>"; };
 		18CDDB0928B7D493006AB795 /* Tabbar.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Tabbar.storyboard; sourceTree = "<group>"; };
@@ -300,6 +304,15 @@
 			path = RenameVC;
 			sourceTree = "<group>";
 		};
+		18804D8F2912ECA100F56724 /* HpRecorder */ = {
+			isa = PBXGroup;
+			children = (
+				18804D902912ECB200F56724 /* HpRecorder.swift */,
+				18804D922912ED0400F56724 /* AudioInput.swift */,
+			);
+			path = HpRecorder;
+			sourceTree = "<group>";
+		};
 		188CEDD928C372350083BAA2 /* ContactUs */ = {
 			isa = PBXGroup;
 			children = (
@@ -455,6 +468,7 @@
 		616E4A3F290AB1E30011ABF2 /* Third-Party */ = {
 			isa = PBXGroup;
 			children = (
+				18804D8F2912ECA100F56724 /* HpRecorder */,
 				616E4A40290AB1F40011ABF2 /* F3BarGauge */,
 			);
 			path = "Third-Party";
@@ -612,8 +626,10 @@
 				184C5FED28C5239E005A52EB /* RecordVC.swift in Sources */,
 				18DF4BD428BE7B5D002FC063 /* LoginApi.swift in Sources */,
 				18DF4BE428BE955E002FC063 /* LoginViewModel.swift in Sources */,
+				18804D912912ECB200F56724 /* HpRecorder.swift in Sources */,
 				1854B88928B94F690039A96E /* UploadProgressVC.swift in Sources */,
 				2327B8AA2907C049000BCEDD /* AudioFiles.swift in Sources */,
+				18804D932912ED0500F56724 /* AudioInput.swift in Sources */,
 				185BE70F28BBE539004484CF /* AudioQualityVC.swift in Sources */,
 				23DCE102290EA54A00117066 /* UploadListCell.swift in Sources */,
 				18CDDB0D28B7D683006AB795 /* TabbarVC.swift in Sources */,
