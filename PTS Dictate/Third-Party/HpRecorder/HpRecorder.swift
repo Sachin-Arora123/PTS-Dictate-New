@@ -34,8 +34,8 @@ public class HPRecorder: NSObject {
     open lazy var settings: [String : Any] = {
         return [
             AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-            AVSampleRateKey: 12000,
-            AVNumberOfChannelsKey: 1,
+            AVSampleRateKey: 44100,
+            AVNumberOfChannelsKey: 2,
             AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
         ]
     }()
@@ -190,15 +190,8 @@ public class HPRecorder: NSObject {
 //
 //        return Constants.documentDir.appendingPathComponent(fileURL)
     }
-    public func createInitialRecordingURL(_ filename: String = "") -> URL {
-
-
-         let fileURL = filename + ".m4a"
-
-         return Constants.documentDir.appendingPathComponent(fileURL)
-     }
     
-    public func concatChunks(filename: String) {
+    public func concatChunks(filename: String, completion: @escaping(_ result: Bool) -> Void) {
         let composition = AVMutableComposition()
 
         var insertAt = CMTimeRange(start: CMTime.zero, end: CMTime.zero)
@@ -258,9 +251,15 @@ public class HPRecorder: NSObject {
         exportSession?.exportAsynchronously {
 
             switch exportSession?.status {
-            case .unknown?: break
-            case .waiting?: break
-            case .exporting?: break
+            case .unknown?:
+                completion(false)
+                break
+            case .waiting?:
+                completion(false)
+                break
+            case .exporting?:
+                completion(false)
+                break
             case .completed?:
                 /* Cleaning up partial recordings
                  */
@@ -274,15 +273,21 @@ public class HPRecorder: NSObject {
 //                    self.listRecordings.tableView.reloadData()
                     self.articleChunks = [AVURLAsset]()
                 }
-
+                completion(true)
                 /* Resetting `articleChunks` here, because this function is
                  called asynchronously and calling it from `queueTapped` or
                  `submitTapped` may delete the files prematurely.
                  */
 //                self.articleChunks = [AVURLAsset]()
-            case .failed?: break
-            case .cancelled?: break
-            case .none: break
+            case .failed?:
+                completion(true)
+                break
+            case .cancelled?:
+                completion(false)
+                break
+            case .none:
+                completion(true)
+                break
             }
         }
     }
