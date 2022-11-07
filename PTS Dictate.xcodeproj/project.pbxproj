@@ -48,6 +48,7 @@
 		18E8AAE828F89E0400DF73F4 /* ExistingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E8AAE728F89E0400DF73F4 /* ExistingViewModel.swift */; };
 		2327B8A82907BEB9000BCEDD /* AudioFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2327B8A72907BEB9000BCEDD /* AudioFile.swift */; };
 		2327B8AA2907C049000BCEDD /* AudioFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2327B8A92907C049000BCEDD /* AudioFiles.swift */; };
+		2365C924291913BC006F355D /* Extension+Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2365C923291913BC006F355D /* Extension+Date.swift */; };
 		23DCE102290EA54A00117066 /* UploadListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23DCE101290EA54A00117066 /* UploadListCell.swift */; };
 		28A4F5C628B510D90035137B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5C528B510D90035137B /* AppDelegate.swift */; };
 		28A4F5C828B510D90035137B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5C728B510D90035137B /* SceneDelegate.swift */; };
@@ -101,6 +102,7 @@
 		18E8AAE728F89E0400DF73F4 /* ExistingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExistingViewModel.swift; sourceTree = "<group>"; };
 		2327B8A72907BEB9000BCEDD /* AudioFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFile.swift; sourceTree = "<group>"; };
 		2327B8A92907C049000BCEDD /* AudioFiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFiles.swift; sourceTree = "<group>"; };
+		2365C923291913BC006F355D /* Extension+Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+Date.swift"; sourceTree = "<group>"; };
 		23DCE101290EA54A00117066 /* UploadListCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadListCell.swift; sourceTree = "<group>"; };
 		28A4F5C228B510D90035137B /* PTS Dictate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PTS Dictate.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		28A4F5C528B510D90035137B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -143,6 +145,7 @@
 				18DF4BE028BE899D002FC063 /* Extension+UIView.swift */,
 				180EB43828B6A87D00F1A3FB /* Extension+UIViewController.swift */,
 				18CDDB0E28B7D96C006AB795 /* Storyboard.swift */,
+				2365C923291913BC006F355D /* Extension+Date.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -603,6 +606,7 @@
 				18DF4BDB28BE7D81002FC063 /* CoreData.xcdatamodeld in Sources */,
 				182BE0B928BD459A00327094 /* ProfileVC.swift in Sources */,
 				188CEDDD28C372BA0083BAA2 /* ContactUsCell.swift in Sources */,
+				2365C924291913BC006F355D /* Extension+Date.swift in Sources */,
 				18DF4BD328BE7B5D002FC063 /* Reachability.swift in Sources */,
 				28A4F5DE28B51D750035137B /* Extension+Navigation.swift in Sources */,
 				188CEDDB28C3729C0083BAA2 /* ContactUsVC.swift in Sources */,

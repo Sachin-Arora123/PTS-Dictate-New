@@ -45,12 +45,13 @@ class UploadListCell: UITableViewCell {
             let size = fileSize(itemName: name)
             lblTiming.text = time
             lblDataLimit.text = size
-        } else {
-            detailStackView.isHidden = true
-            viewUploadProgress.isHidden = false
-            viewUploadProgress.backgroundColor = .systemGray
-            lblUploadProgress.text = "Uploading Progress: 0%"
         }
+//        else {
+//            detailStackView.isHidden = true
+//            viewUploadProgress.isHidden = false
+//            viewUploadProgress.backgroundColor = .systemGray
+//            lblUploadProgress.text = "Uploading Progress: 0%"
+//        }
     }
     
     func getTimeDuration(filePath: String) -> String{

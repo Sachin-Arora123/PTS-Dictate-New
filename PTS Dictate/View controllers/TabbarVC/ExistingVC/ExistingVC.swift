@@ -68,8 +68,8 @@ class ExistingVC: BaseViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setUpUI()
-        CoreData.shared.audioFiles = []
-        CoreData.shared.dataSave()
+//        CoreData.shared.audioFiles = []
+//        CoreData.shared.dataSave()
         self.setUpWave()
     }
     
@@ -193,10 +193,11 @@ class ExistingVC: BaseViewController {
 //                    }
 //
 //                }
-        self.existingViewModel.uploadingQueue = totalFilesSelected
+        
         if self.totalFilesSelected.count == 0{
             CommonFunctions.alertMessage(view: self, title: "PTS Dictate", msg: "Please select atleast one file.", btnTitle: "OK")
         } else {
+            self.existingViewModel.uploadingQueue = totalFilesSelected
             let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
             self.setPushTransitionAnimation(VC)
             self.navigationController?.popViewController(animated: false)

@@ -13,8 +13,8 @@ enum UpdateAudioFile {
     case isUploaded(Bool)
     case archivedDays(Int)
     case canEdit(Bool)
-    case createdAt(Date)
-    
+    case uploadedAt(String)
+    case uploadingInProgress(Bool)
     func update(audioName: String) {
         let instance = AudioFiles.shared
         var audio = 0
@@ -32,8 +32,10 @@ enum UpdateAudioFile {
             instance.audioFiles[audio].fileInfo?.archivedDays = newValue
         case .canEdit(let newValue):
             instance.audioFiles[audio].fileInfo?.canEdit = newValue
-        case .createdAt(let newValue):
-            instance.audioFiles[audio].fileInfo?.createdAt = newValue
+        case .uploadedAt(let newValue):
+            instance.audioFiles[audio].fileInfo?.uploadedAt = newValue
+        case .uploadingInProgress(let newValue):
+            instance.audioFiles[audio].fileInfo?.uploadingInProgress = newValue
         }
         instance.updateAudioFilesOnCoreData()
     }
@@ -58,12 +60,12 @@ class AudioFiles {
     }
     
     func saveNewAudioFile(name: String) {
-        AudioFiles.shared.audioFiles.append(AudioFile(name: name, fileInfo: AudioFileInfo(comment: "", isUploaded: false, archivedDays: 1, canEdit: false, createdAt: Date())))
+        AudioFiles.shared.audioFiles.append(AudioFile(name: name, fileInfo: AudioFileInfo(comment: "", isUploaded: false, archivedDays: 1, canEdit: false, uploadedAt: nil, uploadingInProgress: false)))
         updateAudioFilesOnCoreData()
     }
     
     func saveNewAudioFile(name: String, comment: String) {
-        AudioFiles.shared.audioFiles.append(AudioFile(name: name, fileInfo: AudioFileInfo(comment: comment, isUploaded: false, archivedDays: 1, canEdit: false, createdAt: Date())))
+        AudioFiles.shared.audioFiles.append(AudioFile(name: name, fileInfo: AudioFileInfo(comment: comment, isUploaded: false, archivedDays: 1, canEdit: false, uploadedAt: nil, uploadingInProgress: false)))
         updateAudioFilesOnCoreData()
     }
     
