@@ -71,6 +71,7 @@ class ExistingVC: BaseViewController {
 //        CoreData.shared.audioFiles = []
 //        CoreData.shared.dataSave()
         self.setUpWave()
+        self.checkArchiveDate()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -182,18 +183,6 @@ class ExistingVC: BaseViewController {
     
     // MARK: - @IBActions.
     @IBAction func onTapUpload(_ sender: UIButton) {
-//        let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-//                for file in totalFilesSelected {
-//                    let completePath = directoryPath.absoluteString + file
-//                    let url = URL(string: completePath)
-//                    self.existingViewModel.uploadAudio(userName: CoreData.shared.userName, toUser: "pts", emailNotify: false, fileUrl: url!, fileName: file, description: AudioFiles.shared.getAudioComment(name: file)) {
-//                        print("uploaded successfully")
-//                    } failure: { error in
-//                        print(error)
-//                    }
-//
-//                }
-        
         if self.totalFilesSelected.count == 0{
             CommonFunctions.alertMessage(view: self, title: "PTS Dictate", msg: "Please select atleast one file.", btnTitle: "OK")
         } else {
@@ -214,11 +203,8 @@ class ExistingVC: BaseViewController {
                 if success{
                     print("tF===____>>>", self.totalFiles)
                     print("tFSelect===____>>>", self.totalFilesSelected)
-                    for av in self.totalFilesSelected {
-                        self.removeAudio(itemName: av, fileExtension: "")
-                    }
-                    //                    self.totalFiles = self.findFilesWith(fileExtension: "m4a")
                     for file in self.totalFilesSelected {
+                        self.removeAudio(itemName: file, fileExtension: "")
                         AudioFiles.shared.deleteAudio(name: file)
                     }
                     self.totalFiles = self.getSortedAudioList()
@@ -399,10 +385,27 @@ class ExistingVC: BaseViewController {
         }
     }
     
-    func selectAudioFileToPlay(audio index:Int?) {
+    func checkArchiveDate() {
+        let currentDateString = Date().getFormattedDateString()
+        let audioFiles = AudioFiles.shared.audioFiles
         
+        for file in audioFiles where file.fileInfo?.isUploaded ?? false && file.fileInfo?.archivedDays != 0 {
+            let uploadedDate = file.fileInfo?.uploadedAt ?? ""
+            let archivedDays = file.fileInfo?.archivedDays ?? 0
+            let diffDays = daysBetween(start: uploadedDate.getDateFromFormattedString(), end: currentDateString.getDateFromFormattedString())
+            if diffDays > archivedDays {
+                let fileName = file.name ?? ""
+                self.removeAudio(itemName: fileName, fileExtension: "")
+                AudioFiles.shared.deleteAudio(name: fileName)
+                self.totalFiles = self.getSortedAudioList()
+                self.setRightBarItem()
+            }
+        }
     }
     
+    private func daysBetween(start: Date, end: Date) -> Int {
+        return Calendar.current.dateComponents([.day], from: start, to: end).day!
+    }
 }
 
 // MARK: - Extension for tableView delegate & dataSource methods.

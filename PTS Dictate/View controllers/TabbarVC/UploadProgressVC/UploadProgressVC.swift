@@ -59,8 +59,8 @@ class UploadProgressVC: BaseViewController {
                 print("file uploaded")
                 UpdateAudioFile.isUploaded(true).update(audioName: file)
                 UpdateAudioFile.uploadingInProgress(false).update(audioName: file)
-                let date = Date().getFormattedDateString()
-                UpdateAudioFile.uploadedAt(date).update(audioName: file)
+                let date = Calendar.current.date(byAdding: .day, value: -2, to: Date()) ?? Date()
+                UpdateAudioFile.uploadedAt(date.getFormattedDateString()).update(audioName: file)
                 self.tableView.reloadData()
                 if self.currentUploadingFile < self.files.count - 1 { self.currentUploadingFile += 1 }
             } failure: { error in

@@ -44,7 +44,9 @@ enum UpdateAudioFile {
 class AudioFiles {
     
     var audioFiles: [AudioFile] = []
-
+    private let archiveFile = CoreData.shared.archiveFile
+    private var archiveFileDays = CoreData.shared.archiveFileDays
+    
     static var shared: AudioFiles{
         struct singleTon {
             static let instance = AudioFiles()
@@ -60,12 +62,12 @@ class AudioFiles {
     }
     
     func saveNewAudioFile(name: String) {
-        AudioFiles.shared.audioFiles.append(AudioFile(name: name, fileInfo: AudioFileInfo(comment: "", isUploaded: false, archivedDays: 1, canEdit: false, uploadedAt: nil, uploadingInProgress: false)))
+        AudioFiles.shared.audioFiles.append(AudioFile(name: name, fileInfo: AudioFileInfo(comment: "", isUploaded: false, archivedDays: archiveFile == 1 ? archiveFileDays : 0, canEdit: false, uploadedAt: nil, uploadingInProgress: false)))
         updateAudioFilesOnCoreData()
     }
     
     func saveNewAudioFile(name: String, comment: String) {
-        AudioFiles.shared.audioFiles.append(AudioFile(name: name, fileInfo: AudioFileInfo(comment: comment, isUploaded: false, archivedDays: 1, canEdit: false, uploadedAt: nil, uploadingInProgress: false)))
+        AudioFiles.shared.audioFiles.append(AudioFile(name: name, fileInfo: AudioFileInfo(comment: comment, isUploaded: false, archivedDays: archiveFile == 1 ? archiveFileDays : 0, canEdit: false, uploadedAt: nil, uploadingInProgress: false)))
         updateAudioFilesOnCoreData()
     }
     

@@ -20,11 +20,11 @@ extension Date {
 
 extension String {
     
-    func getDateFromFormattedString() -> Date? {
+    func getDateFromFormattedString() -> Date {
         let formatter = DateFormatter()
         formatter.dateStyle = .long
         formatter.timeStyle = .short
-        return formatter.date(from: self)
+        return formatter.date(from: self) ?? Date()
     }
     
 }
