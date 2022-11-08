@@ -41,9 +41,6 @@ class ExistingVC: BaseViewController {
     var totalFilesSelected : [String] = []
     var playingCellIndex = -1
     var fileDuration = 0
-    var comments: [String: String] {
-        return CoreData.shared.comments
-    }
     var uploadingQueue: [String] = []
     var editFromExiting: Bool = false
     private var audioMeteringLevelTimer: Timer?
@@ -434,6 +431,7 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
             cell.lblFileStatus.text = "Auto Saved File"
             cell.btnComment.isUserInteractionEnabled = true
             cell.btnEdit.isUserInteractionEnabled = true
+            cell.btnComment.isHidden = true
             cell.btnComment.setBackgroundImage(UIImage(named: "no_comments_normal"), for: .normal)
             cell.btnEdit.setBackgroundImage(UIImage(named: "music_edit_normal"), for: .normal)
         } else if file?.fileInfo?.isUploaded ?? true && file?.fileInfo?.comment != nil{
@@ -448,6 +446,7 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
             cell.lblFileStatus.text = "Uploaded"
             cell.btnComment.isUserInteractionEnabled = true
             cell.btnEdit.isUserInteractionEnabled = false
+            cell.btnComment.isHidden = true
             cell.btnComment.setBackgroundImage(UIImage(named: "no_comments_active"), for: .normal)
             cell.btnEdit.setBackgroundImage(UIImage(named: "music_edit_disable"), for: .normal)
         }

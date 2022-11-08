@@ -222,7 +222,6 @@ class CoreData: NSObject {
         archiveFileDays = 1
         uploadViaWifi = 0
         sleepModeOverride = 0
-        comments = [:]
         audioFiles = []
         
         if !self.isRemeberMe{
