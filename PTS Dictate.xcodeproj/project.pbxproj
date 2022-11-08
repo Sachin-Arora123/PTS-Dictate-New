@@ -31,6 +31,8 @@
 		1868EAD628BAB2E200216D62 /* GeneralSettingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1868EAD528BAB2E200216D62 /* GeneralSettingCell.swift */; };
 		1868EAD928BAB3BB00216D62 /* RecordingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1868EAD728BAB3BB00216D62 /* RecordingCell.swift */; };
 		1868EADA28BAB3BB00216D62 /* RecordingCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1868EAD828BAB3BB00216D62 /* RecordingCell.xib */; };
+		18804D912912ECB200F56724 /* HpRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18804D902912ECB200F56724 /* HpRecorder.swift */; };
+		18804D932912ED0500F56724 /* AudioInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18804D922912ED0400F56724 /* AudioInput.swift */; };
 		188CEDDB28C3729C0083BAA2 /* ContactUsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 188CEDDA28C3729C0083BAA2 /* ContactUsVC.swift */; };
 		188CEDDD28C372BA0083BAA2 /* ContactUsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 188CEDDC28C372BA0083BAA2 /* ContactUsCell.swift */; };
 		18CDDB0A28B7D493006AB795 /* Tabbar.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 18CDDB0928B7D493006AB795 /* Tabbar.storyboard */; };
@@ -48,7 +50,7 @@
 		18E8AAE828F89E0400DF73F4 /* ExistingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E8AAE728F89E0400DF73F4 /* ExistingViewModel.swift */; };
 		2327B8A82907BEB9000BCEDD /* AudioFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2327B8A72907BEB9000BCEDD /* AudioFile.swift */; };
 		2327B8AA2907C049000BCEDD /* AudioFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2327B8A92907C049000BCEDD /* AudioFiles.swift */; };
-		2365C924291913BC006F355D /* Extension+Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2365C923291913BC006F355D /* Extension+Date.swift */; };
+		23C89FC0291A948900999929 /* Extension+Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C89FBF291A948900999929 /* Extension+Date.swift */; };
 		23DCE102290EA54A00117066 /* UploadListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23DCE101290EA54A00117066 /* UploadListCell.swift */; };
 		28A4F5C628B510D90035137B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5C528B510D90035137B /* AppDelegate.swift */; };
 		28A4F5C828B510D90035137B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5C728B510D90035137B /* SceneDelegate.swift */; };
@@ -58,6 +60,8 @@
 		28A4F5D228B510DE0035137B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 28A4F5D028B510DE0035137B /* LaunchScreen.storyboard */; };
 		28A4F5DE28B51D750035137B /* Extension+Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5DD28B51D750035137B /* Extension+Navigation.swift */; };
 		4BFCB13CEA7E06C3217E3512 /* Pods_PTS_Dictate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7801E7DB3243DA4B1EF6CD0C /* Pods_PTS_Dictate.framework */; };
+		616E4A43290AB21E0011ABF2 /* F3BarGauge.m in Sources */ = {isa = PBXBuildFile; fileRef = 616E4A41290AB21E0011ABF2 /* F3BarGauge.m */; };
+		616E4A45290AB9550011ABF2 /* Extension+UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616E4A44290AB9550011ABF2 /* Extension+UIColor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -85,6 +89,8 @@
 		1868EAD528BAB2E200216D62 /* GeneralSettingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralSettingCell.swift; sourceTree = "<group>"; };
 		1868EAD728BAB3BB00216D62 /* RecordingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingCell.swift; sourceTree = "<group>"; };
 		1868EAD828BAB3BB00216D62 /* RecordingCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RecordingCell.xib; sourceTree = "<group>"; };
+		18804D902912ECB200F56724 /* HpRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HpRecorder.swift; sourceTree = "<group>"; };
+		18804D922912ED0400F56724 /* AudioInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioInput.swift; sourceTree = "<group>"; };
 		188CEDDA28C3729C0083BAA2 /* ContactUsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactUsVC.swift; sourceTree = "<group>"; };
 		188CEDDC28C372BA0083BAA2 /* ContactUsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactUsCell.swift; sourceTree = "<group>"; };
 		18CDDB0928B7D493006AB795 /* Tabbar.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Tabbar.storyboard; sourceTree = "<group>"; };
@@ -102,7 +108,7 @@
 		18E8AAE728F89E0400DF73F4 /* ExistingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExistingViewModel.swift; sourceTree = "<group>"; };
 		2327B8A72907BEB9000BCEDD /* AudioFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFile.swift; sourceTree = "<group>"; };
 		2327B8A92907C049000BCEDD /* AudioFiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFiles.swift; sourceTree = "<group>"; };
-		2365C923291913BC006F355D /* Extension+Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+Date.swift"; sourceTree = "<group>"; };
+		23C89FBF291A948900999929 /* Extension+Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+Date.swift"; sourceTree = "<group>"; };
 		23DCE101290EA54A00117066 /* UploadListCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadListCell.swift; sourceTree = "<group>"; };
 		28A4F5C228B510D90035137B /* PTS Dictate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PTS Dictate.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		28A4F5C528B510D90035137B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -114,6 +120,10 @@
 		28A4F5D328B510DE0035137B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		28A4F5DD28B51D750035137B /* Extension+Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+Navigation.swift"; sourceTree = "<group>"; };
 		60EFDBA9037F05EEA8612299 /* Pods-PTS Dictate.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PTS Dictate.debug.xcconfig"; path = "Target Support Files/Pods-PTS Dictate/Pods-PTS Dictate.debug.xcconfig"; sourceTree = "<group>"; };
+		616E4A41290AB21E0011ABF2 /* F3BarGauge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = F3BarGauge.m; sourceTree = "<group>"; };
+		616E4A42290AB21E0011ABF2 /* F3BarGauge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = F3BarGauge.h; sourceTree = "<group>"; };
+		616E4A44290AB9550011ABF2 /* Extension+UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+UIColor.swift"; sourceTree = "<group>"; };
+		61736DF3290AA79E006D8065 /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
 		7801E7DB3243DA4B1EF6CD0C /* Pods_PTS_Dictate.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PTS_Dictate.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2DCF3613E1B667385F2C263 /* Pods-PTS Dictate.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PTS Dictate.release.xcconfig"; path = "Target Support Files/Pods-PTS Dictate/Pods-PTS Dictate.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -145,7 +155,8 @@
 				18DF4BE028BE899D002FC063 /* Extension+UIView.swift */,
 				180EB43828B6A87D00F1A3FB /* Extension+UIViewController.swift */,
 				18CDDB0E28B7D96C006AB795 /* Storyboard.swift */,
-				2365C923291913BC006F355D /* Extension+Date.swift */,
+				616E4A44290AB9550011ABF2 /* Extension+UIColor.swift */,
+				23C89FBF291A948900999929 /* Extension+Date.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -296,6 +307,15 @@
 			path = RenameVC;
 			sourceTree = "<group>";
 		};
+		18804D8F2912ECA100F56724 /* HpRecorder */ = {
+			isa = PBXGroup;
+			children = (
+				18804D902912ECB200F56724 /* HpRecorder.swift */,
+				18804D922912ED0400F56724 /* AudioInput.swift */,
+			);
+			path = HpRecorder;
+			sourceTree = "<group>";
+		};
 		188CEDD928C372350083BAA2 /* ContactUs */ = {
 			isa = PBXGroup;
 			children = (
@@ -390,6 +410,7 @@
 		28A4F5C428B510D90035137B /* PTS Dictate */ = {
 			isa = PBXGroup;
 			children = (
+				616E4A3F290AB1E30011ABF2 /* Third-Party */,
 				184C964428C7C707004639B3 /* CommonFunctions */,
 				18DF4BD828BE7D4F002FC063 /* CoreData */,
 				18DF4BCA28BE7B5D002FC063 /* APIHandler */,
@@ -442,8 +463,27 @@
 				2327B8A62907BE8C000BCEDD /* AudioFiles Handler Model */,
 				180EB43428B6A15900F1A3FB /* BaseViewController.swift */,
 				18DF4BDE28BE872F002FC063 /* CommonFunctions.swift */,
+				61736DF3290AA79E006D8065 /* Bridging-Header.h */,
 			);
 			path = Helpers;
+			sourceTree = "<group>";
+		};
+		616E4A3F290AB1E30011ABF2 /* Third-Party */ = {
+			isa = PBXGroup;
+			children = (
+				18804D8F2912ECA100F56724 /* HpRecorder */,
+				616E4A40290AB1F40011ABF2 /* F3BarGauge */,
+			);
+			path = "Third-Party";
+			sourceTree = "<group>";
+		};
+		616E4A40290AB1F40011ABF2 /* F3BarGauge */ = {
+			isa = PBXGroup;
+			children = (
+				616E4A42290AB21E0011ABF2 /* F3BarGauge.h */,
+				616E4A41290AB21E0011ABF2 /* F3BarGauge.m */,
+			);
+			path = F3BarGauge;
 			sourceTree = "<group>";
 		};
 		97719E97C8011AC41905B41C /* Pods */ = {
@@ -489,6 +529,7 @@
 				TargetAttributes = {
 					28A4F5C128B510D90035137B = {
 						CreatedOnToolsVersion = 13.3.1;
+						LastSwiftMigration = 1400;
 					};
 				};
 			};
@@ -581,14 +622,18 @@
 				28A4F5CA28B510D90035137B /* LoginVC.swift in Sources */,
 				1868EAD628BAB2E200216D62 /* GeneralSettingCell.swift in Sources */,
 				186765FB28C4C994006BABDF /* CommentsVC.swift in Sources */,
+				616E4A43290AB21E0011ABF2 /* F3BarGauge.m in Sources */,
 				18DF4BDD28BE7E30002FC063 /* CoreData.swift in Sources */,
 				18DF4BE128BE899D002FC063 /* Extension+UIView.swift in Sources */,
 				1855435628C36474008AFBC2 /* AboutVC.swift in Sources */,
 				184C5FED28C5239E005A52EB /* RecordVC.swift in Sources */,
 				18DF4BD428BE7B5D002FC063 /* LoginApi.swift in Sources */,
 				18DF4BE428BE955E002FC063 /* LoginViewModel.swift in Sources */,
+				23C89FC0291A948900999929 /* Extension+Date.swift in Sources */,
+				18804D912912ECB200F56724 /* HpRecorder.swift in Sources */,
 				1854B88928B94F690039A96E /* UploadProgressVC.swift in Sources */,
 				2327B8AA2907C049000BCEDD /* AudioFiles.swift in Sources */,
+				18804D932912ED0500F56724 /* AudioInput.swift in Sources */,
 				185BE70F28BBE539004484CF /* AudioQualityVC.swift in Sources */,
 				23DCE102290EA54A00117066 /* UploadListCell.swift in Sources */,
 				18CDDB0D28B7D683006AB795 /* TabbarVC.swift in Sources */,
@@ -599,6 +644,7 @@
 				180EB43928B6A87D00F1A3FB /* Extension+UIViewController.swift in Sources */,
 				18CDDB0F28B7D96C006AB795 /* Storyboard.swift in Sources */,
 				18DF4BD228BE7B5D002FC063 /* ApiConstant.swift in Sources */,
+				616E4A45290AB9550011ABF2 /* Extension+UIColor.swift in Sources */,
 				18DF4BD728BE7B5D002FC063 /* ApiHandler.swift in Sources */,
 				28A4F5C628B510D90035137B /* AppDelegate.swift in Sources */,
 				182BE0B628BD3B6000327094 /* MicroSensitivityVC.swift in Sources */,
@@ -606,7 +652,6 @@
 				18DF4BDB28BE7D81002FC063 /* CoreData.xcdatamodeld in Sources */,
 				182BE0B928BD459A00327094 /* ProfileVC.swift in Sources */,
 				188CEDDD28C372BA0083BAA2 /* ContactUsCell.swift in Sources */,
-				2365C924291913BC006F355D /* Extension+Date.swift in Sources */,
 				18DF4BD328BE7B5D002FC063 /* Reachability.swift in Sources */,
 				28A4F5DE28B51D750035137B /* Extension+Navigation.swift in Sources */,
 				188CEDDB28C3729C0083BAA2 /* ContactUsVC.swift in Sources */,
@@ -698,6 +743,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -751,6 +797,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -762,6 +809,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = C9D722FWWH;
@@ -780,10 +828,11 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.mohit.pixelscope.PTS-Dictate";
+				MARKETING_VERSION = 2.4.3;
+				PRODUCT_BUNDLE_IDENTIFIER = "pixelscope.PTS-Dictate";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "PTS Dictate/Helpers/Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -795,6 +844,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = C9D722FWWH;
@@ -813,10 +863,11 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.mohit.pixelscope.PTS-Dictate";
+				MARKETING_VERSION = 2.4.3;
+				PRODUCT_BUNDLE_IDENTIFIER = "pixelscope.PTS-Dictate";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "PTS Dictate/Helpers/Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};

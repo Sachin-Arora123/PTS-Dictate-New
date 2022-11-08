@@ -36,7 +36,7 @@ class UploadListCell: UITableViewCell {
         if inProgress {
             detailStackView.isHidden = true
             viewUploadProgress.isHidden = false
-            viewUploadProgress.backgroundColor = .appThemeColor
+            viewUploadProgress.backgroundColor = UIColor.appThemeColor
             lblUploadProgress.text = "Uploading Progress: 99%"
         } else if isUploaded {
             detailStackView.isHidden = false

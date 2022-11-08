@@ -2,11 +2,10 @@
 //  Extension+Date.swift
 //  PTS Dictate
 //
-//  Created by Mohit Soni on 07/11/22.
+//  Created by Mohit Soni on 08/11/22.
 //
 
 import Foundation
-
 extension Date {
     
     func getFormattedDateString() -> String {

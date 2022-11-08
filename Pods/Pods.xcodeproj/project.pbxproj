@@ -2071,7 +2071,7 @@
 			baseConfigurationReference = 226C4EC49EE9CB8C304DF5B14D66998B /* SwiftToast.release.xcconfig */;
 			buildSettings = {
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/SwiftToast";
-				DEVELOPMENT_TEAM = 3SZD7B8XW4;
+				DEVELOPMENT_TEAM = C9D722FWWH;
 				IBSC_MODULE = SwiftToast;
 				INFOPLIST_FILE = "Target Support Files/SwiftToast/ResourceBundle-SwiftToast-SwiftToast-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -2326,7 +2326,7 @@
 			baseConfigurationReference = 449557796087698F085BF3F7FC460011 /* SwiftToast.debug.xcconfig */;
 			buildSettings = {
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/SwiftToast";
-				DEVELOPMENT_TEAM = 3SZD7B8XW4;
+				DEVELOPMENT_TEAM = C9D722FWWH;
 				IBSC_MODULE = SwiftToast;
 				INFOPLIST_FILE = "Target Support Files/SwiftToast/ResourceBundle-SwiftToast-SwiftToast-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;

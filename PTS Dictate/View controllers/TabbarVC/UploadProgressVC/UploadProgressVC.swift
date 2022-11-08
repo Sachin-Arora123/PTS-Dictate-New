@@ -69,6 +69,7 @@ class UploadProgressVC: BaseViewController {
             } failure: { error in
                 print(error)
                 UpdateAudioFile.isUploaded(false).update(audioName: file)
+                CommonFunctions.alertMessage(view: self, title: "PTS Dictate", msg: "Can't upload audio files at the moment, Please try again after some time.", btnTitle: "OK")
                 self.tableView.reloadData()
             }
     }

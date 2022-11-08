@@ -47,11 +47,6 @@ class CommentsVC: BaseViewController {
     func setUpUI() {
         hideLeftButton()
         setTitleWithoutImage("Comments")
-        if isCommentsMandotary {
-            btnDiscard.isUserInteractionEnabled = true
-        } else {
-            btnDiscard.isUserInteractionEnabled = false
-        }
         if fromExistingVC && canEditComments {
             txtViewComment.isEditable = true
             txtViewComment.text = comment
@@ -66,6 +61,11 @@ class CommentsVC: BaseViewController {
             txtViewComment.isEditable = true
             txtViewComment.becomeFirstResponder()
             btnSave.isUserInteractionEnabled = true
+            btnDiscard.isUserInteractionEnabled = true
+        }
+        if isCommentsMandotary {
+            btnDiscard.isUserInteractionEnabled = false
+        } else {
             btnDiscard.isUserInteractionEnabled = true
         }
         btnSave.isHidden = isUploaded
