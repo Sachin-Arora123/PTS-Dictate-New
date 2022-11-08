@@ -277,20 +277,16 @@ class ExistingVC: BaseViewController {
         self.mediaProgressView.meteringLevels = [0.1, 0.67, 0.13, 0.78, 0.31]
     }
     
-    fileprivate func getSelectedAudioComment(selected audio: String) -> String {
-        for (key, value) in comments where key == audio {
-            return value
-        }
-        return ""
-    }
-    
     fileprivate func pushToComments(selected audio: String, index: Int) {
         let VC = CommentsVC.instantiateFromAppStoryboard(appStoryboard: .Main)
         self.setPushTransitionAnimation(VC)
         VC.hidesBottomBarWhenPushed = true
-        VC.updateComment = true
+        let audioFile = getFileInfo(name: audio)
+        let isUploaded = audioFile?.fileInfo?.isUploaded ?? false
+        VC.fromExistingVC = true
+        VC.canEditComments = isUploaded ? false : true
         VC.selectedAudio = audio
-        VC.comment = getSelectedAudioComment(selected: audio)
+        VC.comment = audioFile?.fileInfo?.comment ?? ""
         self.navigationController?.pushViewController(VC, animated: false)
     }
     
@@ -424,7 +420,46 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
             return 0
         }
     }
+    func setCellData(cell: ExistingFileCell, audioName: String) {
+        let file = getFileInfo(name: audioName)
+        if !(file?.fileInfo?.isUploaded ?? false) && file?.fileInfo?.comment != nil {
+            cell.lblFileStatus.textColor = UIColor.black
+            cell.lblFileStatus.text = "Auto Saved File"
+            cell.btnComment.isUserInteractionEnabled = true
+            cell.btnEdit.isUserInteractionEnabled = true
+            cell.btnComment.setBackgroundImage(UIImage(named: "comments_normal"), for: .normal)
+            cell.btnEdit.setBackgroundImage(UIImage(named: "music_edit_normal"), for: .normal)
+        } else if !(file?.fileInfo?.isUploaded ?? false) && file?.fileInfo?.comment == nil {
+            cell.lblFileStatus.textColor = UIColor.black
+            cell.lblFileStatus.text = "Auto Saved File"
+            cell.btnComment.isUserInteractionEnabled = true
+            cell.btnEdit.isUserInteractionEnabled = true
+            cell.btnComment.setBackgroundImage(UIImage(named: "no_comments_normal"), for: .normal)
+            cell.btnEdit.setBackgroundImage(UIImage(named: "music_edit_normal"), for: .normal)
+        } else if file?.fileInfo?.isUploaded ?? true && file?.fileInfo?.comment != nil{
+            cell.lblFileStatus.textColor = UIColor(red: 62/255, green: 116/255, blue: 36/255, alpha: 1.0)
+            cell.lblFileStatus.text = "Uploaded"
+            cell.btnComment.isUserInteractionEnabled = true
+            cell.btnEdit.isUserInteractionEnabled = false
+            cell.btnComment.setBackgroundImage(UIImage(named: "comments_active"), for: .normal)
+            cell.btnEdit.setBackgroundImage(UIImage(named: "music_edit_disable"), for: .normal)
+        } else if file?.fileInfo?.isUploaded ?? true && file?.fileInfo?.comment == nil {
+            cell.lblFileStatus.textColor = UIColor(red: 62/255, green: 116/255, blue: 36/255, alpha: 1.0)
+            cell.lblFileStatus.text = "Uploaded"
+            cell.btnComment.isUserInteractionEnabled = true
+            cell.btnEdit.isUserInteractionEnabled = false
+            cell.btnComment.setBackgroundImage(UIImage(named: "no_comments_active"), for: .normal)
+            cell.btnEdit.setBackgroundImage(UIImage(named: "music_edit_disable"), for: .normal)
+        }
+    }
     
+    func getFileInfo(name: String) -> AudioFile? {
+        let audioFiles = AudioFiles.shared.audioFiles
+        for file in audioFiles where file.name == name {
+            return file
+        }
+        return nil
+    }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ExistingFileCell", for: indexPath) as! ExistingFileCell
         if self.totalFilesSelected.contains(self.totalFiles[indexPath.row]){
@@ -445,7 +480,7 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
         cell.btnPlay.addTarget(self, action: #selector(play), for: .touchUpInside)
         cell.btnComment.addTarget(self, action: #selector(openCommentVC), for: .touchUpInside)
         cell.btnEdit.addTarget(self, action: #selector(openRenameFileVc), for: .touchUpInside)
-        
+        setCellData(cell: cell, audioName: totalFiles[indexPath.row])
         DispatchQueue.main.async {
             let time = self.getTimeDuration(filePath: self.totalFiles[indexPath.row])
             cell.lblFileTime.text = time
@@ -600,7 +635,7 @@ extension ExistingVC: UITabBarControllerDelegate {
             recordVC.editFromExiting = false
         } else if viewController.isKind(of: UploadProgressVC.self as AnyClass) {
             let uploadVC = tabBarController.viewControllers?[1] as! UploadProgressVC
-           // uploadVC.uploadingQueue = []
+            self.existingViewModel.uploadingQueue = []
         }
             return true
         }

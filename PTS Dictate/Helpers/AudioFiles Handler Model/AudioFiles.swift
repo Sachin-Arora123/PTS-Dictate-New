@@ -62,7 +62,7 @@ class AudioFiles {
     }
     
     func saveNewAudioFile(name: String) {
-        AudioFiles.shared.audioFiles.append(AudioFile(name: name, fileInfo: AudioFileInfo(comment: "", isUploaded: false, archivedDays: archiveFile == 1 ? archiveFileDays : 0, canEdit: false, uploadedAt: nil, uploadingInProgress: false)))
+        AudioFiles.shared.audioFiles.append(AudioFile(name: name, fileInfo: AudioFileInfo(comment: nil, isUploaded: false, archivedDays: archiveFile == 1 ? archiveFileDays : 0, canEdit: false, uploadedAt: nil, uploadingInProgress: false)))
         updateAudioFilesOnCoreData()
     }
     

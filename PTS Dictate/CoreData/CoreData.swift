@@ -30,7 +30,6 @@ class CoreData: NSObject {
     var archiveFileDays = 1 // 1 - day default
     var uploadViaWifi = 0 // 1 - true & 0 - false
     var sleepModeOverride = 0 // 1 - true & 0 - false
-    var comments: [String:String] = [:] // [fileName:Comment]
     var audioFiles: [AudioFile] = [] {
         didSet {
             AudioFiles.shared.audioFiles = audioFiles
@@ -91,7 +90,6 @@ class CoreData: NSObject {
         newData.setValue(archiveFileDays, forKey: "archiveFileDays")
         newData.setValue(uploadViaWifi, forKey: "uploadViaWifi")
         newData.setValue(sleepModeOverride, forKey: "sleepModeOverride")
-        newData.setValue(comments, forKey: "comments")
         newData.setValue(audioFiles, forKey: "audioFiles")
         do {
             try context.save()
@@ -188,14 +186,6 @@ class CoreData: NSObject {
                         self.sleepModeOverride = sleepModeOverride
                         print("data get id \(sleepModeOverride)")
                     }
-                    if let comments = result.value(forKey: "comments") as? [String:String] {
-                        self.comments = comments
-                    }
-//                    if let audioFiles = result.value(forKey: "audioFiles") as? [AudioFile] {
-//                        self.audioFiles = audioFiles
-//                        print("data get audio files \(audioFiles)")
-//                    }
-                    
                     guard let audioFiles = result.value(forKey: "audioFiles") as? [AudioFile] else {
                         self.audioFiles = []
                         print("Failed to load audio files from core data")

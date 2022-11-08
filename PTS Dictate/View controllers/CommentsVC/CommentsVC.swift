@@ -18,8 +18,9 @@ class CommentsVC: BaseViewController {
     
     // MARK: Properties
     var isCommentsMandotary = false
-    var canEditComments = true
-    var updateComment = false
+    var canEditComments = false
+    var fromExistingVC = false
+    var isUploaded = false
     var selectedAudio = ""
     var fileName = ""
     var comment = ""
@@ -51,22 +52,29 @@ class CommentsVC: BaseViewController {
         } else {
             btnDiscard.isUserInteractionEnabled = false
         }
-        if canEditComments {
+        if fromExistingVC && canEditComments {
             txtViewComment.isEditable = true
-            txtViewComment.becomeFirstResponder()
+            txtViewComment.text = comment
             btnSave.isUserInteractionEnabled = true
             btnDiscard.isUserInteractionEnabled = true
-        } else {
+        } else if fromExistingVC && !canEditComments{
             txtViewComment.isEditable = false
             txtViewComment.text = comment
             btnSave.isUserInteractionEnabled = false
             btnDiscard.isUserInteractionEnabled = false
+        } else {
+            txtViewComment.isEditable = true
+            txtViewComment.becomeFirstResponder()
+            btnSave.isUserInteractionEnabled = true
+            btnDiscard.isUserInteractionEnabled = true
         }
+        btnSave.isHidden = isUploaded
+        btnDiscard.isHidden = isUploaded
         self.navigationController?.navigationItem.hidesBackButton = true
     }
     
     fileprivate func saveComment() {
-        if updateComment {
+        if fromExistingVC {
             UpdateAudioFile.comment(txtViewComment.text ?? "").update(audioName: selectedAudio)
         }
         AudioFiles.shared.saveNewAudioFile(name: fileName, comment: txtViewComment.text ?? "")
@@ -81,7 +89,6 @@ class CommentsVC: BaseViewController {
             if controller.isKind(of: TabbarVC.self) {
                 let tabVC = controller as! TabbarVC
                     tabVC.selectedIndex = 0 //no need of this line if you want to access same tab where you have started your navigation
-//                let VCs = tabVC.selectedViewController as! ExistingVC
                 self.navigationController?.popToRootViewController(animated: true)
             }
         }
