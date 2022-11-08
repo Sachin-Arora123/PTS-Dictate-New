@@ -120,8 +120,8 @@ class RecordVC: BaseViewController {
         self.setupFileName()
         isRecording = false
 
-//        //recorder setup
-//        self.recorderSetUp()
+        //recorder setup
+        self.recorderSetUp()
 //
 //        //Audio session Setup
 //        do {
@@ -140,7 +140,7 @@ class RecordVC: BaseViewController {
         if editFromExiting {
             setUpUIForEditing()
         }
-        self.recorder = HPRecorder()
+        
 //        self.initiallyBtnStateSetup()
 //        self.viewBottomButton.isHidden = true
         
@@ -254,20 +254,22 @@ class RecordVC: BaseViewController {
             AVEncoderAudioQualityKey : NSNumber(value: AVAudioQuality.medium.rawValue)
         ] as [String : Any]
   
-        do{
-            audioRecorder = try AVAudioRecorder(url: self.fileURL1, settings: recorderSetting)
-        }catch{
-            print(error.localizedDescription)
-        }
-
-        audioRecorder?.delegate = self
-        audioRecorder?.isMeteringEnabled = true
-
-        self.initiallyBtnStateSetup()
-        self.viewBottomButton.isHidden = true
         
-        // Microphone Authorization/Permission
-        self.checkMicrophoneAccess()
+        self.recorder = HPRecorder(settings: recorderSetting, audioFilename: self.fileURL1, audioInput: AudioInput().defaultAudioInput())
+//        do{
+//            audioRecorder = try AVAudioRecorder(url: self.fileURL1, settings: recorderSetting)
+//        }catch{
+//            print(error.localizedDescription)
+//        }
+//
+//        audioRecorder?.delegate = self
+//        audioRecorder?.isMeteringEnabled = true
+//
+//        self.initiallyBtnStateSetup()
+//        self.viewBottomButton.isHidden = true
+//
+//        // Microphone Authorization/Permission
+//        self.checkMicrophoneAccess()
         
     }
  
@@ -324,27 +326,27 @@ class RecordVC: BaseViewController {
         }
         switch recorderState {
               case .none:
-            self.recorder.startRecording(sampleRateKey: Float(sampleRateKey), fileName:  "P")
-                  self.recorderState = .recording
-            self.recordTimer = Timer.scheduledTimer(timeInterval: 0.1, target:self, selector:#selector(self.updateAudioMeter(timer:)), userInfo:nil, repeats:true)
-            self.lblPlayerStatus.text = "Recording"
-            self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: UIControl.State.normal)
-            self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: UIControl.State.normal)
-            self.btnStop.isUserInteractionEnabled = true
-            print("recording")
+                    self.recorder.startRecording(sampleRateKey: Float(sampleRateKey), fileName:  "P")
+                          self.recorderState = .recording
+                    self.recordTimer = Timer.scheduledTimer(timeInterval: 0.1, target:self, selector:#selector(self.updateAudioMeter(timer:)), userInfo:nil, repeats:true)
+                    self.lblPlayerStatus.text = "Recording"
+                    self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: UIControl.State.normal)
+                    self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: UIControl.State.normal)
+                    self.btnStop.isUserInteractionEnabled = true
+                    print("recording")
               case .recording:
-                  self.recorder.pauseRecording()
+                    self.recorder.pauseRecording()
 //            self.audioFileURL = self.recorder.audioFilename
-                  self.recorderState = .pause
-            lblPlayerStatus.text = "Paused"
-            btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: UIControl.State.normal)
-            btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-            btnBackwardTrim.setBackgroundImage(UIImage(named: "existing_rewind_normal"), for: .normal)
-            btnBackwardTrimEnd.setBackgroundImage(UIImage(named: "existing_backward_fast_normal"), for: .normal)
-            btnPlay.isUserInteractionEnabled = true
-            btnBackwardTrim.isUserInteractionEnabled = true
-            btnBackwardTrimEnd.isUserInteractionEnabled = true
-            print("pause")
+                    self.recorderState = .pause
+                    lblPlayerStatus.text = "Paused"
+                    btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: UIControl.State.normal)
+                    btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+                    btnBackwardTrim.setBackgroundImage(UIImage(named: "existing_rewind_normal"), for: .normal)
+                    btnBackwardTrimEnd.setBackgroundImage(UIImage(named: "existing_backward_fast_normal"), for: .normal)
+                    btnPlay.isUserInteractionEnabled = true
+                    btnBackwardTrim.isUserInteractionEnabled = true
+                    btnBackwardTrimEnd.isUserInteractionEnabled = true
+                    print("pause")
 //            self.recorder.recorderDidFinish = { recorder, url, success in
 //                        print("Recorder URL \(url)")
 //                    self.audioFileURL = url
@@ -917,18 +919,20 @@ class RecordVC: BaseViewController {
                 self.lblTime.text = totalTimeString
                 self.lblFSizeValue.text = String(format: "%.2f", Float(try! Data(contentsOf: recorder.url).count) / 1024.0 / 1024.0) + " Mb"
                 recorder.updateMeters()
+                
+                let decibels = recorder.peakPower(forChannel: 0)
+    //            let value = [3.5, 3.4, 3.3, 3.2, 3.1, 3.0]                
+                self.customRangeBar.value = decibels * 3.5
              }
         }
     }
 
-    @objc func updateRecording(timer: Timer) {
-        if let recorder = self.recorder.audioRecorder , recorder.isRecording == true {
-            recorder.updateMeters()
-            let decibels = Float(recorder.peakPower(forChannel: 0))
-            let value = [3.5, 3.4, 3.3, 3.2, 3.1, 3.0]
-            self.customRangeBar.value = decibels * Float(value[0])
-        }
-    }
+//    @objc func updateRecording(timer: Timer) {
+//        if let recorder = self.recorder.audioRecorder , recorder.isRecording == true {
+//            recorder.updateMeters()
+//
+//        }
+//    }
     
     func finishAudioRecording(success: Bool) {
         if let recorder = self.recorder.audioRecorder {

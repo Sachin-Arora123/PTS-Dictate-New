@@ -72,40 +72,53 @@ public class HPRecorder: NSObject {
 
     // Start recording
     public func startRecording(sampleRateKey: Float, fileName: String) {
-        let settings =
-            [ AVFormatIDKey:             Int(kAudioFormatMPEG4AAC)
-              , AVSampleRateKey:           Float(sampleRateKey)
-            , AVNumberOfChannelsKey:     2
-            , AVEncoderAudioQualityKey:  AVAudioQuality.high.rawValue
-            , AVEncoderBitRateKey:       128000
-            ] as [String : Any]
-        let url = self.createNewRecordingURL(fileName)
+//        let settings =
+//            [ AVFormatIDKey:             Int(kAudioFormatMPEG4AAC)
+//              , AVSampleRateKey:           Float(sampleRateKey)
+//            , AVNumberOfChannelsKey:     2
+//            , AVEncoderAudioQualityKey:  AVAudioQuality.high.rawValue
+//            , AVEncoderBitRateKey:       128000
+//            ] as [String : Any]
+        
+//        let settings = [
+//            //giving the AVSampleRateKey according to the microphone senstivity value in settings.
+//            AVSampleRateKey : sampleRateKey,
+//            AVFormatIDKey : NSNumber(value: Int32(kAudioFormatMPEG4AAC)),
+//            AVNumberOfChannelsKey : NSNumber(value: 2),
+//            AVEncoderAudioQualityKey : NSNumber(value: AVAudioQuality.medium.rawValue)
+//        ] as [String : Any]
+//
+//        let url = self.createNewRecordingURL(fileName)
 
+        
         do {
-
-            self.audioRecorder =
-                try AVAudioRecorder.init(url: url, settings: settings)
-            self.audioRecorder?.record()
-
+            try recordingSession.setCategory(.playAndRecord, mode: .default, options: [.allowBluetooth, .defaultToSpeaker])
+            try recordingSession.setPreferredInput(self.audioInput)
+            try self.recordingSession.setActive(true)
+        } catch {
+            print("Couldn't set Audio session category")
+        }
+        
+        do {
+            audioRecorder = try AVAudioRecorder(url: self.audioFilename, settings: settings)
+            audioRecorder.prepareToRecord()
+            audioRecorder.delegate = self
+            audioRecorder.record()
+            audioRecorder.isMeteringEnabled = true
+            
             // TODO: add audio recorder delegate? Interruptions (e.g., calls)
             //       are handled elsewhere anyway
 
 //            self.startRecTimer()
 
         } catch {
-            NSLog("Unable to init audio recorder.")
+            print("Unable to init audio recorder.")
         }
 //        if self.audioFilename == nil {
 //            self.audioFilename = self.getDocumentsDirectory().appendingPathComponent("recording.m4a")
 //        }
 //
-//        do {
-//            try recordingSession.setCategory(.playAndRecord, mode: .spokenAudio, options: [])
-//            try recordingSession.setPreferredInput(self.audioInput)
-//            try self.recordingSession.setActive(true)
-//        } catch {
-//            print("Couldn't set Audio session category")
-//        }
+        
 //
 //        do {
 //            audioRecorder = try AVAudioRecorder(url: self.audioFilename, settings: settings)
