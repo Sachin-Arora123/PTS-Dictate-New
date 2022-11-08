@@ -25,4 +25,16 @@ class ProfileCell: UITableViewCell {
     }
     
 
+    func setData(indexPath : IndexPath){
+        switch indexPath.row{
+        case 0:
+            self.lblTitleValue.text = CoreData.shared.userId != "" ? CoreData.shared.userId : "N/A"
+        case 1:
+            self.lblTitleValue.text = CoreData.shared.userName != "" ? CoreData.shared.userName : "N/A"
+        case 2:
+            self.lblTitleValue.text = CoreData.shared.email != "" ? CoreData.shared.email : "N/A"
+        default:
+        break
+        }
+    }
 }

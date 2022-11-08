@@ -53,6 +53,9 @@
                                         <color key="minimumTrackTintColor" red="0.90588235859999999" green="0.19215688110000001" blue="0.13725490870000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <color key="maximumTrackTintColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <color key="thumbTintColor" red="0.89803922179999995" green="0.90196073060000004" blue="0.89803922179999995" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                        <connections>
+                                            <action selector="sliderValueChangedWithSender:" destination="Y6W-OH-hqX" eventType="valueChanged" id="nzA-PD-GoI"/>
+                                        </connections>
                                     </slider>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -266,6 +269,9 @@
                                                                     <color key="textColor" name="BlackTextColor"/>
                                                                     <fontDescription key="fontDescription" name="ArialMT" family="Arial" pointSize="18"/>
                                                                     <textInputTraits key="textInputTraits"/>
+                                                                    <connections>
+                                                                        <outlet property="delegate" destination="k7s-CA-gR4" id="b9p-dT-ZYb"/>
+                                                                    </connections>
                                                                 </textField>
                                                             </subviews>
                                                         </stackView>
@@ -293,21 +299,66 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fKZ-3W-Doc">
+                                <rect key="frame" x="0.0" y="1130" width="414" height="50"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="awM-wn-tF7">
+                                        <rect key="frame" x="324" y="0.0" width="90" height="50"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="50" id="7Ck-Hd-Ipk"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                        <inset key="contentEdgeInsets" minX="20" minY="0.0" maxX="20" maxY="0.0"/>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <state key="normal" title="Done">
+                                            <color key="titleColor" name="AppThemeColor"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="btnDonePickerViewAction:" destination="mlD-cK-7db" eventType="touchUpInside" id="6id-uX-VhW"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Select Date Format" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2U5-nb-4Us">
+                                        <rect key="frame" x="20" y="14.5" width="154.5" height="21.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" white="0.33000000000000002" alpha="0.80000000000000004" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="2U5-nb-4Us" firstAttribute="leading" secondItem="fKZ-3W-Doc" secondAttribute="leading" constant="20" id="02O-2f-0Ps"/>
+                                    <constraint firstItem="awM-wn-tF7" firstAttribute="top" secondItem="fKZ-3W-Doc" secondAttribute="top" id="HDa-la-Ybx"/>
+                                    <constraint firstItem="2U5-nb-4Us" firstAttribute="centerY" secondItem="awM-wn-tF7" secondAttribute="centerY" id="IQ8-KX-OOm"/>
+                                    <constraint firstAttribute="bottom" secondItem="awM-wn-tF7" secondAttribute="bottom" id="YCE-It-W8f"/>
+                                    <constraint firstAttribute="trailing" secondItem="awM-wn-tF7" secondAttribute="trailing" id="idx-k3-j0U"/>
+                                </constraints>
+                            </view>
+                            <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mCJ-lu-S78">
+                                <rect key="frame" x="0.0" y="1180" width="414" height="216"/>
+                            </pickerView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="g5B-hU-dfQ"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="UUA-cQ-wip" firstAttribute="leading" secondItem="g5B-hU-dfQ" secondAttribute="leading" id="9Qg-Ec-Sdb"/>
                             <constraint firstItem="k7s-CA-gR4" firstAttribute="trailing" secondItem="g5B-hU-dfQ" secondAttribute="trailing" id="9nr-8i-WKS"/>
+                            <constraint firstAttribute="bottom" secondItem="mCJ-lu-S78" secondAttribute="bottom" constant="-500" id="FJz-Xu-796"/>
+                            <constraint firstItem="g5B-hU-dfQ" firstAttribute="trailing" secondItem="mCJ-lu-S78" secondAttribute="trailing" id="GGr-ae-7lg"/>
+                            <constraint firstItem="fKZ-3W-Doc" firstAttribute="leading" secondItem="mCJ-lu-S78" secondAttribute="leading" id="Hgk-gs-P4c"/>
                             <constraint firstItem="k7s-CA-gR4" firstAttribute="top" secondItem="UUA-cQ-wip" secondAttribute="bottom" id="Pfu-cb-Yk5"/>
                             <constraint firstItem="g5B-hU-dfQ" firstAttribute="bottom" secondItem="k7s-CA-gR4" secondAttribute="bottom" id="X0c-qW-Xqy"/>
+                            <constraint firstItem="mCJ-lu-S78" firstAttribute="leading" secondItem="g5B-hU-dfQ" secondAttribute="leading" id="ihg-Ri-Lka"/>
                             <constraint firstItem="UUA-cQ-wip" firstAttribute="top" secondItem="g5B-hU-dfQ" secondAttribute="top" id="jBM-xv-omK"/>
                             <constraint firstItem="UUA-cQ-wip" firstAttribute="trailing" secondItem="g5B-hU-dfQ" secondAttribute="trailing" id="sVE-Kq-4Ak"/>
                             <constraint firstItem="k7s-CA-gR4" firstAttribute="leading" secondItem="g5B-hU-dfQ" secondAttribute="leading" id="t4m-ch-3BE"/>
+                            <constraint firstItem="mCJ-lu-S78" firstAttribute="top" secondItem="fKZ-3W-Doc" secondAttribute="bottom" id="ucl-tv-TDP"/>
+                            <constraint firstItem="fKZ-3W-Doc" firstAttribute="trailing" secondItem="mCJ-lu-S78" secondAttribute="trailing" id="yle-Mi-yYH"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="lblFileNameTitle" destination="Cyq-UR-6xf" id="bFK-Je-vWR"/>
+                        <outlet property="pickerView" destination="mCJ-lu-S78" id="0Yq-4T-YvR"/>
+                        <outlet property="pickerViewBottomConstant" destination="FJz-Xu-796" id="KWf-tu-1mX"/>
                         <outlet property="tableView" destination="k7s-CA-gR4" id="lEq-Of-JHe"/>
                         <outlet property="txtFldHeaderFileName" destination="iof-hh-n4j" id="D3u-4M-zbx"/>
                         <outlet property="viewHeader" destination="UUA-cQ-wip" id="jZY-2S-y6Q"/>
@@ -512,6 +563,9 @@
     <resources>
         <image name="chevron.right" catalog="system" width="96" height="128"/>
         <image name="settings_phone" width="32" height="32"/>
+        <namedColor name="AppThemeColor">
+            <color red="0.96899998188018799" green="0.25499999523162842" blue="0.093999996781349182" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <namedColor name="BlackTextColor">
             <color red="0.20784313725490197" green="0.21176470588235294" blue="0.21176470588235294" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
         </namedColor>

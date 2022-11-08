@@ -13,23 +13,28 @@ class CoreData: NSObject {
     // 1 - true for switch on & 0 - false for switch off
     var accessToken: String =  ""
     var userName : String = ""
+    var profileName : String = ""
+    var userId : String = ""
     var email: String = ""
     var privilege: String = ""
     var isRemeberMe : Bool = false
     var password = ""
-    var audioQuality = 11
+    var audioQuality = 2
     var voiceActivation = 0 // 1 - true & 0 - false
     var disableEmailNotify = 0 // 1 - true & 0 - false
     var commentScreen = 0 // 1 - true & 0 - false
     var commentScreenMandatory = 0 // 1 - true & 0 - false
     var indexing = 0 // 1 - true & 0 - false
     var disableEditingHelp = 0 // 1 - true & 0 - false
-    var fileNameFormat: String = ""
+    var fileCount: Int = 1
     var dateFormat: String = ""
     var archiveFile = 0 // 1 - true & 0 - false
     var archiveFileDays = 1 // 1 - day default
     var uploadViaWifi = 0 // 1 - true & 0 - false
     var sleepModeOverride = 0 // 1 - true & 0 - false
+    var microSensitivityValue : Double = 1.0
+    var fileName : String = ""
+    var userInfo = [String]()
     var audioFiles: [AudioFile] = [] {
         didSet {
             AudioFiles.shared.audioFiles = audioFiles
@@ -73,6 +78,8 @@ class CoreData: NSObject {
         let newData = NSEntityDescription.insertNewObject(forEntityName: "Login", into: context)
         newData.setValue(accessToken, forKey: "accessToken")
         newData.setValue(userName, forKey: "userName")
+        newData.setValue(profileName, forKey: "profileName")
+        newData.setValue(userId, forKey: "userId")
         newData.setValue(isRemeberMe, forKey: "isRemeberMe")
         newData.setValue(password, forKey: "password")
         newData.setValue(email, forKey: "email")
@@ -84,12 +91,14 @@ class CoreData: NSObject {
         newData.setValue(commentScreenMandatory, forKey: "commentScreenMandatory")
         newData.setValue(indexing, forKey: "indexing")
         newData.setValue(disableEditingHelp, forKey: "disableEditingHelp")
-        newData.setValue(fileNameFormat, forKey: "fileNameFormat")
+        newData.setValue(fileCount, forKey: "fileCount")
         newData.setValue(dateFormat, forKey: "dateFormat")
         newData.setValue(archiveFile, forKey: "archiveFile")
         newData.setValue(archiveFileDays, forKey: "archiveFileDays")
         newData.setValue(uploadViaWifi, forKey: "uploadViaWifi")
         newData.setValue(sleepModeOverride, forKey: "sleepModeOverride")
+        newData.setValue(microSensitivityValue, forKey: "microSensitivityValue")
+        newData.setValue(fileName, forKey: "fileName")
         newData.setValue(audioFiles, forKey: "audioFiles")
         do {
             try context.save()
@@ -118,6 +127,14 @@ class CoreData: NSObject {
                         self.userName = userName
                         print("data get userName \(userName)")
                     }
+                    if let profileName = result.value(forKey: "profileName") as? String{
+                        self.profileName = profileName
+                        print("data get profileName \(profileName)")
+                    }
+                    if let userId = result.value(forKey: "userId") as? String{
+                        self.userId = userId
+                        print("data get userId \(userId)")
+                    }
                     if let isRemeberMe = result.value(forKey: "isRemeberMe") as? Bool{
                         self.isRemeberMe = isRemeberMe
                         print("data get isRemeberMe \(isRemeberMe)")
@@ -132,7 +149,7 @@ class CoreData: NSObject {
                     }
                     if let privilege = result.value(forKey: "privilege") as? String{
                         self.privilege = privilege
-                        print("data get userName \(privilege)")
+                        print("data get privilege \(privilege)")
                     }
                     if let audioQuality = result.value(forKey: "audioQuality") as? Int{
                         self.audioQuality = audioQuality
@@ -162,9 +179,9 @@ class CoreData: NSObject {
                         self.disableEditingHelp = disableEditingHelp
                         print("data get disableEditingHelp \(disableEditingHelp)")
                     }
-                    if let fileNameFormat = result.value(forKey: "fileNameFormat") as? String{
-                        self.fileNameFormat = fileNameFormat
-                        print("data get fileNameFormat \(fileNameFormat)")
+                    if let fileCount = result.value(forKey: "fileCount") as? Int{
+                        self.fileCount = fileCount
+                        print("data get fileCount \(fileCount)")
                     }
                     if let dateFormat = result.value(forKey: "dateFormat") as? String{
                         self.dateFormat = dateFormat
@@ -186,6 +203,10 @@ class CoreData: NSObject {
                         self.sleepModeOverride = sleepModeOverride
                         print("data get id \(sleepModeOverride)")
                     }
+                    if let microSensitivityValue = result.value(forKey: "microSensitivityValue") as? Double{
+                        self.microSensitivityValue = microSensitivityValue
+                        print("data get microSensitivityValue \(microSensitivityValue)")
+                    }
                     guard let audioFiles = result.value(forKey: "audioFiles") as? [AudioFile] else {
                         self.audioFiles = []
                         print("Failed to load audio files from core data")
@@ -201,6 +222,7 @@ class CoreData: NSObject {
             print("something error during getting data \(e)")
         }
     }
+    
     // MARK: - deleteLocalData
     func deleteProfile() {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -208,24 +230,28 @@ class CoreData: NSObject {
         let DelAllReqVar = NSBatchDeleteRequest(fetchRequest: NSFetchRequest<NSFetchRequestResult>(entityName: "Login"))
         accessToken =  ""
         email = ""
+        userName = ""
+        profileName = ""
         privilege = ""
-        audioQuality = 11
+        audioQuality = 0
         voiceActivation = 0
         disableEmailNotify = 0
         commentScreen = 0
         commentScreenMandatory = 0
         indexing = 0
         disableEditingHelp = 0
-        fileNameFormat = ""
         dateFormat = ""
         archiveFile = 0
         archiveFileDays = 1
         uploadViaWifi = 0
         sleepModeOverride = 0
+        microSensitivityValue = 1.0
+        userInfo.removeAll()
+        fileName = ""
         audioFiles = []
         
         if !self.isRemeberMe{
-            self.userName = ""
+            self.userId = ""
             self.password = ""
         }
         do {
