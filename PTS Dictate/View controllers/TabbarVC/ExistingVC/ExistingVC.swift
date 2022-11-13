@@ -52,7 +52,6 @@ class ExistingVC: BaseViewController {
     fileprivate var startLoading = Date()
     fileprivate var endLoading = Date()
     fileprivate var profileResult = ""
-    fileprivate var recorder: HPRecorder!
     // MARK: - View Life-Cycle.
     
     override func viewDidLoad() {
@@ -131,7 +130,7 @@ class ExistingVC: BaseViewController {
             let completePathURL = URL(string: completePath)
             //                let file = directoryPath + fileEndPoint
             //                let dirURL = URL(string: file)
-            
+
             audioPlayer.numberOfLoops = 0 // loop count, set -1 for infinite
             audioPlayer.volume = 1
             audioPlayer.prepareToPlay()
@@ -163,7 +162,7 @@ class ExistingVC: BaseViewController {
             print("catch")
         }
     }
-    
+
     @objc func timerDidUpdateMeter() {
         
         //        let cell = tableView.cellForRow(at: IndexPath(row: tag, section: 0)) as! ExistingFileCell
@@ -357,28 +356,15 @@ class ExistingVC: BaseViewController {
             let currentTime = self.audioPlayer.currentTime
             switch controllerType {
             case .fastRewind:
-//                if currentTime > TimeInterval(10.0) {
-//                    self.audioPlayer.play(atTime: currentTime - 10.0)
-//                }
-                self.recorder.seekBackwards(timeInterval: 3)
+                self.fastBackwardByTime(timeVal: 3)
             case .rewind:
-//                if currentTime > TimeInterval(3.0) {
-//                    self.audioPlayer.play(atTime: currentTime - 3.0)
-//                }
-                self.recorder.seekBackwards(timeInterval: 1)
+                self.fastBackwardByTime(timeVal: 1)
             case .play:
                 self.playAudio()
             case .forward:
-//                if currentTime > TimeInterval(0.0) && currentTime < self.audioPlayer.duration {
-//                    self.preparePlayerToPlay(completePathURL: self.getFilePath())
-//                    self.audioPlayer.play(atTime: currentTime + 3.0)
-//                }
-                self.recorder.seekForward(timeInterval: 1)
+                self.fastForwardByTime(timeVal: 1)
             case .fastForward:
-//                if currentTime > TimeInterval(0.0) && currentTime < self.audioPlayer.duration {
-//                    self.audioPlayer.play(atTime: currentTime + 10.0)
-//                }
-                self.recorder.seekForward(timeInterval: 3)
+                self.fastForwardByTime(timeVal: 3)
             }
         }
     }
@@ -676,3 +662,43 @@ extension ExistingVC: UITabBarControllerDelegate {
         static let audioPlayerManagerMeteringLevelDidUpdateNotification = Notification.Name("AudioPlayerManagerMeteringLevelDidUpdateNotification")
         static let audioPlayerManagerMeteringLevelDidFinishNotification = Notification.Name("AudioPlayerManagerMeteringLevelDidFinishNotification")
     }
+
+extension ExistingVC{
+    // MARK: Seek Forward
+    func fastForwardByTime(timeVal: Double) {
+        var time: TimeInterval = audioPlayer.currentTime
+        time += timeVal
+        if time > audioPlayer.duration {
+           if audioPlayer.isPlaying {
+                audioPlayer.stop()
+            }
+        } else {
+            audioPlayer.pause()
+            audioPlayer.currentTime = time
+            audioPlayer.play()
+            let min = Int(audioPlayer.currentTime / 60)
+            let sec = Int(audioPlayer.currentTime.truncatingRemainder(dividingBy: 60))
+            let totalTimeString = String(format: "%02d:%02d", min, sec)
+            self.lblPlayingTime.text = totalTimeString
+            audioPlayer.updateMeters()
+        }
+    }
+    
+    // MARK: - Seek Backward
+    func fastBackwardByTime(timeVal: Double) {
+        var time: TimeInterval = audioPlayer.currentTime
+        time -= timeVal
+        if time < 0 {
+            audioPlayer.stop()
+        } else {
+            audioPlayer.pause()
+            audioPlayer.currentTime = time
+            audioPlayer.play()
+            let min = Int(audioPlayer.currentTime / 60)
+            let sec = Int(audioPlayer.currentTime.truncatingRemainder(dividingBy: 60))
+            let totalTimeString = String(format: "%02d:%02d", min, sec)
+            self.lblPlayingTime.text = totalTimeString
+            audioPlayer.updateMeters()
+        }
+    }
+}
