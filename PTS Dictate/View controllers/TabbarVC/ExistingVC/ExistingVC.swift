@@ -52,6 +52,7 @@ class ExistingVC: BaseViewController {
     fileprivate var startLoading = Date()
     fileprivate var endLoading = Date()
     fileprivate var profileResult = ""
+    fileprivate var recorder: HPRecorder!
     // MARK: - View Life-Cycle.
     
     override func viewDidLoad() {
@@ -356,24 +357,28 @@ class ExistingVC: BaseViewController {
             let currentTime = self.audioPlayer.currentTime
             switch controllerType {
             case .fastRewind:
-                if currentTime > TimeInterval(10.0) {
-                    self.audioPlayer.play(atTime: currentTime - 10.0)
-                }
+//                if currentTime > TimeInterval(10.0) {
+//                    self.audioPlayer.play(atTime: currentTime - 10.0)
+//                }
+                self.recorder.seekBackwards(timeInterval: 3)
             case .rewind:
-                if currentTime > TimeInterval(3.0) {
-                    self.audioPlayer.play(atTime: currentTime - 3.0)
-                }
+//                if currentTime > TimeInterval(3.0) {
+//                    self.audioPlayer.play(atTime: currentTime - 3.0)
+//                }
+                self.recorder.seekBackwards(timeInterval: 1)
             case .play:
                 self.playAudio()
             case .forward:
-                if currentTime > TimeInterval(0.0) && currentTime < self.audioPlayer.duration {
-                    self.preparePlayerToPlay(completePathURL: self.getFilePath())
-                    self.audioPlayer.play(atTime: currentTime + 3.0)
-                }
+//                if currentTime > TimeInterval(0.0) && currentTime < self.audioPlayer.duration {
+//                    self.preparePlayerToPlay(completePathURL: self.getFilePath())
+//                    self.audioPlayer.play(atTime: currentTime + 3.0)
+//                }
+                self.recorder.seekForward(timeInterval: 1)
             case .fastForward:
-                if currentTime > TimeInterval(0.0) && currentTime < self.audioPlayer.duration {
-                    self.audioPlayer.play(atTime: currentTime + 10.0)
-                }
+//                if currentTime > TimeInterval(0.0) && currentTime < self.audioPlayer.duration {
+//                    self.audioPlayer.play(atTime: currentTime + 10.0)
+//                }
+                self.recorder.seekForward(timeInterval: 3)
             }
         }
     }

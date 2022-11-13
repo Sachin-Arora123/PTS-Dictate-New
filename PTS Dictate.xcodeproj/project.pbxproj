@@ -50,6 +50,7 @@
 		18E8AAE828F89E0400DF73F4 /* ExistingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E8AAE728F89E0400DF73F4 /* ExistingViewModel.swift */; };
 		2327B8A82907BEB9000BCEDD /* AudioFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2327B8A72907BEB9000BCEDD /* AudioFile.swift */; };
 		2327B8AA2907C049000BCEDD /* AudioFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2327B8A92907C049000BCEDD /* AudioFiles.swift */; };
+		2340767E292118CB0096AAB6 /* Sound Wave Helper in Resources */ = {isa = PBXBuildFile; fileRef = 2340767D292118CB0096AAB6 /* Sound Wave Helper */; };
 		23C89FC0291A948900999929 /* Extension+Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C89FBF291A948900999929 /* Extension+Date.swift */; };
 		23DCE102290EA54A00117066 /* UploadListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23DCE101290EA54A00117066 /* UploadListCell.swift */; };
 		28A4F5C628B510D90035137B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5C528B510D90035137B /* AppDelegate.swift */; };
@@ -108,6 +109,7 @@
 		18E8AAE728F89E0400DF73F4 /* ExistingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExistingViewModel.swift; sourceTree = "<group>"; };
 		2327B8A72907BEB9000BCEDD /* AudioFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFile.swift; sourceTree = "<group>"; };
 		2327B8A92907C049000BCEDD /* AudioFiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFiles.swift; sourceTree = "<group>"; };
+		2340767D292118CB0096AAB6 /* Sound Wave Helper */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "Sound Wave Helper"; sourceTree = "<group>"; };
 		23C89FBF291A948900999929 /* Extension+Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+Date.swift"; sourceTree = "<group>"; };
 		23DCE101290EA54A00117066 /* UploadListCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadListCell.swift; sourceTree = "<group>"; };
 		28A4F5C228B510D90035137B /* PTS Dictate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PTS Dictate.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -412,6 +414,7 @@
 			children = (
 				616E4A3F290AB1E30011ABF2 /* Third-Party */,
 				184C964428C7C707004639B3 /* CommonFunctions */,
+				2340767D292118CB0096AAB6 /* Sound Wave Helper */,
 				18DF4BD828BE7D4F002FC063 /* CoreData */,
 				18DF4BCA28BE7B5D002FC063 /* APIHandler */,
 				28A4F5D928B517B40035137B /* App delegate */,
@@ -561,6 +564,7 @@
 				28A4F5D228B510DE0035137B /* LaunchScreen.storyboard in Resources */,
 				28A4F5CF28B510DE0035137B /* Assets.xcassets in Resources */,
 				182BE0B328BD332300327094 /* Settings.storyboard in Resources */,
+				2340767E292118CB0096AAB6 /* Sound Wave Helper in Resources */,
 				28A4F5CD28B510D90035137B /* Main.storyboard in Resources */,
 				1868EADA28BAB3BB00216D62 /* RecordingCell.xib in Resources */,
 			);
