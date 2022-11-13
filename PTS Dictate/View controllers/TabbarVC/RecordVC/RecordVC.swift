@@ -182,6 +182,7 @@ class RecordVC: BaseViewController {
         self.saveRecordedAudio() {
             (success) in
             if success{
+                AudioFiles.shared.saveNewAudioFile(name: self.audioFileName, autoSaved: true)
                 print("Bg success saved")
             }
         }
@@ -224,6 +225,7 @@ class RecordVC: BaseViewController {
 
         //need to check recording file count here as well
         self.audioFileURL = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)"
+        self.audioFileName = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)" + ".m4a"
         self.lblFNameValue.text = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)" + ".m4a"
         self.lblFSizeValue.text = "0.00 Mb"
     }

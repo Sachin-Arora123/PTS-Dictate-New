@@ -58,18 +58,20 @@ public class AudioFileInfo: NSObject, NSCoding {
     public var canEdit: Bool?
     public var uploadedAt: String?
     public var uploadingInProgress: Bool?
+    public var autoSaved: Bool?
     
     enum CodingKeys:String {
-        case comment, isUploaded, archivedDays, canEdit, uploadedAt, uploadingInProgress
+        case comment, isUploaded, archivedDays, canEdit, uploadedAt, uploadingInProgress, autoSaved
     }
     
-    init(comment: String?, isUploaded: Bool?, archivedDays: Int?, canEdit: Bool?, uploadedAt: String?, uploadingInProgress: Bool?) {
+    init(comment: String?, isUploaded: Bool?, archivedDays: Int?, canEdit: Bool?, uploadedAt: String?, uploadingInProgress: Bool?, autoSaved: Bool?) {
         self.comment = comment
         self.isUploaded = isUploaded
         self.archivedDays = archivedDays
         self.canEdit = canEdit
         self.uploadedAt = uploadedAt
         self.uploadingInProgress = uploadingInProgress
+        self.autoSaved = autoSaved
     }
     
     public override init() {
@@ -83,6 +85,7 @@ public class AudioFileInfo: NSObject, NSCoding {
         aCoder.encode(canEdit, forKey: CodingKeys.canEdit.rawValue)
         aCoder.encode(uploadedAt, forKey: CodingKeys.uploadedAt.rawValue)
         aCoder.encode(uploadingInProgress, forKey: CodingKeys.uploadingInProgress.rawValue)
+        aCoder.encode(autoSaved, forKey: CodingKeys.autoSaved.rawValue)
     }
     
     public required convenience init?(coder aDecoder: NSCoder) {
@@ -92,7 +95,7 @@ public class AudioFileInfo: NSObject, NSCoding {
         let canEdit = aDecoder.decodeObject(forKey: CodingKeys.canEdit.rawValue) as? Bool
         let uploadedAt = aDecoder.decodeObject(forKey: CodingKeys.uploadedAt.rawValue) as? String
         let uploadingInProgress = aDecoder.decodeObject(forKey: CodingKeys.uploadingInProgress.rawValue) as? Bool
-        
-        self.init(comment: comment, isUploaded: isUploaded, archivedDays: archivedDays, canEdit: canEdit, uploadedAt: uploadedAt, uploadingInProgress: uploadingInProgress)
+        let autoSaved = aDecoder.decodeObject(forKey: CodingKeys.autoSaved.rawValue) as? Bool
+        self.init(comment: comment, isUploaded: isUploaded, archivedDays: archivedDays, canEdit: canEdit, uploadedAt: uploadedAt, uploadingInProgress: uploadingInProgress, autoSaved: autoSaved)
     }
 }

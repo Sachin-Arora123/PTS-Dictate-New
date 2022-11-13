@@ -412,14 +412,22 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
         let file = getFileInfo(name: audioName)
         if !(file?.fileInfo?.isUploaded ?? false) && file?.fileInfo?.comment != nil {
             cell.lblFileStatus.textColor = UIColor.black
-            cell.lblFileStatus.text = "Auto Saved File"
+            if file?.fileInfo?.autoSaved ?? true {
+                cell.lblFileStatus.text = "Auto Saved File"
+            }else{
+                cell.lblFileStatus.text = ""
+            }
             cell.btnComment.isUserInteractionEnabled = true
             cell.btnEdit.isUserInteractionEnabled = true
             cell.btnComment.setBackgroundImage(UIImage(named: "comments_normal"), for: .normal)
             cell.btnEdit.setBackgroundImage(UIImage(named: "music_edit_normal"), for: .normal)
         } else if !(file?.fileInfo?.isUploaded ?? false) && file?.fileInfo?.comment == nil {
             cell.lblFileStatus.textColor = UIColor.black
-            cell.lblFileStatus.text = "Auto Saved File"
+            if file?.fileInfo?.autoSaved ?? true {
+                cell.lblFileStatus.text = "Auto Saved File"
+            } else{
+                cell.lblFileStatus.text = ""
+            }
             cell.btnComment.isUserInteractionEnabled = true
             cell.btnEdit.isUserInteractionEnabled = true
             cell.btnComment.isHidden = true
@@ -624,7 +632,7 @@ extension ExistingVC: UITabBarControllerDelegate {
             let recordVC = tabBarController.viewControllers?[2] as! RecordVC
             recordVC.editFromExiting = false
         } else if viewController.isKind(of: UploadProgressVC.self as AnyClass) {
-            let uploadVC = tabBarController.viewControllers?[1] as! UploadProgressVC
+            let _ = tabBarController.viewControllers?[1] as! UploadProgressVC
             self.existingViewModel.uploadingQueue = []
         }
             return true
