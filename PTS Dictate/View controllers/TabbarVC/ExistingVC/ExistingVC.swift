@@ -140,7 +140,7 @@ class ExistingVC: BaseViewController {
             try AVAudioSession.sharedInstance().setActive(true)
             if audioPlayer.isPlaying{
                 audioPlayer.pause()
-                self.mediaProgressView.pause()
+//                self.mediaProgressView.pause()
                 sender.setBackgroundImage(UIImage(named: "existing_play_btn"), for: .normal)
                 self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
             }else{
@@ -149,9 +149,9 @@ class ExistingVC: BaseViewController {
                 audioPlayer.delegate = self
                 audioPlayer.play()
                 //                self.mediaProgressView.audioURL = completePathURL!
-                self.mediaProgressView.meteringLevels = [0.1, 0.67, 0.13, 0.78, 0.31]
+//                self.mediaProgressView.meteringLevels = [0.1, 0.67, 0.13, 0.78, 0.31]
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.0){
-                    self.mediaProgressView.play(for: self.audioPlayer.duration / self.audioPlayer.duration)
+//                    self.mediaProgressView.play(for: self.audioPlayer.duration / self.audioPlayer.duration)
                 }
                 sender.setBackgroundImage(UIImage(named: "existing_pause_btn"), for: .normal)
                 self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
@@ -351,16 +351,16 @@ class ExistingVC: BaseViewController {
         if audioPlayer.isPlaying{
             self.lblPlayerStatus.text = "Now Paused"
             audioPlayer.pause()
-            self.mediaProgressView.pause()
+//            self.mediaProgressView.pause()
             cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_play_btn"), for: .normal)
             self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
         }else{
             preparePlayerToPlay(completePathURL: getFilePath())
             self.lblPlayerStatus.text = "Now Playing"
             //                self.mediaProgressView.audioURL = completePathURL!
-            self.mediaProgressView.meteringLevels = [0.1, 0.67, 0.13, 0.78, 0.31]
+//            self.mediaProgressView.meteringLevels = [0.1, 0.67, 0.13, 0.78, 0.31]
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0){
-                self.mediaProgressView.play(for: self.audioPlayer.duration / self.audioPlayer.duration)
+//                self.mediaProgressView.play(for: self.audioPlayer.duration / self.audioPlayer.duration)
             }
             cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_pause_btn"), for: .normal)
             self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
@@ -580,7 +580,7 @@ extension ExistingVC: AVAudioPlayerDelegate {
             cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_play_btn"), for: .normal)
             self.lblPlayerStatus.text  = ""
             self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-            self.mediaProgressView.reset()
+//            self.mediaProgressView.reset()
             self.setUpWave()
             self.tableView.reloadData()
             print("Playing Completed")
