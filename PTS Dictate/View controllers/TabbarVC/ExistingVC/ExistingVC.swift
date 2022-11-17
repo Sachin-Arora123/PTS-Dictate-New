@@ -52,6 +52,7 @@ class ExistingVC: BaseViewController {
     fileprivate var startLoading = Date()
     fileprivate var endLoading = Date()
     fileprivate var profileResult = ""
+    fileprivate var meteringLevels: [Float] = []
     // MARK: - View Life-Cycle.
     
     override func viewDidLoad() {
@@ -124,6 +125,8 @@ class ExistingVC: BaseViewController {
         do {
             let index = sender.tag
             self.lblFileName.text = self.totalFiles[index]
+            let audioFile = getFileInfo(name: self.totalFiles[index])
+            self.meteringLevels = audioFile?.fileInfo?.meteringLevels ?? []
             //                let file = Bundle.main.url(forResource: "file_name", withExtension: "mp3")!
             let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
             let completePath = directoryPath.absoluteString + self.totalFiles[index]
@@ -147,10 +150,10 @@ class ExistingVC: BaseViewController {
                 audioPlayer.delegate = self
                 audioPlayer.play()
                 //                self.mediaProgressView.audioURL = completePathURL!
-                self.mediaProgressView.meteringLevels = [0.1, 0.67, 0.13, 0.78, 0.31]
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0){
-                    self.mediaProgressView.play(for: self.audioPlayer.duration / self.audioPlayer.duration)
-                }
+                self.mediaProgressView.meteringLevels = meteringLevels
+//                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0){
+                    self.mediaProgressView.play(for: self.audioPlayer.duration - self.audioPlayer.currentTime)
+//                }
                 sender.setBackgroundImage(UIImage(named: "existing_pause_btn"), for: .normal)
                 self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
                 tag = sender.tag
@@ -263,15 +266,17 @@ class ExistingVC: BaseViewController {
     }
     
     func setUpWave() {
+        let audioFile = self.getFileInfo(name: self.totalFiles[0])
+        self.meteringLevels = audioFile?.fileInfo?.meteringLevels ?? []
         self.mediaProgressView.meteringLevelBarWidth = 1.0
         self.mediaProgressView.meteringLevelBarInterItem = 1.0
         self.mediaProgressView.meteringLevelBarCornerRadius = 0.0
         self.mediaProgressView.meteringLevelBarSingleStick = false
         self.mediaProgressView.gradientStartColor = #colorLiteral(red: 0.6509803922, green: 0.8235294118, blue: 0.9529411765, alpha: 1)
         self.mediaProgressView.gradientEndColor = #colorLiteral(red: 0.2273887992, green: 0.2274999917, blue: 0.9748747945, alpha: 1)
-        self.mediaProgressView.add(meteringLevel: 0.6)
+        self.mediaProgressView.meteringLevels = meteringLevels
         self.mediaProgressView.audioVisualizationMode = .read
-        self.mediaProgressView.meteringLevels = [0.1, 0.67, 0.13, 0.78, 0.31]
+        
     }
     
     fileprivate func pushToComments(selected audio: String, index: Int) {
@@ -325,6 +330,8 @@ class ExistingVC: BaseViewController {
                 playingMediaIndex = index
             }
         }
+        let audioFile = getFileInfo(name: self.totalFiles[playingMediaIndex])
+        self.meteringLevels = audioFile?.fileInfo?.meteringLevels ?? []
         let cell  = tableView.cellForRow(at: IndexPath(row: playingMediaIndex, section: 0)) as? ExistingFileCell
         self.lblTotalTime.text = self.getTimeDuration(filePath: self.lblFileName.text!)
         settingUpPlayer()
@@ -338,9 +345,9 @@ class ExistingVC: BaseViewController {
             preparePlayerToPlay(completePathURL: getFilePath())
             self.lblPlayerStatus.text = "Now Playing"
             //                self.mediaProgressView.audioURL = completePathURL!
-            self.mediaProgressView.meteringLevels = [0.1, 0.67, 0.13, 0.78, 0.31]
+            self.mediaProgressView.meteringLevels = self.meteringLevels
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0){
-                self.mediaProgressView.play(for: self.audioPlayer.duration / self.audioPlayer.duration)
+                self.mediaProgressView.play(for: self.audioPlayer.duration - self.audioPlayer.currentTime)
             }
             cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_pause_btn"), for: .normal)
             self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
@@ -389,6 +396,10 @@ class ExistingVC: BaseViewController {
     
     private func daysBetween(start: Date, end: Date) -> Int {
         return Calendar.current.dateComponents([.day], from: start, to: end).day!
+    }
+    
+    func getAudioMeteringLevels(audio: String) {
+        
     }
 }
 

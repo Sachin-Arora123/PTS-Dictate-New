@@ -601,6 +601,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6dN-f3-r6C" customClass="AudioVisualizationView" customModule="SoundWave">
+                                <rect key="frame" x="0.0" y="598" width="414" height="185"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </view>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" apportionsSegmentWidthsByContent="YES" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="qhp-LO-2c5">
                                 <rect key="frame" x="15" y="61" width="384" height="32"/>
                                 <constraints>
@@ -998,6 +1002,7 @@
                             <constraint firstItem="lDn-VJ-Xdc" firstAttribute="bottom" secondItem="bmD-0y-Xqp" secondAttribute="bottom" id="7Ef-FQ-Cgh"/>
                             <constraint firstItem="RN2-wU-rAj" firstAttribute="top" secondItem="IFu-Ny-Pj0" secondAttribute="top" id="7jC-sq-6gC"/>
                             <constraint firstItem="yo8-jP-fyy" firstAttribute="trailing" secondItem="qhp-LO-2c5" secondAttribute="trailing" constant="15" id="8dC-Zx-gWD"/>
+                            <constraint firstItem="6dN-f3-r6C" firstAttribute="top" secondItem="bmD-0y-Xqp" secondAttribute="bottom" id="9kc-uY-Acr"/>
                             <constraint firstItem="EO8-So-pyD" firstAttribute="leading" secondItem="u5k-jG-Lb8" secondAttribute="leading" id="CXB-fY-nuI"/>
                             <constraint firstItem="Zkn-h4-eQj" firstAttribute="trailing" secondItem="8du-Pf-dUx" secondAttribute="trailing" id="Cga-Gl-rnc"/>
                             <constraint firstItem="chE-M7-gwr" firstAttribute="leading" secondItem="yo8-jP-fyy" secondAttribute="leading" constant="15" id="D9H-UV-Wst"/>
@@ -1006,6 +1011,7 @@
                             <constraint firstAttribute="trailing" secondItem="tce-Oo-tbv" secondAttribute="trailing" constant="15" id="GZX-fh-g8u"/>
                             <constraint firstItem="RN2-wU-rAj" firstAttribute="top" secondItem="tce-Oo-tbv" secondAttribute="bottom" constant="5" id="Gf3-p6-sau"/>
                             <constraint firstItem="8du-Pf-dUx" firstAttribute="centerY" secondItem="o8d-Qa-DU6" secondAttribute="centerY" constant="-5" id="HFb-Vb-ky9"/>
+                            <constraint firstItem="yo8-jP-fyy" firstAttribute="bottom" secondItem="6dN-f3-r6C" secondAttribute="bottom" constant="30" id="HdU-j0-git"/>
                             <constraint firstItem="WHC-EH-Ct0" firstAttribute="bottom" secondItem="u5k-jG-Lb8" secondAttribute="bottom" id="Ivu-Vy-0VY"/>
                             <constraint firstItem="EO8-So-pyD" firstAttribute="top" secondItem="u5k-jG-Lb8" secondAttribute="bottom" constant="10" id="MiV-Sj-n48"/>
                             <constraint firstItem="J8T-nC-uAX" firstAttribute="leading" secondItem="8du-Pf-dUx" secondAttribute="trailing" constant="5" id="MrT-K0-MEc"/>
@@ -1013,6 +1019,7 @@
                             <constraint firstItem="tce-Oo-tbv" firstAttribute="top" secondItem="qhp-LO-2c5" secondAttribute="bottom" constant="5" id="QKT-e1-VJm"/>
                             <constraint firstItem="GVr-qK-lEL" firstAttribute="bottom" secondItem="F9Z-TR-piS" secondAttribute="bottom" id="RDM-gf-y8v"/>
                             <constraint firstItem="0dl-dH-n19" firstAttribute="top" secondItem="8du-Pf-dUx" secondAttribute="bottom" constant="2" id="S5d-Rh-sZx"/>
+                            <constraint firstItem="6dN-f3-r6C" firstAttribute="leading" secondItem="yo8-jP-fyy" secondAttribute="leading" id="TgU-FH-pXX"/>
                             <constraint firstItem="WHC-EH-Ct0" firstAttribute="leading" secondItem="u5k-jG-Lb8" secondAttribute="trailing" constant="5" id="Uej-yw-iVf"/>
                             <constraint firstItem="vsU-k2-ZZX" firstAttribute="top" secondItem="chE-M7-gwr" secondAttribute="bottom" constant="35" id="W5E-XT-ZAA"/>
                             <constraint firstItem="chE-M7-gwr" firstAttribute="top" secondItem="qhp-LO-2c5" secondAttribute="bottom" constant="20" id="WNt-Af-YLB"/>
@@ -1034,6 +1041,7 @@
                             <constraint firstItem="8du-Pf-dUx" firstAttribute="centerX" secondItem="IFu-Ny-Pj0" secondAttribute="centerX" id="mQh-a0-z2G"/>
                             <constraint firstItem="GVr-qK-lEL" firstAttribute="leading" secondItem="yo8-jP-fyy" secondAttribute="leading" id="r2V-Tc-0BD"/>
                             <constraint firstItem="yo8-jP-fyy" firstAttribute="trailing" secondItem="chE-M7-gwr" secondAttribute="trailing" constant="15" id="r4t-Vp-gtY"/>
+                            <constraint firstItem="yo8-jP-fyy" firstAttribute="trailing" secondItem="6dN-f3-r6C" secondAttribute="trailing" id="t9l-oJ-UDm"/>
                             <constraint firstItem="yo8-jP-fyy" firstAttribute="trailing" secondItem="J8T-nC-uAX" secondAttribute="trailing" constant="20" id="umA-OO-eZt"/>
                             <constraint firstItem="Zkn-h4-eQj" firstAttribute="leading" secondItem="8du-Pf-dUx" secondAttribute="leading" id="vII-E6-Av9"/>
                             <constraint firstItem="vsU-k2-ZZX" firstAttribute="trailing" secondItem="IFu-Ny-Pj0" secondAttribute="trailing" id="vc8-o1-0aA"/>
@@ -1046,6 +1054,7 @@
                         <inset key="largeContentSizeImageInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="0.10000000000000001"/>
                     </tabBarItem>
                     <connections>
+                        <outlet property="audioVisualizationView" destination="6dN-f3-r6C" id="7yb-3X-spD"/>
                         <outlet property="bookMarkView" destination="84w-G6-OB0" id="mWt-Q6-yiT"/>
                         <outlet property="bookmarkWaveTime" destination="StQ-Oa-7am" id="ohd-i6-K2u"/>
                         <outlet property="btnBackwardTrim" destination="G3J-v0-Y15" id="fQk-y8-oU7"/>

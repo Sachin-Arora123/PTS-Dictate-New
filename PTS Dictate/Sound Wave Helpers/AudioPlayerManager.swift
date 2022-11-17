@@ -2,29 +2,11 @@
 //  AudioPlayerManager.swift
 //  PTS Dictate
 //
-//  Created by Mohit Soni on 11/11/22.
+//  Created by Mohit Soni on 08/11/22.
 //
 
 import Foundation
 import AVFoundation
-
-enum AudioRecodingState {
-    case ready
-    case recording
-    case recorded
-    case playing
-    case paused
-
-    var audioVisualizationMode: AudioVisualizationView.AudioVisualizationMode {
-        switch self {
-        case .ready, .recording:
-            return .write
-        case .paused, .playing, .recorded:
-            return .read
-        }
-    }
-}
-
 
 final class AudioPlayerManager: NSObject {
 	static let shared = AudioPlayerManager()
@@ -133,7 +115,7 @@ extension AudioPlayerManager: AVAudioPlayerDelegate {
 	}
 }
 
-extension Notification.Name {
-	static let audioPlayerManagerMeteringLevelDidUpdateNotification = Notification.Name("AudioPlayerManagerMeteringLevelDidUpdateNotification")
-	static let audioPlayerManagerMeteringLevelDidFinishNotification = Notification.Name("AudioPlayerManagerMeteringLevelDidFinishNotification")
-}
+//extension Notification.Name {
+//	static let audioPlayerManagerMeteringLevelDidUpdateNotification = Notification.Name("AudioPlayerManagerMeteringLevelDidUpdateNotification")
+//	static let audioPlayerManagerMeteringLevelDidFinishNotification = Notification.Name("AudioPlayerManagerMeteringLevelDidFinishNotification")
+//}

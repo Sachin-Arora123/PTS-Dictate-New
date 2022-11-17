@@ -24,6 +24,7 @@ class CommentsVC: BaseViewController {
     var selectedAudio = ""
     var fileName = ""
     var comment = ""
+    var meteringLevels: [Float] = []
     // MARK: - View Life-Cycle.
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -77,7 +78,7 @@ class CommentsVC: BaseViewController {
         if fromExistingVC {
             UpdateAudioFile.comment(txtViewComment.text ?? "").update(audioName: selectedAudio)
         }
-        AudioFiles.shared.saveNewAudioFile(name: fileName, comment: txtViewComment.text ?? "")
+        AudioFiles.shared.saveNewAudioFile(name: fileName, comment: txtViewComment.text ?? "", meteringLevels: self.meteringLevels)
         let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
         self.setPushTransitionAnimation(VC)
         popToExitingVC()

@@ -2,14 +2,33 @@
 //  ViewModel.swift
 //  PTS Dictate
 //
-//  Created by Mohit Soni on 11/11/22.
+//  Created by Mohit Soni on 08/11/22.
 //
 
 import Foundation
+import SoundWave
 
 struct SoundRecord {
     var audioFilePathLocal: URL?
     var meteringLevels: [Float]?
+}
+
+
+enum AudioVisualizationState {
+    case ready
+    case recording
+    case recorded
+    case playing
+    case paused
+
+    var audioVisualizationMode: AudioVisualizationView.AudioVisualizationMode {
+        switch self {
+        case .ready, .recording:
+            return .write
+        case .paused, .playing, .recorded:
+            return .read
+        }
+    }
 }
 
 final class AudioVisualizationViewModel {
