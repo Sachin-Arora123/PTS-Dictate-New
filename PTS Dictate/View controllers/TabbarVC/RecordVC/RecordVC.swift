@@ -8,6 +8,8 @@
 import UIKit
 import CoreData
 import AVFoundation
+import SoundWave
+
 
 var isRecording: Bool = false
 var audioRecorder:AVAudioRecorder?
@@ -102,6 +104,17 @@ class RecordVC: BaseViewController {
             (self.tabBarController!.viewControllers![0] as! ExistingVC).editFromExiting = newValue
         }
     }
+    
+    // MARK: Audio visualization view properties
+    private let audioVisualizationViewModel = AudioVisualizationViewModel()
+    private var chronometer: Chronometer?
+    private var meteringLevels: [Float] = []
+    private var currentVisualizationState: AudioVisualizationState = .ready {
+        didSet{
+            self.audioVisualizationView.audioVisualizationMode = self.currentVisualizationState.audioVisualizationMode
+        }
+    }
+    @IBOutlet private var audioVisualizationView: AudioVisualizationView!
     // MARK: - View Life-Cycle.
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -123,7 +136,7 @@ class RecordVC: BaseViewController {
         //setup file name
         self.setupFileName()
         isRecording = false
-
+        visualizationViewSetup()
 //        //recorder setup
 //        self.recorderSetUp()
 //
@@ -182,7 +195,7 @@ class RecordVC: BaseViewController {
         self.saveRecordedAudio() {
             (success) in
             if success{
-                AudioFiles.shared.saveNewAudioFile(name: self.audioFileName, autoSaved: true)
+                AudioFiles.shared.saveNewAudioFile(name: self.audioFileName, autoSaved: true, meteringLevels: self.meteringLevels)
                 print("Bg success saved")
             }
         }
@@ -367,6 +380,7 @@ class RecordVC: BaseViewController {
 
               }
                 isRecording = true
+        visualizationViewControlls()
 //        // Stop the audio player before recording
 //        if let player = audioPlayer , player.isPlaying{
 //            player.stop()
@@ -446,6 +460,7 @@ class RecordVC: BaseViewController {
         viewClear.isHidden = true
         viewPlayerTiming.isHidden = false
         parentStackTop.constant = 60
+        visualizationViewControlls()
 //        stackViewHeight.constant = 150 - 45 * 2 - 70
 //        audioRecorder?.stop()
 //        do {
@@ -801,7 +816,7 @@ class RecordVC: BaseViewController {
                             if self.isCommentsOn {
                                 self.pushCommentVC()
                             } else {
-                                AudioFiles.shared.saveNewAudioFile(name: self.audioFileName)
+                                AudioFiles.shared.saveNewAudioFile(name: self.audioFileName, meteringLevels: self.meteringLevels)
                                 let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
                                 self.setPushTransitionAnimation(VC)
                                 self.navigationController?.popViewController(animated: false)
@@ -1348,4 +1363,88 @@ extension RecordVC {
 //            }
 //        }
 //    }
+}
+
+extension RecordVC {
+    func visualizationViewSetup() {
+        self.audioVisualizationViewModel.askAudioRecordingPermission()
+
+        self.audioVisualizationViewModel.audioMeteringLevelUpdate = { [weak self] meteringLevel in
+            guard let self = self, self.audioVisualizationView.audioVisualizationMode == .write else {
+                return
+            }
+            self.meteringLevels.append(meteringLevel)
+//            self.audioVisualizationView.add(meteringLevel: meteringLevel)
+        }
+
+        self.audioVisualizationViewModel.audioDidFinish = { [weak self] in
+            self?.currentVisualizationState = .recorded
+            self?.audioVisualizationView.stop()
+        }
+    }
+    
+    func visualizationViewControlls() {
+//        if self.currentState == .ready {
+//            self.audioVisualizationViewModel.startRecording { [weak self] soundRecord, error in
+//                if let error = error {
+//                    self?.showAlert(with: error)
+//                    return
+//                }
+//
+//                self?.currentState = .recording
+//
+//                self?.chronometer = Chronometer()
+//                self?.chronometer?.start()
+//            }
+//        }
+        switch self.currentVisualizationState {
+        case .ready:
+            self.currentVisualizationState = .recording
+            self.audioVisualizationViewModel.startRecording { [weak self] soundRecord, error in
+                if let error = error {
+                 //   self?.showAlert(with: error)
+                    print(error)
+                    return
+                }
+
+                self?.currentVisualizationState = .recording
+
+                self?.chronometer = Chronometer()
+                self?.chronometer?.start()
+            }
+        case .recording:
+            self.chronometer?.stop()
+            self.chronometer = nil
+
+            self.audioVisualizationViewModel.currentAudioRecord!.meteringLevels = self.audioVisualizationView.scaleSoundDataToFitScreen()
+            self.audioVisualizationView.audioVisualizationMode = .read
+
+            do {
+                try self.audioVisualizationViewModel.stopRecording()
+                self.currentVisualizationState = .recorded
+            } catch {
+                self.currentVisualizationState = .ready
+             //   self.showAlert(with: error)
+            }
+        case .recorded, .paused:
+            do {
+                let duration = try self.audioVisualizationViewModel.startPlaying()
+                self.currentVisualizationState = .playing
+                self.audioVisualizationView.meteringLevels = self.audioVisualizationViewModel.currentAudioRecord!.meteringLevels
+                self.audioVisualizationView.play(for: duration)
+            } catch {
+                self.showAlert(with: error)
+            }
+        case .playing:
+            do {
+                try self.audioVisualizationViewModel.pausePlaying()
+                self.currentVisualizationState = .paused
+                self.audioVisualizationView.pause()
+            } catch {
+              //  self.showAlert(with: error)
+            }
+        default:
+            break
+        }
+    }
 }
