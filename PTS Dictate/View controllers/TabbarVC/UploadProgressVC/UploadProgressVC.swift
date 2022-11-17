@@ -31,14 +31,13 @@ class UploadProgressVC: BaseViewController {
         // Do any additional setup after loading the view.
         tableView.delegate = self
         tableView.dataSource = self
-        files = ExistingViewModel.shared.uploadingQueue
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 //        self.tabBarController?.navigationItem.hidesBackButton = true
         self.tabBarController?.navigationItem.leftBarButtonItem = nil
+        files = ExistingViewModel.shared.uploadingQueue
         setTitleWithImage("Uploads", andImage: UIImage(named: "settings_upload.png") ?? UIImage())
         if files.count > 0 {
             tableView.isHidden = false
@@ -58,7 +57,7 @@ class UploadProgressVC: BaseViewController {
             let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
             let completePath = directoryPath.absoluteString + file
             let url = URL(string: completePath)
-            ExistingViewModel.shared.uploadAudio(userName: CoreData.shared.userName, toUser: "pts", fileUrl: url!, fileName: file, description: AudioFiles.shared.getAudioComment(name: file)) {
+            ExistingViewModel.shared.uploadAudio(userName: CoreData.shared.userId, toUser: "pts", fileUrl: url!, fileName: file, description: AudioFiles.shared.getAudioComment(name: file)) {
                 print("file uploaded")
                 UpdateAudioFile.isUploaded(true).update(audioName: file)
                 UpdateAudioFile.uploadingInProgress(false).update(audioName: file)

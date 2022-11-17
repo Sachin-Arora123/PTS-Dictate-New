@@ -330,9 +330,9 @@ class ApiHandler: NSObject {
     
     static func uploadMediaFile<T:Codable>(url: String , withParameters parameters: [String: Any], ofType : T.Type, onSuccess:@escaping (T)->(), onFailure: @escaping (Bool, String)->(), method: ApiMethod, fileUrl: URL, headerPresent: Bool, fileName: String, description: String, emailNotifications: String) {
         let kMehod: HTTPMethod = .post
-        let uatURL = "https://uat.etranscriptions.com.au/scripts/web_response.php?Case=UploadFile&Login_Name=\(CoreData.shared.userName)&File_Desc=\(description)&From_User=pts&To_User=pts&Email_Notification=\(emailNotifications)"
+        let uatURL = "https://uat.etranscriptions.com.au/scripts/web_response.php?Case=UploadFile&Login_Name=\(CoreData.shared.userId)&File_Desc=\(description)&From_User=pts&To_User=pts&Email_Notification=\(emailNotifications)"
         
-        let liveURL = "https://www.etranscriptions.com.au/scripts/web_response.php?Case=UploadFile&Login_Name=\(CoreData.shared.userName)&File_Desc=\(description)&From_User=pts&To_User=pts&Email_Notification=\(emailNotifications)"
+        let liveURL = "https://www.etranscriptions.com.au/scripts/web_response.php?Case=UploadFile&Login_Name=\(CoreData.shared.userId)&File_Desc=\(description)&From_User=pts&To_User=pts&Email_Notification=\(emailNotifications)"
         
         let header : HTTPHeaders = [
             :

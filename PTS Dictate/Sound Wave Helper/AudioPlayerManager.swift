@@ -8,6 +8,24 @@
 import Foundation
 import AVFoundation
 
+enum AudioRecodingState {
+    case ready
+    case recording
+    case recorded
+    case playing
+    case paused
+
+    var audioVisualizationMode: AudioVisualizationView.AudioVisualizationMode {
+        switch self {
+        case .ready, .recording:
+            return .write
+        case .paused, .playing, .recorded:
+            return .read
+        }
+    }
+}
+
+
 final class AudioPlayerManager: NSObject {
 	static let shared = AudioPlayerManager()
 
