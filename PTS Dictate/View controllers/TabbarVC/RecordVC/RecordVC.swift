@@ -88,6 +88,7 @@ class RecordVC: BaseViewController {
        private lazy var stopwatch = Stopwatch(timeUpdated: { [weak self] timegap in
             guard let strongSelf = self else { return }
              strongSelf.lblTime.text = strongSelf.timeString(from: timegap)
+           strongSelf.updateAudioMeter()
         })
     
     var editFromExiting: Bool {
@@ -110,6 +111,9 @@ class RecordVC: BaseViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         //UI setup
+        audioRangeMeterSetUp()
+        hideLeftButton()
+        setTitleWithImage("Record", andImage: UIImage(named: "title_record_normal.png") ?? UIImage())
         setUpUI()
         self.initiallyBtnStateSetup()
         self.viewBottomButton.isHidden = true
@@ -141,7 +145,6 @@ class RecordVC: BaseViewController {
       NotificationCenter.default.removeObserver(self)
 //      stopwatch.stop()
     }
-    
     @objc func applicationWillTerminate(notification: Notification) {
         print("Notification received.")
         if self.recorder.audioRecorder != nil {
@@ -183,9 +186,6 @@ class RecordVC: BaseViewController {
     }
     // MARK: - UISetup
     func setUpUI(){
-        audioRangeMeterSetUp()
-        hideLeftButton()
-        setTitleWithImage("Record", andImage: UIImage(named: "title_record_normal.png") ?? UIImage())
         segmentControl.isHidden = true
         stackView.isHidden = true
         stackViewHeight.constant = 0
@@ -266,12 +266,9 @@ class RecordVC: BaseViewController {
         }
         switch recorderState {
               case .none:
-            print("tt--..",self.recorder.articleChunks.count)
-            print("tt--..",self.recorder.articleChunks)
-
             self.recorder.startRecording(sampleRateKey: Float(sampleRateKey), fileName:  "P")
                   self.recorderState = .recording
-            stopwatch.toggle()
+            stopwatch.start()
 //            self.recordTimer = Timer.scheduledTimer(timeInterval: 0.1, target:self, selector:#selector(self.updateAudioMeter(timer:)), userInfo:nil, repeats:true)
             self.lblPlayerStatus.text = "Recording"
             self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: UIControl.State.normal)
@@ -280,7 +277,7 @@ class RecordVC: BaseViewController {
             print("recording")
               case .recording:
                   self.recorder.pauseRecording()
-            stopwatch.toggle()
+            stopwatch.pause()
 //            self.audioFileURL = self.recorder.audioFilename
                   self.recorderState = .pause
             lblPlayerStatus.text = "Paused"
@@ -292,14 +289,21 @@ class RecordVC: BaseViewController {
             btnBackwardTrim.isUserInteractionEnabled = true
             btnBackwardTrimEnd.isUserInteractionEnabled = true
             print("pause")
-
+            self.setUpStopAndPauseUI()
+            self.btnStop.isUserInteractionEnabled = true
               case .pause:
-            stopwatch.toggle()
+            stopwatch.start()
+            self.setUpUI()
+            self.initiallyBtnStateSetup()
+            self.customRangeBar.isHidden = false
+            self.customRangeBarHeight.constant = 45
+            self.parentStackTop.constant = 35
             lblPlayerStatus.text = "Recording"
             self.recorder.startRecording(sampleRateKey: Float(sampleRateKey), fileName: "\(chunkInt)")
             self.chunkInt += 1
             self.recorderState = .recording
             self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: UIControl.State.normal)
+            self.btnStop.isUserInteractionEnabled = true
             print("resume")
 
               }
@@ -309,7 +313,8 @@ class RecordVC: BaseViewController {
     @IBAction func onTapStop(_ sender: UIButton) {
             self.recorder.pauseRecording()
             self.recorderState = .pause
-           stopwatch.toggle()
+//            stopwatch.toggle()
+        stopwatch.pause()
         /* `ListRecordings` is updated in `self.concatChunks` as temporary
          files are deleted there asynchronously, and calling `reloadData`
          here would result in runtime crash.
@@ -327,9 +332,12 @@ class RecordVC: BaseViewController {
         btnBackwardTrimEnd.isUserInteractionEnabled = true
         btnStop.isUserInteractionEnabled = false
         CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
+        lblPlayerStatus.text = "Stopped"
+        self.setUpStopAndPauseUI()
+    }
+    func setUpStopAndPauseUI(){
         self.customRangeBar.isHidden = true
         self.customRangeBarHeight.constant = 0
-        lblPlayerStatus.text = "Stopped"
         progressViewHeight.constant = 0
         viewProgress.isHidden = true
         stackView.isHidden = true
@@ -338,8 +346,9 @@ class RecordVC: BaseViewController {
         viewClear.isHidden = true
         viewPlayerTiming.isHidden = false
         parentStackTop.constant = 60
+        currentPlayingTime.text = self.lblTime.text
+        playerTotalTime.text = self.lblTime.text
     }
-    
     // MARK: - Audio meter range setup.
     func audioRangeMeterSetUp() {
         self.customRangeBar.backgroundColor = .white
@@ -376,14 +385,29 @@ class RecordVC: BaseViewController {
            btnStop.isUserInteractionEnabled = false
        }else{
            self.recorder.stopPlayer()
-           btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-           btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: .normal)
-           btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: .normal)
-           btnRecord.isUserInteractionEnabled = true
-           btnStop.isUserInteractionEnabled = true
+           self.onStopPlayerSetupUI()
        }
+        NotificationCenter.default.addObserver(self, selector: #selector(self.playerDidFinishPlaying(sender:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.recorder.playerItem)
+        self.recorder.queuePlayer?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: DispatchQueue.main, using: { (time) in
+                if self.recorder.queuePlayer?.currentItem?.status == .readyToPlay {
+                    let currentTime = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
+                    self.currentPlayingTime.text = self.timeString(from: currentTime)
+                }})
+    }
+    func onStopPlayerSetupUI(){
+        btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+        btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: .normal)
+        btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: .normal)
+        btnRecord.isUserInteractionEnabled = true
+        btnStop.isUserInteractionEnabled = true
+        btnPlay.isUserInteractionEnabled = true
     }
     
+    @objc func playerDidFinishPlaying(sender: Notification) {
+//        btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+        self.onStopPlayerSetupUI()
+        print("Finished playing")
+    }
     // MARK: - @IBAction Forward.
     @IBAction func onTapForwardTrim(_ sender: UIButton) {
         print("Forward Trim")
@@ -603,6 +627,7 @@ class RecordVC: BaseViewController {
                 for asset in self.recorder.articleChunks {
                     try? FileManager.default.removeItem(at: asset.url)
                 }
+                self.recorder.articleChunks.removeAll()
 //                self.removeDiscardAudio(itemName: "P", fileExtension: "m4a")
                 self.onDiscardRecorderSetUp()
                 self.viewBottomButton.isHidden = true
@@ -623,13 +648,23 @@ class RecordVC: BaseViewController {
                 self.btnClear.setImage(UIImage(named: "btn_start_deleting_normal"), for: .normal)
             }else if sender.imageView?.image == UIImage(named: "btn_start_deleting_normal") {
                 print("Delete")
-                self.recorder.deleteAudio()
-//                self.recorder.deleteExportAsset(endTimeOfRange1: 4.0, startTimeOfRange2: 8.0, fileName: "fileNames"){
-//                    (success) in
-//                    if success{
-//                        print("Delete Success")
-//                    }
-//                }
+                self.recorder.deleteAudio(startTime: 2, endTime: 5){
+                    (success) in
+                    if success{
+                        print("Delete Success")
+                        self.stackView.isHidden = true
+                        self.stackViewHeight.constant = 0
+                        self.segmentControl.isHidden = true
+                        self.segmentHeight.constant = 0
+                        self.btnStop.isUserInteractionEnabled = false
+                        self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: UIControl.State.normal)
+                        CommonFunctions.alertMessage(view: self, title: Constants.appName, msg: Constants.pDeleteMsg, btnTitle: "OK")
+                        DispatchQueue.main.async {
+                            CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
+                            self.tabBarController?.setTabBarHidden(true, animated: false)
+                        }
+                    }
+                }
             }
         }else {
             if sender.imageView?.image == UIImage(named: "btn_start_point_normal") {
@@ -701,14 +736,14 @@ class RecordVC: BaseViewController {
     }
     
     // MARK: - Upadte Timer method.
-   @objc func updateAudioMeter(timer: Timer) {
+   @objc func updateAudioMeter() {
        if let recorder = self.recorder.audioRecorder {
             if recorder.isRecording{
-                let hr = Int((recorder.currentTime / 60) / 60)
-                let min = Int(recorder.currentTime / 60)
-                let sec = Int(recorder.currentTime.truncatingRemainder(dividingBy: 60))
-                let totalTimeString = String(format: "%02d:%02d:%02d", hr, min, sec)
-                self.lblTime.text = totalTimeString
+//                let hr = Int((recorder.currentTime / 60) / 60)
+//                let min = Int(recorder.currentTime / 60)
+//                let sec = Int(recorder.currentTime.truncatingRemainder(dividingBy: 60))
+//                let totalTimeString = String(format: "%02d:%02d:%02d", hr, min, sec)
+//                self.lblTime.text = totalTimeString
                 self.lblFSizeValue.text = String(format: "%.2f", Float(try! Data(contentsOf: recorder.url).count) / 1024.0 / 1024.0) + " Mb"
                 recorder.updateMeters()
              }
@@ -827,9 +862,11 @@ extension RecordVC: AVAudioRecorderDelegate,AVAudioPlayerDelegate {
     
     // Completion of playing
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        if flag{
-            print("Playing Completed")
-            btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+        if player == self.recorder.queuePlayer{
+            if flag{
+                print("Playing Completed")
+                btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+            }
         }
     }
 }

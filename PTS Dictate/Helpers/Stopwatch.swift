@@ -47,11 +47,26 @@ class Stopwatch {
     
     //MARK: Timer actions
 
-    func toggle() {
+//    func toggle() {
+//        guard timer != nil else {
+//            initTimer()
+//            return
+//        }
+//        deinitTimer()
+//    }
+    func start() {
         guard timer != nil else {
             initTimer()
             return
         }
+//        deinitTimer()
+    }
+    
+    func pause() {
+//        guard timer != nil else {
+//            initTimer()
+//            return
+//        }
         deinitTimer()
     }
     

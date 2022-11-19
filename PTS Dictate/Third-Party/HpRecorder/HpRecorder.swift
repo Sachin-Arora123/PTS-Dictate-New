@@ -6,6 +6,7 @@
 //
 import Foundation
 import AVFoundation
+import UIKit
 
 public class HPRecorder: NSObject {
     open var tempVar : AVAsset?
@@ -13,6 +14,9 @@ public class HPRecorder: NSObject {
     open var audioRecorder: AVAudioRecorder!
     open var queuePlayer:      AVQueuePlayer?
     open var articleChunks = [AVURLAsset]()
+    open var playerItem: AVPlayerItem?
+    open var durationTime: Double = 0.0
+//    open var playerItemArray = [AVPlayerItem]()
     open var queuePlayerPlaying = false
     private var levelTimer = Timer()
     // Time interval to get percent of loudness
@@ -129,26 +133,40 @@ public class HPRecorder: NSObject {
             print("Audio here")
             let assetKeys = ["playable"]
             let playerItems = AVPlayerItem(asset: (tempVar!), automaticallyLoadedAssetKeys: assetKeys)
-
+            self.playerItem = playerItems
             self.queuePlayer = AVQueuePlayer(playerItem: playerItems)//AVQueuePlayer(items: playerItems)
             self.queuePlayer?.actionAtItemEnd = .advance
-
             self.queuePlayer?.play()
             self.queuePlayerPlaying = true
+            var playerItemArray = [AVPlayerItem]()
+            playerItemArray.append(playerItem!)
+            self.durationTime = self.getTimeDuration(playerItems: playerItemArray)
             return
         }else{
         let assetKeys = ["playable"]
         let playerItems = self.articleChunks.map {
             AVPlayerItem(asset: $0, automaticallyLoadedAssetKeys: assetKeys)
         }
-
         self.queuePlayer = AVQueuePlayer(items: playerItems)
         self.queuePlayer?.actionAtItemEnd = .advance
-
+        self.playerItem = playerItems.last
         self.queuePlayer?.play()
         self.queuePlayerPlaying = true
-        }
+        self.durationTime = self.getTimeDuration(playerItems: playerItems)
+      }
     }
+    
+    func getTimeDuration(playerItems: [AVPlayerItem]) -> Double{
+        var count: Double = 0.0
+        for playerItem in playerItems {
+            let duration = playerItem.asset.duration
+            let durationSeconds = Double(CMTimeGetSeconds(duration))
+            count = count + durationSeconds
+        }
+        print("durationCount-->>", count)
+        return count
+    }
+    
     // Stop player
     public  func stopPlayer() {
         self.queuePlayer?.pause()
@@ -418,7 +436,7 @@ public class HPRecorder: NSObject {
 //        return trimmedSoundFileURL
     }
     
-    public func deleteAudio(){
+    public func deleteAudio(startTime: Double,endTime: Double, completion: @escaping(_ result: Bool) -> Void){
         // create empty mutable composition
         let composition: AVMutableComposition = AVMutableComposition()
         
@@ -432,8 +450,8 @@ public class HPRecorder: NSObject {
         }
 
         // now edit as required, e.g. delete a time range
-        let startTime = CMTime(seconds: 1, preferredTimescale: 100)
-        let endTime = CMTime(seconds: 4, preferredTimescale: 100)
+        let startTime = CMTime(seconds: startTime, preferredTimescale: 100)
+        let endTime = CMTime(seconds: endTime, preferredTimescale: 100)
         composition.removeTimeRange( CMTimeRangeFromTimeToTime(start: startTime, end: endTime))
 
         // since AVMutableComposition is an AVAsset subclass, it can be exported with AVAssetExportSession (or played with an AVPlayer(Item))
@@ -443,6 +461,9 @@ public class HPRecorder: NSObject {
             // You don't have to set the timeRange of the exportSession
             self.tempVar = exporter.asset
             print("Here", exporter)
+            completion(true)
+        }else{
+            completion(false)
         }
     }
     
@@ -545,6 +566,7 @@ struct Constants {
 
         return dateFormatter.string(from: date)
     }
+    static let appName = "PTS Dictate"
     static let appendMsg = "When the append function is selected, the cursor will automatically move to the end of the original recording. If you want the Append to start at a different point, move the cursor to a desired point and tap the orange Record button to start the Append function."
     
     static let insertMsg = "To start insert, tap the Start Point button marker whilst listening to the audio. Tap the Start Inserting button to initiate the insert. The insert will end when the orange Stop button is tapped."
@@ -552,4 +574,5 @@ struct Constants {
     static let overwriteMsg = "To start overwrite, tap the Start Point and End Point button markers whilst listening to the audio. The End Point button determines where the overwrite finishes. Tap the Start Overwriting button to initiate the overwrite. The overwrite will end when the End Point marker is reached."
     
     static let partialDeleteMsg = "To start partial delete, tap the Start Point and End Point button markers whilst listening to the audio. The End Point button determines where the partial delete finishes. Tap the Start Deleting button to initiate the partial delete. The partial delete will end when the End Point marker is reached."
+    static let pDeleteMsg = "Partial Delete Complete"
 }
