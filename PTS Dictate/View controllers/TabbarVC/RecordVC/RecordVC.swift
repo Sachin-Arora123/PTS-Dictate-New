@@ -788,6 +788,7 @@ class RecordVC: BaseViewController {
         VC.hidesBottomBarWhenPushed = true
         VC.isCommentsMandotary = isCommentsMandotary
         VC.fileName = audioFileName
+        VC.meteringLevels = meteringLevels
         self.navigationController?.pushViewController(VC, animated: false)
     }
     // MARK: - @IBAction Save.

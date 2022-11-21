@@ -67,7 +67,7 @@ class AudioFiles {
     }
     
     func saveNewAudioFile(name: String, comment: String, meteringLevels: [Float]) {
-        AudioFiles.shared.audioFiles.append(AudioFile(name: name, fileInfo: AudioFileInfo(comment: comment, isUploaded: false, archivedDays: archiveFile == 1 ? archiveFileDays : 0, canEdit: false, uploadedAt: nil, uploadingInProgress: false, autoSaved: true, meteringLevels: meteringLevels)))
+        AudioFiles.shared.audioFiles.append(AudioFile(name: name, fileInfo: AudioFileInfo(comment: comment, isUploaded: false, archivedDays: archiveFile == 1 ? archiveFileDays : 0, canEdit: false, uploadedAt: nil, uploadingInProgress: false, autoSaved: false, meteringLevels: meteringLevels)))
         updateAudioFilesOnCoreData()
     }
     
