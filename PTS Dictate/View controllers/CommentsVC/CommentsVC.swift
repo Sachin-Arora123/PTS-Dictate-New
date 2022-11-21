@@ -41,7 +41,7 @@ class CommentsVC: BaseViewController {
     }
     
     @IBAction func discardTapped(_ sender:UIButton) {
-        popToExitingVC()
+        saveComment()
     }
     
     // MARK: UISetUp
@@ -77,8 +77,10 @@ class CommentsVC: BaseViewController {
     fileprivate func saveComment() {
         if fromExistingVC {
             UpdateAudioFile.comment(txtViewComment.text ?? "").update(audioName: selectedAudio)
+            popToExitingVC()
+            return
         }
-        AudioFiles.shared.saveNewAudioFile(name: fileName, comment: txtViewComment.text ?? "", meteringLevels: self.meteringLevels)
+        AudioFiles.shared.saveNewAudioFile(name: fileName, comment: txtViewComment.text, meteringLevels: self.meteringLevels)
         let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
         self.setPushTransitionAnimation(VC)
         popToExitingVC()

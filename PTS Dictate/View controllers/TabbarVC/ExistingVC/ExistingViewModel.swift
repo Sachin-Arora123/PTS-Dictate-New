@@ -19,6 +19,7 @@ class  ExistingViewModel{
     
     var existingViewController : ExistingVC?
     var uploadingQueue: [String] = []
+    var uploadingInProgress: Bool = false
     func uploadAudio(userName : String, toUser: String, emailNotify: Bool = false, fileUrl: URL, fileName: String, description: String, completion: @escaping () -> Void, failure: @escaping (String) -> Void) {
         let params: [String: String] = [
             "Login_Name": userName,

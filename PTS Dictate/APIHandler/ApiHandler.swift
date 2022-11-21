@@ -332,6 +332,7 @@ class ApiHandler: NSObject {
         let kMehod: HTTPMethod = .post
         let uatURL = "https://uat.etranscriptions.com.au/scripts/web_response.php?Case=UploadFile&Login_Name=\(CoreData.shared.userId)&File_Desc=\(description)&From_User=pts&To_User=pts&Email_Notification=\(emailNotifications)"
         
+//    https://uat.etranscriptions.com.au/scripts/web_response.php?Case=UploadFile&Login_Name=nathanuat$01&File_Desc=new comment&From_User=pts&To_User=pts&Email_Notification=OFF
         let liveURL = "https://www.etranscriptions.com.au/scripts/web_response.php?Case=UploadFile&Login_Name=\(CoreData.shared.userId)&File_Desc=\(description)&From_User=pts&To_User=pts&Email_Notification=\(emailNotifications)"
         
         let header : HTTPHeaders = [
