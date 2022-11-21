@@ -68,7 +68,10 @@ class ExistingVC: BaseViewController {
         setUpUI()
 //        CoreData.shared.audioFiles = []
 //        CoreData.shared.dataSave()
-        self.setUpWave()
+        resetSoundWaves()
+        if totalFiles.count > 0 {
+            self.setUpWave(index: 0)
+        }
         self.checkArchiveDate()
     }
     
@@ -151,6 +154,7 @@ class ExistingVC: BaseViewController {
                 audioPlayer.play()
                 //                self.mediaProgressView.audioURL = completePathURL!
                 self.mediaProgressView.meteringLevels = meteringLevels
+                
 //                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0){
                     self.mediaProgressView.play(for: self.audioPlayer.duration - self.audioPlayer.currentTime)
 //                }
@@ -265,8 +269,8 @@ class ExistingVC: BaseViewController {
         controllAudioPlayer(controllerType: controllerType)
     }
     
-    func setUpWave() {
-        let audioFile = self.getFileInfo(name: self.totalFiles[0])
+    func setUpWave(index: Int) {
+        let audioFile = self.getFileInfo(name: self.totalFiles[index])
         self.meteringLevels = audioFile?.fileInfo?.meteringLevels ?? []
         self.mediaProgressView.meteringLevelBarWidth = 1.0
         self.mediaProgressView.meteringLevelBarInterItem = 1.0
@@ -330,31 +334,50 @@ class ExistingVC: BaseViewController {
                 playingMediaIndex = index
             }
         }
-        let audioFile = getFileInfo(name: self.totalFiles[playingMediaIndex])
-        self.meteringLevels = audioFile?.fileInfo?.meteringLevels ?? []
-        let cell  = tableView.cellForRow(at: IndexPath(row: playingMediaIndex, section: 0)) as? ExistingFileCell
-        self.lblTotalTime.text = self.getTimeDuration(filePath: self.lblFileName.text!)
-        settingUpPlayer()
-        if audioPlayer.isPlaying{
-            self.lblPlayerStatus.text = "Now Paused"
-            audioPlayer.pause()
-            self.mediaProgressView.pause()
-            cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_play_btn"), for: .normal)
-            self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-        }else{
-            preparePlayerToPlay(completePathURL: getFilePath())
-            self.lblPlayerStatus.text = "Now Playing"
-            //                self.mediaProgressView.audioURL = completePathURL!
-            self.mediaProgressView.meteringLevels = self.meteringLevels
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0){
-                self.mediaProgressView.play(for: self.audioPlayer.duration - self.audioPlayer.currentTime)
+        do {
+            let index = playingMediaIndex
+            let cell  = tableView.cellForRow(at: IndexPath(row: playingMediaIndex, section: 0)) as? ExistingFileCell
+            self.lblFileName.text = self.totalFiles[index]
+            let audioFile = getFileInfo(name: self.totalFiles[index])
+            self.meteringLevels = audioFile?.fileInfo?.meteringLevels ?? []
+            //                let file = Bundle.main.url(forResource: "file_name", withExtension: "mp3")!
+            let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            let completePath = directoryPath.absoluteString + self.totalFiles[index]
+            let completePathURL = URL(string: completePath)
+            //                let file = directoryPath + fileEndPoint
+            //                let dirURL = URL(string: file)
+
+            audioPlayer.numberOfLoops = 0 // loop count, set -1 for infinite
+            audioPlayer.volume = 1
+            audioPlayer.prepareToPlay()
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
+            try AVAudioSession.sharedInstance().setActive(true)
+            if audioPlayer.isPlaying{
+                audioPlayer.pause()
+                self.mediaProgressView.pause()
+                cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_play_btn"), for: .normal)
+                self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+            }else{
+                self.playingCellIndex = index
+                audioPlayer =  try AVAudioPlayer(contentsOf: completePathURL!)
+                audioPlayer.delegate = self
+                audioPlayer.play()
+                //                self.mediaProgressView.audioURL = completePathURL!
+                self.mediaProgressView.meteringLevels = meteringLevels
+                
+//                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0){
+                    self.mediaProgressView.play(for: self.audioPlayer.duration - self.audioPlayer.currentTime)
+//                }
+                cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_pause_btn"), for: .normal)
+                self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
+                tag = index
+                self.audioMeteringLevelTimer = Timer.scheduledTimer(timeInterval: 0.05, target: self, selector: #selector(timerDidUpdateMeter), userInfo: nil, repeats: true)
+                self.lblTotalTime.text = self.getTimeDuration(filePath: self.totalFiles[index])
             }
-            cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_pause_btn"), for: .normal)
-            self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
-            tag = playingMediaIndex
-            self.audioMeteringLevelTimer = Timer.scheduledTimer(timeInterval: 0.05, target: self, selector: #selector(timerDidUpdateMeter), userInfo: nil, repeats: true)
+            self.setTrimButtonInteraction(isInteractive: true)
+        } catch _ {
+            print("catch")
         }
-        self.setTrimButtonInteraction(isInteractive: true)
     }
     
     private func controllAudioPlayer(controllerType: AudioControllers) {
@@ -499,6 +522,15 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.lblFileName.text = totalFiles[indexPath.row]
+        let cell  = tableView.cellForRow(at: IndexPath(row: indexPath.row, section: 0)) as? ExistingFileCell
+        cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_play_btn"), for: .normal)
+        self.lblPlayerStatus.text  = ""
+        self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+        self.mediaProgressView.stop()
+        self.mediaProgressView.reset()
+        self.setUpWave(index: indexPath.row)
+        self.tableView.reloadData()
+        
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
@@ -617,6 +649,11 @@ extension ExistingVC{
         }
         return String(format: "%4.2f %@", convertedValue, tokens[multiplyFactor])
     }
+    
+    private func resetSoundWaves() {
+        self.mediaProgressView.stop()
+        self.mediaProgressView.reset()
+    }
 }
 
 // MARK: - Extension for AVAudioPlayerDelegate
@@ -628,8 +665,8 @@ extension ExistingVC: AVAudioPlayerDelegate {
             cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_play_btn"), for: .normal)
             self.lblPlayerStatus.text  = ""
             self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-            self.mediaProgressView.reset()
-            self.setUpWave()
+            self.resetSoundWaves()
+            self.setUpWave(index: playingCellIndex)
             self.tableView.reloadData()
             print("Playing Completed")
         }
@@ -693,12 +730,14 @@ extension ExistingVC{
             }
         } else {
             audioPlayer.pause()
+            self.mediaProgressView.pause()
             audioPlayer.currentTime = time
             audioPlayer.play()
             let min = Int(audioPlayer.currentTime / 60)
             let sec = Int(audioPlayer.currentTime.truncatingRemainder(dividingBy: 60))
             let totalTimeString = String(format: "%02d:%02d", min, sec)
             self.lblPlayingTime.text = totalTimeString
+            self.mediaProgressView.play(for: time)
             audioPlayer.updateMeters()
         }
     }
@@ -711,12 +750,14 @@ extension ExistingVC{
             audioPlayer.stop()
         } else {
             audioPlayer.pause()
+            self.mediaProgressView.pause()
             audioPlayer.currentTime = time
             audioPlayer.play()
             let min = Int(audioPlayer.currentTime / 60)
             let sec = Int(audioPlayer.currentTime.truncatingRemainder(dividingBy: 60))
             let totalTimeString = String(format: "%02d:%02d", min, sec)
             self.lblPlayingTime.text = totalTimeString
+            self.mediaProgressView.play(for: time)
             audioPlayer.updateMeters()
         }
     }

@@ -24,14 +24,14 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "C3906ECD-703F-48D9-9266-AF82C494A5B1"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PTS Dictate/View controllers/TabbarVC/ExistingVC/ExistingVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "72"
-            endingLineNumber = "72"
+            startingLineNumber = "75"
+            endingLineNumber = "75"
             landmarkName = "viewWillAppear(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -40,14 +40,14 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "007BA713-A843-44B5-9827-596FB50930B7"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PTS Dictate/View controllers/TabbarVC/ExistingVC/ExistingVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "153"
-            endingLineNumber = "153"
+            startingLineNumber = "156"
+            endingLineNumber = "156"
             landmarkName = "play(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -55,49 +55,33 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "E433AA6E-6B41-442F-A8BE-C4CBFCBDCDE1"
-            shouldBeEnabled = "No"
+            uuid = "00D332F2-7A84-4BBB-9390-11C7ADB6F773"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Pods/SoundWave/SoundWave/Classes/AudioVisualizationView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "195"
+            endingLineNumber = "195"
+            landmarkName = "pause()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "4936D4A4-B54F-498F-B75E-0329A28FFC76"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PTS Dictate/View controllers/TabbarVC/ExistingVC/ExistingVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "349"
-            endingLineNumber = "349"
-            landmarkName = "playAudio()"
+            startingLineNumber = "671"
+            endingLineNumber = "671"
+            landmarkName = "audioPlayerDidFinishPlaying(_:successfully:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "E433AA6E-6B41-442F-A8BE-C4CBFCBDCDE1 - 1e54ff8eaf734f77"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "PTS_Dictate.ExistingVC.playAudio() -&gt; ()"
-                  moduleName = "PTS Dictate"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/mohitsoni/Desktop/FreelanceProjects/new/PTS-Dictate-New/PTS%20Dictate/View%20controllers/TabbarVC/ExistingVC/ExistingVC.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "348"
-                  endingLineNumber = "348"
-                  offsetFromSymbolStart = "4848">
-               </Location>
-               <Location
-                  uuid = "E433AA6E-6B41-442F-A8BE-C4CBFCBDCDE1 - 6782256ea2573940"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Swift.MainActor () -&gt; () in PTS_Dictate.ExistingVC.playAudio() -&gt; ()"
-                  moduleName = "PTS Dictate"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/mohitsoni/Desktop/FreelanceProjects/new/PTS-Dictate-New/PTS%20Dictate/View%20controllers/TabbarVC/ExistingVC/ExistingVC.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "349"
-                  endingLineNumber = "349"
-                  offsetFromSymbolStart = "84">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
