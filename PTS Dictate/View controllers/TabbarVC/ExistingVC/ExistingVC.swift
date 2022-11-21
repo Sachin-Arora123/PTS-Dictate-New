@@ -190,11 +190,18 @@ class ExistingVC: BaseViewController {
         if self.totalFilesSelected.count == 0{
             CommonFunctions.alertMessage(view: self, title: "PTS Dictate", msg: "Please select atleast one file.", btnTitle: "OK")
         } else {
-            self.existingViewModel.uploadingQueue = totalFilesSelected
-            let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
-            self.setPushTransitionAnimation(VC)
-            self.navigationController?.popViewController(animated: false)
-            self.tabBarController?.selectedIndex = 1
+            let alreadyUploaded = self.checkFilesAlreadyUploadedOrNot()
+            if alreadyUploaded {
+                CommonFunctions.showAlert(view: self, title: "PTS Dictate", message: "Are you sure you want to re-upload?") { success in
+                    if success {
+                        self.uploadFiles()
+                    } else {
+                        return
+                    }
+                }
+            } else {
+                self.uploadFiles()
+            }
         }
     }
     
@@ -217,6 +224,27 @@ class ExistingVC: BaseViewController {
             })
         }
     }
+    
+    func checkFilesAlreadyUploadedOrNot() -> Bool {
+        for file in totalFilesSelected {
+            let audioFile = getFileInfo(name: file)
+            if audioFile?.fileInfo?.isUploaded ?? true {
+                return true
+            } else {
+                return false
+            }
+        }
+        return false
+    }
+    
+    func uploadFiles() {
+        self.existingViewModel.uploadingQueue = self.totalFilesSelected
+        let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
+        self.setPushTransitionAnimation(VC)
+        self.navigationController?.popViewController(animated: false)
+        self.tabBarController?.selectedIndex = 1
+    }
+    
     func getSortedAudioList() -> [String] {
         var sortedDateArray = [String]()
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
