@@ -301,7 +301,8 @@ class ExistingVC: BaseViewController {
         let audioFile = self.getFileInfo(name: self.totalFiles[index])
         self.meteringLevels = audioFile?.fileInfo?.meteringLevels ?? []
         self.mediaProgressView.meteringLevelBarWidth = 1.0
-        self.mediaProgressView.meteringLevelBarInterItem = 1.0
+        self.mediaProgressView.meteringLevelBarInterItem = 2.5
+//        self.mediaProgressView.add(meteringLevel: 0.8)
         self.mediaProgressView.meteringLevelBarCornerRadius = 0.0
         self.mediaProgressView.meteringLevelBarSingleStick = false
         self.mediaProgressView.gradientStartColor = #colorLiteral(red: 0.6509803922, green: 0.8235294118, blue: 0.9529411765, alpha: 1)

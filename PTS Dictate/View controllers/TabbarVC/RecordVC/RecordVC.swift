@@ -195,6 +195,7 @@ class RecordVC: BaseViewController {
         self.saveRecordedAudio() {
             (success) in
             if success{
+                print(self.meteringLevels)
                 AudioFiles.shared.saveNewAudioFile(name: self.audioFileName, autoSaved: true, meteringLevels: self.meteringLevels)
                 print("Bg success saved")
             }
@@ -1385,19 +1386,6 @@ extension RecordVC {
     }
     
     func visualizationViewControlls() {
-//        if self.currentState == .ready {
-//            self.audioVisualizationViewModel.startRecording { [weak self] soundRecord, error in
-//                if let error = error {
-//                    self?.showAlert(with: error)
-//                    return
-//                }
-//
-//                self?.currentState = .recording
-//
-//                self?.chronometer = Chronometer()
-//                self?.chronometer?.start()
-//            }
-//        }
         switch self.currentVisualizationState {
         case .ready:
             self.currentVisualizationState = .recording
