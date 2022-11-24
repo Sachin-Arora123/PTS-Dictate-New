@@ -9,7 +9,7 @@ import AVFoundation
 import UIKit
 
 public class HPRecorder: NSObject {
-    open var tempVar : AVAsset?
+    open var partialDeleteAsset : AVAsset?
     open var recordingSession: AVAudioSession!
     open var audioRecorder: AVAudioRecorder!
     open var queuePlayer:      AVQueuePlayer?
@@ -102,6 +102,26 @@ public class HPRecorder: NSObject {
             print("Unable to init audio recorder.")
         }
     }
+    public func startInsertRecording(sampleRateKey: Float, fileName: String) {
+        let settings =
+            [ AVFormatIDKey:             Int(kAudioFormatMPEG4AAC)
+              , AVSampleRateKey:           Float(sampleRateKey)
+            , AVNumberOfChannelsKey:     2
+            , AVEncoderAudioQualityKey:  AVAudioQuality.high.rawValue
+            , AVEncoderBitRateKey:       128000
+            ] as [String : Any]
+        let url = self.createNewRecordingURL(fileName)
+
+        do {
+
+            self.audioRecorder =
+                try AVAudioRecorder.init(url: url, settings: settings)
+            self.audioRecorder?.record(atTime: 2.0, forDuration: 7.0)
+
+        } catch {
+            NSLog("Unable to init audio recorder.")
+        }
+    }
 
     // End recording
     public func endRecording() {
@@ -131,10 +151,10 @@ public class HPRecorder: NSObject {
     }
     // Start player
     public func startPlayer() {
-        if tempVar != nil{
+        let assetKeys = ["playable"]
+        if partialDeleteAsset != nil{
             print("Audio here")
-            let assetKeys = ["playable"]
-            let playerItems = AVPlayerItem(asset: (tempVar!), automaticallyLoadedAssetKeys: assetKeys)
+            let playerItems = AVPlayerItem(asset: (partialDeleteAsset!), automaticallyLoadedAssetKeys: assetKeys)
             self.playerItem = playerItems
             self.queuePlayer = AVQueuePlayer(playerItem: playerItems)//AVQueuePlayer(items: playerItems)
             self.queuePlayer?.actionAtItemEnd = .advance
@@ -145,7 +165,6 @@ public class HPRecorder: NSObject {
             self.durationTime = self.getTimeDuration(playerItems: playerItemArray)
             return
         }else{
-        let assetKeys = ["playable"]
         let playerItems = self.articleChunks.map {
             AVPlayerItem(asset: $0, automaticallyLoadedAssetKeys: assetKeys)
         }
@@ -186,14 +205,14 @@ public class HPRecorder: NSObject {
 //
 //        return Constants.documentDir.appendingPathComponent(fileURL)
     }
-    
-    public func concatChunks(filename: String, completion: @escaping(_ result: Bool) -> Void) {
+//
+    public func concatChunks(filename: String ,completion: @escaping(_ result: Bool) -> Void) {
         let composition = AVMutableComposition()
         var insertAt = CMTimeRange(start: .zero, end: .zero)
-        if self.tempVar != nil{
-            let assetTimeRange = CMTimeRange(start: .zero, end: tempVar!.duration)
+        if self.partialDeleteAsset != nil{
+            let assetTimeRange = CMTimeRange(start: .zero, end: partialDeleteAsset!.duration)
             do {
-                try composition.insertTimeRange(assetTimeRange, of: tempVar!, at: insertAt.end)
+                try composition.insertTimeRange(assetTimeRange, of: partialDeleteAsset!, at: insertAt.end)
             } catch {
                 NSLog("Unable to compose asset track.")
             }
@@ -267,12 +286,11 @@ public class HPRecorder: NSObject {
                  called asynchronously and calling it from `queueTapped` or
                  `submitTapped` may delete the files prematurely.
                  */
-                
                 let assetToSave = AVURLAsset(url: exportSession?.outputURL ?? URL(fileURLWithPath: ""))
                 self.articleChunks.removeAll()
                 self.articleChunks.append(assetToSave)
 //                self.articleChunks = [AVURLAsset]()
-                self.tempVar = nil
+                self.partialDeleteAsset = nil
             case .failed?:
                 print("error:-->>",exportSession?.error?.localizedDescription ?? "")
                 completion(false)
@@ -292,27 +310,6 @@ public class HPRecorder: NSObject {
     
     func deleteExportAsset(endTimeOfRange1: Double,startTimeOfRange2: Double , fileName: String, completion: @escaping(_ result: Bool) -> Void)  {
         print("\(#function)")
-
-//        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-//        let trimmedSoundFileURL = documentsDirectory.appendingPathComponent(fileName)
-//        print("saving to \(trimmedSoundFileURL.absoluteString)")
-//
-//        if FileManager.default.fileExists(atPath: trimmedSoundFileURL.absoluteString) {
-//            print("sound exists, removing \(trimmedSoundFileURL.absoluteString)")
-//            do {
-//                if try trimmedSoundFileURL.checkResourceIsReachable() {
-//                    print("is reachable")
-//                }
-//
-//                try FileManager.default.removeItem(atPath: trimmedSoundFileURL.absoluteString)
-//            } catch {
-//                print("could not remove \(trimmedSoundFileURL)")
-//                print(error.localizedDescription)
-//            }
-//
-//        }
-// ******************
-        // assuming 'asset', 'endTimeOfRange1' and 'startTimeOfRange2' from the question:
         // create empty mutable composition
         let composition: AVMutableComposition = AVMutableComposition()
         // copy all of original asset into the mutable composition, effectively creating an editable copy
@@ -380,44 +377,6 @@ public class HPRecorder: NSObject {
                break
            }
        }
-//        {
-//            // configure session and exportAsynchronously as above.
-//            // You don't have to set the timeRange of the exportSession
-//        }
-// ******************
-//        print("creating export session for \(asset)")
-//
-//        if let exporter = AVAssetExportSession(asset: composition, presetName: AVAssetExportPresetAppleM4A) {
-//            exporter.outputFileType = AVFileType.m4a
-//            exporter.outputURL = trimmedSoundFileURL
-//
-//            let timeRange1 = CMTimeRangeFromTimeToTime(start: CMTime(seconds: 0, preferredTimescale: 100), end: CMTime(seconds: endTimeOfRange1, preferredTimescale: 100))
-//            let timeRange2 = CMTimeRangeFromTimeToTime(start: CMTime(seconds: startTimeOfRange2, preferredTimescale: <#CMTimeScale#>), end: <#CMTime#>), preferredTimescale:; 100;), CMTime(seconds: Double(completeAudioTime), preferredTimescale: 100))
-//            exporter.timeRange = CMTimeRangeGetUnion(timeRange1, timeRange2)
-
-            // do it
-//            exporter.exportAsynchronously(completionHandler: {
-//                print("export complete \(exporter.status)")
-//
-//                switch exporter.status {
-//                case  AVAssetExportSessionStatus.failed:
-//
-//                    if let e = exporter.error {
-//                        print("export failed \(e)")
-//                    }
-//
-//
-//                case AVAssetExportSessionStatus.cancelled:
-//                    print("export cancelled \(String(describing: exporter.error))")
-//                default:
-//                    print("export complete")
-//                }
-//            })
-//        } else {
-//            print("cannot create AVAssetExportSession for asset \("asset")")
-//        }
-
-//        return trimmedSoundFileURL
     }
     
     public func deleteAudio(startTime: Double,endTime: Double, completion: @escaping(_ result: Bool) -> Void){
@@ -443,7 +402,7 @@ public class HPRecorder: NSObject {
         {
             // configure session and exportAsynchronously as above.
             // You don't have to set the timeRange of the exportSession
-            self.tempVar = exporter.asset
+            self.partialDeleteAsset = exporter.asset
             print("Here", exporter)
             completion(true)
         }else{
@@ -560,3 +519,47 @@ struct Constants {
     static let partialDeleteMsg = "To start partial delete, tap the Start Point and End Point button markers whilst listening to the audio. The End Point button determines where the partial delete finishes. Tap the Start Deleting button to initiate the partial delete. The partial delete will end when the End Point marker is reached."
     static let pDeleteMsg = "Partial Delete Complete"
 }
+
+////  Converted to Swift 5.7 by Swiftify v5.7.28606 - https://swiftify.com/
+//// Path of your source audio file
+//let strInputFilePath = URL(fileURLWithPath: Bundle.main.resourcePath ?? "").appendingPathComponent("abc.mp3").path
+//let audioFileInput = URL(fileURLWithPath: strInputFilePath)
+//
+//// Path of your destination save audio file
+//let paths = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).map(\.path)
+//var libraryCachesDirectory = paths[0]
+//libraryCachesDirectory = URL(fileURLWithPath: libraryCachesDirectory).appendingPathComponent("Caches").path
+//
+//let strOutputFilePath = "\(libraryCachesDirectory)\("/abc.mp4")"
+//let audioFileOutput = URL(fileURLWithPath: strOutputFilePath)
+//
+//if audioFileInput == nil || audioFileOutput == nil {
+//    return false
+//}
+//
+//try? FileManager.default.removeItem(at: audioFileOutput)
+//let asset = AVAsset(url: audioFileInput)
+//
+//let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetAppleM4A)
+//
+//if exportSession == nil {
+//    return false
+//}
+//let startTrimTime: Float = 0
+//let endTrimTime: Float = 5
+//
+//let startTime = CMTimeMake(value: Int64(Int(floor(startTrimTime * 100))), timescale: 100)
+//let stopTime = CMTimeMake(value: Int64(Int(ceil(endTrimTime * 100))), timescale: 100)
+//let exportTimeRange = CMTimeRangeFromTimeToTime(start: startTime, end: stopTime)
+//
+//exportSession?.outputURL = audioFileOutput
+//exportSession?.outputFileType = .m4a
+//exportSession?.timeRange = exportTimeRange
+//
+//exportSession?.exportAsynchronously(completionHandler: {
+//    if .completed == exportSession?.status {
+//        print("Success!")
+//    } else if .failed == exportSession?.status {
+//        print("failed")
+//    }
+//})

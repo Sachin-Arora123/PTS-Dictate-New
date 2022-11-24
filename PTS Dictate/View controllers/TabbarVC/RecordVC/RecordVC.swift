@@ -77,6 +77,7 @@ class RecordVC: BaseViewController {
     @IBOutlet weak var viewPlayerTiming: UIView!
 
     // MARK: - Variables.
+    var sampleRateKey = 0
     var recorder: HPRecorder!
     var recorderState: RecorderState = .none
     var performingFunctionState: PerformingFunction = .append
@@ -317,19 +318,18 @@ class RecordVC: BaseViewController {
     
     // MARK: - @IBActions.
     @IBAction func onTapRecord(_ sender: UIButton) {
-//        let index = CoreData.shared.audioQuality
-//        var sampleRateKey = 0
-//
-//        switch index {
-//        case 0:
-//            sampleRateKey  = 11025
-//        case 1:
-//            sampleRateKey  = 22050
-//        case 2:
-//            sampleRateKey  = 44100
-//        default:
-//            sampleRateKey  = 11025
-//        }
+
+        let index = CoreData.shared.audioQuality
+        switch index {
+        case 0:
+            sampleRateKey  = 11025
+        case 1:
+            sampleRateKey  = 22050
+        case 2:
+            sampleRateKey  = 44100
+        default:
+            sampleRateKey  = 11025
+        }
         switch recorderState {
             case .none:
                 self.recorder.startRecording(fileName: (self.lblFNameValue.text ?? ""))
@@ -478,7 +478,8 @@ class RecordVC: BaseViewController {
                 if self.recorder.queuePlayer?.currentItem?.status == .readyToPlay {
                     let currentTime = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
                     self.currentPlayingTime.text = self.timeString(from: currentTime)
-                }})
+                }
+        })
     }
     func onStopPlayerSetupUI(){
         btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
