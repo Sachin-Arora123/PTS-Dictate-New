@@ -68,6 +68,7 @@ class RecordVC: BaseViewController {
     @IBOutlet weak var viewPlayerTiming: UIView!
 
     // MARK: - Variables.
+    var sampleRateKey = 0
     var recorder: HPRecorder!
     var recorderState: RecorderState = .none
     var audioFileURL: String = ""
@@ -252,7 +253,7 @@ class RecordVC: BaseViewController {
     // MARK: - @IBActions.
     @IBAction func onTapRecord(_ sender: UIButton) {
         let index = CoreData.shared.audioQuality
-        var sampleRateKey = 0
+//        var sampleRateKey = 0
 
         switch index {
         case 0:
@@ -392,7 +393,8 @@ class RecordVC: BaseViewController {
                 if self.recorder.queuePlayer?.currentItem?.status == .readyToPlay {
                     let currentTime = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
                     self.currentPlayingTime.text = self.timeString(from: currentTime)
-                }})
+                }
+        })
     }
     func onStopPlayerSetupUI(){
         btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
@@ -493,6 +495,11 @@ class RecordVC: BaseViewController {
                 AVNumberOfChannelsKey: 1,
                 AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
             ]
+            self.recorderState = .pause
+            self.btnRecord.isUserInteractionEnabled = true
+            self.btnStop.isUserInteractionEnabled = true
+            btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: .normal)
+            btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: .normal)
             self.setInsert_PartialDeleteUI()
 //            self.stackView.isHidden = false
 //            self.stackViewHeight.constant = 50
@@ -639,7 +646,9 @@ class RecordVC: BaseViewController {
     
     // MARK: - @IBAction Clear.
     @IBAction func onTapClear(_ sender: UIButton) {
-        if sender.tag == 4 {
+        if sender.tag == 2{
+            self.recorder.startInsertRecording(sampleRateKey: Float(sampleRateKey), fileName: "ra")
+        }else if sender.tag == 4 {
             if sender.imageView?.image == UIImage(named: "btn_start_point_normal") {
                 print("Start Point")
                 self.btnClear.setImage(UIImage(named: "btn_end_point_normal"), for: .normal)
