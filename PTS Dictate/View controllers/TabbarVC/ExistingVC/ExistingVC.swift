@@ -40,6 +40,8 @@ class ExistingVC: BaseViewController {
     var totalFiles = [String]()
     var totalFilesSelected : [String] = []
     var playingCellIndex = -1
+    var isPlaying: Bool = false
+    var pausedTime: Double?
     var fileDuration = 0
     var uploadingQueue: [String] = []
     var editFromExiting: Bool = false
@@ -78,6 +80,8 @@ class ExistingVC: BaseViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.totalFilesSelected.removeAll()
+        self.audioPlayer.stop()
+        self.resetSoundWaves()
         self.tabBarController?.navigationItem.rightBarButtonItem = nil
     }
     
@@ -128,6 +132,7 @@ class ExistingVC: BaseViewController {
         do {
             let index = sender.tag
             self.lblFileName.text = self.totalFiles[index]
+            self.lblPlayerStatus.text = "Now Playing"
             let audioFile = getFileInfo(name: self.totalFiles[index])
             self.meteringLevels = audioFile?.fileInfo?.meteringLevels ?? []
             //                let file = Bundle.main.url(forResource: "file_name", withExtension: "mp3")!
@@ -143,12 +148,21 @@ class ExistingVC: BaseViewController {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
             try AVAudioSession.sharedInstance().setActive(true)
             if audioPlayer.isPlaying{
-                audioPlayer.pause()
-                self.mediaProgressView.pause()
-                sender.setBackgroundImage(UIImage(named: "existing_play_btn"), for: .normal)
+                if index != self.playingCellIndex {
+                    audioPlayer.stop()
+                    resetSoundWaves()
+                } else{
+                    audioPlayer.pause()
+                    self.pausedTime = self.audioPlayer.currentTime
+                    self.mediaProgressView.pause()
+                }
+//                sender.setBackgroundImage(UIImage(named: "existing_play_btn"), for: .normal)
+                self.isPlaying = false
                 self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+                    
             }else{
                 self.playingCellIndex = index
+                self.isPlaying = true
                 audioPlayer =  try AVAudioPlayer(contentsOf: completePathURL!)
                 audioPlayer.delegate = self
                 audioPlayer.play()
@@ -158,13 +172,14 @@ class ExistingVC: BaseViewController {
 //                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0){
                     self.mediaProgressView.play(for: self.audioPlayer.duration - self.audioPlayer.currentTime)
 //                }
-                sender.setBackgroundImage(UIImage(named: "existing_pause_btn"), for: .normal)
+//                sender.setBackgroundImage(UIImage(named: "existing_pause_btn"), for: .normal)
                 self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
                 tag = sender.tag
                 self.audioMeteringLevelTimer = Timer.scheduledTimer(timeInterval: 0.05, target: self, selector: #selector(timerDidUpdateMeter), userInfo: nil, repeats: true)
                 self.lblTotalTime.text = self.getTimeDuration(filePath: self.totalFiles[index])
             }
             self.setTrimButtonInteraction(isInteractive: true)
+            self.tableView.reloadData()
         } catch _ {
             print("catch")
         }
@@ -367,6 +382,7 @@ class ExistingVC: BaseViewController {
             let index = playingMediaIndex
             let cell  = tableView.cellForRow(at: IndexPath(row: playingMediaIndex, section: 0)) as? ExistingFileCell
             self.lblFileName.text = self.totalFiles[index]
+            self.lblPlayerStatus.text = "Now Playing"
             let audioFile = getFileInfo(name: self.totalFiles[index])
             self.meteringLevels = audioFile?.fileInfo?.meteringLevels ?? []
             //                let file = Bundle.main.url(forResource: "file_name", withExtension: "mp3")!
@@ -382,9 +398,16 @@ class ExistingVC: BaseViewController {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
             try AVAudioSession.sharedInstance().setActive(true)
             if audioPlayer.isPlaying{
-                audioPlayer.pause()
-                self.mediaProgressView.pause()
-                cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_play_btn"), for: .normal)
+                if index != self.playingCellIndex {
+                    audioPlayer.stop()
+                    resetSoundWaves()
+                } else{
+                    audioPlayer.pause()
+                    self.mediaProgressView.pause()
+                }
+//                cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_play_btn"), for: .normal)
+                self.isPlaying = false
+                self.pausedTime = self.audioPlayer.currentTime
                 self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
             }else{
                 self.playingCellIndex = index
@@ -397,13 +420,15 @@ class ExistingVC: BaseViewController {
 //                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0){
                     self.mediaProgressView.play(for: self.audioPlayer.duration - self.audioPlayer.currentTime)
 //                }
-                cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_pause_btn"), for: .normal)
+//                cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_pause_btn"), for: .normal)
+                self.isPlaying = true
                 self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
                 tag = index
                 self.audioMeteringLevelTimer = Timer.scheduledTimer(timeInterval: 0.05, target: self, selector: #selector(timerDidUpdateMeter), userInfo: nil, repeats: true)
                 self.lblTotalTime.text = self.getTimeDuration(filePath: self.totalFiles[index])
             }
             self.setTrimButtonInteraction(isInteractive: true)
+            self.tableView.reloadData()
         } catch _ {
             print("catch")
         }
@@ -539,6 +564,8 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
         cell.btnEdit.tag = indexPath.row
         cell.btnPlay.tag = indexPath.row
         cell.btnPlay.addTarget(self, action: #selector(play), for: .touchUpInside)
+        let playBtnImage = (indexPath.row == playingCellIndex && isPlaying) ? UIImage(named: "existing_pause_btn") : UIImage(named: "existing_play_btn")
+        cell.btnPlay.setBackgroundImage(playBtnImage, for: .normal)
         cell.btnComment.addTarget(self, action: #selector(openCommentVC), for: .touchUpInside)
         cell.btnEdit.addTarget(self, action: #selector(openRenameFileVc), for: .touchUpInside)
         setCellData(cell: cell, audioName: totalFiles[indexPath.row])
@@ -550,17 +577,21 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.lblFileName.text = totalFiles[indexPath.row]
-        let cell  = tableView.cellForRow(at: IndexPath(row: indexPath.row, section: 0)) as? ExistingFileCell
-        cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_play_btn"), for: .normal)
-        self.lblPlayerStatus.text  = ""
-        self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-        self.mediaProgressView.stop()
-        self.mediaProgressView.reset()
-        self.setUpWave(index: indexPath.row)
-        self.tableView.reloadData()
-        
+        DispatchQueue.main.async {
+            let fileName = self.totalFiles[indexPath.row]
+            self.lblFileName.text = fileName
+            if self.audioPlayer.isPlaying {
+                self.audioPlayer.stop()
+                self.resetSoundWaves()
+                self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+            }
+            self.playingCellIndex = -1
+            self.setUpWave(index: indexPath.row)
+            self.lblPlayerStatus.text  = ""
+            self.tableView.reloadData()
+        }
     }
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
@@ -690,12 +721,11 @@ extension ExistingVC: AVAudioPlayerDelegate {
     // Completion of playing
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         if flag {
-            let cell  = tableView.cellForRow(at: IndexPath(row: self.playingCellIndex, section: 0)) as? ExistingFileCell
-            cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_play_btn"), for: .normal)
             self.lblPlayerStatus.text  = ""
             self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
             self.resetSoundWaves()
             self.setUpWave(index: playingCellIndex)
+            self.playingCellIndex = -1
             self.tableView.reloadData()
             print("Playing Completed")
         }
