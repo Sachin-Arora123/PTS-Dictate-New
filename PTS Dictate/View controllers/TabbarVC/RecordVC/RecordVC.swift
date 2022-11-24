@@ -8,6 +8,7 @@
 import UIKit
 import CoreData
 import AVFoundation
+import SoundWave
 
 var isRecording: Bool = false
 var audioRecorder:AVAudioRecorder?
@@ -21,6 +22,14 @@ enum RecorderState: Int {
     case recording
     case pause
 }
+
+enum PerformingFunction: Int {
+    case append
+    case insert
+    case overwrite
+    case partialDelete
+}
+
 class RecordVC: BaseViewController {
     
     // MARK: - @IBOutlets.
@@ -51,7 +60,7 @@ class RecordVC: BaseViewController {
     @IBOutlet weak var lblSeperator: UILabel!
     @IBOutlet weak var playerTotalTime: UILabel!
     @IBOutlet weak var stackView: UIStackView!
-    @IBOutlet weak var playerWaveView: UIView!
+    @IBOutlet weak var playerWaveView: AudioVisualizationView!
     @IBOutlet weak var bookmarkWaveTime: UIView!
     @IBOutlet weak var bookMarkView: UIView!
     @IBOutlet weak var btnLeftBookmark: UIButton!
@@ -70,6 +79,7 @@ class RecordVC: BaseViewController {
     // MARK: - Variables.
     var recorder: HPRecorder!
     var recorderState: RecorderState = .none
+    var performingFunctionState: PerformingFunction = .append
     var audioFileURL: String = ""
     var chunkInt = 0
     let fileManager = FileManager.default
@@ -78,6 +88,11 @@ class RecordVC: BaseViewController {
     var articleChunks = [AVURLAsset]()
     var settings         = [String : Any]()
     var currentRecordUpdateTimer: Timer!
+    var fileURL1:URL!
+    var insertStartingPoint = 0
+    
+    var overwritingStartingPoint = 0
+    
     private var isCommentsOn:Bool {
         return CoreData.shared.commentScreen == 1 ?  true : false
     }
@@ -124,15 +139,47 @@ class RecordVC: BaseViewController {
         if editFromExiting {
             setUpUIForEditing()
         }
-        self.recorder = HPRecorder()
-             self.recorder.askPermission {[weak self] (grandted) in
-                 DispatchQueue.main.async {
-                     if !grandted {
-                         print("granted")
-                     }
-                 }
-             }
+//        self.recorder = HPRecorder()
+        
+        
+        setupRecorder()
     }
+    
+    func setupRecorder(){
+        let index = CoreData.shared.audioQuality
+        var sampleRateKey = 0
+
+        switch index {
+        case 0:
+            sampleRateKey  = 11025
+        case 1:
+            sampleRateKey  = 22050
+        case 2:
+            sampleRateKey  = 44100
+        default:
+            sampleRateKey  = 11025
+        }
+        
+        let recorderSetting = [
+            //giving the AVSampleRateKey according to the microphone senstivity value in settings.
+            AVSampleRateKey : sampleRateKey,
+            AVFormatIDKey : NSNumber(value: Int32(kAudioFormatMPEG4AAC)),
+            AVNumberOfChannelsKey : NSNumber(value: 1),
+            AVEncoderAudioQualityKey : NSNumber(value: AVAudioQuality.medium.rawValue)
+        ] as [String : Any]
+        
+        self.recorder = HPRecorder(settings: recorderSetting, audioFilename: self.fileURL1, audioInput: AudioInput().defaultAudioInput())
+        
+        self.recorder.askPermission {[weak self] (granted) in
+            DispatchQueue.main.async {
+                if !granted {
+                    print("granted")
+                }
+            }
+        }
+    }
+    
+    
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -194,8 +241,24 @@ class RecordVC: BaseViewController {
         segmentHeight.constant = 0
         viewProgress.isHidden = true
         progressViewHeight.constant = 45
-        self.playerWaveView.isHidden = true
+        
+        setUpWave()
+        
     }
+    
+    func setUpWave() {
+        self.playerWaveView.isHidden = true
+        self.playerWaveView.meteringLevelBarWidth = 1.0
+        self.playerWaveView.meteringLevelBarInterItem = 1.0
+        self.playerWaveView.meteringLevelBarCornerRadius = 0.0
+        self.playerWaveView.meteringLevelBarSingleStick = false
+        self.playerWaveView.gradientStartColor = #colorLiteral(red: 0.6509803922, green: 0.8235294118, blue: 0.9529411765, alpha: 1)
+        self.playerWaveView.gradientEndColor = #colorLiteral(red: 0.2273887992, green: 0.2274999917, blue: 0.9748747945, alpha: 1)
+        self.playerWaveView.add(meteringLevel: 0.6)
+        self.playerWaveView.audioVisualizationMode = .read
+        self.playerWaveView.meteringLevels = [0.1, 0.67, 0.13, 0.78, 0.31]
+    }
+    
     // MARK: - File Name Setup.
     func setupFileName(){
         let currentDate = Date()
@@ -219,6 +282,9 @@ class RecordVC: BaseViewController {
         self.audioFileURL = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)"
         self.lblFNameValue.text = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)" + ".m4a"
         self.lblFSizeValue.text = "0.00 Mb"
+        
+        //setup file url as well.
+        self.fileURL1 = Constants.documentDir.appendingPathComponent((self.lblFNameValue.text ?? "") + ".m4a")
     }
     
     // MARK: - Bottom Button View.
@@ -251,68 +317,68 @@ class RecordVC: BaseViewController {
     
     // MARK: - @IBActions.
     @IBAction func onTapRecord(_ sender: UIButton) {
-        let index = CoreData.shared.audioQuality
-        var sampleRateKey = 0
-
-        switch index {
-        case 0:
-            sampleRateKey  = 11025
-        case 1:
-            sampleRateKey  = 22050
-        case 2:
-            sampleRateKey  = 44100
-        default:
-            sampleRateKey  = 11025
-        }
+//        let index = CoreData.shared.audioQuality
+//        var sampleRateKey = 0
+//
+//        switch index {
+//        case 0:
+//            sampleRateKey  = 11025
+//        case 1:
+//            sampleRateKey  = 22050
+//        case 2:
+//            sampleRateKey  = 44100
+//        default:
+//            sampleRateKey  = 11025
+//        }
         switch recorderState {
-              case .none:
-            self.recorder.startRecording(sampleRateKey: Float(sampleRateKey), fileName:  "P")
-                  self.recorderState = .recording
-            stopwatch.start()
-//            self.recordTimer = Timer.scheduledTimer(timeInterval: 0.1, target:self, selector:#selector(self.updateAudioMeter(timer:)), userInfo:nil, repeats:true)
-            self.lblPlayerStatus.text = "Recording"
-            self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: UIControl.State.normal)
-            self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: UIControl.State.normal)
-            self.btnStop.isUserInteractionEnabled = true
-            print("recording")
-              case .recording:
-                  self.recorder.pauseRecording()
-            stopwatch.pause()
+            case .none:
+                self.recorder.startRecording(fileName: (self.lblFNameValue.text ?? ""))
+                self.recorderState = .recording
+                stopwatch.start()
+    //            self.recordTimer = Timer.scheduledTimer(timeInterval: 0.1, target:self, selector:#selector(self.updateAudioMeter(timer:)), userInfo:nil, repeats:true)
+                self.lblPlayerStatus.text = "Recording"
+                self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: .normal)
+                self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: .normal)
+                self.btnStop.isUserInteractionEnabled = true
+                print("recording")
+            
+            case .recording:
+                self.recorder.pauseRecording()
+                stopwatch.pause()
 //            self.audioFileURL = self.recorder.audioFilename
-                  self.recorderState = .pause
-            lblPlayerStatus.text = "Paused"
-            btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: UIControl.State.normal)
-            btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-            btnBackwardTrim.setBackgroundImage(UIImage(named: "existing_rewind_normal"), for: .normal)
-            btnBackwardTrimEnd.setBackgroundImage(UIImage(named: "existing_backward_fast_normal"), for: .normal)
-            btnPlay.isUserInteractionEnabled = true
-            btnBackwardTrim.isUserInteractionEnabled = true
-            btnBackwardTrimEnd.isUserInteractionEnabled = true
-            print("pause")
-            self.setUpStopAndPauseUI()
-            self.btnStop.isUserInteractionEnabled = true
-              case .pause:
-            stopwatch.start()
-            self.setUpUI()
-            self.initiallyBtnStateSetup()
-            self.customRangeBar.isHidden = false
-            self.customRangeBarHeight.constant = 45
-            self.parentStackTop.constant = 35
-            lblPlayerStatus.text = "Recording"
-            self.recorder.startRecording(sampleRateKey: Float(sampleRateKey), fileName: "\(chunkInt)")
-            self.chunkInt += 1
-            self.recorderState = .recording
-            self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: UIControl.State.normal)
-            self.btnStop.isUserInteractionEnabled = true
-            print("resume")
-
-              }
-                isRecording = true
+                self.recorderState = .pause
+                lblPlayerStatus.text = "Paused"
+                btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: .normal)
+                btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+                btnBackwardTrim.setBackgroundImage(UIImage(named: "existing_rewind_normal"), for: .normal)
+                btnBackwardTrimEnd.setBackgroundImage(UIImage(named: "existing_backward_fast_normal"), for: .normal)
+                btnPlay.isUserInteractionEnabled = true
+                btnBackwardTrim.isUserInteractionEnabled = true
+                btnBackwardTrimEnd.isUserInteractionEnabled = true
+                print("pause")
+                self.setUpStopAndPauseUI()
+                self.btnStop.isUserInteractionEnabled = true
+            case .pause:
+                stopwatch.start()
+                self.setUpUI()
+                self.initiallyBtnStateSetup()
+                self.customRangeBar.isHidden = false
+                self.customRangeBarHeight.constant = 45
+                self.parentStackTop.constant = 35
+                lblPlayerStatus.text = "Recording"
+                self.recorder.startRecording(fileName: "\(chunkInt)")
+                self.chunkInt += 1
+                self.recorderState = .recording
+                self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: .normal)
+                self.btnStop.isUserInteractionEnabled = true
+                print("resume")
+            }
+            isRecording = true
     }
     
     @IBAction func onTapStop(_ sender: UIButton) {
-            self.recorder.pauseRecording()
-            self.recorderState = .pause
+        self.recorder.pauseRecording()
+        self.recorderState = .pause
 //            stopwatch.toggle()
         stopwatch.pause()
         /* `ListRecordings` is updated in `self.concatChunks` as temporary
@@ -334,7 +400,26 @@ class RecordVC: BaseViewController {
         CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
         lblPlayerStatus.text = "Stopped"
         self.setUpStopAndPauseUI()
+        
+        if self.performingFunctionState == .append{
+            self.recorder.concatChunks(filename: self.audioFileURL){
+                success in
+                if success{
+                    self.chunkInt = 0
+                    print("Success save chunks removed")
+                }
+            }
+        }else if (self.performingFunctionState == .insert || self.performingFunctionState == .overwrite){
+            //need to perform insert here.
+            let startTime = (self.performingFunctionState == .insert) ? CMTimeMakeWithSeconds(Float64(self.insertStartingPoint), preferredTimescale: 1) : CMTimeMakeWithSeconds(Float64(self.overwritingStartingPoint), preferredTimescale: 1)
+            if let originalUrl = self.recorder.articleChunks.first?.url, let replacingUrl = self.recorder.articleChunks.last?.url{
+                self.mergeAudioFiles(originalURL: originalUrl, replacingURL: replacingUrl, startTime: startTime, folderName: "Demo", caseNumber: "test", taskToPerform: self.performingFunctionState == .insert ? "Insert" : "Overwrite")
+            }
+        }
+        
     }
+    
+    
     func setUpStopAndPauseUI(){
         self.customRangeBar.isHidden = true
         self.customRangeBarHeight.constant = 0
@@ -361,6 +446,7 @@ class RecordVC: BaseViewController {
         self.customRangeBar.outerBorderColor = .gray
         self.customRangeBar.innerBorderColor = .black
         self.customRangeBar.alpha = 1.0
+        self.customRangeBar.value = 0.0
     }
     
             
@@ -474,6 +560,7 @@ class RecordVC: BaseViewController {
     @IBAction func segmentChanged(_ sender: Any) {
         switch segmentControl.selectedSegmentIndex {
         case 0:
+            self.performingFunctionState = .append
             self.btnClear.tag = 1
             self.viewClear.isHidden = true
             self.recorderState = .pause
@@ -485,15 +572,18 @@ class RecordVC: BaseViewController {
             CommonFunctions.alertMessage(view: self, title: "Append", msg: Constants.appendMsg, btnTitle: "OK")
             break
         case 1:
+            self.performingFunctionState = .insert
             self.btnClear.tag = 2
-            CommonFunctions.alertMessage(view: self, title: "Insert", msg: Constants.insertMsg, btnTitle: "OK")
-            settings = [
-                AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-                AVSampleRateKey: Double(savedAudioQuality(audioQuality: AudioQuality(rawValue: CoreData.shared.audioQuality)!)),
-                AVNumberOfChannelsKey: 1,
-                AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
-            ]
+            self.recorderState = .pause
             self.setInsert_PartialDeleteUI()
+            CommonFunctions.alertMessage(view: self, title: "Insert", msg: Constants.insertMsg, btnTitle: "OK")
+//            settings = [
+//                AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+//                AVSampleRateKey: Double(savedAudioQuality(audioQuality: AudioQuality(rawValue: CoreData.shared.audioQuality)!)),
+//                AVNumberOfChannelsKey: 1,
+//                AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+//            ]
+            
 //            self.stackView.isHidden = false
 //            self.stackViewHeight.constant = 50
 //            self.viewClear.isHidden = false
@@ -504,10 +594,14 @@ class RecordVC: BaseViewController {
 //            startRecording()
             break
         case 2:
+            self.performingFunctionState = .overwrite
             self.btnClear.tag = 3
+            self.recorderState = .pause
+            self.setInsert_PartialDeleteUI()
             CommonFunctions.alertMessage(view: self, title: "Overwrite", msg: Constants.overwriteMsg, btnTitle: "OK")
             break
         case 3:
+            self.performingFunctionState = .partialDelete
             self.btnClear.tag = 4
             CommonFunctions.alertMessage(view: self, title: "Partial Delete", msg: Constants.partialDeleteMsg, btnTitle: "OK")
             self.setInsert_PartialDeleteUI()
@@ -591,24 +685,43 @@ class RecordVC: BaseViewController {
                 CoreData.shared.fileCount += 1
                 isRecording = false
                 self.onDiscardRecorderSetUp()
-                self.recorder.concatChunks(filename: self.audioFileURL){
-                    success in
-                    if success{
-                        self.chunkInt = 0
-                        print("Succes save chunks removed")
-                        DispatchQueue.main.async {
-                            if self.isCommentsOn {
-                                self.pushCommentVC()
-                            } else {
-                                AudioFiles.shared.saveNewAudioFile(name: self.audioFileURL)
-                                let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
-                                self.setPushTransitionAnimation(VC)
-                                self.navigationController?.popViewController(animated: false)
-                                self.tabBarController?.selectedIndex = 0
-                            }
-                        }
+                
+                self.performingFunctionState = .append
+                
+                DispatchQueue.main.async {
+                    if self.isCommentsOn {
+                        self.pushCommentVC()
+                    } else {
+                        AudioFiles.shared.saveNewAudioFile(name: self.audioFileURL)
+                        let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
+                        self.setPushTransitionAnimation(VC)
+                        self.navigationController?.popViewController(animated: false)
+                        self.tabBarController?.selectedIndex = 0
                     }
                 }
+                
+                
+                
+//                self.recorder.concatChunks(filename: self.audioFileURL){
+//                    success in
+//                    if success{
+//                        self.chunkInt = 0
+//                        print("Success save chunks removed")
+//                        DispatchQueue.main.async {
+//                            if self.isCommentsOn {
+//                                self.pushCommentVC()
+//                            } else {
+//                                AudioFiles.shared.saveNewAudioFile(name: self.audioFileURL)
+//                                let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
+//                                self.setPushTransitionAnimation(VC)
+//                                self.navigationController?.popViewController(animated: false)
+//                                self.tabBarController?.selectedIndex = 0
+//                            }
+//                        }
+//                    }
+//                }
+                
+                
 //                NotificationCenter.default.post(name: Notification.Name("refreshRecorder"), object: nil)
             }
         })
@@ -640,14 +753,15 @@ class RecordVC: BaseViewController {
     // MARK: - @IBAction Clear.
     @IBAction func onTapClear(_ sender: UIButton) {
         if sender.tag == 4 {
+            //Partial delete
             if sender.imageView?.image == UIImage(named: "btn_start_point_normal") {
-                print("Start Point")
+                print("Got Start Point")
                 self.btnClear.setImage(UIImage(named: "btn_end_point_normal"), for: .normal)
             }else if sender.imageView?.image == UIImage(named: "btn_end_point_normal") {
-                print("End Point")
+                print("Got End Point")
                 self.btnClear.setImage(UIImage(named: "btn_start_deleting_normal"), for: .normal)
             }else if sender.imageView?.image == UIImage(named: "btn_start_deleting_normal") {
-                print("Delete")
+                print("Delete proceed")
                 self.recorder.deleteAudio(startTime: 2, endTime: 5){
                     (success) in
                     if success{
@@ -666,6 +780,30 @@ class RecordVC: BaseViewController {
                     }
                 }
             }
+        }else if sender.tag == 2{
+            //insert
+            if sender.imageView?.image == UIImage(named: "btn_start_point_normal") {
+                print("Got starting position")
+                insertStartingPoint = 4
+                self.btnClear.setImage(UIImage(named: "btn_start_inserting_normal"), for: .normal)
+            }else if sender.imageView?.image == UIImage(named: "btn_start_inserting_normal") {
+                print("Inserting === start recording new audio")
+                self.recordFileForInsert()
+            }
+        }else if sender.tag == 3{
+            //Overwrite
+            if sender.imageView?.image == UIImage(named: "btn_start_point_normal") {
+                print("Got starting point")
+                overwritingStartingPoint = 4
+                self.btnClear.setImage(UIImage(named: "btn_end_point_normal"), for: .normal)
+            }else if sender.imageView?.image == UIImage(named: "btn_end_point_normal") {
+                print("Got end point")
+//                overwritingEndPoint = 4
+                self.btnClear.setImage(UIImage(named: "btn_start_overwriting_normal"), for: .normal)
+            }else {
+                print("Overwriting === start recording new audio")
+                self.recordFileForInsert()
+            }
         }else {
             if sender.imageView?.image == UIImage(named: "btn_start_point_normal") {
                 print("Start Point")
@@ -673,6 +811,22 @@ class RecordVC: BaseViewController {
                 print("Clear")
             }
         }
+    }
+    
+    func recordFileForInsert(){
+        stopwatch.start()
+        self.setUpUI()
+        self.initiallyBtnStateSetup()
+        self.customRangeBar.isHidden = false
+        self.customRangeBarHeight.constant = 45
+        self.parentStackTop.constant = 35
+        lblPlayerStatus.text = "Recording"
+        self.recorder.startRecording(fileName: "file_to_insert")
+        self.chunkInt += 1
+        self.recorderState = .recording
+        self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: .normal)
+        self.btnStop.isUserInteractionEnabled = true
+        print("resume")
     }
     
     // MARK: - Discard Recorder setUp.
@@ -746,18 +900,22 @@ class RecordVC: BaseViewController {
 //                self.lblTime.text = totalTimeString
                 self.lblFSizeValue.text = String(format: "%.2f", Float(try! Data(contentsOf: recorder.url).count) / 1024.0 / 1024.0) + " Mb"
                 recorder.updateMeters()
+                
+                let decibels = Float(recorder.peakPower(forChannel: 0))
+//                let value = [3.5, 3.4, 3.3, 3.2, 3.1, 3.0]
+                self.customRangeBar.value = decibels * 3.5
              }
         }
     }
     // MARK: - updateRecording.
-    @objc func updateRecording(timer: Timer) {
-        if let recorder = self.recorder.audioRecorder , recorder.isRecording == true {
-            recorder.updateMeters()
-            let decibels = Float(recorder.peakPower(forChannel: 0))
-            let value = [3.5, 3.4, 3.3, 3.2, 3.1, 3.0]
-            self.customRangeBar.value = decibels * Float(value[0])
-        }
-    }
+//    @objc func updateRecording(timer: Timer) {
+//        if let recorder = self.recorder.audioRecorder , recorder.isRecording == true {
+//            recorder.updateMeters()
+//            let decibels = Float(recorder.peakPower(forChannel: 0))
+//            let value = [3.5, 3.4, 3.3, 3.2, 3.1, 3.0]
+//            self.customRangeBar.value = decibels * Float(value[0])
+//        }
+//    }
     // MARK: - finishAudioRecording.
     func finishAudioRecording(success: Bool) {
         if let recorder = self.recorder.audioRecorder {
@@ -935,3 +1093,208 @@ extension RecordVC {
             return URL(string: fileUrl)!.lastPathComponent
     }
 }
+
+extension RecordVC{
+    func mergeAudioFiles(originalURL: URL, replacingURL:URL, startTime:CMTime, folderName:String, caseNumber:String, taskToPerform:String) {
+            
+        let options = [AVURLAssetPreferPreciseDurationAndTimingKey:true]
+        let originalAsset  = AVURLAsset(url: originalURL, options: options)
+        let replacingAsset = AVURLAsset(url: replacingURL, options: options)
+        print("Original Asset Duration",originalAsset.duration.seconds)
+        print("Replacing Asset Duration",replacingAsset.duration.seconds)
+        
+        if let replacingTrack = replacingAsset.tracks.first, let originalTrack = originalAsset.tracks.first {
+            print("Original Track Duration",originalTrack.timeRange.duration.seconds)
+            print("Replacing Track Duration",replacingTrack.timeRange.duration.seconds)
+            
+            let duration = replacingTrack.timeRange.duration.scaled
+            let replacingRange = CMTimeRange(start: startTime, duration: duration)
+            
+            self.trimOriginalAssetFor(taskToPerform: taskToPerform, asset: originalAsset, replacingRange: replacingRange, replacingURL: replacingURL, folderName: folderName,  caseNumber:caseNumber) { (finalURLs) in
+                self.exportFinalOutput(from: finalURLs, folderName: folderName,  caseNumber:caseNumber, completionHandler: { (isCompleted) in
+                    if isCompleted {
+                        print("Merge Successful")
+                    } else {
+                        print("Merge Failed")
+                    }
+                })
+            }
+        }
+    }
+    
+    func trimOriginalAssetFor(taskToPerform:String, asset:AVAsset, replacingRange:CMTimeRange, replacingURL:URL, folderName:String, caseNumber:String, completionHandler handler: @escaping (_ finalURLs:[URL]) -> Void) {
+            
+        var finalURLs = [URL]()
+        
+//        let startURL = self.getCurrentDirectory(with: folderName, caseNumber: caseNumber).appendingPathComponent("StartTrim.m4a")
+//        let endURL = self.getCurrentDirectory(with: folderName, caseNumber: caseNumber).appendingPathComponent("EndTrim.m4a")
+        
+        let startURL = self.getDocumentsDirectory().appendingPathComponent("StartTrim.m4a")
+        let endURL = self.getDocumentsDirectory().appendingPathComponent("EndTrim.m4a")
+        
+        self.removeFileIfAlreadyExists(at: startURL)
+        self.removeFileIfAlreadyExists(at: endURL)
+        
+        
+        if let originalTrack = asset.tracks(withMediaType: AVMediaType.audio).first {
+            
+            var rangeStart : CMTimeRange!
+            var rangeEnd : CMTimeRange!
+            
+            if taskToPerform == "Overwrite"{
+                //Overwrite
+                
+                //Range for first file(which will be from 0 to raplacing file's start point)
+                rangeStart = CMTimeRange(start: .zero, duration: replacingRange.start.scaled)
+                print("start file start : ==== \(rangeStart.start.seconds)  end : ==== \(rangeStart.end.seconds)")
+                
+                print("inserting file start : ==== \(replacingRange.start.seconds)  end : ==== \(replacingRange.end.seconds)")
+                
+                let endFileDuration = originalTrack.timeRange.duration.scaled - (replacingRange.start.scaled + replacingRange.duration.scaled)
+                
+                let endFileStartTime = replacingRange.start.scaled + replacingRange.duration.scaled
+                rangeEnd = CMTimeRange(start: endFileStartTime.scaled, duration: endFileDuration.scaled)
+                
+                print("end file start : ==== \(rangeEnd.start.seconds)  end : ==== \(rangeEnd.end.seconds)")
+            }else{
+                //Insert
+                //Range for start file(which will be from 0 to raplacing file's start point)
+                rangeStart = CMTimeRange(start: .zero, duration: replacingRange.start.scaled)
+                print("start file start : ==== \(rangeStart.start.seconds)  end : ==== \(rangeStart.end.seconds)")
+                
+                print("inserting file start : ==== \(replacingRange.start.seconds)  end : ==== \(replacingRange.end.seconds)")
+                
+                //Range for end file
+                let endFileDuration = originalTrack.timeRange.duration.scaled - rangeStart.duration.scaled
+                let endFileStartTime = rangeStart.duration.scaled
+                rangeEnd = CMTimeRange(start: endFileStartTime.scaled, duration: endFileDuration.scaled)
+                
+                print("end file start : ==== \(rangeEnd.start.seconds)  end : ==== \(rangeEnd.end.seconds)")
+            }
+            
+            asset.export(to: startURL, timeRange: rangeStart) { (isCompleted) in
+                if isCompleted {
+                    //Second file export
+                    asset.export(to: endURL, timeRange: rangeEnd) { (isCompleted) in
+                        if isCompleted {
+                            finalURLs.append(contentsOf:[startURL,replacingURL,endURL])
+                            handler(finalURLs)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    func exportFinalOutput(from urls:[URL] , folderName:String, caseNumber:String, completionHandler handler: @escaping (Bool) -> Void) {
+        let options = [AVURLAssetPreferPreciseDurationAndTimingKey:true]
+        let composition = AVMutableComposition(urlAssetInitializationOptions: options)
+        let compositionAudioTrack = composition.addMutableTrack(withMediaType: AVMediaType.audio, preferredTrackID: kCMPersistentTrackID_Invalid)
+        
+        //Export Trimmed Audio Files
+        do {
+            try compositionAudioTrack?.append(urls: urls)
+        } catch {
+            print("Error Occured while apending", error.localizedDescription)
+        }
+        
+        //Export Final Audio //Dictation_10162018095338_20424047
+//        let finalAudioURL = self.getCurrentDirectory(with: folderName, caseNumber: caseNumber).appendingPathComponent("Dictation_\(folderName)_\(caseNumber).m4a")
+        let finalAudioURL = self.getDocumentsDirectory().appendingPathComponent("final.m4a")
+        self.removeFileIfAlreadyExists(at: finalAudioURL)
+        self.removeAllFilesExceptNewRecording(withFolderName: folderName, caseNumber: caseNumber)
+        composition.export(to: finalAudioURL, completionHandler: handler)
+    }
+
+    func getCurrentDirectory(with folderName:String, caseNumber:String)  -> URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        let documentsDirectory = paths[0]
+        let appendedURL = documentsDirectory.appendingPathComponent(caseNumber).appendingPathComponent(folderName)
+        return appendedURL
+    }
+    
+    func removeFileIfAlreadyExists(at url:URL) {
+        do {
+            try FileManager.default.removeItem(at: url)
+        } catch { }
+    }
+    
+    func removeAllFilesExceptNewRecording(withFolderName : String, caseNumber : String){
+        let newRecording = "Dictation_New_\(withFolderName).m4a"
+        let newOverwrite = "Dictation_\(withFolderName)_\(caseNumber)_newOverWrite.m4a"
+        
+        let startTrim = self.getCurrentDirectory(with: withFolderName, caseNumber: caseNumber).appendingPathComponent("StartTrim.m4a")
+        let endTrim = getCurrentDirectory(with: withFolderName, caseNumber: caseNumber).appendingPathComponent("EndTrim.m4a")
+        let newRec = getCurrentDirectory(with: withFolderName, caseNumber: caseNumber).appendingPathComponent(newRecording)
+        let newOver = getCurrentDirectory(with: withFolderName, caseNumber: caseNumber).appendingPathComponent(newOverwrite)
+        
+        do{
+            try FileManager.default.removeItem(at: startTrim)
+        }catch{
+            print("File not Found in Directory..!!")
+        }
+        
+        do{
+            try FileManager.default.removeItem(at: endTrim)
+        }catch{
+            print("File not Found in Directory..!!")
+        }
+        
+        do{
+            try FileManager.default.removeItem(at: newRec)
+        }catch{
+            print("File not Found in Directory..!!")
+        }
+        
+        do{
+            try FileManager.default.removeItem(at: newOver)
+        }catch{
+            print("File not Found in Directory..!!")
+        }
+    }
+}
+
+//extension AVMutableCompositionTrack {
+//    func append(urls: [URL]) throws {
+//        for url in urls {
+//            let newAsset = AVURLAsset(url: url)
+//            let range = CMTimeRange(start:.zero, duration:newAsset.duration)
+//            let end = timeRange.end
+//            if let track = newAsset.tracks(withMediaType: AVMediaType.audio).first {
+//                try insertTimeRange(range, of: track, at: end)
+//            }
+//        }
+//    }
+//}
+
+//extension AVAsset {
+//    func export(to url:URL, timeRange: CMTimeRange? = nil ,completionHandler handler: @escaping (Bool) -> Void) {
+//        if let assetExportSession = AVAssetExportSession(asset: self, presetName: AVAssetExportPresetAppleM4A) {
+//            assetExportSession.outputFileType = AVFileType.m4a
+//            assetExportSession.audioTimePitchAlgorithm = .timeDomain
+//            assetExportSession.outputURL = url
+//            if let range = timeRange {
+//                assetExportSession.timeRange = range
+//                print("Exporting Range from",range.start,"Duration",range.duration,url.lastPathComponent)
+//            }
+//            assetExportSession.exportAsynchronously(completionHandler: {
+//                if assetExportSession.status == .completed {
+//                    handler(true)
+//                } else if let error = assetExportSession.error {
+//                    print("STATUS:",assetExportSession.status,"ERROR:",error.localizedDescription,"URL",url)
+//                    handler(false)
+//                } else {
+//                    handler(false)
+//                }
+//            })
+//        } else {
+//            print("Export failed")
+//        }
+//    }
+//}
+
+//extension CMTime {
+//    var scaled : CMTime {
+//        return self.convertScale(60000, method: CMTimeRoundingMethod.roundAwayFromZero)
+//    }
+//}

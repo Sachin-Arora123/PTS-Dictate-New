@@ -451,7 +451,27 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.lblFileName.text = totalFiles[indexPath.row]
+        
+        //demo for now
+//        if indexPath.row == 0{
+//            //want to perform overwrite
+//            /*
+//             for overwrite, we're inserting the second file(4 seconds long) in the 4-8th seconds of first file which was originally 10 seconds long.
+//             so the final result will be start file(2 seconds) + second file(4 seconds) + end file(4 seconds) and it will be 10 seconds long.
+//             */
+//            let firstUrl = self.getDocumentsDirectory().appendingPathComponent(totalFiles.first!)
+//            let secondUrl = self.getDocumentsDirectory().appendingPathComponent(totalFiles.last!)
+//            let startTime = CMTimeMakeWithSeconds(4, preferredTimescale: 1)
+//            self.mergeAudioFiles(originalURL: secondUrl, replacingURL: firstUrl, startTime: startTime, folderName: "Demo", caseNumber: "test", taskToPerform: "Overwrite")
+//        }else{
+//            //want to perform insert
+//            let firstUrl = self.getDocumentsDirectory().appendingPathComponent(totalFiles.first!)
+//            let secondUrl = self.getDocumentsDirectory().appendingPathComponent(totalFiles.last!)
+//            let startTime = CMTimeMakeWithSeconds(3, preferredTimescale: 1)
+//            self.mergeAudioFiles(originalURL: secondUrl, replacingURL: firstUrl, startTime: startTime, folderName: "Demo", caseNumber: "test", taskToPerform: "Insert")
+//        }
     }
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
@@ -633,3 +653,215 @@ extension ExistingVC: UITabBarControllerDelegate {
         static let audioPlayerManagerMeteringLevelDidUpdateNotification = Notification.Name("AudioPlayerManagerMeteringLevelDidUpdateNotification")
         static let audioPlayerManagerMeteringLevelDidFinishNotification = Notification.Name("AudioPlayerManagerMeteringLevelDidFinishNotification")
     }
+
+//Demo code below to check insert and overwrite that needs to remove.
+extension ExistingVC{
+    func mergeAudioFiles(originalURL: URL, replacingURL:URL, startTime:CMTime, folderName:String, caseNumber:String, taskToPerform:String) {
+            
+        let options = [AVURLAssetPreferPreciseDurationAndTimingKey:true]
+        let originalAsset  = AVURLAsset(url: originalURL, options: options)
+        let replacingAsset = AVURLAsset(url: replacingURL, options: options)
+        print("####### Original Asset Duration",originalAsset.duration.seconds)
+        print("####### Replacing Asset Duration",replacingAsset.duration.seconds)
+        
+        if let replacingTrack = replacingAsset.tracks.first, let originalTrack = originalAsset.tracks.first {
+            print("####### Original Track Duration",originalTrack.timeRange.duration.seconds)
+            print("####### Replacing Track Duration",replacingTrack.timeRange.duration.seconds)
+            
+            let duration = replacingTrack.timeRange.duration.scaled
+            let replacingRange = CMTimeRange(start: startTime, duration: duration)
+            
+            self.trimOriginalAssetFor(taskToPerform: taskToPerform, asset: originalAsset, replacingRange: replacingRange, replacingURL: replacingURL, folderName: folderName,  caseNumber:caseNumber) { (finalURLs) in
+                self.exportFinalOutput(from: finalURLs, folderName: folderName,  caseNumber:caseNumber, completionHandler: { (isCompleted) in
+                    if isCompleted {
+                        print("Merge Successful")
+                    } else {
+                        print("Merge Failed")
+                    }
+                })
+            }
+        }
+    }
+    
+    func trimOriginalAssetFor(taskToPerform:String, asset:AVAsset, replacingRange:CMTimeRange, replacingURL:URL, folderName:String, caseNumber:String, completionHandler handler: @escaping (_ finalURLs:[URL]) -> Void) {
+            
+        var finalURLs = [URL]()
+        
+//        let startURL = self.getCurrentDirectory(with: folderName, caseNumber: caseNumber).appendingPathComponent("StartTrim.m4a")
+//        let endURL = self.getCurrentDirectory(with: folderName, caseNumber: caseNumber).appendingPathComponent("EndTrim.m4a")
+        
+        let startURL = self.getDocumentsDirectory().appendingPathComponent("StartTrim.m4a")
+        let endURL = self.getDocumentsDirectory().appendingPathComponent("EndTrim.m4a")
+        
+        self.removeFileIfAlreadyExists(at: startURL)
+        self.removeFileIfAlreadyExists(at: endURL)
+        
+        
+        if let originalTrack = asset.tracks(withMediaType: AVMediaType.audio).first {
+            
+            var rangeStart : CMTimeRange!
+            var rangeEnd : CMTimeRange!
+            
+            if taskToPerform == "Overwrite"{
+                //Overwrite
+                
+                //Range for first file(which will be from 0 to raplacing file's start point)
+                rangeStart = CMTimeRange(start: .zero, duration: replacingRange.start.scaled)
+                print("start file start : ==== \(rangeStart.start.seconds)  end : ==== \(rangeStart.end.seconds)")
+                
+                print("inserting file start : ==== \(replacingRange.start.seconds)  end : ==== \(replacingRange.end.seconds)")
+                
+                let endFileDuration = originalTrack.timeRange.duration.scaled - (replacingRange.start.scaled + replacingRange.duration.scaled)
+                
+                let endFileStartTime = replacingRange.start.scaled + replacingRange.duration.scaled
+                rangeEnd = CMTimeRange(start: endFileStartTime.scaled, duration: endFileDuration.scaled)
+                
+                print("end file start : ==== \(rangeEnd.start.seconds)  end : ==== \(rangeEnd.end.seconds)")
+            }else{
+                //Insert
+                //Range for start file(which will be from 0 to raplacing file's start point)
+                rangeStart = CMTimeRange(start: .zero, duration: replacingRange.start.scaled)
+                print("start file start : ==== \(rangeStart.start.seconds)  end : ==== \(rangeStart.end.seconds)")
+                
+                print("inserting file start : ==== \(replacingRange.start.seconds)  end : ==== \(replacingRange.end.seconds)")
+                
+                //Range for end file
+                let endFileDuration = originalTrack.timeRange.duration.scaled - rangeStart.duration.scaled
+                let endFileStartTime = rangeStart.duration.scaled
+                rangeEnd = CMTimeRange(start: endFileStartTime.scaled, duration: endFileDuration.scaled)
+                
+                print("end file start : ==== \(rangeEnd.start.seconds)  end : ==== \(rangeEnd.end.seconds)")
+            }
+            
+            asset.export(to: startURL, timeRange: rangeStart) { (isCompleted) in
+                if isCompleted {
+                    //Second file export
+                    asset.export(to: endURL, timeRange: rangeEnd) { (isCompleted) in
+                        if isCompleted {
+                            finalURLs.append(contentsOf:[startURL,replacingURL,endURL])
+                            handler(finalURLs)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    func exportFinalOutput(from urls:[URL] , folderName:String, caseNumber:String, completionHandler handler: @escaping (Bool) -> Void) {
+        let options = [AVURLAssetPreferPreciseDurationAndTimingKey:true]
+        let composition = AVMutableComposition(urlAssetInitializationOptions: options)
+        let compositionAudioTrack = composition.addMutableTrack(withMediaType: AVMediaType.audio, preferredTrackID: kCMPersistentTrackID_Invalid)
+        
+        //Export Trimmed Audio Files
+        do {
+            try compositionAudioTrack?.append(urls: urls)
+        } catch {
+            print("Error Occured while apending", error.localizedDescription)
+        }
+        
+        //Export Final Audio //Dictation_10162018095338_20424047
+//        let finalAudioURL = self.getCurrentDirectory(with: folderName, caseNumber: caseNumber).appendingPathComponent("Dictation_\(folderName)_\(caseNumber).m4a")
+        let finalAudioURL = self.getDocumentsDirectory().appendingPathComponent("final.m4a")
+        self.removeFileIfAlreadyExists(at: finalAudioURL)
+        self.removeAllFilesExceptNewRecording(withFolderName: folderName, caseNumber: caseNumber)
+        composition.export(to: finalAudioURL, completionHandler: handler)
+    }
+    
+    func getDocumentsDirectory() -> URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        let documentsDirectory = paths[0]
+        return documentsDirectory
+    }
+
+    func getCurrentDirectory(with folderName:String, caseNumber:String)  -> URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        let documentsDirectory = paths[0]
+        let appendedURL = documentsDirectory.appendingPathComponent(caseNumber).appendingPathComponent(folderName)
+        return appendedURL
+    }
+    
+    func removeFileIfAlreadyExists(at url:URL) {
+        do {
+            try FileManager.default.removeItem(at: url)
+        } catch { }
+    }
+    
+    func removeAllFilesExceptNewRecording(withFolderName : String, caseNumber : String){
+        let newRecording = "Dictation_New_\(withFolderName).m4a"
+        let newOverwrite = "Dictation_\(withFolderName)_\(caseNumber)_newOverWrite.m4a"
+        
+        let startTrim = self.getCurrentDirectory(with: withFolderName, caseNumber: caseNumber).appendingPathComponent("StartTrim.m4a")
+        let endTrim = getCurrentDirectory(with: withFolderName, caseNumber: caseNumber).appendingPathComponent("EndTrim.m4a")
+        let newRec = getCurrentDirectory(with: withFolderName, caseNumber: caseNumber).appendingPathComponent(newRecording)
+        let newOver = getCurrentDirectory(with: withFolderName, caseNumber: caseNumber).appendingPathComponent(newOverwrite)
+        
+        do{
+            try FileManager.default.removeItem(at: startTrim)
+        }catch{
+            print("File not Found in Directory..!!")
+        }
+        
+        do{
+            try FileManager.default.removeItem(at: endTrim)
+        }catch{
+            print("File not Found in Directory..!!")
+        }
+        
+        do{
+            try FileManager.default.removeItem(at: newRec)
+        }catch{
+            print("File not Found in Directory..!!")
+        }
+        
+        do{
+            try FileManager.default.removeItem(at: newOver)
+        }catch{
+            print("File not Found in Directory..!!")
+        }
+    }
+}
+
+extension AVMutableCompositionTrack {
+    func append(urls: [URL]) throws {
+        for url in urls {
+            let newAsset = AVURLAsset(url: url)
+            let range = CMTimeRange(start:.zero, duration:newAsset.duration)
+            let end = timeRange.end
+            if let track = newAsset.tracks(withMediaType: AVMediaType.audio).first {
+                try insertTimeRange(range, of: track, at: end)
+            }
+        }
+    }
+}
+
+extension AVAsset {
+    func export(to url:URL, timeRange: CMTimeRange? = nil ,completionHandler handler: @escaping (Bool) -> Void) {
+        if let assetExportSession = AVAssetExportSession(asset: self, presetName: AVAssetExportPresetAppleM4A) {
+            assetExportSession.outputFileType = AVFileType.m4a
+            assetExportSession.audioTimePitchAlgorithm = .timeDomain
+            assetExportSession.outputURL = url
+            if let range = timeRange {
+                assetExportSession.timeRange = range
+                print("Exporting Range from",range.start,"Duration",range.duration,url.lastPathComponent)
+            }
+            assetExportSession.exportAsynchronously(completionHandler: {
+                if assetExportSession.status == .completed {
+                    handler(true)
+                } else if let error = assetExportSession.error {
+                    print("STATUS:",assetExportSession.status,"ERROR:",error.localizedDescription,"URL",url)
+                    handler(false)
+                } else {
+                    handler(false)
+                }
+            })
+        } else {
+            print("Export failed")
+        }
+    }
+}
+
+extension CMTime {
+    var scaled : CMTime {
+        return self.convertScale(60000, method: CMTimeRoundingMethod.roundAwayFromZero)
+    }
+}

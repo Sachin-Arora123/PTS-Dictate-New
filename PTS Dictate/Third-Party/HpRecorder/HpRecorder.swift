@@ -80,24 +80,26 @@ public class HPRecorder: NSObject {
     }
 
     // Start recording
-    public func startRecording(sampleRateKey: Float, fileName: String) {
-        let settings =
-            [ AVFormatIDKey:             Int(kAudioFormatMPEG4AAC)
-              , AVSampleRateKey:           Float(sampleRateKey)
-            , AVNumberOfChannelsKey:     2
-            , AVEncoderAudioQualityKey:  AVAudioQuality.high.rawValue
-            , AVEncoderBitRateKey:       128000
-            ] as [String : Any]
+    public func startRecording(fileName: String) {
         let url = self.createNewRecordingURL(fileName)
-
+        
+        //new
         do {
-
-            self.audioRecorder =
-                try AVAudioRecorder.init(url: url, settings: settings)
-            self.audioRecorder?.record()
-
+            try recordingSession.setCategory(.playAndRecord, mode: .default, options: [.allowBluetooth, .defaultToSpeaker])
+            try recordingSession.setPreferredInput(self.audioInput)
+            try self.recordingSession.setActive(true)
         } catch {
-            NSLog("Unable to init audio recorder.")
+            print("Couldn't set Audio session category")
+        }
+                
+        do {
+            audioRecorder = try AVAudioRecorder(url: url, settings: settings)
+            audioRecorder.prepareToRecord()
+            audioRecorder.delegate = self
+            audioRecorder.record()
+            audioRecorder.isMeteringEnabled = true
+        } catch {
+            print("Unable to init audio recorder.")
         }
     }
 
@@ -176,8 +178,8 @@ public class HPRecorder: NSObject {
     
     // Creates URL relative to apps Document directory
    public func createNewRecordingURL(_ filename: String = "") -> URL {
-                let fileURL = filename + ".m4a"
-                return Constants.documentDir.appendingPathComponent(fileURL)
+        let fileURL = filename + ".m4a"
+        return Constants.documentDir.appendingPathComponent(fileURL)
 //        let now = Constants.dateString(Date())
 //
 //        let fileURL = filename + "_" + now + ".m4a"
@@ -187,54 +189,33 @@ public class HPRecorder: NSObject {
     
     public func concatChunks(filename: String, completion: @escaping(_ result: Bool) -> Void) {
         let composition = AVMutableComposition()
-
-        var insertAt = CMTimeRange(start: CMTime.zero, end: CMTime.zero)
+        var insertAt = CMTimeRange(start: .zero, end: .zero)
         if self.tempVar != nil{
-            let assetTimeRange = CMTimeRange(
-                start: CMTime.zero,
-                end: tempVar!.duration)
-            
+            let assetTimeRange = CMTimeRange(start: .zero, end: tempVar!.duration)
             do {
-                try composition.insertTimeRange(assetTimeRange,
-                                                of: tempVar!,
-                                                at: insertAt.end)
+                try composition.insertTimeRange(assetTimeRange, of: tempVar!, at: insertAt.end)
             } catch {
                 NSLog("Unable to compose asset track.")
             }
-            
             let nextDuration = insertAt.duration + assetTimeRange.duration
-            insertAt = CMTimeRange(
-                start:    CMTime.zero,
-                duration: nextDuration)
+            insertAt = CMTimeRange( start: .zero, duration: nextDuration)
         }else{
             for asset in self.articleChunks {
-                let assetTimeRange = CMTimeRange(
-                    start: CMTime.zero,
-                    end:   asset.duration)
-                
+                let assetTimeRange = CMTimeRange(start: .zero, end: asset.duration)
                 do {
-                    try composition.insertTimeRange(assetTimeRange,
-                                                    of: asset,
-                                                    at: insertAt.end)
+                    try composition.insertTimeRange(assetTimeRange, of: asset, at: insertAt.end)
                 } catch {
                     NSLog("Unable to compose asset track.")
                 }
-                
                 let nextDuration = insertAt.duration + assetTimeRange.duration
-                insertAt = CMTimeRange(
-                    start:    CMTime.zero,
-                    duration: nextDuration)
+                insertAt = CMTimeRange(start: .zero, duration: nextDuration)
             }
         }
 
-        let exportSession =
-            AVAssetExportSession(
-                asset:      composition,
-                presetName: AVAssetExportPresetAppleM4A)
-
+        let exportSession = AVAssetExportSession( asset: composition,presetName: AVAssetExportPresetAppleM4A)
         exportSession?.outputFileType = AVFileType.m4a
         exportSession?.outputURL = self.createNewRecordingURL(filename)
-        print("OP",   exportSession?.outputURL)
+        print("OP", exportSession?.outputURL)
 
      // Leaving here for debugging purposes.
      // exportSession?.outputURL = self.createNewRecordingURL("exported-")
@@ -256,7 +237,6 @@ public class HPRecorder: NSObject {
          because the completion handler is run async, KVO would be more appropriate
          */
         exportSession?.exportAsynchronously {
-
             switch exportSession?.status {
             case .unknown?:
                 completion(false)
@@ -287,7 +267,11 @@ public class HPRecorder: NSObject {
                  called asynchronously and calling it from `queueTapped` or
                  `submitTapped` may delete the files prematurely.
                  */
-                self.articleChunks = [AVURLAsset]()
+                
+                let assetToSave = AVURLAsset(url: exportSession?.outputURL ?? URL(fileURLWithPath: ""))
+                self.articleChunks.removeAll()
+                self.articleChunks.append(assetToSave)
+//                self.articleChunks = [AVURLAsset]()
                 self.tempVar = nil
             case .failed?:
                 print("error:-->>",exportSession?.error?.localizedDescription ?? "")
@@ -442,17 +426,17 @@ public class HPRecorder: NSObject {
         
         // copy all of original asset into the mutable composition, effectively creating an editable copy
         for asset in self.articleChunks.reversed() {
-        do{
-            try composition.insertTimeRange( CMTimeRangeMake( start: CMTime.zero, duration: asset.duration), of: asset, at: CMTime.zero)
-        }catch{
-            print("Error")
-        }
+            do{
+                try composition.insertTimeRange( CMTimeRangeMake( start: CMTime.zero, duration: asset.duration), of: asset, at: CMTime.zero)
+            }catch{
+                print("Error")
+            }
         }
 
         // now edit as required, e.g. delete a time range
         let startTime = CMTime(seconds: startTime, preferredTimescale: 100)
         let endTime = CMTime(seconds: endTime, preferredTimescale: 100)
-        composition.removeTimeRange( CMTimeRangeFromTimeToTime(start: startTime, end: endTime))
+        composition.removeTimeRange(CMTimeRangeFromTimeToTime(start: startTime, end: endTime))
 
         // since AVMutableComposition is an AVAsset subclass, it can be exported with AVAssetExportSession (or played with an AVPlayer(Item))
         if let exporter = AVAssetExportSession(asset: composition, presetName: AVAssetExportPresetAppleM4A)
