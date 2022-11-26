@@ -32,8 +32,7 @@ enum PerformingFunction: Int {
 
 class RecordVC: BaseViewController {
     
-    // MARK: - @IBOutlets.
-    
+    // MARK: - @IBOutlets
     @IBOutlet weak var customRangeBar: F3BarGauge!
     @IBOutlet weak var viewProgress: UIView!
     @IBOutlet weak var btnRecord: UIButton!
@@ -93,6 +92,8 @@ class RecordVC: BaseViewController {
     var insertStartingPoint = 0
     
     var overwritingStartingPoint = 0
+    var overwritingEndPoint = 0
+    var overwriteTimer : Timer?
     
     private var isCommentsOn:Bool {
         return CoreData.shared.commentScreen == 1 ?  true : false
@@ -100,12 +101,11 @@ class RecordVC: BaseViewController {
     private var isCommentsMandotary:Bool {
         return CoreData.shared.commentScreenMandatory == 1 ?  true : false
     }
-    
-       private lazy var stopwatch = Stopwatch(timeUpdated: { [weak self] timegap in
-            guard let strongSelf = self else { return }
-             strongSelf.lblTime.text = strongSelf.timeString(from: timegap)
-           strongSelf.updateAudioMeter()
-        })
+    private lazy var stopwatch = Stopwatch(timeUpdated: { [weak self] timegap in
+        guard let strongSelf = self else { return }
+        strongSelf.lblTime.text = strongSelf.timeString(from: timegap)
+        strongSelf.updateAudioMeter()
+    })
     
     var editFromExiting: Bool {
         // getting the value from exiting view controller's variable
@@ -117,6 +117,7 @@ class RecordVC: BaseViewController {
             (self.tabBarController!.viewControllers![0] as! ExistingVC).editFromExiting = newValue
         }
     }
+    
     // MARK: - View Life-Cycle.
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -169,7 +170,7 @@ class RecordVC: BaseViewController {
         
         self.recorder = HPRecorder(settings: recorderSetting, audioFilename: self.fileURL1, audioInput: AudioInput().defaultAudioInput())
         
-        self.recorder.askPermission {[weak self] (granted) in
+        self.recorder.askPermission { (granted) in
             DispatchQueue.main.async {
                 if !granted {
                     print("granted")
@@ -262,19 +263,19 @@ class RecordVC: BaseViewController {
     
     // MARK: - Bottom Button View.
     @objc func showBottomView() {
-            btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
-            btnRecord.isUserInteractionEnabled = false
-            btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-            btnBackwardTrim.setBackgroundImage(UIImage(named: "existing_rewind_normal"), for: .normal)
-            btnBackwardTrimEnd.setBackgroundImage(UIImage(named: "existing_backward_fast_normal"), for: .normal)
-            btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_disable"), for: .normal)
-            btnPlay.isUserInteractionEnabled = true
-            btnBackwardTrim.isUserInteractionEnabled = true
-            btnBackwardTrimEnd.isUserInteractionEnabled = true
-            btnStop.isUserInteractionEnabled = false
+        btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
+        btnRecord.isUserInteractionEnabled = false
+        btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+        btnBackwardTrim.setBackgroundImage(UIImage(named: "existing_rewind_normal"), for: .normal)
+        btnBackwardTrimEnd.setBackgroundImage(UIImage(named: "existing_backward_fast_normal"), for: .normal)
+        btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_disable"), for: .normal)
+        btnPlay.isUserInteractionEnabled = true
+        btnBackwardTrim.isUserInteractionEnabled = true
+        btnBackwardTrimEnd.isUserInteractionEnabled = true
+        btnStop.isUserInteractionEnabled = false
 //            self.viewBottomButton.isHidden = false
-            CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
-            lblPlayerStatus.text = "Stopped"
+        CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
+        lblPlayerStatus.text = "Stopped"
     }
     
     // MARK: - Initially button state setup.
@@ -415,24 +416,25 @@ class RecordVC: BaseViewController {
         let transition:CATransition = CATransition()
         transition.duration = 0.5
         transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
-        transition.type = CATransitionType.push
-        transition.subtype = CATransitionSubtype.fromBottom
+        transition.type = .push
+        transition.subtype = .fromBottom
         view.layer.add(transition, forKey: kCATransition)
     }
     
     // MARK: - @IBAction Play.
     @IBAction func onTapPlay(_ sender: UIButton)  {
-       if !self.recorder.queuePlayerPlaying {
+        if !self.recorder.queuePlayerPlaying {
            self.recorder.startPlayer()
            btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
            btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_disable"), for: .normal)
            btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
            btnRecord.isUserInteractionEnabled = false
            btnStop.isUserInteractionEnabled = false
-       }else{
+        }else{
            self.recorder.stopPlayer()
            self.onStopPlayerSetupUI()
-       }
+        }
+        
         NotificationCenter.default.addObserver(self, selector: #selector(self.playerDidFinishPlaying(sender:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.recorder.playerItem)
         self.recorder.queuePlayer?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: DispatchQueue.main, using: { (time) in
                 if self.recorder.queuePlayer?.currentItem?.status == .readyToPlay {
@@ -441,6 +443,7 @@ class RecordVC: BaseViewController {
                 }
         })
     }
+    
     func onStopPlayerSetupUI(){
         btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
         btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: .normal)
@@ -517,6 +520,7 @@ class RecordVC: BaseViewController {
             audioPlayer?.updateMeters()
         }
     }
+    
     // MARK: - @IBAction Segment Control.
     @IBAction func segmentChanged(_ sender: Any) {
         switch segmentControl.selectedSegmentIndex {
@@ -591,6 +595,7 @@ class RecordVC: BaseViewController {
         }
         return matches
     }
+    
     // MARK: - Save Recording audio
     func saveRecordedAudio(completion: @escaping(_ result: Bool) -> Void) {
         let url = getDocumentsDirectory().appendingPathComponent(".m4a")
@@ -673,70 +678,76 @@ class RecordVC: BaseViewController {
         print("Discard")
     }
     
-    // MARK: - @IBAction Clear.
+    // MARK: - @IBAction Clear button action(multiple functionality).
     @IBAction func onTapClear(_ sender: UIButton) {
-        if sender.tag == 4 {
+        switch sender.tag {
+        case 2:
+            //insert
+            onTapEditPerformInsertFunction(sender)
+        case 3:
+            //Overwrite
+            onTapEditPerformOverwriteFunction(sender)
+        case 4:
             //Partial delete
-            if sender.imageView?.image == UIImage(named: "btn_start_point_normal") {
-                print("Got Start Point")
-                self.btnClear.setImage(UIImage(named: "btn_end_point_normal"), for: .normal)
-            }else if sender.imageView?.image == UIImage(named: "btn_end_point_normal") {
-                print("Got End Point")
-                self.btnClear.setImage(UIImage(named: "btn_start_deleting_normal"), for: .normal)
-            }else if sender.imageView?.image == UIImage(named: "btn_start_deleting_normal") {
-                print("Delete proceed")
-                self.recorder.deleteAudio(startTime: 2, endTime: 5){
-                    (success) in
-                    if success{
-                        print("Delete Success")
-                        self.stackView.isHidden = true
-                        self.stackViewHeight.constant = 0
-                        self.segmentControl.isHidden = true
-                        self.segmentHeight.constant = 0
-                        self.btnStop.isUserInteractionEnabled = false
-                        self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: UIControl.State.normal)
-                        CommonFunctions.alertMessage(view: self, title: Constants.appName, msg: Constants.pDeleteMsg, btnTitle: "OK")
-                        DispatchQueue.main.async {
-                            CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
-                            self.tabBarController?.setTabBarHidden(true, animated: false)
-                        }
+            onTapEditPerformPartialDeleteFunction(sender)
+        default:
+            print("Nothing to do")
+        }
+    }
+    
+    func onTapEditPerformInsertFunction(_ sender: UIButton){
+        if sender.imageView?.image == UIImage(named: "btn_start_point_normal") {
+            insertStartingPoint = 4
+            self.btnClear.setImage(UIImage(named: "btn_start_inserting_normal"), for: .normal)
+        }else if sender.imageView?.image == UIImage(named: "btn_start_inserting_normal") {
+            self.proceedForInsert()
+        }
+    }
+    
+    func onTapEditPerformOverwriteFunction(_ sender: UIButton){
+        if sender.imageView?.image == UIImage(named: "btn_start_point_normal") {
+            overwritingStartingPoint = 4
+            self.btnClear.setImage(UIImage(named: "btn_end_point_normal"), for: .normal)
+        }else if sender.imageView?.image == UIImage(named: "btn_end_point_normal") {
+            overwritingEndPoint = 8
+            self.btnClear.setImage(UIImage(named: "btn_start_overwriting_normal"), for: .normal)
+        }else {
+            print("Overwriting === start recording new audio")
+            //Here we need to start recording from the start point to the end point and stop the recorder as soon as users records till end point.
+            self.proceedForOverwrite()
+        }
+    }
+    
+    func onTapEditPerformPartialDeleteFunction(_ sender: UIButton){
+        if sender.imageView?.image == UIImage(named: "btn_start_point_normal") {
+            print("Got Start Point")
+            self.btnClear.setImage(UIImage(named: "btn_end_point_normal"), for: .normal)
+        }else if sender.imageView?.image == UIImage(named: "btn_end_point_normal") {
+            print("Got End Point")
+            self.btnClear.setImage(UIImage(named: "btn_start_deleting_normal"), for: .normal)
+        }else if sender.imageView?.image == UIImage(named: "btn_start_deleting_normal") {
+            print("Delete proceed")
+            self.recorder.deleteAudio(startTime: 2, endTime: 5){
+                (success) in
+                if success{
+                    print("Delete Success")
+                    self.stackView.isHidden = true
+                    self.stackViewHeight.constant = 0
+                    self.segmentControl.isHidden = true
+                    self.segmentHeight.constant = 0
+                    self.btnStop.isUserInteractionEnabled = false
+                    self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: UIControl.State.normal)
+                    CommonFunctions.alertMessage(view: self, title: Constants.appName, msg: Constants.pDeleteMsg, btnTitle: "OK")
+                    DispatchQueue.main.async {
+                        CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
+                        self.tabBarController?.setTabBarHidden(true, animated: false)
                     }
                 }
-            }
-        }else if sender.tag == 2{
-            //insert
-            if sender.imageView?.image == UIImage(named: "btn_start_point_normal") {
-                print("Got starting position")
-                insertStartingPoint = 4
-                self.btnClear.setImage(UIImage(named: "btn_start_inserting_normal"), for: .normal)
-            }else if sender.imageView?.image == UIImage(named: "btn_start_inserting_normal") {
-                print("Inserting === start recording new audio")
-                self.recordFileForInsert()
-            }
-        }else if sender.tag == 3{
-            //Overwrite
-            if sender.imageView?.image == UIImage(named: "btn_start_point_normal") {
-                print("Got starting point")
-                overwritingStartingPoint = 4
-                self.btnClear.setImage(UIImage(named: "btn_end_point_normal"), for: .normal)
-            }else if sender.imageView?.image == UIImage(named: "btn_end_point_normal") {
-                print("Got end point")
-//                overwritingEndPoint = 4
-                self.btnClear.setImage(UIImage(named: "btn_start_overwriting_normal"), for: .normal)
-            }else {
-                print("Overwriting === start recording new audio")
-                self.recordFileForInsert()
-            }
-        }else {
-            if sender.imageView?.image == UIImage(named: "btn_start_point_normal") {
-                print("Start Point")
-            }else{
-                print("Clear")
             }
         }
     }
     
-    func recordFileForInsert(){
+    func proceedForInsert(){
         stopwatch.start()
         self.setUpUI()
         self.initiallyBtnStateSetup()
@@ -749,7 +760,53 @@ class RecordVC: BaseViewController {
         self.recorderState = .recording
         self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: .normal)
         self.btnStop.isUserInteractionEnabled = true
-        print("resume")
+    }
+    
+    func proceedForOverwrite(){
+        stopwatch.start()
+        self.setUpUI()
+        self.initiallyBtnStateSetup()
+        self.customRangeBar.isHidden = false
+        self.customRangeBarHeight.constant = 45
+        self.parentStackTop.constant = 35
+        lblPlayerStatus.text = "Recording"
+        self.recorder.startRecording(fileName: "\(chunkInt)")
+        self.chunkInt += 1
+        self.recorderState = .recording
+//        self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: .normal)
+//        self.btnStop.isUserInteractionEnabled = true
+//        print("resume")
+        
+        //need to start a timer which will observe and stop recording when user reach at the end point.
+        let time = overwritingEndPoint - overwritingStartingPoint
+        
+        self.overwriteTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(time), repeats: true) { timer in
+            self.recorder.pauseRecording()
+            self.recorderState = .pause
+            self.stopwatch.pause()
+           
+            self.tabBarController?.setTabBarHidden(true, animated: false)
+            self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
+            self.btnRecord.isUserInteractionEnabled = false
+            self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+            self.btnBackwardTrim.setBackgroundImage(UIImage(named: "existing_rewind_normal"), for: .normal)
+            self.btnBackwardTrimEnd.setBackgroundImage(UIImage(named: "existing_backward_fast_normal"), for: .normal)
+            self.btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_disable"), for: .normal)
+            self.btnPlay.isUserInteractionEnabled = true
+            self.btnBackwardTrim.isUserInteractionEnabled = true
+            self.btnBackwardTrimEnd.isUserInteractionEnabled = true
+            self.btnStop.isUserInteractionEnabled = false
+            CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
+            self.lblPlayerStatus.text = "Stopped"
+            self.setUpStopAndPauseUI()
+            
+            self.overwriteTimer?.invalidate()
+            
+            CommonFunctions.alertMessage(view: self, title: "PTS", msg: "Overwrite complete", btnTitle: "Ok")
+            if let originalUrl = self.recorder.articleChunks.first?.url, let replacingUrl = self.recorder.articleChunks.last?.url{
+                self.mergeAudioFiles(originalURL: originalUrl, replacingURL: replacingUrl, startTime: CMTimeMakeWithSeconds(Float64(self.overwritingStartingPoint), preferredTimescale: 1), folderName: "Demo", caseNumber: "test", taskToPerform: "Overwrite")
+            }
+        }
     }
     
     // MARK: - Discard Recorder setUp.
@@ -907,12 +964,6 @@ class RecordVC: BaseViewController {
         let  documentsDirectory = paths[0]
         return documentsDirectory
     }
-//    private func createURLForNewRecord() -> URL {
-//        let appGroupFolderUrl = self.getDocumentsDirectory()
-//        let fullFileName = (self.lblFNameValue.text ?? "")
-//        let newRecordFileName = appGroupFolderUrl.appendingPathComponent(fullFileName)
-//        return newRecordFileName
-//    }
     
     private func timeString(from timeInterval: TimeInterval) -> String {
         let seconds = Int(timeInterval.truncatingRemainder(dividingBy: 60))
@@ -1009,17 +1060,11 @@ extension RecordVC {
 
 extension RecordVC{
     func mergeAudioFiles(originalURL: URL, replacingURL:URL, startTime:CMTime, folderName:String, caseNumber:String, taskToPerform:String) {
-            
         let options = [AVURLAssetPreferPreciseDurationAndTimingKey:true]
         let originalAsset  = AVURLAsset(url: originalURL, options: options)
         let replacingAsset = AVURLAsset(url: replacingURL, options: options)
-        print("Original Asset Duration",originalAsset.duration.seconds)
-        print("Replacing Asset Duration",replacingAsset.duration.seconds)
         
-        if let replacingTrack = replacingAsset.tracks.first, let originalTrack = originalAsset.tracks.first {
-            print("Original Track Duration",originalTrack.timeRange.duration.seconds)
-            print("Replacing Track Duration",replacingTrack.timeRange.duration.seconds)
-            
+        if let replacingTrack = replacingAsset.tracks.first{
             let duration = replacingTrack.timeRange.duration.scaled
             let replacingRange = CMTimeRange(start: startTime, duration: duration)
             
@@ -1167,47 +1212,47 @@ extension RecordVC{
     }
 }
 
-//extension AVMutableCompositionTrack {
-//    func append(urls: [URL]) throws {
-//        for url in urls {
-//            let newAsset = AVURLAsset(url: url)
-//            let range = CMTimeRange(start:.zero, duration:newAsset.duration)
-//            let end = timeRange.end
-//            if let track = newAsset.tracks(withMediaType: AVMediaType.audio).first {
-//                try insertTimeRange(range, of: track, at: end)
-//            }
-//        }
-//    }
-//}
+extension AVMutableCompositionTrack {
+    func append(urls: [URL]) throws {
+        for url in urls {
+            let newAsset = AVURLAsset(url: url)
+            let range = CMTimeRange(start:.zero, duration:newAsset.duration)
+            let end = timeRange.end
+            if let track = newAsset.tracks(withMediaType: AVMediaType.audio).first {
+                try insertTimeRange(range, of: track, at: end)
+            }
+        }
+    }
+}
 
-//extension AVAsset {
-//    func export(to url:URL, timeRange: CMTimeRange? = nil ,completionHandler handler: @escaping (Bool) -> Void) {
-//        if let assetExportSession = AVAssetExportSession(asset: self, presetName: AVAssetExportPresetAppleM4A) {
-//            assetExportSession.outputFileType = AVFileType.m4a
-//            assetExportSession.audioTimePitchAlgorithm = .timeDomain
-//            assetExportSession.outputURL = url
-//            if let range = timeRange {
-//                assetExportSession.timeRange = range
-//                print("Exporting Range from",range.start,"Duration",range.duration,url.lastPathComponent)
-//            }
-//            assetExportSession.exportAsynchronously(completionHandler: {
-//                if assetExportSession.status == .completed {
-//                    handler(true)
-//                } else if let error = assetExportSession.error {
-//                    print("STATUS:",assetExportSession.status,"ERROR:",error.localizedDescription,"URL",url)
-//                    handler(false)
-//                } else {
-//                    handler(false)
-//                }
-//            })
-//        } else {
-//            print("Export failed")
-//        }
-//    }
-//}
+extension AVAsset {
+    func export(to url:URL, timeRange: CMTimeRange? = nil ,completionHandler handler: @escaping (Bool) -> Void) {
+        if let assetExportSession = AVAssetExportSession(asset: self, presetName: AVAssetExportPresetAppleM4A) {
+            assetExportSession.outputFileType = AVFileType.m4a
+            assetExportSession.audioTimePitchAlgorithm = .timeDomain
+            assetExportSession.outputURL = url
+            if let range = timeRange {
+                assetExportSession.timeRange = range
+                print("Exporting Range from",range.start,"Duration",range.duration,url.lastPathComponent)
+            }
+            assetExportSession.exportAsynchronously(completionHandler: {
+                if assetExportSession.status == .completed {
+                    handler(true)
+                } else if let error = assetExportSession.error {
+                    print("STATUS:",assetExportSession.status,"ERROR:",error.localizedDescription,"URL",url)
+                    handler(false)
+                } else {
+                    handler(false)
+                }
+            })
+        } else {
+            print("Export failed")
+        }
+    }
+}
 
-//extension CMTime {
-//    var scaled : CMTime {
-//        return self.convertScale(60000, method: CMTimeRoundingMethod.roundAwayFromZero)
-//    }
-//}
+extension CMTime {
+    var scaled : CMTime {
+        return self.convertScale(60000, method: CMTimeRoundingMethod.roundAwayFromZero)
+    }
+}
