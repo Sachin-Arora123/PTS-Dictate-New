@@ -137,7 +137,6 @@ class RecordVC: BaseViewController {
         self.setupFileName()
         isRecording = false
 
-
         if editFromExiting {
             setUpUIForEditing()
         }
@@ -179,8 +178,6 @@ class RecordVC: BaseViewController {
         }
     }
     
-    
-    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         audioRecorder = nil
@@ -192,6 +189,7 @@ class RecordVC: BaseViewController {
       NotificationCenter.default.removeObserver(self)
 //      stopwatch.stop()
     }
+    
     @objc func applicationWillTerminate(notification: Notification) {
         print("Notification received.")
         if self.recorder.audioRecorder != nil {
@@ -203,34 +201,11 @@ class RecordVC: BaseViewController {
         print("temp",tempAudioFileURL)
 //        UserDefaults.standard.set(audioFileURL, forKey: "terminatedRecording")
         
-
-//
-//        do{
-//            let encodedData = try NSKeyedArchiver.archivedData(withRootObject: tempChunks, requiringSecureCoding: false)
-//            let userDefaults = UserDefaults.standard
-//            userDefaults.set(encodedData, forKey: "assetChunks")
-//        }catch (let error){
-//            #if DEBUG
-//                print("Failed to convert UIColor to Data : \(error.localizedDescription)")
-//            #endif
-//        }
-        
-//        CoreData.shared.fileCount += 1
         for asset in self.recorder.articleChunks {
             try! FileManager.default.removeItem(at: asset.url)
         }
-//        DispatchQueue.main.async {
-//            self.recorder.concatChunks(filename: self.audioFileURL){
-//                success in
-//                if success{
-//                    CoreData.shared.fileCount += 1
-//                    print("success saved")
-//                }else{
-//                    print("Fail")
-//                }
-//            }
-//        }
     }
+    
     // MARK: - UISetup
     func setUpUI(){
         segmentControl.isHidden = true
@@ -241,9 +216,7 @@ class RecordVC: BaseViewController {
         segmentHeight.constant = 0
         viewProgress.isHidden = true
         progressViewHeight.constant = 45
-        
         setUpWave()
-        
     }
     
     func setUpWave() {
@@ -317,20 +290,7 @@ class RecordVC: BaseViewController {
     
     // MARK: - @IBActions.
     @IBAction func onTapRecord(_ sender: UIButton) {
-
-        let index = CoreData.shared.audioQuality
-        switch index {
-        case 0:
-            sampleRateKey  = 11025
-        case 1:
-            sampleRateKey  = 22050
-        case 2:
-            sampleRateKey  = 44100
-        default:
-            sampleRateKey  = 11025
-        }
         switch recorderState {
-
             case .none:
                 self.recorder.startRecording(fileName: (self.lblFNameValue.text ?? ""))
                 self.recorderState = .recording
@@ -578,21 +538,6 @@ class RecordVC: BaseViewController {
             self.recorderState = .pause
             self.setInsert_PartialDeleteUI()
             CommonFunctions.alertMessage(view: self, title: "Insert", msg: Constants.insertMsg, btnTitle: "OK")
-//            settings = [
-//                AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-//                AVSampleRateKey: Double(savedAudioQuality(audioQuality: AudioQuality(rawValue: CoreData.shared.audioQuality)!)),
-//                AVNumberOfChannelsKey: 1,
-//                AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
-//            ]
-            
-//            self.stackView.isHidden = false
-//            self.stackViewHeight.constant = 50
-//            self.viewClear.isHidden = false
-//            self.bookMarkView.isHidden = true
-//            self.bookmarkWaveTime.isHidden = true
-//            self.btnClear.setImage(UIImage(named: "btn_start_point_normal"), for: .normal)
-//            self.btnClear.setBackgroundImage(UIImage(named: ""), for: .normal)
-//            startRecording()
             break
         case 2:
             self.performingFunctionState = .overwrite
@@ -671,6 +616,7 @@ class RecordVC: BaseViewController {
         VC.fileName = audioFileName
         self.navigationController?.pushViewController(VC, animated: false)
     }
+    
     // MARK: - @IBAction Save.
     @IBAction func onTapSave(_ sender: UIButton) {
         print("Saved")
@@ -700,30 +646,6 @@ class RecordVC: BaseViewController {
                         self.tabBarController?.selectedIndex = 0
                     }
                 }
-                
-                
-                
-//                self.recorder.concatChunks(filename: self.audioFileURL){
-//                    success in
-//                    if success{
-//                        self.chunkInt = 0
-//                        print("Success save chunks removed")
-//                        DispatchQueue.main.async {
-//                            if self.isCommentsOn {
-//                                self.pushCommentVC()
-//                            } else {
-//                                AudioFiles.shared.saveNewAudioFile(name: self.audioFileURL)
-//                                let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
-//                                self.setPushTransitionAnimation(VC)
-//                                self.navigationController?.popViewController(animated: false)
-//                                self.tabBarController?.selectedIndex = 0
-//                            }
-//                        }
-//                    }
-//                }
-                
-                
-//                NotificationCenter.default.post(name: Notification.Name("refreshRecorder"), object: nil)
             }
         })
     }
@@ -861,6 +783,7 @@ class RecordVC: BaseViewController {
         progressViewHeight.constant = 45
         self.playerWaveView.isHidden = true
     }
+    
     // MARK: - Editing UI setup.
     func setUpUIForEditing() {
         segmentControl.selectedSegmentIndex = -1
@@ -871,6 +794,7 @@ class RecordVC: BaseViewController {
         CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: true, animation: .transitionFlipFromBottom)
         self.tabBarController?.setTabBarHidden(false, animated: false)
     }
+    
     // MARK: - Remove Discard Audio.
      func removeDiscardAudio(itemName: String, fileExtension: String) {
          let fileManager = FileManager.default
@@ -983,15 +907,12 @@ class RecordVC: BaseViewController {
         let  documentsDirectory = paths[0]
         return documentsDirectory
     }
-    private func createURLForNewRecord() -> URL {
-        let appGroupFolderUrl = self.getDocumentsDirectory()
-//        let fileNamePrefix = DateFormatter.sharedDateFormatter.string(from: Date())
-//        let fullFileName = "pixel01_" + fileNamePrefix + ".m4a"
-//        self.audioFileName = fullFileName
-        let fullFileName = (self.lblFNameValue.text ?? "")
-        let newRecordFileName = appGroupFolderUrl.appendingPathComponent(fullFileName)
-        return newRecordFileName
-    }
+//    private func createURLForNewRecord() -> URL {
+//        let appGroupFolderUrl = self.getDocumentsDirectory()
+//        let fullFileName = (self.lblFNameValue.text ?? "")
+//        let newRecordFileName = appGroupFolderUrl.appendingPathComponent(fullFileName)
+//        return newRecordFileName
+//    }
     
     private func timeString(from timeInterval: TimeInterval) -> String {
         let seconds = Int(timeInterval.truncatingRemainder(dividingBy: 60))

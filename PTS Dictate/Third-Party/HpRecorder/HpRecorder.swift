@@ -124,6 +124,7 @@ public class HPRecorder: NSObject {
 //        }
 //    }
 
+
     // End recording
     public func endRecording() {
         audioRecorder?.stop()
@@ -194,7 +195,7 @@ public class HPRecorder: NSObject {
     }
     
     // Creates URL relative to apps Document directory
-   public func createNewRecordingURL(_ filename: String = "") -> URL {
+    public func createNewRecordingURL(_ filename: String = "") -> URL {
         let fileURL = filename + ".m4a"
         return Constants.documentDir.appendingPathComponent(fileURL)
     }
@@ -227,7 +228,7 @@ public class HPRecorder: NSObject {
         let exportSession = AVAssetExportSession( asset: composition,presetName: AVAssetExportPresetAppleM4A)
         exportSession?.outputFileType = AVFileType.m4a
         exportSession?.outputURL = self.createNewRecordingURL(filename)
-        print("OP", exportSession?.outputURL)
+        print("outputURL", exportSession?.outputURL)
 
      // Leaving here for debugging purposes.
      // exportSession?.outputURL = self.createNewRecordingURL("exported-")
