@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "quickAdd.jpeg",
+      "filename" : "quickAdd_preview_rev_1 2.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "quickAdd@2x.jpeg",
+      "filename" : "quickAdd_preview_rev_1 4.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "quickAdd@3x.jpeg",
+      "filename" : "quickAdd_preview_rev_1.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

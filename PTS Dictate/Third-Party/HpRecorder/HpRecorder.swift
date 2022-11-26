@@ -6,13 +6,17 @@
 //
 import Foundation
 import AVFoundation
+import UIKit
 
 public class HPRecorder: NSObject {
-
+    open var partialDeleteAsset : AVAsset?
     open var recordingSession: AVAudioSession!
     open var audioRecorder: AVAudioRecorder!
     open var queuePlayer:      AVQueuePlayer?
     open var articleChunks = [AVURLAsset]()
+    open var playerItem: AVPlayerItem?
+    open var durationTime: Double = 0.0
+//    open var playerItemArray = [AVPlayerItem]()
     open var queuePlayerPlaying = false
     private var levelTimer = Timer()
     // Time interval to get percent of loudness
@@ -34,8 +38,8 @@ public class HPRecorder: NSObject {
     open lazy var settings: [String : Any] = {
         return [
             AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-            AVSampleRateKey: 12000,
-            AVNumberOfChannelsKey: 1,
+            AVSampleRateKey: 44100,
+            AVNumberOfChannelsKey: 2,
             AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
         ]
     }()
@@ -52,6 +56,11 @@ public class HPRecorder: NSObject {
         super.init()
         self.recordingSession = AVAudioSession.sharedInstance()
         self.audioInput = AudioInput().defaultAudioInput()
+        do {
+            try recordingSession.setCategory(AVAudioSession.Category.playAndRecord)
+        } catch let error as NSError {
+            print(error.description)
+        }
     }
 
     // Ask permssion to record audio
@@ -71,26 +80,10 @@ public class HPRecorder: NSObject {
     }
 
     // Start recording
-    public func startRecording(sampleRateKey: Float, fileName: String) {
-//        let settings =
-//            [ AVFormatIDKey:             Int(kAudioFormatMPEG4AAC)
-//              , AVSampleRateKey:           Float(sampleRateKey)
-//            , AVNumberOfChannelsKey:     2
-//            , AVEncoderAudioQualityKey:  AVAudioQuality.high.rawValue
-//            , AVEncoderBitRateKey:       128000
-//            ] as [String : Any]
+    public func startRecording(fileName: String) {
+        let url = self.createNewRecordingURL(fileName)
         
-//        let settings = [
-//            //giving the AVSampleRateKey according to the microphone senstivity value in settings.
-//            AVSampleRateKey : sampleRateKey,
-//            AVFormatIDKey : NSNumber(value: Int32(kAudioFormatMPEG4AAC)),
-//            AVNumberOfChannelsKey : NSNumber(value: 2),
-//            AVEncoderAudioQualityKey : NSNumber(value: AVAudioQuality.medium.rawValue)
-//        ] as [String : Any]
-//
-//        let url = self.createNewRecordingURL(fileName)
-
-        
+        //new
         do {
             try recordingSession.setCategory(.playAndRecord, mode: .default, options: [.allowBluetooth, .defaultToSpeaker])
             try recordingSession.setPreferredInput(self.audioInput)
@@ -98,41 +91,35 @@ public class HPRecorder: NSObject {
         } catch {
             print("Couldn't set Audio session category")
         }
-        
+                
         do {
-            audioRecorder = try AVAudioRecorder(url: self.audioFilename, settings: settings)
+            audioRecorder = try AVAudioRecorder(url: url, settings: settings)
             audioRecorder.prepareToRecord()
             audioRecorder.delegate = self
             audioRecorder.record()
             audioRecorder.isMeteringEnabled = true
-            
-            // TODO: add audio recorder delegate? Interruptions (e.g., calls)
-            //       are handled elsewhere anyway
-
-//            self.startRecTimer()
-
         } catch {
             print("Unable to init audio recorder.")
         }
-//        if self.audioFilename == nil {
-//            self.audioFilename = self.getDocumentsDirectory().appendingPathComponent("recording.m4a")
-//        }
-//
+    }
+    public func startInsertRecording(sampleRateKey: Float, fileName: String) {
+        let settings =
+            [ AVFormatIDKey:             Int(kAudioFormatMPEG4AAC)
+              , AVSampleRateKey:           Float(sampleRateKey)
+            , AVNumberOfChannelsKey:     2
+            , AVEncoderAudioQualityKey:  AVAudioQuality.high.rawValue
+            , AVEncoderBitRateKey:       128000
+            ] as [String : Any]
+        let url = self.createNewRecordingURL(fileName)
+
         
-//
-//        do {
-//            audioRecorder = try AVAudioRecorder(url: self.audioFilename, settings: settings)
-//            audioRecorder.prepareToRecord()
-//            audioRecorder.delegate = self
-//            audioRecorder.record()
-//            audioRecorder.isMeteringEnabled = true
-//
-//            self.levelTimer = Timer.scheduledTimer(timeInterval: timeInterVal, target: self, selector: #selector(HPRecorder.levelTimerCallback), userInfo: nil, repeats: true)
-//            isRecording = true
-//
-//        } catch {
-//            endRecording()
-//        }
+        do {
+            self.audioRecorder =
+                try AVAudioRecorder.init(url: url, settings: settings)
+            self.audioRecorder?.record(atTime: 2.0, forDuration: 7.0)
+        } catch {
+            print("Unable to init audio recorder.")
+        }
     }
 
     // End recording
@@ -142,18 +129,14 @@ public class HPRecorder: NSObject {
         let assetOpts = [AVURLAssetPreferPreciseDurationAndTimingKey: true]
         let asset     = AVURLAsset(url: assetURL, options: assetOpts)
         self.articleChunks.append(asset)
+        tempChunks.append(asset)
         isRecording = false
-//        audioFilename = nil
         audioRecorder = nil
         self.levelTimer.invalidate()
     }
 
     // Pause recorinding
     public func pauseRecording() {
-//        if audioRecorder.isRecording {
-//            audioRecorder.pause()
-//            isRecording = false
-//        }
         if self.audioRecorder?.isRecording == true {
             self.endRecording()
             isRecording = false
@@ -161,29 +144,46 @@ public class HPRecorder: NSObject {
             self.queuePlayer?.pause()
         }
     }
+    
     // Start player
     public func startPlayer() {
         let assetKeys = ["playable"]
+        if partialDeleteAsset != nil{
+            print("Audio here")
+            let playerItems = AVPlayerItem(asset: (partialDeleteAsset!), automaticallyLoadedAssetKeys: assetKeys)
+            self.playerItem = playerItems
+            self.queuePlayer = AVQueuePlayer(playerItem: playerItems)//AVQueuePlayer(items: playerItems)
+            self.queuePlayer?.actionAtItemEnd = .advance
+            self.queuePlayer?.play()
+            self.queuePlayerPlaying = true
+            var playerItemArray = [AVPlayerItem]()
+            playerItemArray.append(playerItem!)
+            self.durationTime = self.getTimeDuration(playerItems: playerItemArray)
+            return
+        }else{
         let playerItems = self.articleChunks.map {
             AVPlayerItem(asset: $0, automaticallyLoadedAssetKeys: assetKeys)
         }
-
-        //        playerItem.addObserver(
-        //            self,
-        //            forKeyPath: #keyPath(AVPlayerItem.status),
-        //            options:    [.old, .new],
-        //            context:    &RecordViewController.playerItemContext)
-
         self.queuePlayer = AVQueuePlayer(items: playerItems)
         self.queuePlayer?.actionAtItemEnd = .advance
-
+        self.playerItem = playerItems.last
         self.queuePlayer?.play()
         self.queuePlayerPlaying = true
-
-//        self.updateControlsAndStatus(
-//            activeControls: [.stop],
-//            controlStatus:  nil)
+        self.durationTime = self.getTimeDuration(playerItems: playerItems)
+      }
     }
+    
+    func getTimeDuration(playerItems: [AVPlayerItem]) -> Double{
+        var count: Double = 0.0
+        for playerItem in playerItems {
+            let duration = playerItem.asset.duration
+            let durationSeconds = Double(CMTimeGetSeconds(duration))
+            count = count + durationSeconds
+        }
+        print("durationCount-->>", count)
+        return count
+    }
+    
     // Stop player
     public  func stopPlayer() {
         self.queuePlayer?.pause()
@@ -192,62 +192,40 @@ public class HPRecorder: NSObject {
     }
     
     // Creates URL relative to apps Document directory
-   public func createNewRecordingURL(_ filename: String = "") -> URL {
-       
-                let fileURL = filename + ".m4a"
-       
-                return Constants.documentDir.appendingPathComponent(fileURL)
-//        let now = Constants.dateString(Date())
-//
-//        let fileURL = filename + "_" + now + ".m4a"
-//
-//        return Constants.documentDir.appendingPathComponent(fileURL)
+    public func createNewRecordingURL(_ filename: String = "") -> URL {
+        let fileURL = filename + ".m4a"
+        return Constants.documentDir.appendingPathComponent(fileURL)
     }
-    public func createInitialRecordingURL(_ filename: String = "") -> URL {
 
-
-         let fileURL = filename + ".m4a"
-
-         return Constants.documentDir.appendingPathComponent(fileURL)
-     }
-    
-    public func concatChunks(filename: String) {
+    public func concatChunks(filename: String ,completion: @escaping(_ result: Bool) -> Void) {
         let composition = AVMutableComposition()
-
-        var insertAt = CMTimeRange(start: CMTime.zero, end: CMTime.zero)
-
-        for asset in self.articleChunks {
-            let assetTimeRange = CMTimeRange(
-                start: CMTime.zero,
-                end:   asset.duration)
-
+        var insertAt = CMTimeRange(start: .zero, end: .zero)
+        if self.partialDeleteAsset != nil{
+            let assetTimeRange = CMTimeRange(start: .zero, end: partialDeleteAsset!.duration)
             do {
-                try composition.insertTimeRange(assetTimeRange,
-                                                of: asset,
-                                                at: insertAt.end)
+                try composition.insertTimeRange(assetTimeRange, of: partialDeleteAsset!, at: insertAt.end)
             } catch {
                 NSLog("Unable to compose asset track.")
             }
-
             let nextDuration = insertAt.duration + assetTimeRange.duration
-            insertAt = CMTimeRange(
-                start:    CMTime.zero,
-                duration: nextDuration)
+            insertAt = CMTimeRange( start: .zero, duration: nextDuration)
+        }else{
+            for asset in self.articleChunks {
+                let assetTimeRange = CMTimeRange(start: .zero, end: asset.duration)
+                do {
+                    try composition.insertTimeRange(assetTimeRange, of: asset, at: insertAt.end)
+                } catch {
+                    NSLog("Unable to compose asset track.")
+                }
+                let nextDuration = insertAt.duration + assetTimeRange.duration
+                insertAt = CMTimeRange(start: .zero, duration: nextDuration)
+            }
         }
 
-        let exportSession =
-            AVAssetExportSession(
-                asset:      composition,
-                presetName: AVAssetExportPresetAppleM4A)
-
-//        let filename =
-//              "1"
-//            + "-"
-//            + "2"
-
+        let exportSession = AVAssetExportSession( asset: composition,presetName: AVAssetExportPresetAppleM4A)
         exportSession?.outputFileType = AVFileType.m4a
         exportSession?.outputURL = self.createNewRecordingURL(filename)
-        
+        print("outputURL", exportSession?.outputURL)
 
      // Leaving here for debugging purposes.
      // exportSession?.outputURL = self.createNewRecordingURL("exported-")
@@ -269,34 +247,157 @@ public class HPRecorder: NSObject {
          because the completion handler is run async, KVO would be more appropriate
          */
         exportSession?.exportAsynchronously {
-
             switch exportSession?.status {
-            case .unknown?: break
-            case .waiting?: break
-            case .exporting?: break
+            case .unknown?:
+                completion(false)
+                break
+            case .waiting?:
+                completion(false)
+                break
+            case .exporting?:
+                completion(false)
+                break
             case .completed?:
                 /* Cleaning up partial recordings
                  */
+                print("articleCount-->>",self.articleChunks.count)
+                print("article-->>",self.articleChunks)
+
                 for asset in self.articleChunks {
                     try! FileManager.default.removeItem(at: asset.url)
                 }
 
                 /* https://stackoverflow.com/questions/26277371/swift-uitableview-reloaddata-in-a-closure
                 */
-                DispatchQueue.main.async {
+//                DispatchQueue.main.async {
 //                    self.listRecordings.tableView.reloadData()
-                    self.articleChunks = [AVURLAsset]()
-                }
-
+//                }
+                completion(true)
                 /* Resetting `articleChunks` here, because this function is
                  called asynchronously and calling it from `queueTapped` or
                  `submitTapped` may delete the files prematurely.
                  */
+                let assetToSave = AVURLAsset(url: exportSession?.outputURL ?? URL(fileURLWithPath: ""))
+                self.articleChunks.removeAll()
+                self.articleChunks.append(assetToSave)
 //                self.articleChunks = [AVURLAsset]()
-            case .failed?: break
-            case .cancelled?: break
-            case .none: break
+                self.partialDeleteAsset = nil
+            case .failed?:
+                print("error:-->>",exportSession?.error?.localizedDescription ?? "")
+                completion(false)
+                break
+            case .cancelled?:
+                completion(false)
+                break
+            case .none:
+                completion(false)
+                break
+            case .some(_):
+                completion(false)
+                break
             }
+        }
+    }
+    
+    func deleteExportAsset(endTimeOfRange1: Double,startTimeOfRange2: Double , fileName: String, completion: @escaping(_ result: Bool) -> Void)  {
+        print("\(#function)")
+        // create empty mutable composition
+        let composition: AVMutableComposition = AVMutableComposition()
+        // copy all of original asset into the mutable composition, effectively creating an editable copy
+        for asset in self.articleChunks {
+        do {
+            try composition.insertTimeRange(CMTimeRangeMake( start: CMTime.zero, duration: asset.duration), of: asset, at: CMTime.zero)
+        } catch {
+            NSLog("Unable to compose asset track.")
+        }
+        // now edit as required, e.g. delete a time range
+        let startTime = CMTime(seconds: endTimeOfRange1, preferredTimescale: 100)
+        let endTime = CMTime(seconds: startTimeOfRange2, preferredTimescale: 100)
+        composition.removeTimeRange(CMTimeRangeFromTimeToTime( start: startTime, end: endTime))
+    }
+       
+        // since AVMutableComposition is an AVAsset subclass, it can be exported with AVAssetExportSession (or played with an AVPlayer(Item))
+         let exportSession = AVAssetExportSession(asset: composition, presetName: AVAssetExportPresetAppleM4A)
+        exportSession?.outputFileType = AVFileType.m4a
+        exportSession?.outputURL = self.createNewRecordingURL("fileName")
+        print("OP",exportSession?.outputURL)
+        exportSession?.canPerformMultiplePassesOverSourceMediaData = true
+        
+       exportSession?.exportAsynchronously {
+
+           switch exportSession?.status {
+           case .unknown?:
+               completion(false)
+               break
+           case .waiting?:
+               completion(false)
+               break
+           case .exporting?:
+               completion(false)
+               break
+           case .completed?:
+               /* Cleaning up partial recordings
+                */
+               for asset in self.articleChunks {
+                   try! FileManager.default.removeItem(at: asset.url)
+               }
+
+               /* https://stackoverflow.com/questions/26277371/swift-uitableview-reloaddata-in-a-closure
+               */
+//                DispatchQueue.main.async {
+//                    self.listRecordings.tableView.reloadData()
+//                }
+               completion(true)
+               /* Resetting `articleChunks` here, because this function is
+                called asynchronously and calling it from `queueTapped` or
+                `submitTapped` may delete the files prematurely.
+                */
+//               self.articleChunks = [AVURLAsset]()
+           case .failed?:
+               print("error:-->>",exportSession?.error?.localizedDescription ?? "")
+               completion(false)
+               break
+           case .cancelled?:
+               completion(false)
+               break
+           case .none:
+               completion(false)
+               break
+           case .some(_):
+               completion(false)
+               break
+           }
+       }
+    }
+    
+    public func deleteAudio(startTime: Double,endTime: Double, completion: @escaping(_ result: Bool) -> Void){
+        // create empty mutable composition
+        let composition: AVMutableComposition = AVMutableComposition()
+        
+        // copy all of original asset into the mutable composition, effectively creating an editable copy
+        for asset in self.articleChunks.reversed() {
+            do{
+                try composition.insertTimeRange( CMTimeRangeMake( start: CMTime.zero, duration: asset.duration), of: asset, at: CMTime.zero)
+            }catch{
+                print("Error")
+            }
+        }
+
+        // now edit as required, e.g. delete a time range
+        let startTime = CMTime(seconds: startTime, preferredTimescale: 100)
+        let endTime = CMTime(seconds: endTime, preferredTimescale: 100)
+        composition.removeTimeRange(CMTimeRangeFromTimeToTime(start: startTime, end: endTime))
+
+        // since AVMutableComposition is an AVAsset subclass, it can be exported with AVAssetExportSession (or played with an AVPlayer(Item))
+        if let exporter = AVAssetExportSession(asset: composition, presetName: AVAssetExportPresetAppleM4A)
+        {
+            // configure session and exportAsynchronously as above.
+            // You don't have to set the timeRange of the exportSession
+            self.partialDeleteAsset = exporter.asset
+            print("Here", exporter)
+            completion(true)
+        }else{
+            completion(false)
         }
     }
     
@@ -399,6 +500,7 @@ struct Constants {
 
         return dateFormatter.string(from: date)
     }
+    static let appName = "PTS Dictate"
     static let appendMsg = "When the append function is selected, the cursor will automatically move to the end of the original recording. If you want the Append to start at a different point, move the cursor to a desired point and tap the orange Record button to start the Append function."
     
     static let insertMsg = "To start insert, tap the Start Point button marker whilst listening to the audio. Tap the Start Inserting button to initiate the insert. The insert will end when the orange Stop button is tapped."
@@ -406,4 +508,5 @@ struct Constants {
     static let overwriteMsg = "To start overwrite, tap the Start Point and End Point button markers whilst listening to the audio. The End Point button determines where the overwrite finishes. Tap the Start Overwriting button to initiate the overwrite. The overwrite will end when the End Point marker is reached."
     
     static let partialDeleteMsg = "To start partial delete, tap the Start Point and End Point button markers whilst listening to the audio. The End Point button determines where the partial delete finishes. Tap the Start Deleting button to initiate the partial delete. The partial delete will end when the End Point marker is reached."
+    static let pDeleteMsg = "Partial Delete Complete"
 }
