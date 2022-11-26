@@ -19,7 +19,7 @@ class CoreData: NSObject {
     var privilege: String = ""
     var isRemeberMe : Bool = false
     var password = ""
-    var audioQuality = 0
+    var audioQuality = 2
     var voiceActivation = 0 // 1 - true & 0 - false
     var disableEmailNotify = 0 // 1 - true & 0 - false
     var commentScreen = 0 // 1 - true & 0 - false

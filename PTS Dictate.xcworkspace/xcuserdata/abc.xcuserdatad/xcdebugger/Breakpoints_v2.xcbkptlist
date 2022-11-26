@@ -48,7 +48,11 @@
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "34"
                   endingLineNumber = "34"
+<<<<<<< HEAD
                   offsetFromSymbolStart = "1136">
+=======
+                  offsetFromSymbolStart = "1540">
+>>>>>>> final_dev
                </Location>
                <Location
                   uuid = "DAE14140-7079-4974-B607-64399141B448 - 110c837d5ec3e66c"
@@ -63,7 +67,11 @@
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "34"
                   endingLineNumber = "34"
+<<<<<<< HEAD
                   offsetFromSymbolStart = "268">
+=======
+                  offsetFromSymbolStart = "246">
+>>>>>>> final_dev
                </Location>
             </Locations>
          </BreakpointContent>
@@ -80,11 +88,16 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "346"
             endingLineNumber = "346"
+<<<<<<< HEAD
             landmarkName = "uploadMediaFile(url:withParameters:ofType:onSuccess:onFailure:method:fileUrl:headerPresent:fileName:description:emailNotifications:)"
+=======
+            landmarkName = "uploadMediaFile(url:withParameters:ofType:onSuccess:onFailure:method:fileUrl:headerPresent:)"
+>>>>>>> final_dev
             landmarkType = "7">
             <Locations>
                <Location
                   uuid = "15B725B8-F2DE-4E99-B997-F0E6120CA53D - 15af171869388dd0"
+<<<<<<< HEAD
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
@@ -104,6 +117,12 @@
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "closure #1 (Alamofire.MultipartFormData) -&gt; () in static PTS_Dictate.ApiHandler.uploadMediaFile&lt;&#x3c4;_0_0 where &#x3c4;_0_0: Swift.Decodable, &#x3c4;_0_0: Swift.Encodable&gt;(url: Swift.String, withParameters: Swift.Dictionary&lt;Swift.String, Any&gt;, ofType: &#x3c4;_0_0.Type, onSuccess: (&#x3c4;_0_0) -&gt; (), onFailure: (Swift.Bool, Swift.String) -&gt; (), method: PTS_Dictate.ApiMethod, fileUrl: Foundation.URL, headerPresent: Swift.Bool, fileName: Swift.String, description: Swift.String, emailNotifications: Swift.String) -&gt; ()"
+=======
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "static PTS_Dictate.ApiHandler.uploadMediaFile&lt;&#x3c4;_0_0 where &#x3c4;_0_0: Swift.Decodable, &#x3c4;_0_0: Swift.Encodable&gt;(url: Swift.String, withParameters: Swift.Dictionary&lt;Swift.String, Any&gt;, ofType: &#x3c4;_0_0.Type, onSuccess: (&#x3c4;_0_0) -&gt; (), onFailure: (Swift.Bool, Swift.String) -&gt; (), method: PTS_Dictate.ApiMethod, fileUrl: Foundation.URL, headerPresent: Swift.Bool, fileName: Swift.String, description: Swift.String, emailNotifications: Swift.String) -&gt; ()"
+>>>>>>> final_dev
                   moduleName = "PTS Dictate"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/abc/Desktop/PTS%20Dictate/PTS%20Dictate/APIHandler/ApiHandler.swift"
@@ -111,7 +130,38 @@
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "347"
                   endingLineNumber = "347"
+<<<<<<< HEAD
                   offsetFromSymbolStart = "192">
+               </Location>
+               <Location
+                  uuid = "15B725B8-F2DE-4E99-B997-F0E6120CA53D - 3e345c2721e0db35"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #2 (__C.NSProgress) -&gt; () in static PTS_Dictate.ApiHandler.uploadMediaFile&lt;&#x3c4;_0_0 where &#x3c4;_0_0: Swift.Decodable, &#x3c4;_0_0: Swift.Encodable&gt;(url: Swift.String, withParameters: Swift.Dictionary&lt;Swift.String, Any&gt;, ofType: &#x3c4;_0_0.Type, onSuccess: (&#x3c4;_0_0) -&gt; (), onFailure: (Swift.Bool, Swift.String) -&gt; (), method: PTS_Dictate.ApiMethod, fileUrl: Foundation.URL, headerPresent: Swift.Bool, fileName: Swift.String, description: Swift.String, emailNotifications: Swift.String) -&gt; ()"
+=======
+                  offsetFromSymbolStart = "2367">
+               </Location>
+               <Location
+                  uuid = "15B725B8-F2DE-4E99-B997-F0E6120CA53D - d0c711905c1a6bcc"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Alamofire.MultipartFormData) -&gt; () in static PTS_Dictate.ApiHandler.uploadMediaFile&lt;&#x3c4;_0_0 where &#x3c4;_0_0: Swift.Decodable, &#x3c4;_0_0: Swift.Encodable&gt;(url: Swift.String, withParameters: Swift.Dictionary&lt;Swift.String, Any&gt;, ofType: &#x3c4;_0_0.Type, onSuccess: (&#x3c4;_0_0) -&gt; (), onFailure: (Swift.Bool, Swift.String) -&gt; (), method: PTS_Dictate.ApiMethod, fileUrl: Foundation.URL, headerPresent: Swift.Bool, fileName: Swift.String, description: Swift.String, emailNotifications: Swift.String) -&gt; ()"
+>>>>>>> final_dev
+                  moduleName = "PTS Dictate"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/abc/Desktop/PTS%20Dictate/PTS%20Dictate/APIHandler/ApiHandler.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+<<<<<<< HEAD
+                  startingLineNumber = "348"
+                  endingLineNumber = "348"
+                  offsetFromSymbolStart = "72">
+=======
+                  startingLineNumber = "347"
+                  endingLineNumber = "347"
+                  offsetFromSymbolStart = "180">
                </Location>
                <Location
                   uuid = "15B725B8-F2DE-4E99-B997-F0E6120CA53D - 3e345c2721e0db35"
@@ -126,7 +176,8 @@
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "348"
                   endingLineNumber = "348"
-                  offsetFromSymbolStart = "72">
+                  offsetFromSymbolStart = "39">
+>>>>>>> final_dev
                </Location>
             </Locations>
          </BreakpointContent>
@@ -143,7 +194,11 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "339"
             endingLineNumber = "339"
+<<<<<<< HEAD
             landmarkName = "uploadMediaFile(url:withParameters:ofType:onSuccess:onFailure:method:fileUrl:headerPresent:fileName:description:emailNotifications:)"
+=======
+            landmarkName = "uploadMediaFile(url:withParameters:ofType:onSuccess:onFailure:method:fileUrl:headerPresent:)"
+>>>>>>> final_dev
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -193,6 +248,22 @@
             endingLineNumber = "28"
             landmarkName = "uploadAudio(userName:toUser:emailNotify:fileUrl:)"
             landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "052BDCC0-04C3-4CD2-863F-F1D28EADE446"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PTS Dictate/View controllers/TabbarVC/ExistingVC/ExistingViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "28"
+            endingLineNumber = "28"
+            landmarkName = "uploadAudio(userName:toUser:emailNotify:fileUrl:)"
+            landmarkType = "7">
             <Locations>
                <Location
                   uuid = "052BDCC0-04C3-4CD2-863F-F1D28EADE446 - f4e317a64938ddc3"
@@ -207,7 +278,11 @@
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "28"
                   endingLineNumber = "28"
+<<<<<<< HEAD
                   offsetFromSymbolStart = "664">
+=======
+                  offsetFromSymbolStart = "953">
+>>>>>>> final_dev
                </Location>
                <Location
                   uuid = "052BDCC0-04C3-4CD2-863F-F1D28EADE446 - 96e3df86734bc6d7"
@@ -222,7 +297,11 @@
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "29"
                   endingLineNumber = "29"
+<<<<<<< HEAD
                   offsetFromSymbolStart = "136">
+=======
+                  offsetFromSymbolStart = "109">
+>>>>>>> final_dev
                </Location>
             </Locations>
          </BreakpointContent>
@@ -230,6 +309,7 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
+<<<<<<< HEAD
             uuid = "717711F4-5621-469B-8E99-6B72C67DD0A0"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -246,6 +326,8 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
+=======
+>>>>>>> final_dev
             uuid = "2DDA6CFB-5336-4C83-8F34-3266823E76D1"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -310,6 +392,7 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
+<<<<<<< HEAD
             uuid = "6827A7B3-08FF-490A-806A-6AAC36CC4365"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -342,6 +425,8 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
+=======
+>>>>>>> final_dev
             uuid = "4BF81574-7538-447D-8F04-7041979BB554"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -374,6 +459,7 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
+<<<<<<< HEAD
             uuid = "771B8319-4966-46FA-8172-BAD5E8871130"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -455,32 +541,131 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "F4186E7F-DC11-4E91-94A6-CB592BF99464"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1064"
-            endingLineNumber = "1064"
-            landmarkName = "startRecording()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "30A43541-64C2-4C56-9378-7F574389B840"
+=======
+            uuid = "FCED0D80-3B4A-4A52-B787-E9C438144815"
+>>>>>>> final_dev
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PTS Dictate/Third-Party/HpRecorder/HpRecorder.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
+<<<<<<< HEAD
+            startingLineNumber = "1064"
+            endingLineNumber = "1064"
+            landmarkName = "startRecording()"
+=======
+            startingLineNumber = "390"
+            endingLineNumber = "390"
+            landmarkName = "deleteAudio(startTime:endTime:completion:)"
+>>>>>>> final_dev
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "FCED0D80-3B4A-4A52-B787-E9C438144815 - 17497c889a6ab7fc"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "PTS_Dictate.HPRecorder.deleteAudio(startTime: Swift.Double, endTime: Swift.Double, completion: (Swift.Bool) -&gt; ()) -&gt; ()"
+                  moduleName = "PTS Dictate"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/abc/Desktop/PTS%20Dictate/PTS%20Dictate/Third-Party/HpRecorder/HpRecorder.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "390"
+                  endingLineNumber = "390"
+                  offsetFromSymbolStart = "2550">
+               </Location>
+               <Location
+                  uuid = "FCED0D80-3B4A-4A52-B787-E9C438144815 - 17497c889a6ab7fc"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "PTS_Dictate.HPRecorder.deleteAudio(startTime: Swift.Double, endTime: Swift.Double, completion: (Swift.Bool) -&gt; ()) -&gt; ()"
+                  moduleName = "PTS Dictate"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/abc/Desktop/PTS%20Dictate/PTS%20Dictate/Third-Party/HpRecorder/HpRecorder.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "390"
+                  endingLineNumber = "390"
+                  offsetFromSymbolStart = "2757">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+<<<<<<< HEAD
+            uuid = "30A43541-64C2-4C56-9378-7F574389B840"
+=======
+            uuid = "E7AADC2E-45DB-4E90-9BA8-092C1FF20103"
+>>>>>>> final_dev
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PTS Dictate/Third-Party/HpRecorder/HpRecorder.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+<<<<<<< HEAD
             startingLineNumber = "35"
             endingLineNumber = "35"
             landmarkName = "settings"
             landmarkType = "24">
+=======
+            startingLineNumber = "1106"
+            endingLineNumber = "1106"
+            landmarkName = "mergeAudioFiles(originalURL:replacingURL:startTime:folderName:caseNumber:taskToPerform:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "E7AADC2E-45DB-4E90-9BA8-092C1FF20103 - 1d581f05b2d18da7"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "PTS_Dictate.RecordVC.mergeAudioFiles(originalURL: Foundation.URL, replacingURL: Foundation.URL, startTime: __C.CMTime, folderName: Swift.String, caseNumber: Swift.String, taskToPerform: Swift.String) -&gt; ()"
+                  moduleName = "PTS Dictate"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/abc/Desktop/PTS%20Dictate/PTS%20Dictate/View%20controllers/TabbarVC/RecordVC/RecordVC.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1107"
+                  endingLineNumber = "1107"
+                  offsetFromSymbolStart = "1906">
+               </Location>
+               <Location
+                  uuid = "E7AADC2E-45DB-4E90-9BA8-092C1FF20103 - 1d581f05b2d18da7"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "PTS_Dictate.RecordVC.mergeAudioFiles(originalURL: Foundation.URL, replacingURL: Foundation.URL, startTime: __C.CMTime, folderName: Swift.String, caseNumber: Swift.String, taskToPerform: Swift.String) -&gt; ()"
+                  moduleName = "PTS Dictate"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/abc/Desktop/PTS%20Dictate/PTS%20Dictate/View%20controllers/TabbarVC/RecordVC/RecordVC.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1107"
+                  endingLineNumber = "1107"
+                  offsetFromSymbolStart = "2149">
+               </Location>
+               <Location
+                  uuid = "E7AADC2E-45DB-4E90-9BA8-092C1FF20103 - 1d581f05b2d18da7"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "PTS_Dictate.RecordVC.mergeAudioFiles(originalURL: Foundation.URL, replacingURL: Foundation.URL, startTime: __C.CMTime, folderName: Swift.String, caseNumber: Swift.String, taskToPerform: Swift.String) -&gt; ()"
+                  moduleName = "PTS Dictate"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/abc/Desktop/PTS%20Dictate/PTS%20Dictate/View%20controllers/TabbarVC/RecordVC/RecordVC.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1107"
+                  endingLineNumber = "1107"
+                  offsetFromSymbolStart = "2411">
+               </Location>
+            </Locations>
+>>>>>>> final_dev
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
