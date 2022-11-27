@@ -56,18 +56,24 @@ public class AudioFileInfo: NSObject, NSCoding {
     public var isUploaded: Bool?
     public var archivedDays: Int?
     public var canEdit: Bool?
-    public var createdAt: Date?
+    public var uploadedAt: String?
+    public var uploadingInProgress: Bool?
+    public var autoSaved: Bool?
+    public var meteringLevels: [Float]?
     
-    enum CodinhKeys:String {
-        case comment, isUploaded, archivedDays, canEdit, createdAt
+    enum CodingKeys:String {
+        case comment, isUploaded, archivedDays, canEdit, uploadedAt, uploadingInProgress, autoSaved, meteringLevels
     }
     
-    init(comment: String?, isUploaded: Bool?, archivedDays: Int?, canEdit: Bool?, createdAt: Date?) {
+    init(comment: String?, isUploaded: Bool?, archivedDays: Int?, canEdit: Bool?, uploadedAt: String?, uploadingInProgress: Bool?, autoSaved: Bool?, meteringLevels: [Float]?) {
         self.comment = comment
         self.isUploaded = isUploaded
         self.archivedDays = archivedDays
         self.canEdit = canEdit
-        self.createdAt = createdAt
+        self.uploadedAt = uploadedAt
+        self.uploadingInProgress = uploadingInProgress
+        self.autoSaved = autoSaved
+        self.meteringLevels = meteringLevels
     }
     
     public override init() {
@@ -75,20 +81,26 @@ public class AudioFileInfo: NSObject, NSCoding {
     }
     
     public func encode(with aCoder: NSCoder) {
-        aCoder.encode(comment, forKey: CodinhKeys.comment.rawValue)
-        aCoder.encode(isUploaded, forKey: CodinhKeys.isUploaded.rawValue)
-        aCoder.encode(archivedDays, forKey: CodinhKeys.archivedDays.rawValue)
-        aCoder.encode(canEdit, forKey: CodinhKeys.canEdit.rawValue)
-        aCoder.encode(createdAt, forKey: CodinhKeys.createdAt.rawValue)
+        aCoder.encode(comment, forKey: CodingKeys.comment.rawValue)
+        aCoder.encode(isUploaded, forKey: CodingKeys.isUploaded.rawValue)
+        aCoder.encode(archivedDays, forKey: CodingKeys.archivedDays.rawValue)
+        aCoder.encode(canEdit, forKey: CodingKeys.canEdit.rawValue)
+        aCoder.encode(uploadedAt, forKey: CodingKeys.uploadedAt.rawValue)
+        aCoder.encode(uploadingInProgress, forKey: CodingKeys.uploadingInProgress.rawValue)
+        aCoder.encode(autoSaved, forKey: CodingKeys.autoSaved.rawValue)
+        aCoder.encode(meteringLevels, forKey: CodingKeys.meteringLevels.rawValue)
     }
     
     public required convenience init?(coder aDecoder: NSCoder) {
-        let comment = aDecoder.decodeObject(forKey: CodinhKeys.comment.rawValue) as? String
-        let isUploaded = aDecoder.decodeObject(forKey: CodinhKeys.isUploaded.rawValue) as? Bool
-        let archivedDays = aDecoder.decodeObject(forKey: CodinhKeys.archivedDays.rawValue) as? Int
-        let canEdit = aDecoder.decodeObject(forKey: CodinhKeys.canEdit.rawValue) as? Bool
-        let createdAt = aDecoder.decodeObject(forKey: CodinhKeys.createdAt.rawValue) as? Date
+        let comment = aDecoder.decodeObject(forKey: CodingKeys.comment.rawValue) as? String
+        let isUploaded = aDecoder.decodeObject(forKey: CodingKeys.isUploaded.rawValue) as? Bool
+        let archivedDays = aDecoder.decodeObject(forKey: CodingKeys.archivedDays.rawValue) as? Int
+        let canEdit = aDecoder.decodeObject(forKey: CodingKeys.canEdit.rawValue) as? Bool
+        let uploadedAt = aDecoder.decodeObject(forKey: CodingKeys.uploadedAt.rawValue) as? String
+        let uploadingInProgress = aDecoder.decodeObject(forKey: CodingKeys.uploadingInProgress.rawValue) as? Bool
+        let autoSaved = aDecoder.decodeObject(forKey: CodingKeys.autoSaved.rawValue) as? Bool
+        let meteringLevels = aDecoder.decodeObject(forKey: CodingKeys.meteringLevels.rawValue) as? [Float]
         
-        self.init(comment: comment, isUploaded: isUploaded, archivedDays: archivedDays, canEdit: canEdit, createdAt: createdAt)
+        self.init(comment: comment, isUploaded: isUploaded, archivedDays: archivedDays, canEdit: canEdit, uploadedAt: uploadedAt, uploadingInProgress: uploadingInProgress, autoSaved: autoSaved, meteringLevels: meteringLevels)
     }
 }

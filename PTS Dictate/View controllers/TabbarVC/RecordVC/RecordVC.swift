@@ -118,6 +118,17 @@ class RecordVC: BaseViewController {
         }
     }
     
+    // MARK: Audio visualization view properties
+    private let audioVisualizationViewModel = AudioVisualizationViewModel()
+    private var chronometer: Chronometer?
+    private var meteringLevels: [Float] = []
+    private var currentVisualizationState: AudioVisualizationState = .ready {
+        didSet{
+            self.audioVisualizationView.audioVisualizationMode = self.currentVisualizationState.audioVisualizationMode
+        }
+    }
+    @IBOutlet private var audioVisualizationView: AudioVisualizationView!
+
     // MARK: - View Life-Cycle.
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -137,6 +148,8 @@ class RecordVC: BaseViewController {
         //setup file name
         self.setupFileName()
         isRecording = false
+
+        visualizationViewSetup()
 
         if editFromExiting {
             setUpUIForEditing()
@@ -193,6 +206,7 @@ class RecordVC: BaseViewController {
     
     @objc func applicationWillTerminate(notification: Notification) {
         print("Notification received.")
+
         if self.recorder.audioRecorder != nil {
             self.recorder.endRecording()
         }
@@ -204,6 +218,14 @@ class RecordVC: BaseViewController {
         
         for asset in self.recorder.articleChunks {
             try! FileManager.default.removeItem(at: asset.url)
+        }
+        
+        self.saveRecordedAudio() { (success) in
+            if success{
+                print(self.meteringLevels)
+                AudioFiles.shared.saveNewAudioFile(name: self.audioFileName, autoSaved: true, meteringLevels: self.meteringLevels)
+                print("Bg success saved")
+            }
         }
     }
     
@@ -217,20 +239,28 @@ class RecordVC: BaseViewController {
         segmentHeight.constant = 0
         viewProgress.isHidden = true
         progressViewHeight.constant = 45
-        setUpWave()
+//        setUpWave()
     }
     
     func setUpWave() {
-        self.playerWaveView.isHidden = true
+//        self.playerWaveView.meteringLevelBarWidth = 1.0
+//        self.playerWaveView.meteringLevelBarInterItem = 1.0
+//        self.playerWaveView.meteringLevelBarCornerRadius = 0.0
+//        self.playerWaveView.meteringLevelBarSingleStick = false
+//        self.playerWaveView.gradientStartColor = #colorLiteral(red: 0.6509803922, green: 0.8235294118, blue: 0.9529411765, alpha: 1)
+//        self.playerWaveView.gradientEndColor = #colorLiteral(red: 0.2273887992, green: 0.2274999917, blue: 0.9748747945, alpha: 1)
+//        self.playerWaveView.add(meteringLevel: 0.6)
+//        self.playerWaveView.audioVisualizationMode = .read
+//        self.playerWaveView.meteringLevels = self.meteringLevels
+        
         self.playerWaveView.meteringLevelBarWidth = 1.0
-        self.playerWaveView.meteringLevelBarInterItem = 1.0
+        self.playerWaveView.meteringLevelBarInterItem = 2.5
         self.playerWaveView.meteringLevelBarCornerRadius = 0.0
         self.playerWaveView.meteringLevelBarSingleStick = false
         self.playerWaveView.gradientStartColor = #colorLiteral(red: 0.6509803922, green: 0.8235294118, blue: 0.9529411765, alpha: 1)
         self.playerWaveView.gradientEndColor = #colorLiteral(red: 0.2273887992, green: 0.2274999917, blue: 0.9748747945, alpha: 1)
-        self.playerWaveView.add(meteringLevel: 0.6)
+        self.playerWaveView.meteringLevels = meteringLevels
         self.playerWaveView.audioVisualizationMode = .read
-        self.playerWaveView.meteringLevels = [0.1, 0.67, 0.13, 0.78, 0.31]
     }
     
     // MARK: - File Name Setup.
@@ -254,6 +284,7 @@ class RecordVC: BaseViewController {
 
         //need to check recording file count here as well
         self.audioFileURL = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)"
+        self.audioFileName = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)" + ".m4a"
         self.lblFNameValue.text = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)" + ".m4a"
         self.lblFSizeValue.text = "0.00 Mb"
         
@@ -334,7 +365,8 @@ class RecordVC: BaseViewController {
                 self.btnStop.isUserInteractionEnabled = true
                 print("resume")
             }
-            isRecording = true
+        isRecording = true
+        visualizationViewControlls()
     }
     
     @IBAction func onTapStop(_ sender: UIButton) {
@@ -388,13 +420,16 @@ class RecordVC: BaseViewController {
         viewProgress.isHidden = true
         stackView.isHidden = true
         playerWaveView.isHidden = false
+        setUpWave()
         bookMarkView.isHidden = true
         viewClear.isHidden = true
         viewPlayerTiming.isHidden = false
         parentStackTop.constant = 60
         currentPlayingTime.text = self.lblTime.text
         playerTotalTime.text = self.lblTime.text
+        visualizationViewControlls()
     }
+    
     // MARK: - Audio meter range setup.
     func audioRangeMeterSetUp() {
         self.customRangeBar.backgroundColor = .white
@@ -619,6 +654,7 @@ class RecordVC: BaseViewController {
         VC.hidesBottomBarWhenPushed = true
         VC.isCommentsMandotary = isCommentsMandotary
         VC.fileName = audioFileName
+        VC.meteringLevels = meteringLevels
         self.navigationController?.pushViewController(VC, animated: false)
     }
     
@@ -644,16 +680,18 @@ class RecordVC: BaseViewController {
                     if self.isCommentsOn {
                         self.pushCommentVC()
                     } else {
-                        AudioFiles.shared.saveNewAudioFile(name: self.audioFileURL)
+                        AudioFiles.shared.saveNewAudioFile(name: self.audioFileName, meteringLevels: self.meteringLevels)
                         let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
                         self.setPushTransitionAnimation(VC)
                         self.navigationController?.popViewController(animated: false)
                         self.tabBarController?.selectedIndex = 0
                     }
                 }
+                
             }
         })
     }
+            
     // MARK: - @IBAction Edit.
     @IBAction func onTapEdit(_ sender: UIButton) {
         setUpUIForEditing()
@@ -1254,5 +1292,76 @@ extension AVAsset {
 extension CMTime {
     var scaled : CMTime {
         return self.convertScale(60000, method: CMTimeRoundingMethod.roundAwayFromZero)
+    }
+}
+
+extension RecordVC {
+    func visualizationViewSetup() {
+        self.audioVisualizationViewModel.askAudioRecordingPermission()
+
+        self.audioVisualizationViewModel.audioMeteringLevelUpdate = { [weak self] meteringLevel in
+            guard let self = self, self.audioVisualizationView.audioVisualizationMode == .write else {
+                return
+            }
+            self.meteringLevels.append(meteringLevel)
+//            self.audioVisualizationView.add(meteringLevel: meteringLevel)
+        }
+
+        self.audioVisualizationViewModel.audioDidFinish = { [weak self] in
+            self?.currentVisualizationState = .recorded
+            self?.audioVisualizationView.stop()
+        }
+    }
+    
+    func visualizationViewControlls() {
+        switch self.currentVisualizationState {
+        case .ready:
+            self.currentVisualizationState = .recording
+            self.audioVisualizationViewModel.startRecording { [weak self] soundRecord, error in
+                if let error = error {
+                 //   self?.showAlert(with: error)
+                    print(error)
+                    return
+                }
+
+                self?.currentVisualizationState = .recording
+
+                self?.chronometer = Chronometer()
+                self?.chronometer?.start()
+            }
+        case .recording:
+            self.chronometer?.stop()
+            self.chronometer = nil
+
+            self.audioVisualizationViewModel.currentAudioRecord!.meteringLevels = self.audioVisualizationView.scaleSoundDataToFitScreen()
+            self.audioVisualizationView.audioVisualizationMode = .read
+
+            do {
+                try self.audioVisualizationViewModel.stopRecording()
+                self.currentVisualizationState = .recorded
+            } catch {
+                self.currentVisualizationState = .ready
+             //   self.showAlert(with: error)
+            }
+        case .recorded, .paused:
+            do {
+                let duration = try self.audioVisualizationViewModel.startPlaying()
+                self.currentVisualizationState = .playing
+                self.audioVisualizationView.meteringLevels = self.audioVisualizationViewModel.currentAudioRecord!.meteringLevels
+                self.audioVisualizationView.play(for: duration)
+            } catch {
+                self.showAlert(with: error)
+            }
+        case .playing:
+            do {
+                try self.audioVisualizationViewModel.pausePlaying()
+                self.currentVisualizationState = .paused
+                self.audioVisualizationView.pause()
+            } catch {
+              //  self.showAlert(with: error)
+            }
+        default:
+            break
+        }
     }
 }

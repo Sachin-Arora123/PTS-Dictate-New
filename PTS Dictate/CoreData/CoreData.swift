@@ -32,11 +32,9 @@ class CoreData: NSObject {
     var archiveFileDays = 1 // 1 - day default
     var uploadViaWifi = 0 // 1 - true & 0 - false
     var sleepModeOverride = 0 // 1 - true & 0 - false
-    
     var microSensitivityValue : Double = 1.0
     var fileName : String = ""
     var userInfo = [String]()
-    var comments: [String:String] = [:] // [fileName:Comment]
     var audioFiles: [AudioFile] = [] {
         didSet {
             AudioFiles.shared.audioFiles = audioFiles
@@ -101,7 +99,6 @@ class CoreData: NSObject {
         newData.setValue(sleepModeOverride, forKey: "sleepModeOverride")
         newData.setValue(microSensitivityValue, forKey: "microSensitivityValue")
         newData.setValue(fileName, forKey: "fileName")
-        newData.setValue(comments, forKey: "comments")
         newData.setValue(audioFiles, forKey: "audioFiles")
         do {
             try context.save()
@@ -210,11 +207,6 @@ class CoreData: NSObject {
                         self.microSensitivityValue = microSensitivityValue
                         print("data get microSensitivityValue \(microSensitivityValue)")
                     }
-//                    if let audioFiles = result.value(forKey: "audioFiles") as? [AudioFile] {
-//                        self.audioFiles = audioFiles
-//                        print("data get audio files \(audioFiles)")
-//                    }
-                    
                     guard let audioFiles = result.value(forKey: "audioFiles") as? [AudioFile] else {
                         self.audioFiles = []
                         print("Failed to load audio files from core data")
@@ -256,7 +248,6 @@ class CoreData: NSObject {
         microSensitivityValue = 1.0
         userInfo.removeAll()
         fileName = ""
-        comments = [:]
         audioFiles = []
         
         if !self.isRemeberMe{

@@ -14,90 +14,120 @@ class UploadProgressVC: BaseViewController {
     @IBOutlet weak var viewNoUpload: UIView!
     
     // MARK: Properties
-//    var uploadingQueue: [String]? {
-//        // getting the value from exiting view controller's variable
-//        get {
-//            return (self.tabBarController!.viewControllers![0] as! ExistingVC).uploadingQueue
-//        }
-//        // assign the new value to this view controller's variable
-//        set {
-//            (self.tabBarController!.viewControllers![0] as! ExistingVC).uploadingQueue = newValue ?? []
-//            self.files = newValue ?? []
-//        }
-//    }
     
     var files: [String] = []
-    
-    var currentUploadingFile: Int = 0
+    var inProgressFiles: [String] = []
+    var currentUploadingFile: Int = Int(){
+        didSet {
+            self.uploadFiles(file: files[currentUploadingFile])
+            ExistingViewModel.shared.uploadingInProgress = true
+            if currentUploadingFile == files.count - 1 {
+                ExistingViewModel.shared.uploadingQueue = []
+                ExistingViewModel.shared.uploadingInProgress = false
+            }
+        }
+    }
     // MARK: View Life-Cycle.
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        tableView.delegate = self
-        tableView.dataSource = self
-        files =  ExistingViewModel.shared.uploadingQueue
+        setUpUI()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 //        self.tabBarController?.navigationItem.hidesBackButton = true
+        let uploadingInProgress = ExistingViewModel.shared.uploadingInProgress
+        
+        if !uploadingInProgress {
+            setUpUI()
+        }
+    }
+    
+    func setUpUI() {
+        tableView.delegate = self
+        tableView.dataSource = self
         self.tabBarController?.navigationItem.leftBarButtonItem = nil
+        files = ExistingViewModel.shared.uploadingQueue
         setTitleWithImage("Uploads", andImage: UIImage(named: "settings_upload.png") ?? UIImage())
         if files.count > 0 {
             tableView.isHidden = false
-            viewNoUpload.isHidden =  true
-            uploadFiles()
+            viewNoUpload.isHidden = true
+            for file in files {
+                UpdateAudioFile.uploadingInProgress(true).update(audioName: file)
+            }
             self.tableView.reloadData()
+            currentUploadingFile = 0
+            
         } else {
             tableView.isHidden = true
             viewNoUpload.isHidden = false
         }
     }
-    
-    fileprivate func uploadFiles() {
-        //        let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-                //        for file in totalFilesSelected {
-                //            let completePath = directoryPath.absoluteString + file
-                //            let url = URL(string: completePath)
-                //            self.existingViewModel.uploadAudio(userName: CoreData.shared.userName, toUser: "pts", emailNotify: false, fileUrl: url!, fileName: file, description: AudioFiles.shared.getAudioComment(name: file))
-                //        }
-//        if files != nil {
-//            while currentUploadingFile != files.count {
-                let file = files[currentUploadingFile]
-                let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-                let completePath = directoryPath.absoluteString + file
-                let url = URL(string: completePath)
-                ExistingViewModel.shared.uploadAudio(userName: CoreData.shared.userName, toUser: "pts", fileUrl: url!, fileName: file, description: AudioFiles.shared.getAudioComment(name: file)) {
-                    print("file uploaded")
-                    self.currentUploadingFile += 1
-                    UpdateAudioFile.isUploaded(true).update(audioName: file)
-                } failure: { error in
-                    print(error)
-                }
-//            }
-//        }
+    fileprivate func uploadFiles(file: String) {
+            let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            let completePath = directoryPath.absoluteString + file
+            let url = URL(string: completePath)
+            ExistingViewModel.shared.uploadAudio(userName: CoreData.shared.userId, toUser: "pts", fileUrl: url!, fileName: file, description: AudioFiles.shared.getAudioComment(name: file)) {
+                print("file uploaded")
+                UpdateAudioFile.isUploaded(true).update(audioName: file)
+                UpdateAudioFile.uploadingInProgress(false).update(audioName: file)
+                let date = Date().getFormattedDateString()
+                UpdateAudioFile.uploadedAt(date).update(audioName: file)
+                self.tableView.reloadData()
+                if self.currentUploadingFile < self.files.count - 1 { self.currentUploadingFile += 1 }
+            } failure: { error in
+                print(error)
+                UpdateAudioFile.isUploaded(false).update(audioName: file)
+                self.currentUploadingFile = self.files.count - 1
+                CommonFunctions.alertMessage(view: self, title: "PTS Dictate", msg: "Can't upload audio files at the moment, Please try again after some time.", btnTitle: "OK")
+                self.tableView.reloadData()
+            }
     }
+    
+    func checkFileUploadedOrNot(name: String) -> Bool {
+        let audioFiles = AudioFiles.shared.audioFiles
+        for audioFile in audioFiles where audioFile.name == name {
+            return audioFile.fileInfo?.isUploaded ?? false
+        }
+        return false
+    }
+    
+    func checkUploadingInProgress(name: String) -> Bool {
+        let audioFiles = AudioFiles.shared.audioFiles
+        for audioFile in audioFiles where audioFile.name == name {
+            return audioFile.fileInfo?.uploadingInProgress ?? false
+        }
+        return false
+    }
+    
 }
 
 // MARK: Extension for tableView delegate & dataSource methods.
 extension UploadProgressVC: UITableViewDelegate,UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return files.count
+        if files.count > 0 {
+            tableView.isHidden = false
+            viewNoUpload.isHidden = true
+            return files.count
+            
+        } else {
+            tableView.isHidden = true
+            viewNoUpload.isHidden = false
+            return 0
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "UploadListCell", for: indexPath) as! UploadListCell
-//        if let uploadingQueue = uploadingQueue {
+        if files.count > 0 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "UploadListCell", for: indexPath) as! UploadListCell
             let name = files[indexPath.row]
-            let audioFiles = AudioFiles.shared.audioFiles
-            var isUploaded = false
-            let inProgress = indexPath.row == currentUploadingFile ? true : false
-            for audioFile in audioFiles where audioFile.name == name{
-                isUploaded = audioFile.fileInfo?.isUploaded ?? false
-            }
+            let isUploaded = checkFileUploadedOrNot(name: name)
+            let inProgress = checkUploadingInProgress(name: name)
             cell.setData(name: name, isUploaded: isUploaded, inProgress: inProgress)
-//        }
-        return cell
+            return cell
+        }
+        return UITableViewCell()
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension

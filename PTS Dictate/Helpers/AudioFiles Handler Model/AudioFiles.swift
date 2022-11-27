@@ -13,8 +13,8 @@ enum UpdateAudioFile {
     case isUploaded(Bool)
     case archivedDays(Int)
     case canEdit(Bool)
-    case createdAt(Date)
-    
+    case uploadedAt(String)
+    case uploadingInProgress(Bool)
     func update(audioName: String) {
         let instance = AudioFiles.shared
         var audio = 0
@@ -32,8 +32,10 @@ enum UpdateAudioFile {
             instance.audioFiles[audio].fileInfo?.archivedDays = newValue
         case .canEdit(let newValue):
             instance.audioFiles[audio].fileInfo?.canEdit = newValue
-        case .createdAt(let newValue):
-            instance.audioFiles[audio].fileInfo?.createdAt = newValue
+        case .uploadedAt(let newValue):
+            instance.audioFiles[audio].fileInfo?.uploadedAt = newValue
+        case .uploadingInProgress(let newValue):
+            instance.audioFiles[audio].fileInfo?.uploadingInProgress = newValue
         }
         instance.updateAudioFilesOnCoreData()
     }
@@ -42,7 +44,9 @@ enum UpdateAudioFile {
 class AudioFiles {
     
     var audioFiles: [AudioFile] = []
-
+    private let archiveFile = CoreData.shared.archiveFile
+    private var archiveFileDays = CoreData.shared.archiveFileDays
+    
     static var shared: AudioFiles{
         struct singleTon {
             static let instance = AudioFiles()
@@ -57,13 +61,13 @@ class AudioFiles {
         updateAudioFilesOnCoreData()
     }
     
-    func saveNewAudioFile(name: String) {
-        AudioFiles.shared.audioFiles.append(AudioFile(name: name, fileInfo: AudioFileInfo(comment: "", isUploaded: false, archivedDays: 1, canEdit: false, createdAt: Date())))
+    func saveNewAudioFile(name: String, autoSaved: Bool = false, meteringLevels: [Float]) {
+        AudioFiles.shared.audioFiles.append(AudioFile(name: name, fileInfo: AudioFileInfo(comment: nil, isUploaded: false, archivedDays: archiveFile == 1 ? archiveFileDays : 0, canEdit: false, uploadedAt: nil, uploadingInProgress: false, autoSaved: autoSaved, meteringLevels: meteringLevels)))
         updateAudioFilesOnCoreData()
     }
     
-    func saveNewAudioFile(name: String, comment: String) {
-        AudioFiles.shared.audioFiles.append(AudioFile(name: name, fileInfo: AudioFileInfo(comment: comment, isUploaded: false, archivedDays: 1, canEdit: false, createdAt: Date())))
+    func saveNewAudioFile(name: String, comment: String?, meteringLevels: [Float]) {
+        AudioFiles.shared.audioFiles.append(AudioFile(name: name, fileInfo: AudioFileInfo(comment: comment, isUploaded: false, archivedDays: archiveFile == 1 ? archiveFileDays : 0, canEdit: false, uploadedAt: nil, uploadingInProgress: false, autoSaved: false, meteringLevels: meteringLevels)))
         updateAudioFilesOnCoreData()
     }
     
