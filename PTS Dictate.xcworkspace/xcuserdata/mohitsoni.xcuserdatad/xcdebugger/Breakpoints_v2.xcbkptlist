@@ -7,40 +7,72 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "73284639-39DF-45BA-9D18-4C29E16A657C"
+            uuid = "1C2866ED-A5EE-42B5-A9B3-592C97F28F75"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PTS Dictate/CoreData/CoreData.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "215"
+            endingLineNumber = "215"
+            landmarkName = "getdata()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "ABF1C48F-360F-4D79-BAE5-F056F469C572"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PTS Dictate/View controllers/TabbarVC/ExistingVC/ExistingVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "568"
-            endingLineNumber = "568"
-            landmarkName = "tableView(_:cellForRowAt:)"
+            startingLineNumber = "70"
+            endingLineNumber = "70"
+            landmarkName = "viewWillAppear(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "B017B1F3-5741-4C2E-A048-50025CC0B8F3"
+            uuid = "30A88329-FCB1-4486-B001-7B1DBB2ABC5E"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PTS Dictate/View controllers/TabbarVC/ExistingVC/ExistingVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "589"
-            endingLineNumber = "589"
-            landmarkName = "tableView(_:didSelectRowAt:)"
+            startingLineNumber = "403"
+            endingLineNumber = "403"
+            landmarkName = "playAudio()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "758567A1-65DC-476F-93E5-ED35F8856666"
+            uuid = "C70C0390-1101-4281-B06A-2912F1DFDFF4"
             shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PTS Dictate/View controllers/TabbarVC/ExistingVC/ExistingVC.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "385"
+            endingLineNumber = "385"
+            landmarkName = "playAudio()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "C60921B5-90FC-4DBF-BB12-833A7C0D6D07"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PTS Dictate/View controllers/TabbarVC/ExistingVC/ExistingVC.swift"
@@ -48,55 +80,55 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "583"
             endingLineNumber = "583"
-            landmarkName = "tableView(_:cellForRowAt:)"
+            landmarkName = "tableView(_:didSelectRowAt:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "617450FB-1028-467C-A0D3-693BA6D40D08"
+            uuid = "64907E63-D9CC-4CB3-9F90-0399B083D2F4"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PTS Dictate/View controllers/TabbarVC/ExistingVC/ExistingVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "619"
-            endingLineNumber = "619"
-            landmarkName = "getTimeDuration(filePath:)"
+            startingLineNumber = "152"
+            endingLineNumber = "152"
+            landmarkName = "play(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "94643D17-DA69-427A-BC95-495921AC2445"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PTS Dictate/View controllers/TabbarVC/ExistingVC/ExistingVC.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "196"
-            endingLineNumber = "196"
-            landmarkName = "timerDidUpdateMeter()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "6A15E534-AA38-406A-8051-4101E8F4AB05"
+            uuid = "7CAB38BC-37AF-4E79-9A56-50412EA20F62"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PTS Dictate/View controllers/TabbarVC/ExistingVC/ExistingVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "198"
-            endingLineNumber = "198"
-            landmarkName = "timerDidUpdateMeter()"
+            startingLineNumber = "165"
+            endingLineNumber = "165"
+            landmarkName = "play(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "9B5AE063-1AC5-4D64-9FB2-229FD7C0A45D"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PTS Dictate/View controllers/TabbarVC/ExistingVC/ExistingVC.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "415"
+            endingLineNumber = "415"
+            landmarkName = "playAudio()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

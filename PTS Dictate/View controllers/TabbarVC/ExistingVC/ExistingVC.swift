@@ -96,6 +96,7 @@ class ExistingVC: BaseViewController {
         tableView.contentInset =  UIEdgeInsets(top: 0, left: 0, bottom: 25, right: 0)
         //        totalFiles = self.findFilesWith(fileExtension: "m4a")
         totalFiles = self.getSortedAudioList()
+        self.lblFileName.text = self.totalFiles[0]
         setRightBarItem()
     }
     
@@ -147,7 +148,7 @@ class ExistingVC: BaseViewController {
             audioPlayer.prepareToPlay()
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
             try AVAudioSession.sharedInstance().setActive(true)
-            if audioPlayer.isPlaying{
+            if isPlaying{
                 if index != self.playingCellIndex {
                     audioPlayer.stop()
                     resetSoundWaves()
@@ -163,8 +164,10 @@ class ExistingVC: BaseViewController {
             }else{
                 self.playingCellIndex = index
                 self.isPlaying = true
-                audioPlayer =  try AVAudioPlayer(contentsOf: completePathURL!)
-                audioPlayer.delegate = self
+                if pausedTime == nil{
+                    audioPlayer =  try AVAudioPlayer(contentsOf: completePathURL!)
+                    audioPlayer.delegate = self
+                }
                 audioPlayer.play()
                 //                self.mediaProgressView.audioURL = completePathURL!
                 self.mediaProgressView.meteringLevels = meteringLevels
@@ -380,7 +383,6 @@ class ExistingVC: BaseViewController {
         }
         do {
             let index = playingMediaIndex
-            let cell  = tableView.cellForRow(at: IndexPath(row: playingMediaIndex, section: 0)) as? ExistingFileCell
             self.lblFileName.text = self.totalFiles[index]
             self.lblPlayerStatus.text = "Now Playing"
             let audioFile = getFileInfo(name: self.totalFiles[index])
@@ -397,7 +399,7 @@ class ExistingVC: BaseViewController {
             audioPlayer.prepareToPlay()
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
             try AVAudioSession.sharedInstance().setActive(true)
-            if audioPlayer.isPlaying{
+            if isPlaying{
                 if index != self.playingCellIndex {
                     audioPlayer.stop()
                     resetSoundWaves()
@@ -411,8 +413,10 @@ class ExistingVC: BaseViewController {
                 self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
             }else{
                 self.playingCellIndex = index
-                audioPlayer =  try AVAudioPlayer(contentsOf: completePathURL!)
-                audioPlayer.delegate = self
+                if pausedTime == nil{
+                    audioPlayer =  try AVAudioPlayer(contentsOf: completePathURL!)
+                    audioPlayer.delegate = self
+                }
                 audioPlayer.play()
                 //                self.mediaProgressView.audioURL = completePathURL!
                 self.mediaProgressView.meteringLevels = meteringLevels
@@ -436,8 +440,6 @@ class ExistingVC: BaseViewController {
     
     private func controllAudioPlayer(controllerType: AudioControllers) {
         DispatchQueue.main.async {
-            self.audioPlayer.pause()
-            let currentTime = self.audioPlayer.currentTime
             switch controllerType {
             case .fastRewind:
                 self.fastBackwardByTime(timeVal: 3)
@@ -484,7 +486,6 @@ class ExistingVC: BaseViewController {
 extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if self.totalFiles.count > 0{
-            self.lblFileName.text = self.totalFiles[0] as? String
             self.tableView.isHidden = false
             self.viewBottomPlayer.isHidden = false
             self.viewNoRecordedFile.isHidden = true
@@ -586,6 +587,7 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
                 self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
             }
             self.playingCellIndex = -1
+            self.pausedTime = nil
             self.setUpWave(index: indexPath.row)
             self.lblPlayerStatus.text  = ""
             self.tableView.reloadData()
@@ -726,6 +728,7 @@ extension ExistingVC: AVAudioPlayerDelegate {
             self.resetSoundWaves()
             self.setUpWave(index: playingCellIndex)
             self.playingCellIndex = -1
+            self.pausedTime = nil
             self.tableView.reloadData()
             print("Playing Completed")
         }

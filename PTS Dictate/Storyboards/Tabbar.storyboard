@@ -409,7 +409,7 @@
                         <outlet property="btnForwardTrimEnd" destination="aYN-YW-iRC" id="cog-oO-6pp"/>
                         <outlet property="btnPlay" destination="R31-zh-aR2" id="NbJ-E4-kKG"/>
                         <outlet property="btnUpload" destination="3UI-2t-f5g" id="Fcy-jr-yts"/>
-                        <outlet property="lblFileName" destination="Y0A-3u-4f4" id="J2d-hd-yd7"/>
+                        <outlet property="lblFileName" destination="Y0A-3u-4f4" id="f5D-IO-4Mn"/>
                         <outlet property="lblPlayerStatus" destination="i6l-41-bJY" id="crp-ia-BZL"/>
                         <outlet property="lblPlayingTime" destination="X7J-4a-Y4P" id="QRC-73-L3Y"/>
                         <outlet property="lblTotalTime" destination="ddW-QM-PhP" id="mCB-mP-wFb"/>
