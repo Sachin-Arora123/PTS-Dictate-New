@@ -138,24 +138,118 @@ class RecordVC: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        //UI setup
+        
+        //setup microphone senstivity tracking view
         audioRangeMeterSetUp()
+        
+        //hide navigation bar left button.
         hideLeftButton()
+        
+        //set navigation bar title
         setTitleWithImage("Record", andImage: UIImage(named: "title_record_normal.png") ?? UIImage())
+        
+        //Setup some other UI components
         setUpUI()
+        
+        //Setup control button's initial state.
         self.initiallyBtnStateSetup()
+        
+        //Hide bottom view(included save,edit,descard)
         self.viewBottomButton.isHidden = true
-        //setup file name
+        
+        //setup file name and fileurl before recording
         self.setupFileName()
-        isRecording = false
-
+        
+        //visulization view setup
         visualizationViewSetup()
 
+        //setup audio recorder
+        setupRecorder()
+        
+        //If comes for editing the audio from existing dictations screen, setup the UI according to that.
         if editFromExiting {
             setUpUIForEditing()
         }
         
-        setupRecorder()
+        //isRecording flag
+        isRecording = false
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        audioRecorder = nil
+        self.tabBarController?.setTabBarHidden(false, animated: false)
+    }
+    
+    deinit {
+      NotificationCenter.default.removeObserver(self, name: Notification.Name("showBottomBtnView"), object: nil)
+      NotificationCenter.default.removeObserver(self)
+//      stopwatch.stop()
+    }
+    
+    // MARK: - View life cycle end.
+    // MARK: - ==== Setup components starts here ====
+    func audioRangeMeterSetUp() {
+        self.customRangeBar.backgroundColor = .white
+        self.customRangeBar.numBars = 30
+        self.customRangeBar.minLimit = -100
+        self.customRangeBar.maxLimit = -10
+        self.customRangeBar.normalBarColor = hexStringToUIColor(hex: "F74118")
+        self.customRangeBar.warningBarColor = UIColor(red: 105.0/255.0, green: 105.0/255.0, blue: 105.0/255.0, alpha: 1.0)
+        self.customRangeBar.dangerBarColor = UIColor(red: 211.0/255.0, green: 211.0/255.0, blue: 211.0/255.0, alpha: 1.0)
+        self.customRangeBar.outerBorderColor = .gray
+        self.customRangeBar.innerBorderColor = .black
+        self.customRangeBar.alpha = 1.0
+        self.customRangeBar.value = -160
+    }
+    
+    func setUpUI(){
+        segmentControl.isHidden = true
+        stackView.isHidden = true
+        stackViewHeight.constant = 0
+        viewPlayerTiming.isHidden = true
+        insertTimer.isHidden = true
+        segmentHeight.constant = 0
+        viewProgress.isHidden = true
+        progressViewHeight.constant = 45
+    }
+    
+    func initiallyBtnStateSetup(){
+        btnStop.isUserInteractionEnabled = false
+        btnPlay.isUserInteractionEnabled = false
+        btnForwardTrim.isUserInteractionEnabled = false
+        btnForwardTrimEnd.isUserInteractionEnabled = false
+        btnBackwardTrim.isUserInteractionEnabled = false
+        btnBackwardTrimEnd.isUserInteractionEnabled = false
+        lblPlayerStatus.text = ""
+    }
+    
+    func setupFileName(){
+        let currentDate = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let currentDateStr = dateFormatter.string(from: currentDate)
+        let convertedDate = dateFormatter.date(from: currentDateStr) ?? Date()
+        let fileFormatString = CoreData.shared.dateFormat
+
+        if fileFormatString.count == 0 {
+            dateFormatter.dateFormat = "ddMMyyyy"
+        }else{
+            dateFormatter.dateFormat = fileFormatString.replacingOccurrences(of: "mm", with: "MM")
+        }
+
+        let convertedDateStr = "\(dateFormatter.string(from: convertedDate))"
+
+        let nameToShow = (CoreData.shared.fileName.count != 0) ? CoreData.shared.fileName : CoreData.shared.profileName
+
+        //need to check recording file count here as well
+        self.audioFileURL = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)"
+        self.audioFileName = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)" + ".m4a"
+        self.lblFNameValue.text = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)" + ".m4a"
+        self.lblFSizeValue.text = "0.00 Mb"
+        
+        //setup file url as well.
+        self.fileURL1 = Constants.documentDir.appendingPathComponent((self.lblFNameValue.text ?? "") + ".m4a")
     }
     
     func setupRecorder(){
@@ -192,18 +286,7 @@ class RecordVC: BaseViewController {
         }
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        audioRecorder = nil
-        self.tabBarController?.setTabBarHidden(false, animated: false)
-    }
-    
-    deinit {
-      NotificationCenter.default.removeObserver(self, name: Notification.Name("showBottomBtnView"), object: nil)
-      NotificationCenter.default.removeObserver(self)
-//      stopwatch.stop()
-    }
-    
+    // MARK: - Handle app terminate notification
     @objc func applicationWillTerminate(notification: Notification) {
         print("Notification received.")
 
@@ -224,35 +307,12 @@ class RecordVC: BaseViewController {
             if success{
                 print(self.meteringLevels)
                 AudioFiles.shared.saveNewAudioFile(name: self.audioFileName, autoSaved: true, meteringLevels: self.meteringLevels)
-                print("Bg success saved")
             }
         }
     }
     
-    // MARK: - UISetup
-    func setUpUI(){
-        segmentControl.isHidden = true
-        stackView.isHidden = true
-        stackViewHeight.constant = 0
-        viewPlayerTiming.isHidden = true
-        insertTimer.isHidden = true
-        segmentHeight.constant = 0
-        viewProgress.isHidden = true
-        progressViewHeight.constant = 45
-//        setUpWave()
-    }
-    
+    // MARK: - Setup audio waves for the recorded audio
     func setUpWave() {
-//        self.playerWaveView.meteringLevelBarWidth = 1.0
-//        self.playerWaveView.meteringLevelBarInterItem = 1.0
-//        self.playerWaveView.meteringLevelBarCornerRadius = 0.0
-//        self.playerWaveView.meteringLevelBarSingleStick = false
-//        self.playerWaveView.gradientStartColor = #colorLiteral(red: 0.6509803922, green: 0.8235294118, blue: 0.9529411765, alpha: 1)
-//        self.playerWaveView.gradientEndColor = #colorLiteral(red: 0.2273887992, green: 0.2274999917, blue: 0.9748747945, alpha: 1)
-//        self.playerWaveView.add(meteringLevel: 0.6)
-//        self.playerWaveView.audioVisualizationMode = .read
-//        self.playerWaveView.meteringLevels = self.meteringLevels
-        
         self.playerWaveView.meteringLevelBarWidth = 1.0
         self.playerWaveView.meteringLevelBarInterItem = 2.5
         self.playerWaveView.meteringLevelBarCornerRadius = 0.0
@@ -263,36 +323,7 @@ class RecordVC: BaseViewController {
         self.playerWaveView.audioVisualizationMode = .read
     }
     
-    // MARK: - File Name Setup.
-    func setupFileName(){
-        let currentDate = Date()
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        let currentDateStr = dateFormatter.string(from: currentDate)
-        let convertedDate = dateFormatter.date(from: currentDateStr) ?? Date()
-        let fileFormatString = CoreData.shared.dateFormat
-
-        if fileFormatString.count == 0 {
-            dateFormatter.dateFormat = "ddMMyyyy"
-        }else{
-            dateFormatter.dateFormat = fileFormatString.replacingOccurrences(of: "mm", with: "MM")
-        }
-
-        let convertedDateStr = "\(dateFormatter.string(from: convertedDate))"
-
-        let nameToShow = (CoreData.shared.fileName.count != 0) ? CoreData.shared.fileName : CoreData.shared.profileName
-
-        //need to check recording file count here as well
-        self.audioFileURL = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)"
-        self.audioFileName = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)" + ".m4a"
-        self.lblFNameValue.text = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)" + ".m4a"
-        self.lblFSizeValue.text = "0.00 Mb"
-        
-        //setup file url as well.
-        self.fileURL1 = Constants.documentDir.appendingPathComponent((self.lblFNameValue.text ?? "") + ".m4a")
-    }
-    
-    // MARK: - Bottom Button View.
+    // MARK: - Bottom Button's View.
     @objc func showBottomView() {
         btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
         btnRecord.isUserInteractionEnabled = false
@@ -309,17 +340,6 @@ class RecordVC: BaseViewController {
         lblPlayerStatus.text = "Stopped"
     }
     
-    // MARK: - Initially button state setup.
-    func initiallyBtnStateSetup(){
-        btnStop.isUserInteractionEnabled = false
-        btnPlay.isUserInteractionEnabled = false
-        btnForwardTrim.isUserInteractionEnabled = false
-        btnForwardTrimEnd.isUserInteractionEnabled = false
-        btnBackwardTrim.isUserInteractionEnabled = false
-        btnBackwardTrimEnd.isUserInteractionEnabled = false
-        lblPlayerStatus.text = ""
-    }
-    
     // MARK: - @IBActions.
     @IBAction func onTapRecord(_ sender: UIButton) {
         switch recorderState {
@@ -327,18 +347,17 @@ class RecordVC: BaseViewController {
                 self.recorder.startRecording(fileName: (self.lblFNameValue.text ?? ""))
                 self.recorderState = .recording
                 stopwatch.start()
-    //            self.recordTimer = Timer.scheduledTimer(timeInterval: 0.1, target:self, selector:#selector(self.updateAudioMeter(timer:)), userInfo:nil, repeats:true)
+
                 self.lblPlayerStatus.text = "Recording"
                 self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: .normal)
                 self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: .normal)
                 self.btnStop.isUserInteractionEnabled = true
-                print("recording")
             
             case .recording:
                 self.recorder.pauseRecording()
-                stopwatch.pause()
-//            self.audioFileURL = self.recorder.audioFilename
                 self.recorderState = .pause
+                stopwatch.pause()
+            
                 lblPlayerStatus.text = "Paused"
                 btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: .normal)
                 btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
@@ -347,7 +366,6 @@ class RecordVC: BaseViewController {
                 btnPlay.isUserInteractionEnabled = true
                 btnBackwardTrim.isUserInteractionEnabled = true
                 btnBackwardTrimEnd.isUserInteractionEnabled = true
-                print("pause")
                 self.setUpStopAndPauseUI()
                 self.btnStop.isUserInteractionEnabled = true
             case .pause:
@@ -363,8 +381,8 @@ class RecordVC: BaseViewController {
                 self.recorderState = .recording
                 self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: .normal)
                 self.btnStop.isUserInteractionEnabled = true
-                print("resume")
-            }
+        }
+        
         isRecording = true
         visualizationViewControlls()
     }
@@ -420,29 +438,15 @@ class RecordVC: BaseViewController {
         viewProgress.isHidden = true
         stackView.isHidden = true
         playerWaveView.isHidden = false
-        setUpWave()
         bookMarkView.isHidden = true
         viewClear.isHidden = true
         viewPlayerTiming.isHidden = false
         parentStackTop.constant = 60
         currentPlayingTime.text = self.lblTime.text
         playerTotalTime.text = self.lblTime.text
+        
         visualizationViewControlls()
-    }
-    
-    // MARK: - Audio meter range setup.
-    func audioRangeMeterSetUp() {
-        self.customRangeBar.backgroundColor = .white
-        self.customRangeBar.numBars = 30
-        self.customRangeBar.minLimit = -100
-        self.customRangeBar.maxLimit = -10
-        self.customRangeBar.normalBarColor = hexStringToUIColor(hex: "F74118")
-        self.customRangeBar.warningBarColor = UIColor(red: 105.0/255.0, green: 105.0/255.0, blue: 105.0/255.0, alpha: 1.0)
-        self.customRangeBar.dangerBarColor = UIColor(red: 211.0/255.0, green: 211.0/255.0, blue: 211.0/255.0, alpha: 1.0)
-        self.customRangeBar.outerBorderColor = .gray
-        self.customRangeBar.innerBorderColor = .black
-        self.customRangeBar.alpha = 1.0
-        self.customRangeBar.value = 0.0
+        setUpWave()
     }
     
             
@@ -923,7 +927,33 @@ class RecordVC: BaseViewController {
                 
                 let decibels = Float(recorder.peakPower(forChannel: 0))
 //                let value = [3.5, 3.4, 3.3, 3.2, 3.1, 3.0]
+                
+                //will get the value and use it later. Using 3.5 constant for now.
+//                let microPhoneSensitivityIndex = CoreData.shared.microSensitivityValue
+//                print(microPhoneSensitivityIndex)
+//                int value;
+//
+//                if (microPhoneSensitivityIndex == 5) {
+//                    value = 3.5;
+//                }
+//                else if (microPhoneSensitivityIndex == 4) {
+//                    value = 3.4;
+//                }
+//                else if (microPhoneSensitivityIndex == 3) {
+//                    value = 3.3;
+//                }
+//                else if (microPhoneSensitivityIndex == 2) {
+//                    value = 3.2;
+//                }
+//                else if (microPhoneSensitivityIndex == 1) {
+//                    value = 3.1;
+//                }
+//                else if (microPhoneSensitivityIndex == 0) {
+//                    value = 3.0;
+//                }
+                
                 self.customRangeBar.value = decibels * 3.5
+                print("self.customRangeBar.value ===== \(self.customRangeBar.value)")
              }
         }
     }
