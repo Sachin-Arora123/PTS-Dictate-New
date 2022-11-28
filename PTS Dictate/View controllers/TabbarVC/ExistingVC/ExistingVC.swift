@@ -97,6 +97,7 @@ class ExistingVC: BaseViewController {
         //        totalFiles = self.findFilesWith(fileExtension: "m4a")
         totalFiles = self.getSortedAudioList()
         self.lblFileName.text = self.totalFiles[0]
+        self.lblTotalTime.text = self.getTimeDuration(filePath: self.totalFiles[0])
         setRightBarItem()
     }
     
@@ -588,6 +589,7 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
             }
             self.playingCellIndex = -1
             self.pausedTime = nil
+            self.lblTotalTime.text = self.getTimeDuration(filePath: self.totalFiles[indexPath.row])
             self.setUpWave(index: indexPath.row)
             self.lblPlayerStatus.text  = ""
             self.tableView.reloadData()
@@ -725,6 +727,7 @@ extension ExistingVC: AVAudioPlayerDelegate {
         if flag {
             self.lblPlayerStatus.text  = ""
             self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+            self.audioPlayer.stop()
             self.resetSoundWaves()
             self.setUpWave(index: playingCellIndex)
             self.playingCellIndex = -1
@@ -787,12 +790,14 @@ extension ExistingVC{
         var time: TimeInterval = audioPlayer.currentTime
         time += timeVal
         if time > audioPlayer.duration {
-           if audioPlayer.isPlaying {
+           if isPlaying {
                 audioPlayer.stop()
             }
         } else {
-            audioPlayer.pause()
-            self.mediaProgressView.pause()
+            if isPlaying {
+                audioPlayer.pause()
+                self.mediaProgressView.pause()
+            }
             audioPlayer.currentTime = time
             audioPlayer.play()
             let min = Int(audioPlayer.currentTime / 60)
@@ -809,10 +814,14 @@ extension ExistingVC{
         var time: TimeInterval = audioPlayer.currentTime
         time -= timeVal
         if time < 0 {
-            audioPlayer.stop()
+            if isPlaying {
+                audioPlayer.stop()
+            }
         } else {
-            audioPlayer.pause()
-            self.mediaProgressView.pause()
+            if isPlaying {
+                audioPlayer.pause()
+                self.mediaProgressView.pause()
+            }
             audioPlayer.currentTime = time
             audioPlayer.play()
             let min = Int(audioPlayer.currentTime / 60)

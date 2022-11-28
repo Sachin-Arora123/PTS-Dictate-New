@@ -245,7 +245,7 @@
                                                     <constraint firstAttribute="width" constant="40" id="khl-FT-bjX"/>
                                                 </constraints>
                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                                <state key="normal" backgroundImage="existing_rewind_normal"/>
+                                                <state key="normal" backgroundImage="existing_backward_fast_normal"/>
                                                 <connections>
                                                     <action selector="audioControllersTapped:" destination="q4s-u4-31I" eventType="touchUpInside" id="lsa-jS-sVk"/>
                                                 </connections>
@@ -1279,6 +1279,7 @@
         <image name="delete_btn_normal" width="120" height="40"/>
         <image name="discard_btn_normal" width="120" height="40"/>
         <image name="existing_backward_fast_disable" width="100" height="100"/>
+        <image name="existing_backward_fast_normal" width="100" height="100"/>
         <image name="existing_controls_play_btn_diable" width="100" height="100"/>
         <image name="existing_controls_play_btn_normal" width="100" height="100"/>
         <image name="existing_forward_disable" width="256" height="256"/>
