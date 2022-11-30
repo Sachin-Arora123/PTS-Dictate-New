@@ -101,10 +101,11 @@ class RecordVC: BaseViewController {
     private var isCommentsMandotary:Bool {
         return CoreData.shared.commentScreenMandatory == 1 ?  true : false
     }
+    
     private lazy var stopwatch = Stopwatch(timeUpdated: { [weak self] timegap in
         guard let strongSelf = self else { return }
-        strongSelf.lblTime.text = strongSelf.timeString(from: timegap)
-        strongSelf.updateAudioMeter()
+         strongSelf.lblTime.text = strongSelf.timeString(from: timegap)
+       strongSelf.updateAudioMeter()
     })
     
     var editFromExiting: Bool {
@@ -118,17 +119,19 @@ class RecordVC: BaseViewController {
         }
     }
     
+    //Mohit New
     // MARK: Audio visualization view properties
-    private let audioVisualizationViewModel = AudioVisualizationViewModel()
-    private var chronometer: Chronometer?
-    private var meteringLevels: [Float] = []
-    private var currentVisualizationState: AudioVisualizationState = .ready {
-        didSet{
-            self.audioVisualizationView.audioVisualizationMode = self.currentVisualizationState.audioVisualizationMode
-        }
-    }
-    @IBOutlet private var audioVisualizationView: AudioVisualizationView!
-
+//    private let audioVisualizationViewModel = AudioVisualizationViewModel()
+//    private var chronometer: Chronometer?
+//    private var meteringLevels: [Float] = []
+//    private var currentVisualizationState: AudioVisualizationState = .ready {
+//        didSet{
+//            self.audioVisualizationView.audioVisualizationMode = self.currentVisualizationState.audioVisualizationMode
+//        }
+//    }
+//    @IBOutlet private var audioVisualizationView: AudioVisualizationView!
+    
+    
     // MARK: - View Life-Cycle.
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -138,7 +141,7 @@ class RecordVC: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         //setup microphone senstivity tracking view
         audioRangeMeterSetUp()
         
@@ -161,7 +164,7 @@ class RecordVC: BaseViewController {
         self.setupFileName()
         
         //visulization view setup
-        visualizationViewSetup()
+//        visualizationViewSetup()
 
         //setup audio recorder
         setupRecorder()
@@ -212,6 +215,7 @@ class RecordVC: BaseViewController {
         segmentHeight.constant = 0
         viewProgress.isHidden = true
         progressViewHeight.constant = 45
+                
     }
     
     func initiallyBtnStateSetup(){
@@ -244,7 +248,6 @@ class RecordVC: BaseViewController {
 
         //need to check recording file count here as well
         self.audioFileURL = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)"
-        self.audioFileName = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)" + ".m4a"
         self.lblFNameValue.text = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)" + ".m4a"
         self.lblFSizeValue.text = "0.00 Mb"
         
@@ -289,7 +292,6 @@ class RecordVC: BaseViewController {
     // MARK: - Handle app terminate notification
     @objc func applicationWillTerminate(notification: Notification) {
         print("Notification received.")
-
         if self.recorder.audioRecorder != nil {
             self.recorder.endRecording()
         }
@@ -298,32 +300,26 @@ class RecordVC: BaseViewController {
         stopwatch.stop()
         print("temp",tempAudioFileURL)
 //        UserDefaults.standard.set(audioFileURL, forKey: "terminatedRecording")
-        
+        CoreData.shared.fileCount += 1
         for asset in self.recorder.articleChunks {
             try! FileManager.default.removeItem(at: asset.url)
         }
-        
-        self.saveRecordedAudio() { (success) in
-            if success{
-                print(self.meteringLevels)
-                AudioFiles.shared.saveNewAudioFile(name: self.audioFileName, autoSaved: true, meteringLevels: self.meteringLevels)
-            }
-        }
     }
-    
+        
     // MARK: - Setup audio waves for the recorded audio
     func setUpWave() {
+        self.playerWaveView.isHidden = false
         self.playerWaveView.meteringLevelBarWidth = 1.0
         self.playerWaveView.meteringLevelBarInterItem = 2.5
         self.playerWaveView.meteringLevelBarCornerRadius = 0.0
         self.playerWaveView.meteringLevelBarSingleStick = false
         self.playerWaveView.gradientStartColor = #colorLiteral(red: 0.6509803922, green: 0.8235294118, blue: 0.9529411765, alpha: 1)
         self.playerWaveView.gradientEndColor = #colorLiteral(red: 0.2273887992, green: 0.2274999917, blue: 0.9748747945, alpha: 1)
-        self.playerWaveView.meteringLevels = meteringLevels
+//        self.playerWaveView.meteringLevels = meteringLevels
         self.playerWaveView.audioVisualizationMode = .read
     }
     
-    // MARK: - Bottom Button's View.
+    // MARK: - Bottom Button View.
     @objc func showBottomView() {
         btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
         btnRecord.isUserInteractionEnabled = false
@@ -339,64 +335,72 @@ class RecordVC: BaseViewController {
         CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
         lblPlayerStatus.text = "Stopped"
     }
+        
     
     // MARK: - @IBActions.
     @IBAction func onTapRecord(_ sender: UIButton) {
-        switch recorderState {
-            case .none:
-                self.recorder.startRecording(fileName: (self.lblFNameValue.text ?? ""))
-                self.recorderState = .recording
-                stopwatch.start()
 
-                self.lblPlayerStatus.text = "Recording"
-                self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: .normal)
-                self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: .normal)
-                self.btnStop.isUserInteractionEnabled = true
-            
-            case .recording:
-                self.recorder.pauseRecording()
-                self.recorderState = .pause
-                stopwatch.pause()
-            
-                lblPlayerStatus.text = "Paused"
-                btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: .normal)
-                btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-                btnBackwardTrim.setBackgroundImage(UIImage(named: "existing_rewind_normal"), for: .normal)
-                btnBackwardTrimEnd.setBackgroundImage(UIImage(named: "existing_backward_fast_normal"), for: .normal)
-                btnPlay.isUserInteractionEnabled = true
-                btnBackwardTrim.isUserInteractionEnabled = true
-                btnBackwardTrimEnd.isUserInteractionEnabled = true
-                self.setUpStopAndPauseUI()
-                self.btnStop.isUserInteractionEnabled = true
-            case .pause:
-                stopwatch.start()
-                self.setUpUI()
-                self.initiallyBtnStateSetup()
-                self.customRangeBar.isHidden = false
-                self.customRangeBarHeight.constant = 45
-                self.parentStackTop.constant = 35
-                lblPlayerStatus.text = "Recording"
-                self.recorder.startRecording(fileName: "\(chunkInt)")
-                self.chunkInt += 1
-                self.recorderState = .recording
-                self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: .normal)
-                self.btnStop.isUserInteractionEnabled = true
+        let index = CoreData.shared.audioQuality
+        switch index {
+        case 0:
+            sampleRateKey  = 11025
+        case 1:
+            sampleRateKey  = 22050
+        case 2:
+            sampleRateKey  = 44100
+        default:
+            sampleRateKey  = 11025
         }
-        
+        switch recorderState {
+        case .none:
+            self.recorder.startRecording(fileName: self.audioFileURL)
+            self.recorderState = .recording
+            stopwatch.start()
+
+            self.lblPlayerStatus.text = "Recording"
+            self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: .normal)
+            self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: .normal)
+            self.btnStop.isUserInteractionEnabled = true
+            
+        case .recording:
+            self.recorder.pauseRecording()
+            self.recorderState = .pause
+            stopwatch.pause()
+                
+            lblPlayerStatus.text = "Paused"
+            btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: .normal)
+            btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+            btnBackwardTrim.setBackgroundImage(UIImage(named: "existing_rewind_normal"), for: .normal)
+            btnBackwardTrimEnd.setBackgroundImage(UIImage(named: "existing_backward_fast_normal"), for: .normal)
+            btnPlay.isUserInteractionEnabled = true
+            btnBackwardTrim.isUserInteractionEnabled = true
+            btnBackwardTrimEnd.isUserInteractionEnabled = true
+            self.setUpStopAndPauseUI()
+            self.btnStop.isUserInteractionEnabled = true
+            
+        case .pause:
+            stopwatch.start()
+            self.setUpUI()
+            self.initiallyBtnStateSetup()
+            self.customRangeBar.isHidden = false
+            self.customRangeBarHeight.constant = 45
+            self.parentStackTop.constant = 35
+            lblPlayerStatus.text = "Recording"
+            self.recorder.startRecording(fileName: "\(chunkInt)")
+            self.chunkInt += 1
+            self.recorderState = .recording
+            self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: .normal)
+            self.btnStop.isUserInteractionEnabled = true
+        }
         isRecording = true
-        visualizationViewControlls()
+//        visualizationViewControlls()
     }
     
     @IBAction func onTapStop(_ sender: UIButton) {
         self.recorder.pauseRecording()
         self.recorderState = .pause
-//            stopwatch.toggle()
         stopwatch.pause()
-        /* `ListRecordings` is updated in `self.concatChunks` as temporary
-         files are deleted there asynchronously, and calling `reloadData`
-         here would result in runtime crash.
-         */
-        print("stop")
+        
         self.tabBarController?.setTabBarHidden(true, animated: false)
         btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
         btnRecord.isUserInteractionEnabled = false
@@ -411,6 +415,7 @@ class RecordVC: BaseViewController {
         CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
         lblPlayerStatus.text = "Stopped"
         self.setUpStopAndPauseUI()
+//        visualizationViewControlls()
         
         if self.performingFunctionState == .append{
             self.recorder.concatChunks(filename: self.audioFileURL){
@@ -421,7 +426,7 @@ class RecordVC: BaseViewController {
                 }
             }
         }else if (self.performingFunctionState == .insert || self.performingFunctionState == .overwrite){
-            //need to perform insert here.
+            //need to perform insert or overwrite here.
             let startTime = (self.performingFunctionState == .insert) ? CMTimeMakeWithSeconds(Float64(self.insertStartingPoint), preferredTimescale: 1) : CMTimeMakeWithSeconds(Float64(self.overwritingStartingPoint), preferredTimescale: 1)
             if let originalUrl = self.recorder.articleChunks.first?.url, let replacingUrl = self.recorder.articleChunks.last?.url{
                 self.mergeAudioFiles(originalURL: originalUrl, replacingURL: replacingUrl, startTime: startTime, folderName: "Demo", caseNumber: "test", taskToPerform: self.performingFunctionState == .insert ? "Insert" : "Overwrite")
@@ -429,7 +434,6 @@ class RecordVC: BaseViewController {
         }
         
     }
-    
     
     func setUpStopAndPauseUI(){
         self.customRangeBar.isHidden = true
@@ -445,35 +449,32 @@ class RecordVC: BaseViewController {
         currentPlayingTime.text = self.lblTime.text
         playerTotalTime.text = self.lblTime.text
         
-        visualizationViewControlls()
         setUpWave()
     }
-    
             
     // MARK: - Slide View - Top To Bottom
     func viewSlideInFromTopToBottom(view: UIView) -> Void {
         let transition:CATransition = CATransition()
         transition.duration = 0.5
         transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
-        transition.type = .push
-        transition.subtype = .fromBottom
+        transition.type = CATransitionType.push
+        transition.subtype = CATransitionSubtype.fromBottom
         view.layer.add(transition, forKey: kCATransition)
     }
     
     // MARK: - @IBAction Play.
     @IBAction func onTapPlay(_ sender: UIButton)  {
-        if !self.recorder.queuePlayerPlaying {
+       if !self.recorder.queuePlayerPlaying {
            self.recorder.startPlayer()
            btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
            btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_disable"), for: .normal)
            btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
            btnRecord.isUserInteractionEnabled = false
            btnStop.isUserInteractionEnabled = false
-        }else{
+       }else{
            self.recorder.stopPlayer()
            self.onStopPlayerSetupUI()
-        }
-        
+       }
         NotificationCenter.default.addObserver(self, selector: #selector(self.playerDidFinishPlaying(sender:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.recorder.playerItem)
         self.recorder.queuePlayer?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: DispatchQueue.main, using: { (time) in
                 if self.recorder.queuePlayer?.currentItem?.status == .readyToPlay {
@@ -497,6 +498,7 @@ class RecordVC: BaseViewController {
         self.onStopPlayerSetupUI()
         print("Finished playing")
     }
+    
     // MARK: - @IBAction Forward.
     @IBAction func onTapForwardTrim(_ sender: UIButton) {
         print("Forward Trim")
@@ -559,7 +561,6 @@ class RecordVC: BaseViewController {
             audioPlayer?.updateMeters()
         }
     }
-    
     // MARK: - @IBAction Segment Control.
     @IBAction func segmentChanged(_ sender: Any) {
         switch segmentControl.selectedSegmentIndex {
@@ -610,55 +611,12 @@ class RecordVC: BaseViewController {
         self.btnClear.setBackgroundImage(UIImage(named: ""), for: .normal)
     }
 
-    func listVideos() -> [URL] {
-        let documentDirectory = self.getDocumentsDirectory()
-        let files = try? fileManager.contentsOfDirectory(
-            at: documentDirectory,
-            includingPropertiesForKeys: nil,
-            options: [.skipsSubdirectoryDescendants, .skipsHiddenFiles]
-        ).filter {
-            ["m4a"].contains($0.pathExtension.lowercased())
-        }
-        return files ?? []
-    }
-    
-    func findFilesWith(fileExtension: String) -> [AnyObject]{
-        var matches = [AnyObject]()
-        let files = fileManager.enumerator(atPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0])
-        // *** this section here adds all files with the chosen extension to an array ***
-        for item in files! {
-            let fileURL = item as! NSString
-            if (fileURL.pathExtension == fileExtension) {
-                matches.append(fileURL)
-            }
-        }
-        return matches
-    }
-    
-    // MARK: - Save Recording audio
-    func saveRecordedAudio(completion: @escaping(_ result: Bool) -> Void) {
-        let url = getDocumentsDirectory().appendingPathComponent(".m4a")
-         do {
-             try self.audioFileURL.write(to: url, atomically: true, encoding: .utf8)
-             let input = try String(contentsOf: url)
-             let dataDict:[String: String] = ["file": input]
-             isRecording = false
-//             NotificationCenter.default.post(name: Notification.Name("FileSaved"), object: nil, userInfo: dataDict)
-             print("Saved File--->>",input)
-             completion(true)
-         } catch {
-             print("Saving error-->>",error.localizedDescription)
-             
-         }
-    }
-    
     func pushCommentVC(){
         let VC = CommentsVC.instantiateFromAppStoryboard(appStoryboard: .Main)
         self.setPushTransitionAnimation(VC)
         VC.hidesBottomBarWhenPushed = true
         VC.isCommentsMandotary = isCommentsMandotary
         VC.fileName = audioFileName
-        VC.meteringLevels = meteringLevels
         self.navigationController?.pushViewController(VC, animated: false)
     }
     
@@ -684,22 +642,22 @@ class RecordVC: BaseViewController {
                     if self.isCommentsOn {
                         self.pushCommentVC()
                     } else {
-                        AudioFiles.shared.saveNewAudioFile(name: self.audioFileName, meteringLevels: self.meteringLevels)
+//                        AudioFiles.shared.saveNewAudioFile(name: self.audioFileURL, meteringLevels: self.meteringLevels)
                         let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
                         self.setPushTransitionAnimation(VC)
                         self.navigationController?.popViewController(animated: false)
                         self.tabBarController?.selectedIndex = 0
                     }
                 }
-                
             }
         })
     }
-            
+    
     // MARK: - @IBAction Edit.
     @IBAction func onTapEdit(_ sender: UIButton) {
         setUpUIForEditing()
     }
+    
     // MARK: - @IBAction Discard.
     @IBAction func onTapDiscard(_ sender: UIButton) {
         CommonFunctions.showAlert(view: self, title: "PTS Dictate", message: "Do you want to discard the current Recording?", completion: {
@@ -717,10 +675,9 @@ class RecordVC: BaseViewController {
                 self.tabBarController?.setTabBarHidden(false, animated: true)
             }
         })
-        print("Discard")
     }
     
-    // MARK: - @IBAction Clear button action(multiple functionality).
+    // MARK: - @IBAction Clear.
     @IBAction func onTapClear(_ sender: UIButton) {
         switch sender.tag {
         case 2:
@@ -746,49 +703,6 @@ class RecordVC: BaseViewController {
         }
     }
     
-    func onTapEditPerformOverwriteFunction(_ sender: UIButton){
-        if sender.imageView?.image == UIImage(named: "btn_start_point_normal") {
-            overwritingStartingPoint = 4
-            self.btnClear.setImage(UIImage(named: "btn_end_point_normal"), for: .normal)
-        }else if sender.imageView?.image == UIImage(named: "btn_end_point_normal") {
-            overwritingEndPoint = 8
-            self.btnClear.setImage(UIImage(named: "btn_start_overwriting_normal"), for: .normal)
-        }else {
-            print("Overwriting === start recording new audio")
-            //Here we need to start recording from the start point to the end point and stop the recorder as soon as users records till end point.
-            self.proceedForOverwrite()
-        }
-    }
-    
-    func onTapEditPerformPartialDeleteFunction(_ sender: UIButton){
-        if sender.imageView?.image == UIImage(named: "btn_start_point_normal") {
-            print("Got Start Point")
-            self.btnClear.setImage(UIImage(named: "btn_end_point_normal"), for: .normal)
-        }else if sender.imageView?.image == UIImage(named: "btn_end_point_normal") {
-            print("Got End Point")
-            self.btnClear.setImage(UIImage(named: "btn_start_deleting_normal"), for: .normal)
-        }else if sender.imageView?.image == UIImage(named: "btn_start_deleting_normal") {
-            print("Delete proceed")
-            self.recorder.deleteAudio(startTime: 2, endTime: 5){
-                (success) in
-                if success{
-                    print("Delete Success")
-                    self.stackView.isHidden = true
-                    self.stackViewHeight.constant = 0
-                    self.segmentControl.isHidden = true
-                    self.segmentHeight.constant = 0
-                    self.btnStop.isUserInteractionEnabled = false
-                    self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: UIControl.State.normal)
-                    CommonFunctions.alertMessage(view: self, title: Constants.appName, msg: Constants.pDeleteMsg, btnTitle: "OK")
-                    DispatchQueue.main.async {
-                        CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
-                        self.tabBarController?.setTabBarHidden(true, animated: false)
-                    }
-                }
-            }
-        }
-    }
-    
     func proceedForInsert(){
         stopwatch.start()
         self.setUpUI()
@@ -802,6 +716,20 @@ class RecordVC: BaseViewController {
         self.recorderState = .recording
         self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: .normal)
         self.btnStop.isUserInteractionEnabled = true
+        print("resume")
+    }
+    
+    func onTapEditPerformOverwriteFunction(_ sender: UIButton){
+        if sender.imageView?.image == UIImage(named: "btn_start_point_normal") {
+            overwritingStartingPoint = 4
+            self.btnClear.setImage(UIImage(named: "btn_end_point_normal"), for: .normal)
+        }else if sender.imageView?.image == UIImage(named: "btn_end_point_normal") {
+            overwritingEndPoint = 8
+            self.btnClear.setImage(UIImage(named: "btn_start_overwriting_normal"), for: .normal)
+        }else {
+            //Here we need to start recording from the start point to the end point and stop the recorder as soon as users records till end point.
+            self.proceedForOverwrite()
+        }
     }
     
     func proceedForOverwrite(){
@@ -851,6 +779,56 @@ class RecordVC: BaseViewController {
         }
     }
     
+    func onTapEditPerformPartialDeleteFunction(_ sender: UIButton){
+        if sender.imageView?.image == UIImage(named: "btn_start_point_normal") {
+            self.btnClear.setImage(UIImage(named: "btn_end_point_normal"), for: .normal)
+        }else if sender.imageView?.image == UIImage(named: "btn_end_point_normal") {
+            self.btnClear.setImage(UIImage(named: "btn_start_deleting_normal"), for: .normal)
+        }else if sender.imageView?.image == UIImage(named: "btn_start_deleting_normal") {
+            self.partialDeleteAudio(outputUrl: Constants.documentDir.appendingPathComponent("final.m4a"), startTime: 2, endTime: 5) { result in
+                print(result)
+            }
+        }
+    }
+    
+    func partialDeleteAudio(outputUrl: URL,startTime: Double,endTime: Double, completion: @escaping(_ result: Bool) -> Void){
+        // create empty mutable composition
+        let composition: AVMutableComposition = AVMutableComposition()
+        
+        // copy all of original asset into the mutable composition, effectively creating an editable copy
+        for asset in self.recorder.articleChunks.reversed() {
+            do{
+                try composition.insertTimeRange( CMTimeRangeMake( start: .zero, duration: asset.duration), of: asset, at: .zero)
+            }catch{
+                print("Error")
+            }
+        }
+
+        // now edit as required, e.g. delete a time range
+        let startTime = CMTime(seconds: startTime, preferredTimescale: 100)
+        let endTime   = CMTime(seconds: endTime, preferredTimescale: 100)
+        composition.removeTimeRange(CMTimeRangeFromTimeToTime(start: startTime, end: endTime))
+        
+        //export that composition
+        composition.export(to: outputUrl) { status in
+            if status{
+                self.removeFileChunksInDocDirectory()
+                DispatchQueue.main.async {
+                    self.stackView.isHidden = true
+                    self.stackViewHeight.constant = 0
+                    self.segmentControl.isHidden = true
+                    self.segmentHeight.constant = 0
+                    self.btnStop.isUserInteractionEnabled = false
+                    self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: UIControl.State.normal)
+                    CommonFunctions.alertMessage(view: self, title: Constants.appName, msg: Constants.pDeleteMsg, btnTitle: "OK")
+                    
+                    CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
+                    self.tabBarController?.setTabBarHidden(true, animated: false)
+                }
+            }
+        }
+    }
+    
     // MARK: - Discard Recorder setUp.
     @objc func onDiscardRecorderSetUp(){
 //        self.recordTimer.invalidate()
@@ -893,26 +871,7 @@ class RecordVC: BaseViewController {
         CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: true, animation: .transitionFlipFromBottom)
         self.tabBarController?.setTabBarHidden(false, animated: false)
     }
-    
-    // MARK: - Remove Discard Audio.
-     func removeDiscardAudio(itemName: String, fileExtension: String) {
-         let fileManager = FileManager.default
-          let nsDocumentDirectory = FileManager.SearchPathDirectory.documentDirectory
-          let nsUserDomainMask = FileManager.SearchPathDomainMask.userDomainMask
-          let paths = NSSearchPathForDirectoriesInDomains(nsDocumentDirectory, nsUserDomainMask, true)
-          guard let dirPath = paths.first else {
-              return
-          }
-          let filePath = "\(dirPath)/\(itemName).\(fileExtension)"
-          do {
-            try fileManager.removeItem(atPath: filePath)
-              print("Discard success")
-          } catch let error as NSError {
-              print("Error block")
-            print(error.debugDescription)
-          }
-    }
-    
+ 
     // MARK: - Upadte Timer method.
    @objc func updateAudioMeter() {
        if let recorder = self.recorder.audioRecorder {
@@ -927,37 +886,12 @@ class RecordVC: BaseViewController {
                 
                 let decibels = Float(recorder.peakPower(forChannel: 0))
 //                let value = [3.5, 3.4, 3.3, 3.2, 3.1, 3.0]
-                
-                //will get the value and use it later. Using 3.5 constant for now.
-//                let microPhoneSensitivityIndex = CoreData.shared.microSensitivityValue
-//                print(microPhoneSensitivityIndex)
-//                int value;
-//
-//                if (microPhoneSensitivityIndex == 5) {
-//                    value = 3.5;
-//                }
-//                else if (microPhoneSensitivityIndex == 4) {
-//                    value = 3.4;
-//                }
-//                else if (microPhoneSensitivityIndex == 3) {
-//                    value = 3.3;
-//                }
-//                else if (microPhoneSensitivityIndex == 2) {
-//                    value = 3.2;
-//                }
-//                else if (microPhoneSensitivityIndex == 1) {
-//                    value = 3.1;
-//                }
-//                else if (microPhoneSensitivityIndex == 0) {
-//                    value = 3.0;
-//                }
-                
                 self.customRangeBar.value = decibels * 3.5
-                print("self.customRangeBar.value ===== \(self.customRangeBar.value)")
              }
         }
     }
-
+    
+    // MARK: - finishAudioRecording.
     func finishAudioRecording(success: Bool) {
         if let recorder = self.recorder.audioRecorder {
             if success {
@@ -973,66 +907,62 @@ class RecordVC: BaseViewController {
     }
     
     // Microphone Access
-    func checkMicrophoneAccess() {
-        // Check Microphone Authorization
-        switch AVAudioSession.sharedInstance().recordPermission {
-            
-        case AVAudioSession.RecordPermission.granted:
-            print(#function, " Microphone Permission Granted")
-            break
-            
-        case AVAudioSession.RecordPermission.denied:
-            // Dismiss Keyboard (on UIView level, without reference to a specific text field)
-            UIApplication.shared.sendAction(#selector(UIView.endEditing(_:)), to:nil, from:nil, for:nil)
-            CommonFunctions.showAlert(view: self, title: "Microphone Error!", message: "PTS Dictate is Not Authorized to Access the Microphone!", completion: {
-                (result) in
-                if result {
-                    DispatchQueue.main.async {
-                        if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
-                            UIApplication.shared.open(settingsURL, options: self.convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
-                        }
-                    }
-                }else{
-                    print("No Message")
-                }
-            })
-            return
-            
-        case AVAudioSession.RecordPermission.undetermined:
-            print("Request permission here")
-            // Dismiss Keyboard (on UIView level, without reference to a specific text field)
-            UIApplication.shared.sendAction(#selector(UIView.endEditing(_:)), to:nil, from:nil, for:nil)
-            
-            AVAudioSession.sharedInstance().requestRecordPermission({ (granted) in
-                // Handle granted
-                if granted {
-                    print(#function, " Now Granted")
-                } else {
-                    print("Pemission Not Granted")
-                    
-                } // end else
-            })
-        @unknown default:
-            print("ERROR! Unknown Default. Check!")
-        } // end switch
-        
-    }
-
-    // Helper function inserted by Swift migrator.
-    fileprivate func convertFromAVAudioSessionCategory(_ input: AVAudioSession.Category) -> String {
-        return input.rawValue
-    }
+//    func checkMicrophoneAccess() {
+//        // Check Microphone Authorization
+//        switch AVAudioSession.sharedInstance().recordPermission {
+//            
+//        case AVAudioSession.RecordPermission.granted:
+//            print(#function, " Microphone Permission Granted")
+//            break
+//            
+//        case AVAudioSession.RecordPermission.denied:
+//            // Dismiss Keyboard (on UIView level, without reference to a specific text field)
+//            UIApplication.shared.sendAction(#selector(UIView.endEditing(_:)), to:nil, from:nil, for:nil)
+//            CommonFunctions.showAlert(view: self, title: "Microphone Error!", message: "PTS Dictate is Not Authorized to Access the Microphone!", completion: {
+//                (result) in
+//                if result {
+//                    DispatchQueue.main.async {
+//                        if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+//                            UIApplication.shared.open(settingsURL, options: self.convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
+//                        }
+//                    }
+//                }else{
+//                    print("No Message")
+//                }
+//            })
+//            return
+//            
+//        case AVAudioSession.RecordPermission.undetermined:
+//            print("Request permission here")
+//            // Dismiss Keyboard (on UIView level, without reference to a specific text field)
+//            UIApplication.shared.sendAction(#selector(UIView.endEditing(_:)), to:nil, from:nil, for:nil)
+//            
+//            AVAudioSession.sharedInstance().requestRecordPermission({ (granted) in
+//                // Handle granted
+//                if granted {
+//                    print(#function, " Now Granted")
+//                } else {
+//                    print("Pemission Not Granted")
+//                    
+//                } // end else
+//            })
+//        @unknown default:
+//            print("ERROR! Unknown Default. Check!")
+//        } // end switch
+//        
+//    }
 
     // Helper function inserted by Swift migrator.
     fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
         return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
     }
+    
     func getDocumentsDirectory() -> URL{
         let paths = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
         let  documentsDirectory = paths[0]
         return documentsDirectory
     }
-    
+
     private func timeString(from timeInterval: TimeInterval) -> String {
         let seconds = Int(timeInterval.truncatingRemainder(dividingBy: 60))
         let minutes = Int(timeInterval.truncatingRemainder(dividingBy: 60 * 60) / 60)
@@ -1061,78 +991,14 @@ extension RecordVC: AVAudioRecorderDelegate,AVAudioPlayerDelegate {
     }
 }
 
-extension DateFormatter {
-    static var sharedDateFormatter: DateFormatter = {
-        let dateFormatter = DateFormatter()
-        // Add your formatter configuration here
-        dateFormatter.dateFormat = "ddMMyyyy_ss_SSS"
-        return dateFormatter
-    }()
-}
-
-// Extension for merge audio file
-extension RecordVC {
-    
-    func mergeAudioFiles(audioFileUrls: [URL]) -> String? {
-            let composition = AVMutableComposition()
-               
-            for i in 0 ..< audioFileUrls.count {
-                let compositionAudioTrack :AVMutableCompositionTrack = composition.addMutableTrack(withMediaType: AVMediaType.audio, preferredTrackID: CMPersistentTrackID())!
-                let filePath = "\(self.getDocumentsDirectory())" + self.getFileName(audioFileUrls[i].path)
-                
-                let asset = AVURLAsset(url: URL(string: filePath)!)
-                            
-                let trackContainer = asset.tracks(withMediaType: AVMediaType.audio)
-                
-                guard trackContainer.count > 0 else{
-                    return nil
-                }
-                
-                let audioTrack = trackContainer[0]
-                let timeRange = CMTimeRange(start: CMTimeMake(value: 0, timescale: 600), duration: audioTrack.timeRange.duration)
-                try! compositionAudioTrack.insertTimeRange(timeRange, of: audioTrack, at: composition.duration)
-            }
-            
-            let finalUrl = URL(string: "\(getDocumentsDirectory())\(UUID().uuidString)_audio.m4a")
-            
-            let assetExport = AVAssetExportSession(asset: composition, presetName: AVAssetExportPresetAppleM4A)
-            assetExport?.outputFileType = AVFileType.m4a
-            assetExport?.outputURL = finalUrl
-            assetExport?.exportAsynchronously(completionHandler:{
-                    switch assetExport!.status
-                    {
-                    case AVAssetExportSession.Status.failed:
-                        print("AUDIO_MERGE -> failed \(String(describing: assetExport!.error!))")
-                    case AVAssetExportSession.Status.cancelled:
-                        print("AUDIO_MERGE -> cancelled \(String(describing: assetExport!.error))")
-                    case AVAssetExportSession.Status.unknown:
-                        print("AUDIO_MERGE -> unknown\(String(describing: assetExport!.error))")
-                    case AVAssetExportSession.Status.waiting:
-                        print("AUDIO_MERGE -> waiting\(String(describing: assetExport!.error))")
-                    case AVAssetExportSession.Status.exporting:
-                        print("AUDIO_MERGE -> exporting\(String(describing: assetExport!.error) )")
-                    default:
-                        print("Audio Concatenation Complete")
-                        print("Old audio :: \(self.getFileName(audioFileUrls[0].path))")
-                        print("New audio :: \(self.getFileName(finalUrl!.path))")
-                        print("Merged    :: \(self.getFileName(finalUrl!.path))")
-                       }
-            })
-            
-            return finalUrl!.path
-    }
-    func getFileName(_ fileUrl : String) -> String{
-            return URL(string: fileUrl)!.lastPathComponent
-    }
-}
-
 extension RecordVC{
     func mergeAudioFiles(originalURL: URL, replacingURL:URL, startTime:CMTime, folderName:String, caseNumber:String, taskToPerform:String) {
+            
         let options = [AVURLAssetPreferPreciseDurationAndTimingKey:true]
         let originalAsset  = AVURLAsset(url: originalURL, options: options)
         let replacingAsset = AVURLAsset(url: replacingURL, options: options)
         
-        if let replacingTrack = replacingAsset.tracks.first{
+        if let replacingTrack = replacingAsset.tracks.first, let originalTrack = originalAsset.tracks.first {
             let duration = replacingTrack.timeRange.duration.scaled
             let replacingRange = CMTimeRange(start: startTime, duration: duration)
             
@@ -1140,12 +1006,40 @@ extension RecordVC{
                 self.exportFinalOutput(from: finalURLs, folderName: folderName,  caseNumber:caseNumber, completionHandler: { (isCompleted) in
                     if isCompleted {
                         print("Merge Successful")
+                        //if merge successful, then remove all chunks except final.m4a from the doc directory and change its name as well.
+                        self.removeFileChunksInDocDirectory()
                     } else {
                         print("Merge Failed")
                     }
                 })
             }
         }
+    }
+    
+    func removeFileChunksInDocDirectory(){
+        do {
+            let fileURLs = try FileManager.default.contentsOfDirectory(at: Constants.documentDir, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
+            for fileURL in fileURLs{
+                //Do not remove the files which are already saved.
+                
+                if fileURL.standardizedFileURL.absoluteString.contains(CoreData.shared.profileName){
+                    //that is some old saved file which we don't need to delete.
+                    
+                }else{
+                    if fileURL.standardizedFileURL.absoluteString != Constants.documentDir.appendingPathComponent("final.m4a").absoluteString{
+                        try FileManager.default.removeItem(at: fileURL)
+                    }
+                }
+            }
+        } catch  { print(error) }
+        
+        //change the name of final.url
+        let sourcePath = Constants.documentDir.appendingPathComponent("final.m4a")
+        let destPath = Constants.documentDir.appendingPathComponent(self.audioFileURL + ".m4a")
+        do{
+            _ = try FileManager.default.replaceItemAt(destPath, withItemAt: sourcePath)
+        }catch  { print(error) }
+        
     }
     
     func trimOriginalAssetFor(taskToPerform:String, asset:AVAsset, replacingRange:CMTimeRange, replacingURL:URL, folderName:String, caseNumber:String, completionHandler handler: @escaping (_ finalURLs:[URL]) -> Void) {
@@ -1321,77 +1215,79 @@ extension AVAsset {
 
 extension CMTime {
     var scaled : CMTime {
-        return self.convertScale(60000, method: CMTimeRoundingMethod.roundAwayFromZero)
+        return self.convertScale(60000, method: .roundAwayFromZero)
     }
 }
 
-extension RecordVC {
-    func visualizationViewSetup() {
-        self.audioVisualizationViewModel.askAudioRecordingPermission()
 
-        self.audioVisualizationViewModel.audioMeteringLevelUpdate = { [weak self] meteringLevel in
-            guard let self = self, self.audioVisualizationView.audioVisualizationMode == .write else {
-                return
-            }
-            self.meteringLevels.append(meteringLevel)
-//            self.audioVisualizationView.add(meteringLevel: meteringLevel)
-        }
-
-        self.audioVisualizationViewModel.audioDidFinish = { [weak self] in
-            self?.currentVisualizationState = .recorded
-            self?.audioVisualizationView.stop()
-        }
-    }
-    
-    func visualizationViewControlls() {
-        switch self.currentVisualizationState {
-        case .ready:
-            self.currentVisualizationState = .recording
-            self.audioVisualizationViewModel.startRecording { [weak self] soundRecord, error in
-                if let error = error {
-                 //   self?.showAlert(with: error)
-                    print(error)
-                    return
-                }
-
-                self?.currentVisualizationState = .recording
-
-                self?.chronometer = Chronometer()
-                self?.chronometer?.start()
-            }
-        case .recording:
-            self.chronometer?.stop()
-            self.chronometer = nil
-
-            self.audioVisualizationViewModel.currentAudioRecord!.meteringLevels = self.audioVisualizationView.scaleSoundDataToFitScreen()
-            self.audioVisualizationView.audioVisualizationMode = .read
-
-            do {
-                try self.audioVisualizationViewModel.stopRecording()
-                self.currentVisualizationState = .recorded
-            } catch {
-                self.currentVisualizationState = .ready
-             //   self.showAlert(with: error)
-            }
-        case .recorded, .paused:
-            do {
-                let duration = try self.audioVisualizationViewModel.startPlaying()
-                self.currentVisualizationState = .playing
-                self.audioVisualizationView.meteringLevels = self.audioVisualizationViewModel.currentAudioRecord!.meteringLevels
-                self.audioVisualizationView.play(for: duration)
-            } catch {
-                self.showAlert(with: error)
-            }
-        case .playing:
-            do {
-                try self.audioVisualizationViewModel.pausePlaying()
-                self.currentVisualizationState = .paused
-                self.audioVisualizationView.pause()
-            } catch {
-              //  self.showAlert(with: error)
-            }
-        default:
-            break
-        }
-    }
-}
+//extension RecordVC {
+//
+//    func visualizationViewSetup() {
+//        self.audioVisualizationViewModel.askAudioRecordingPermission()
+//
+//        self.audioVisualizationViewModel.audioMeteringLevelUpdate = { [weak self] meteringLevel in
+//            guard let self = self, self.audioVisualizationView.audioVisualizationMode == .write else {
+//                return
+//            }
+//            self.meteringLevels.append(meteringLevel)
+////            self.audioVisualizationView.add(meteringLevel: meteringLevel)
+//        }
+//
+//        self.audioVisualizationViewModel.audioDidFinish = { [weak self] in
+//            self?.currentVisualizationState = .recorded
+//            self?.audioVisualizationView.stop()
+//        }
+//    }
+//
+//    func visualizationViewControlls() {
+//        switch self.currentVisualizationState {
+//        case .ready:
+//            self.currentVisualizationState = .recording
+//            self.audioVisualizationViewModel.startRecording { [weak self] soundRecord, error in
+//                if let error = error {
+//                 //   self?.showAlert(with: error)
+//                    print(error)
+//                    return
+//                }
+//
+//                self?.currentVisualizationState = .recording
+//
+//                self?.chronometer = Chronometer()
+//                self?.chronometer?.start()
+//            }
+//        case .recording:
+//            self.chronometer?.stop()
+//            self.chronometer = nil
+//
+//            self.audioVisualizationViewModel.currentAudioRecord!.meteringLevels = self.audioVisualizationView.scaleSoundDataToFitScreen()
+//            self.audioVisualizationView.audioVisualizationMode = .read
+//
+//            do {
+//                try self.audioVisualizationViewModel.stopRecording()
+//                self.currentVisualizationState = .recorded
+//            } catch {
+//                self.currentVisualizationState = .ready
+//             //   self.showAlert(with: error)
+//            }
+//        case .recorded, .paused:
+//            do {
+//                let duration = try self.audioVisualizationViewModel.startPlaying()
+//                self.currentVisualizationState = .playing
+//                self.audioVisualizationView.meteringLevels = self.audioVisualizationViewModel.currentAudioRecord!.meteringLevels
+//                self.audioVisualizationView.play(for: duration)
+//            } catch {
+//                self.showAlert(with: error)
+//            }
+//        case .playing:
+//            do {
+//                try self.audioVisualizationViewModel.pausePlaying()
+//                self.currentVisualizationState = .paused
+//                self.audioVisualizationView.pause()
+//            } catch {
+//              //  self.showAlert(with: error)
+//            }
+//        default:
+//            break
+//        }
+//    }
+//}
