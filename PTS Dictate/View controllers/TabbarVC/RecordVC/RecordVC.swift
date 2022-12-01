@@ -591,7 +591,6 @@ class RecordVC: BaseViewController {
             self.setInsert_PartialDeleteUI()
             CommonFunctions.alertMessage(view: self, title: "Insert", msg: Constants.insertMsg, btnTitle: "OK")
             
-            //need to play the sound as well.
             self.recorder.startPlayer()
             break
         case 2:
@@ -600,6 +599,8 @@ class RecordVC: BaseViewController {
             self.recorderState = .pause
             self.setInsert_PartialDeleteUI()
             CommonFunctions.alertMessage(view: self, title: "Overwrite", msg: Constants.overwriteMsg, btnTitle: "OK")
+            
+            self.recorder.startPlayer()
             break
         case 3:
             self.performingFunctionState = .partialDelete
@@ -607,7 +608,6 @@ class RecordVC: BaseViewController {
             CommonFunctions.alertMessage(view: self, title: "Partial Delete", msg: Constants.partialDeleteMsg, btnTitle: "OK")
             self.setInsert_PartialDeleteUI()
             
-            //need to play the sound as well.
             self.recorder.startPlayer()
             break
         default:
@@ -748,11 +748,12 @@ class RecordVC: BaseViewController {
     
     func onTapEditPerformOverwriteFunction(_ sender: UIButton){
         if sender.imageView?.image == UIImage(named: "btn_start_point_normal") {
-            overwritingStartingPoint = 4
+            overwritingStartingPoint = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
             self.btnClear.setImage(UIImage(named: "btn_end_point_normal"), for: .normal)
         }else if sender.imageView?.image == UIImage(named: "btn_end_point_normal") {
-            overwritingEndPoint = 8
+            overwritingEndPoint = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
             self.btnClear.setImage(UIImage(named: "btn_start_overwriting_normal"), for: .normal)
+            self.recorder.stopPlayer()
         }else {
             //Here we need to start recording from the start point to the end point and stop the recorder as soon as users records till end point.
             self.proceedForOverwrite()
@@ -857,6 +858,10 @@ class RecordVC: BaseViewController {
                 }
             }
         }
+    }
+    
+    func updateTimer(){
+        
     }
     
     // MARK: - Discard Recorder setUp.
