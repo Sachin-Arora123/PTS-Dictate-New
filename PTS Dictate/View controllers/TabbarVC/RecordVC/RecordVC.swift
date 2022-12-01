@@ -96,6 +96,8 @@ class RecordVC: BaseViewController {
     var overwriteTimer : Timer?
     var pdStartingPoint = 0.0
     var pdEndPoint      = 0.0
+    var isPerformingOverwrite = false
+    var overwritingStartingTimerPoint = 0.0
     
     private var isCommentsOn:Bool {
         return CoreData.shared.commentScreen == 1 ?  true : false
@@ -106,8 +108,14 @@ class RecordVC: BaseViewController {
     
     private lazy var stopwatch = Stopwatch(timeUpdated: { [weak self] timegap in
         guard let strongSelf = self else { return }
-         strongSelf.lblTime.text = strongSelf.timeString(from: timegap)
-       strongSelf.updateAudioMeter()
+        if strongSelf.isPerformingOverwrite{
+            strongSelf.overwritingStartingTimerPoint += 1
+            print("startPoint ===== \(strongSelf.overwritingStartingTimerPoint)")
+            strongSelf.insertTimer.text = strongSelf.timeString(from: strongSelf.overwritingStartingTimerPoint)
+        }else{
+            strongSelf.lblTime.text = strongSelf.timeString(from: timegap)
+        }
+        strongSelf.updateAudioMeter()
     })
     
     var editFromExiting: Bool {
@@ -178,6 +186,8 @@ class RecordVC: BaseViewController {
         
         //isRecording flag
         isRecording = false
+        
+        insertTimer.isHidden = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -213,7 +223,6 @@ class RecordVC: BaseViewController {
         stackView.isHidden = true
         stackViewHeight.constant = 0
         viewPlayerTiming.isHidden = true
-        insertTimer.isHidden = true
         segmentHeight.constant = 0
         viewProgress.isHidden = true
         progressViewHeight.constant = 45
@@ -671,11 +680,12 @@ class RecordVC: BaseViewController {
     }
     
     func resetValues(){
-        self.insertStartingPoint      = 0
-        self.overwritingStartingPoint = 0
-        self.overwritingEndPoint      = 0
-        self.pdStartingPoint          = 0
-        self.pdEndPoint               = 0
+        self.insertStartingPoint      = 0.0
+        self.overwritingStartingPoint = 0.0
+        self.overwritingEndPoint      = 0.0
+        self.pdStartingPoint          = 0.0
+        self.pdEndPoint               = 0.0
+        self.overwritingStartingTimerPoint = 0.0
         
         self.performingFunctionState = .append
     }
@@ -696,9 +706,10 @@ class RecordVC: BaseViewController {
                     try? FileManager.default.removeItem(at: asset.url)
                 }
                 self.recorder.articleChunks.removeAll()
-//                self.removeDiscardAudio(itemName: "P", fileExtension: "m4a")
                 self.onDiscardRecorderSetUp()
                 self.viewBottomButton.isHidden = true
+                self.updateTimer()
+                self.resetValues()
                 self.tabBarController?.setTabBarHidden(false, animated: true)
             }
         })
@@ -756,6 +767,10 @@ class RecordVC: BaseViewController {
             self.recorder.stopPlayer()
         }else {
             //Here we need to start recording from the start point to the end point and stop the recorder as soon as users records till end point.
+            self.insertTimer.isHidden = false
+            self.insertTimer.text = self.timeString(from: self.overwritingStartingPoint)
+            self.isPerformingOverwrite = true
+            self.overwritingStartingTimerPoint = self.overwritingStartingPoint
             self.proceedForOverwrite()
         }
     }
@@ -801,6 +816,8 @@ class RecordVC: BaseViewController {
             self.overwriteTimer?.invalidate()
             
             CommonFunctions.alertMessage(view: self, title: "PTS", msg: "Overwrite complete", btnTitle: "Ok")
+            self.insertTimer.isHidden  = true
+            self.isPerformingOverwrite = false
             if let originalUrl = self.recorder.articleChunks.first?.url, let replacingUrl = self.recorder.articleChunks.last?.url{
                 self.mergeAudioFiles(originalURL: originalUrl, replacingURL: replacingUrl, startTime: CMTimeMakeWithSeconds(Float64(self.overwritingStartingPoint), preferredTimescale: 1), folderName: "Demo", caseNumber: "test", taskToPerform: "Overwrite")
             }
@@ -861,7 +878,16 @@ class RecordVC: BaseViewController {
     }
     
     func updateTimer(){
-        
+        DispatchQueue.main.async {
+            if self.recorder.articleChunks.count > 0{
+                self.lblTime.text            = self.timeString(from: self.recorder.articleChunks[0].duration.seconds)
+            }else{
+                self.lblTime.text            = "00:00:00"
+            }
+            
+            self.currentPlayingTime.text = self.lblTime.text
+            self.playerTotalTime.text    = self.lblTime.text
+        }
     }
     
     // MARK: - Discard Recorder setUp.
@@ -911,11 +937,6 @@ class RecordVC: BaseViewController {
     @objc func updateAudioMeter() {
        if let recorder = self.recorder.audioRecorder {
             if recorder.isRecording{
-//                let hr = Int((recorder.currentTime / 60) / 60)
-//                let min = Int(recorder.currentTime / 60)
-//                let sec = Int(recorder.currentTime.truncatingRemainder(dividingBy: 60))
-//                let totalTimeString = String(format: "%02d:%02d:%02d", hr, min, sec)
-//                self.lblTime.text = totalTimeString
                 self.lblFSizeValue.text = String(format: "%.2f", Float(try! Data(contentsOf: recorder.url).count) / 1024.0 / 1024.0) + " Mb"
                 recorder.updateMeters()
                 
@@ -1079,15 +1100,8 @@ extension RecordVC{
             self.recorder.articleChunks.removeAll()
             self.recorder.articleChunks.append(assetToAdd)
             
+            self.updateTimer()
         }catch  { print(error) }
-        
-        
-//        do{
-//            let updatedFileUrls = try FileManager.default.contentsOfDirectory(at: Constants.documentDir, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
-//            print(updatedFileUrls)
-//            //need to update article chunks array as well.
-//
-//        }catch  { print(error) }
     }
     
     func trimOriginalAssetFor(taskToPerform:String, asset:AVAsset, replacingRange:CMTimeRange, replacingURL:URL, folderName:String, caseNumber:String, completionHandler handler: @escaping (_ finalURLs:[URL]) -> Void) {
