@@ -653,8 +653,6 @@ class RecordVC: BaseViewController {
                 isRecording = false
                 self.onDiscardRecorderSetUp()
                 
-                self.performingFunctionState = .append
-                
                 self.resetValues()
                 
                 DispatchQueue.main.async {
@@ -678,6 +676,8 @@ class RecordVC: BaseViewController {
         self.overwritingEndPoint      = 0
         self.pdStartingPoint          = 0
         self.pdEndPoint               = 0
+        
+        self.performingFunctionState = .append
     }
     
     // MARK: - @IBAction Edit.
@@ -748,10 +748,10 @@ class RecordVC: BaseViewController {
     
     func onTapEditPerformOverwriteFunction(_ sender: UIButton){
         if sender.imageView?.image == UIImage(named: "btn_start_point_normal") {
-            overwritingStartingPoint = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
+            overwritingStartingPoint = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? .zero)
             self.btnClear.setImage(UIImage(named: "btn_end_point_normal"), for: .normal)
         }else if sender.imageView?.image == UIImage(named: "btn_end_point_normal") {
-            overwritingEndPoint = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
+            overwritingEndPoint = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? .zero)
             self.btnClear.setImage(UIImage(named: "btn_start_overwriting_normal"), for: .normal)
             self.recorder.stopPlayer()
         }else {
@@ -1033,7 +1033,7 @@ extension RecordVC{
         let originalAsset  = AVURLAsset(url: originalURL, options: options)
         let replacingAsset = AVURLAsset(url: replacingURL, options: options)
         
-        if let replacingTrack = replacingAsset.tracks.first, let originalTrack = originalAsset.tracks.first {
+        if let replacingTrack = replacingAsset.tracks.first{
             let duration = replacingTrack.timeRange.duration.scaled
             let replacingRange = CMTimeRange(start: startTime, duration: duration)
             
@@ -1073,8 +1073,21 @@ extension RecordVC{
         let destPath = Constants.documentDir.appendingPathComponent(self.audioFileURL + ".m4a")
         do{
             _ = try FileManager.default.replaceItemAt(destPath, withItemAt: sourcePath)
+            
+            //now the destPath has updated result. we can give that value to articleChunks array as well so that it can play the final one.
+            let assetToAdd = AVURLAsset(url: destPath)
+            self.recorder.articleChunks.removeAll()
+            self.recorder.articleChunks.append(assetToAdd)
+            
         }catch  { print(error) }
         
+        
+//        do{
+//            let updatedFileUrls = try FileManager.default.contentsOfDirectory(at: Constants.documentDir, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
+//            print(updatedFileUrls)
+//            //need to update article chunks array as well.
+//
+//        }catch  { print(error) }
     }
     
     func trimOriginalAssetFor(taskToPerform:String, asset:AVAsset, replacingRange:CMTimeRange, replacingURL:URL, folderName:String, caseNumber:String, completionHandler handler: @escaping (_ finalURLs:[URL]) -> Void) {
