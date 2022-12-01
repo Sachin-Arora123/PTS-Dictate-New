@@ -89,11 +89,13 @@ class RecordVC: BaseViewController {
     var settings         = [String : Any]()
     var currentRecordUpdateTimer: Timer!
     var fileURL1:URL!
-    var insertStartingPoint = 0
     
-    var overwritingStartingPoint = 0
-    var overwritingEndPoint = 0
+    var insertStartingPoint = 0.0
+    var overwritingStartingPoint = 0.0
+    var overwritingEndPoint = 0.0
     var overwriteTimer : Timer?
+    var pdStartingPoint = 0.0
+    var pdEndPoint      = 0.0
     
     private var isCommentsOn:Bool {
         return CoreData.shared.commentScreen == 1 ?  true : false
@@ -294,13 +296,18 @@ class RecordVC: BaseViewController {
         print("Notification received.")
         if self.recorder.audioRecorder != nil {
             self.recorder.endRecording()
+            
+            CoreData.shared.fileCount += 1
+            CoreData.shared.dataSave()
         }
+        
         self.recorderState = .none
         tempAudioFileURL = self.audioFileURL
         stopwatch.stop()
         print("temp",tempAudioFileURL)
 //        UserDefaults.standard.set(audioFileURL, forKey: "terminatedRecording")
-        CoreData.shared.fileCount += 1
+        
+        
         for asset in self.recorder.articleChunks {
             try! FileManager.default.removeItem(at: asset.url)
         }
@@ -479,6 +486,7 @@ class RecordVC: BaseViewController {
         self.recorder.queuePlayer?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: DispatchQueue.main, using: { (time) in
                 if self.recorder.queuePlayer?.currentItem?.status == .readyToPlay {
                     let currentTime = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
+                    print("currentTime ======== \(currentTime)")
                     self.currentPlayingTime.text = self.timeString(from: currentTime)
                 }
         })
@@ -582,6 +590,9 @@ class RecordVC: BaseViewController {
             self.recorderState = .pause
             self.setInsert_PartialDeleteUI()
             CommonFunctions.alertMessage(view: self, title: "Insert", msg: Constants.insertMsg, btnTitle: "OK")
+            
+            //need to play the sound as well.
+            self.recorder.startPlayer()
             break
         case 2:
             self.performingFunctionState = .overwrite
@@ -595,6 +606,9 @@ class RecordVC: BaseViewController {
             self.btnClear.tag = 4
             CommonFunctions.alertMessage(view: self, title: "Partial Delete", msg: Constants.partialDeleteMsg, btnTitle: "OK")
             self.setInsert_PartialDeleteUI()
+            
+            //need to play the sound as well.
+            self.recorder.startPlayer()
             break
         default:
             break
@@ -632,11 +646,16 @@ class RecordVC: BaseViewController {
                 }
                 self.lblTime.text = "00:00:00"
                 self.recorderState = .none
+                
                 CoreData.shared.fileCount += 1
+                CoreData.shared.dataSave()
+                
                 isRecording = false
                 self.onDiscardRecorderSetUp()
                 
                 self.performingFunctionState = .append
+                
+                self.resetValues()
                 
                 DispatchQueue.main.async {
                     if self.isCommentsOn {
@@ -651,6 +670,14 @@ class RecordVC: BaseViewController {
                 }
             }
         })
+    }
+    
+    func resetValues(){
+        self.insertStartingPoint      = 0
+        self.overwritingStartingPoint = 0
+        self.overwritingEndPoint      = 0
+        self.pdStartingPoint          = 0
+        self.pdEndPoint               = 0
     }
     
     // MARK: - @IBAction Edit.
@@ -696,7 +723,8 @@ class RecordVC: BaseViewController {
     
     func onTapEditPerformInsertFunction(_ sender: UIButton){
         if sender.imageView?.image == UIImage(named: "btn_start_point_normal") {
-            insertStartingPoint = 4
+            self.insertStartingPoint = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
+            self.recorder.stopPlayer()
             self.btnClear.setImage(UIImage(named: "btn_start_inserting_normal"), for: .normal)
         }else if sender.imageView?.image == UIImage(named: "btn_start_inserting_normal") {
             self.proceedForInsert()
@@ -716,7 +744,6 @@ class RecordVC: BaseViewController {
         self.recorderState = .recording
         self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: .normal)
         self.btnStop.isUserInteractionEnabled = true
-        print("resume")
     }
     
     func onTapEditPerformOverwriteFunction(_ sender: UIButton){
@@ -781,11 +808,14 @@ class RecordVC: BaseViewController {
     
     func onTapEditPerformPartialDeleteFunction(_ sender: UIButton){
         if sender.imageView?.image == UIImage(named: "btn_start_point_normal") {
+            self.pdStartingPoint = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
             self.btnClear.setImage(UIImage(named: "btn_end_point_normal"), for: .normal)
         }else if sender.imageView?.image == UIImage(named: "btn_end_point_normal") {
+            self.pdEndPoint = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
             self.btnClear.setImage(UIImage(named: "btn_start_deleting_normal"), for: .normal)
+            self.recorder.stopPlayer()
         }else if sender.imageView?.image == UIImage(named: "btn_start_deleting_normal") {
-            self.partialDeleteAudio(outputUrl: Constants.documentDir.appendingPathComponent("final.m4a"), startTime: 2, endTime: 5) { result in
+            self.partialDeleteAudio(outputUrl: Constants.documentDir.appendingPathComponent("final.m4a"), startTime: Double(self.pdStartingPoint), endTime: Double(self.pdEndPoint)) { result in
                 print(result)
             }
         }
@@ -873,7 +903,7 @@ class RecordVC: BaseViewController {
     }
  
     // MARK: - Upadte Timer method.
-   @objc func updateAudioMeter() {
+    @objc func updateAudioMeter() {
        if let recorder = self.recorder.audioRecorder {
             if recorder.isRecording{
 //                let hr = Int((recorder.currentTime / 60) / 60)
