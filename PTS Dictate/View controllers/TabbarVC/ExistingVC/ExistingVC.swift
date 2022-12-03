@@ -7,7 +7,7 @@
 
 import UIKit
 import AVFoundation
-import SoundWave
+import SCWaveformView
 
 
 enum AudioControllers: Int {
@@ -30,7 +30,7 @@ class ExistingVC: BaseViewController {
     @IBOutlet weak var btnBackwardTrimEnd: UIButton!
     @IBOutlet weak var btnUpload: UIButton!
     @IBOutlet weak var btnDelete: UIButton!
-    @IBOutlet weak var mediaProgressView: AudioVisualizationView!
+    @IBOutlet weak var mediaProgressView: SCScrollableWaveformView!
     @IBOutlet weak var tableView: UITableView!
     
     let existingViewModel = ExistingViewModel.shared
@@ -38,6 +38,7 @@ class ExistingVC: BaseViewController {
     var audioRecorder:AVAudioRecorder?
     var audioPlayer = AVAudioPlayer()
     var totalFiles = [String]()
+    var totalAsset = [AVAsset]()
     var totalFilesSelected : [String] = []
     var playingCellIndex = -1
     var isPlaying: Bool = false
@@ -96,6 +97,13 @@ class ExistingVC: BaseViewController {
         tableView.contentInset =  UIEdgeInsets(top: 0, left: 0, bottom: 25, right: 0)
         //        totalFiles = self.findFilesWith(fileExtension: "m4a")
         totalFiles = self.getSortedAudioList()
+        
+        totalAsset.removeAll()
+        totalFiles.forEach { fileString in
+            let asset = AVAsset(url: Constants.documentDir.appendingPathComponent(fileString))
+            totalAsset.append(asset)
+        }
+        
         setRightBarItem()
     }
     
@@ -154,7 +162,7 @@ class ExistingVC: BaseViewController {
                 } else{
                     audioPlayer.pause()
                     self.pausedTime = self.audioPlayer.currentTime
-                    self.mediaProgressView.pause()
+//                    self.mediaProgressView.pause()
                 }
 //                sender.setBackgroundImage(UIImage(named: "existing_play_btn"), for: .normal)
                 self.isPlaying = false
@@ -166,8 +174,8 @@ class ExistingVC: BaseViewController {
                 audioPlayer =  try AVAudioPlayer(contentsOf: completePathURL!)
                 audioPlayer.delegate = self
                 audioPlayer.play()
-                self.mediaProgressView.meteringLevels = meteringLevels
-                self.mediaProgressView.play(for: self.audioPlayer.duration - self.audioPlayer.currentTime)
+//                self.mediaProgressView.meteringLevels = meteringLevels
+//                self.mediaProgressView.play(for: self.audioPlayer.duration - self.audioPlayer.currentTime)
                 self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
                 tag = sender.tag
                 self.audioMeteringLevelTimer = Timer.scheduledTimer(timeInterval: 0.05, target: self, selector: #selector(timerDidUpdateMeter), userInfo: nil, repeats: true)
@@ -186,6 +194,12 @@ class ExistingVC: BaseViewController {
         let min = Int(audioPlayer.currentTime / 60)
         let sec = Int(audioPlayer.currentTime.truncatingRemainder(dividingBy: 60))
         let totalTimeString = String(format: "%02d:%02d",min, sec)
+        print("totalTimeString ===== \(totalTimeString)")
+        
+        
+        let cmTime = CMTime(seconds: audioPlayer.currentTime, preferredTimescale: 1000000)
+        self.mediaProgressView.waveformView.progressTime = cmTime
+        
         
         //            cell.lblFileTime.text = totalTimeString
         self.lblPlayingTime.text = totalTimeString
@@ -308,17 +322,42 @@ class ExistingVC: BaseViewController {
     }
     
     func setUpWave(index: Int) {
-        let audioFile = self.getFileInfo(name: self.totalFiles[index])
-        self.meteringLevels = audioFile?.fileInfo?.meteringLevels ?? []
-        self.mediaProgressView.meteringLevelBarWidth = 1.0
-        self.mediaProgressView.meteringLevelBarInterItem = 2.5
-//        self.mediaProgressView.add(meteringLevel: 0.8)
-        self.mediaProgressView.meteringLevelBarCornerRadius = 0.0
-        self.mediaProgressView.meteringLevelBarSingleStick = false
-        self.mediaProgressView.gradientStartColor = #colorLiteral(red: 0.6509803922, green: 0.8235294118, blue: 0.9529411765, alpha: 1)
-        self.mediaProgressView.gradientEndColor = #colorLiteral(red: 0.2273887992, green: 0.2274999917, blue: 0.9748747945, alpha: 1)
-        self.mediaProgressView.meteringLevels = meteringLevels
-        self.mediaProgressView.audioVisualizationMode = .read
+//        let audioFile = self.getFileInfo(name: self.totalFiles[index])
+        
+        self.mediaProgressView.waveformView.asset = totalAsset[index]
+        self.mediaProgressView.waveformView.normalColor = .lightGray
+        self.mediaProgressView.waveformView.progressColor = .blue
+        self.mediaProgressView.waveformView.progressTime = CMTimeMakeWithSeconds(0, preferredTimescale: 1)
+        
+        // Set the precision, 1 being the maximum
+        self.mediaProgressView.waveformView.precision = 0.1 // We are going to render one line per four pixels
+        
+        // Set the lineWidth so we have some space between the lines
+        self.mediaProgressView.waveformView.lineWidthRatio = 0.5
+
+        // Show stereo if available
+        self.mediaProgressView.waveformView.channelStartIndex = 0
+        self.mediaProgressView.waveformView.channelEndIndex = 1
+
+        // Show only right channel
+        self.mediaProgressView.waveformView.channelStartIndex = 1
+        self.mediaProgressView.waveformView.channelEndIndex = 1
+
+        // Add some padding between the channels
+        self.mediaProgressView.waveformView.channelsPadding = 10
+        
+        
+        
+//        self.meteringLevels = audioFile?.fileInfo?.meteringLevels ?? []
+//        self.mediaProgressView.meteringLevelBarWidth = 1.0
+//        self.mediaProgressView.meteringLevelBarInterItem = 2.5
+////        self.mediaProgressView.add(meteringLevel: 0.8)
+//        self.mediaProgressView.meteringLevelBarCornerRadius = 0.0
+//        self.mediaProgressView.meteringLevelBarSingleStick = false
+//        self.mediaProgressView.gradientStartColor = #colorLiteral(red: 0.6509803922, green: 0.8235294118, blue: 0.9529411765, alpha: 1)
+//        self.mediaProgressView.gradientEndColor = #colorLiteral(red: 0.2273887992, green: 0.2274999917, blue: 0.9748747945, alpha: 1)
+//        self.mediaProgressView.meteringLevels = meteringLevels
+//        self.mediaProgressView.audioVisualizationMode = .read
         
     }
     
@@ -398,7 +437,7 @@ class ExistingVC: BaseViewController {
                     resetSoundWaves()
                 } else{
                     audioPlayer.pause()
-                    self.mediaProgressView.pause()
+//                    self.mediaProgressView.pause()
                 }
 //                cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_play_btn"), for: .normal)
                 self.isPlaying = false
@@ -410,10 +449,10 @@ class ExistingVC: BaseViewController {
                 audioPlayer.delegate = self
                 audioPlayer.play()
                 //                self.mediaProgressView.audioURL = completePathURL!
-                self.mediaProgressView.meteringLevels = meteringLevels
+//                self.mediaProgressView.meteringLevels = meteringLevels
                 
 //                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0){
-                    self.mediaProgressView.play(for: self.audioPlayer.duration - self.audioPlayer.currentTime)
+//                    self.mediaProgressView.play(for: self.audioPlayer.duration - self.audioPlayer.currentTime)
 //                }
 //                cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_pause_btn"), for: .normal)
                 self.isPlaying = true
@@ -541,6 +580,7 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
         }
         return nil
     }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ExistingFileCell", for: indexPath) as! ExistingFileCell
         if self.totalFilesSelected.contains(self.totalFiles[indexPath.row]){
@@ -706,8 +746,8 @@ extension ExistingVC{
     }
     
     private func resetSoundWaves() {
-        self.mediaProgressView.stop()
-        self.mediaProgressView.reset()
+//        self.mediaProgressView.stop()
+//        self.mediaProgressView.reset()
     }
 }
 
@@ -723,6 +763,8 @@ extension ExistingVC: AVAudioPlayerDelegate {
             self.playingCellIndex = -1
             self.tableView.reloadData()
             print("Playing Completed")
+            
+            audioMeteringLevelTimer?.invalidate()
         }
     }
 }
@@ -784,14 +826,14 @@ extension ExistingVC{
             }
         } else {
             audioPlayer.pause()
-            self.mediaProgressView.pause()
+//            self.mediaProgressView.pause()
             audioPlayer.currentTime = time
             audioPlayer.play()
             let min = Int(audioPlayer.currentTime / 60)
             let sec = Int(audioPlayer.currentTime.truncatingRemainder(dividingBy: 60))
             let totalTimeString = String(format: "%02d:%02d", min, sec)
             self.lblPlayingTime.text = totalTimeString
-            self.mediaProgressView.play(for: time)
+//            self.mediaProgressView.play(for: time)
             audioPlayer.updateMeters()
         }
     }
@@ -804,14 +846,14 @@ extension ExistingVC{
             audioPlayer.stop()
         } else {
             audioPlayer.pause()
-            self.mediaProgressView.pause()
+//            self.mediaProgressView.pause()
             audioPlayer.currentTime = time
             audioPlayer.play()
             let min = Int(audioPlayer.currentTime / 60)
             let sec = Int(audioPlayer.currentTime.truncatingRemainder(dividingBy: 60))
             let totalTimeString = String(format: "%02d:%02d", min, sec)
             self.lblPlayingTime.text = totalTimeString
-            self.mediaProgressView.play(for: time)
+//            self.mediaProgressView.play(for: time)
             audioPlayer.updateMeters()
         }
     }

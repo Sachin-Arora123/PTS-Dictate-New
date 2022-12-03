@@ -8,7 +8,7 @@
 import UIKit
 import CoreData
 import AVFoundation
-import SoundWave
+import SCWaveformView
 
 var isRecording: Bool = false
 var audioRecorder:AVAudioRecorder?
@@ -59,7 +59,7 @@ class RecordVC: BaseViewController {
     @IBOutlet weak var lblSeperator: UILabel!
     @IBOutlet weak var playerTotalTime: UILabel!
     @IBOutlet weak var stackView: UIStackView!
-    @IBOutlet weak var playerWaveView: AudioVisualizationView!
+    @IBOutlet weak var playerWaveView: SCScrollableWaveformView!
     @IBOutlet weak var bookmarkWaveTime: UIView!
     @IBOutlet weak var bookMarkView: UIView!
     @IBOutlet weak var btnLeftBookmark: UIButton!
@@ -98,6 +98,7 @@ class RecordVC: BaseViewController {
     var pdEndPoint      = 0.0
     var isPerformingOverwrite = false
     var overwritingStartingTimerPoint = 0.0
+    var playedFirstTime = false
     
     private var isCommentsOn:Bool {
         return CoreData.shared.commentScreen == 1 ?  true : false
@@ -129,19 +130,6 @@ class RecordVC: BaseViewController {
         }
     }
     
-    //Mohit New
-    // MARK: Audio visualization view properties
-//    private let audioVisualizationViewModel = AudioVisualizationViewModel()
-//    private var chronometer: Chronometer?
-//    private var meteringLevels: [Float] = []
-//    private var currentVisualizationState: AudioVisualizationState = .ready {
-//        didSet{
-//            self.audioVisualizationView.audioVisualizationMode = self.currentVisualizationState.audioVisualizationMode
-//        }
-//    }
-//    @IBOutlet private var audioVisualizationView: AudioVisualizationView!
-    
-    
     // MARK: - View Life-Cycle.
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -172,9 +160,6 @@ class RecordVC: BaseViewController {
         
         //setup file name and fileurl before recording
         self.setupFileName()
-        
-        //visulization view setup
-//        visualizationViewSetup()
 
         //setup audio recorder
         setupRecorder()
@@ -193,6 +178,7 @@ class RecordVC: BaseViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         audioRecorder = nil
+        self.playedFirstTime = false
         self.tabBarController?.setTabBarHidden(false, animated: false)
     }
     
@@ -226,7 +212,7 @@ class RecordVC: BaseViewController {
         segmentHeight.constant = 0
         viewProgress.isHidden = true
         progressViewHeight.constant = 45
-                
+        self.playerWaveView.isHidden = true
     }
     
     func initiallyBtnStateSetup(){
@@ -325,14 +311,27 @@ class RecordVC: BaseViewController {
     // MARK: - Setup audio waves for the recorded audio
     func setUpWave() {
         self.playerWaveView.isHidden = false
-        self.playerWaveView.meteringLevelBarWidth = 1.0
-        self.playerWaveView.meteringLevelBarInterItem = 2.5
-        self.playerWaveView.meteringLevelBarCornerRadius = 0.0
-        self.playerWaveView.meteringLevelBarSingleStick = false
-        self.playerWaveView.gradientStartColor = #colorLiteral(red: 0.6509803922, green: 0.8235294118, blue: 0.9529411765, alpha: 1)
-        self.playerWaveView.gradientEndColor = #colorLiteral(red: 0.2273887992, green: 0.2274999917, blue: 0.9748747945, alpha: 1)
-//        self.playerWaveView.meteringLevels = meteringLevels
-        self.playerWaveView.audioVisualizationMode = .read
+        self.playerWaveView.waveformView.asset = self.getFullAsset()
+        self.playerWaveView.waveformView.normalColor = .lightGray
+        self.playerWaveView.waveformView.progressColor = .blue
+        self.playerWaveView.waveformView.progressTime = CMTimeMakeWithSeconds(0, preferredTimescale: 1)
+        
+        // Set the precision, 1 being the maximum
+        self.playerWaveView.waveformView.precision = 0.1 // We are going to render one line per four pixels
+        
+        // Set the lineWidth so we have some space between the lines
+        self.playerWaveView.waveformView.lineWidthRatio = 0.5
+
+        // Show stereo if available
+        self.playerWaveView.waveformView.channelStartIndex = 0
+        self.playerWaveView.waveformView.channelEndIndex = 1
+
+        // Show only right channel
+        self.playerWaveView.waveformView.channelStartIndex = 1
+        self.playerWaveView.waveformView.channelEndIndex = 1
+
+        // Add some padding between the channels
+        self.playerWaveView.waveformView.channelsPadding = 10
     }
     
     // MARK: - Bottom Button View.
@@ -391,7 +390,17 @@ class RecordVC: BaseViewController {
             btnPlay.isUserInteractionEnabled = true
             btnBackwardTrim.isUserInteractionEnabled = true
             btnBackwardTrimEnd.isUserInteractionEnabled = true
-            self.setUpStopAndPauseUI()
+            
+            self.recorder.concatChunks(filename: self.audioFileURL){
+                success in
+                if success{
+                    self.chunkInt = 0
+                    DispatchQueue.main.async {
+                        self.setUpStopAndPauseUI()
+                    }
+                }
+            }
+            
             self.btnStop.isUserInteractionEnabled = true
             
         case .pause:
@@ -409,7 +418,6 @@ class RecordVC: BaseViewController {
             self.btnStop.isUserInteractionEnabled = true
         }
         isRecording = true
-//        visualizationViewControlls()
     }
     
     @IBAction func onTapStop(_ sender: UIButton) {
@@ -431,7 +439,6 @@ class RecordVC: BaseViewController {
         CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
         lblPlayerStatus.text = "Stopped"
         self.setUpStopAndPauseUI()
-//        visualizationViewControlls()
         
         if self.performingFunctionState == .append{
             self.recorder.concatChunks(filename: self.audioFileURL){
@@ -457,7 +464,6 @@ class RecordVC: BaseViewController {
         progressViewHeight.constant = 0
         viewProgress.isHidden = true
         stackView.isHidden = true
-        playerWaveView.isHidden = false
         bookMarkView.isHidden = true
         viewClear.isHidden = true
         viewPlayerTiming.isHidden = false
@@ -480,25 +486,41 @@ class RecordVC: BaseViewController {
     
     // MARK: - @IBAction Play.
     @IBAction func onTapPlay(_ sender: UIButton)  {
-       if !self.recorder.queuePlayerPlaying {
-           self.recorder.startPlayer()
-           btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
-           btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_disable"), for: .normal)
-           btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
-           btnRecord.isUserInteractionEnabled = false
-           btnStop.isUserInteractionEnabled = false
-       }else{
-           self.recorder.stopPlayer()
-           self.onStopPlayerSetupUI()
-       }
-        NotificationCenter.default.addObserver(self, selector: #selector(self.playerDidFinishPlaying(sender:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.recorder.playerItem)
-        self.recorder.queuePlayer?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1, preferredTimescale: 1), queue: DispatchQueue.main, using: { (time) in
-                if self.recorder.queuePlayer?.currentItem?.status == .readyToPlay {
-                    let currentTime = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
-                    print("currentTime ======== \(currentTime)")
-                    self.currentPlayingTime.text = self.timeString(from: currentTime)
-                }
-        })
+        if !self.recorder.queuePlayerPlaying {
+            //play the recording
+            if !playedFirstTime{
+                //playing first time
+                self.recorder.startPlayer()
+                self.playedFirstTime = true
+            }else{
+                self.recorder.queuePlayerPlaying = true
+                self.recorder.queuePlayer?.play()
+            }
+            btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
+            btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_disable"), for: .normal)
+            btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
+            btnRecord.isUserInteractionEnabled = false
+            btnStop.isUserInteractionEnabled = false
+            
+            NotificationCenter.default.addObserver(self, selector: #selector(self.playerDidFinishPlaying(sender:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.recorder.playerItem)
+            
+            let timeScale = CMTimeScale(NSEC_PER_SEC)
+            let time = CMTime(seconds: 0.25, preferredTimescale: timeScale)
+            //observing the player after every 0.25 seconds.
+            self.recorder.queuePlayer?.addPeriodicTimeObserver(forInterval: time, queue: .main, using: { time in
+                    if self.recorder.queuePlayer?.currentItem?.status == .readyToPlay {
+                        let currentTime = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
+                        print("currentTime ======== \(currentTime)")
+                        self.currentPlayingTime.text = self.timeString(from: currentTime)
+                        self.playerWaveView.waveformView.progressTime = self.recorder.queuePlayer?.currentTime() ?? CMTime.zero
+                    }
+            })
+            
+        }else{
+            //pause the recording
+            self.recorder.stopPlayer()
+            self.onStopPlayerSetupUI()
+        }
     }
     
     func onStopPlayerSetupUI(){
@@ -513,6 +535,8 @@ class RecordVC: BaseViewController {
     @objc func playerDidFinishPlaying(sender: Notification) {
 //        btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
         self.onStopPlayerSetupUI()
+        self.playedFirstTime = false
+        self.recorder.queuePlayerPlaying = false
         print("Finished playing")
     }
     
@@ -541,7 +565,6 @@ class RecordVC: BaseViewController {
     }
     
     func fastForwardByTime(timeVal: Double) {
-//        audioPlayer = try? AVAudioPlayer(contentsOf: audioRecorder!.url)
         audioPlayer = try? AVAudioPlayer(contentsOf: self.recorder.audioRecorder.url)
         audioPlayer?.delegate = self
         var time: TimeInterval = audioPlayer?.currentTime ?? 0.0
@@ -563,7 +586,6 @@ class RecordVC: BaseViewController {
     }
     
     func fastBackwardByTime(timeVal: Double) {
-//        audioPlayer = try? AVAudioPlayer(contentsOf: audioRecorder!.url)
         audioPlayer = try? AVAudioPlayer(contentsOf:   self.recorder.audioRecorder.url)
         var time: TimeInterval = audioPlayer?.currentTime ?? 0.0
         time -= timeVal
@@ -578,6 +600,7 @@ class RecordVC: BaseViewController {
             audioPlayer?.updateMeters()
         }
     }
+    
     // MARK: - @IBAction Segment Control.
     @IBAction func segmentChanged(_ sender: Any) {
         switch segmentControl.selectedSegmentIndex {
@@ -601,6 +624,16 @@ class RecordVC: BaseViewController {
             CommonFunctions.alertMessage(view: self, title: "Insert", msg: Constants.insertMsg, btnTitle: "OK")
             
             self.recorder.startPlayer()
+            let timeScale = CMTimeScale(NSEC_PER_SEC)
+            let time = CMTime(seconds: 0.25, preferredTimescale: timeScale)
+            self.recorder.queuePlayer?.addPeriodicTimeObserver(forInterval: time, queue: .main, using: { time in
+                    if self.recorder.queuePlayer?.currentItem?.status == .readyToPlay {
+                        let currentTime = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
+                        print("currentTime ======== \(currentTime)")
+                        self.currentPlayingTime.text = self.timeString(from: currentTime)
+                        self.playerWaveView.waveformView.progressTime = self.recorder.queuePlayer?.currentTime() ?? CMTime.zero
+                    }
+            })
             break
         case 2:
             self.performingFunctionState = .overwrite
@@ -668,7 +701,6 @@ class RecordVC: BaseViewController {
                     if self.isCommentsOn {
                         self.pushCommentVC()
                     } else {
-//                        AudioFiles.shared.saveNewAudioFile(name: self.audioFileURL, meteringLevels: self.meteringLevels)
                         let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
                         self.setPushTransitionAnimation(VC)
                         self.navigationController?.popViewController(animated: false)
@@ -875,6 +907,27 @@ class RecordVC: BaseViewController {
                 }
             }
         }
+    }
+    
+    func getFullAsset() -> AVAsset?{
+        // create empty mutable composition
+        let composition: AVMutableComposition = AVMutableComposition()
+        
+        // copy all of original asset into the mutable composition, effectively creating an editable copy
+        for asset in self.recorder.articleChunks.reversed() {
+            do{
+                try composition.insertTimeRange( CMTimeRangeMake( start: .zero, duration: asset.duration), of: asset, at: .zero)
+            }catch{
+                print("Error")
+            }
+        }
+        
+        if let session = AVAssetExportSession(asset: composition, presetName: AVAssetExportPresetAppleM4A){
+            print(session.asset.duration.seconds)
+            return session.asset
+        }
+        
+        return nil
     }
     
     func updateTimer(){
@@ -1111,8 +1164,8 @@ extension RecordVC{
 //        let startURL = self.getCurrentDirectory(with: folderName, caseNumber: caseNumber).appendingPathComponent("StartTrim.m4a")
 //        let endURL = self.getCurrentDirectory(with: folderName, caseNumber: caseNumber).appendingPathComponent("EndTrim.m4a")
         
-        let startURL = self.getDocumentsDirectory().appendingPathComponent("StartTrim.m4a")
-        let endURL = self.getDocumentsDirectory().appendingPathComponent("EndTrim.m4a")
+        let startURL = Constants.documentDir.appendingPathComponent("StartTrim.m4a")
+        let endURL = Constants.documentDir.appendingPathComponent("EndTrim.m4a")
         
         self.removeFileIfAlreadyExists(at: startURL)
         self.removeFileIfAlreadyExists(at: endURL)
@@ -1182,18 +1235,18 @@ extension RecordVC{
         
         //Export Final Audio //Dictation_10162018095338_20424047
 //        let finalAudioURL = self.getCurrentDirectory(with: folderName, caseNumber: caseNumber).appendingPathComponent("Dictation_\(folderName)_\(caseNumber).m4a")
-        let finalAudioURL = self.getDocumentsDirectory().appendingPathComponent("final.m4a")
+        let finalAudioURL = Constants.documentDir.appendingPathComponent("final.m4a")
         self.removeFileIfAlreadyExists(at: finalAudioURL)
-        self.removeAllFilesExceptNewRecording(withFolderName: folderName, caseNumber: caseNumber)
+//        self.removeAllFilesExceptNewRecording(withFolderName: folderName, caseNumber: caseNumber)
         composition.export(to: finalAudioURL, completionHandler: handler)
     }
 
-    func getCurrentDirectory(with folderName:String, caseNumber:String)  -> URL {
-        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        let documentsDirectory = paths[0]
-        let appendedURL = documentsDirectory.appendingPathComponent(caseNumber).appendingPathComponent(folderName)
-        return appendedURL
-    }
+//    func getCurrentDirectory(with folderName:String, caseNumber:String)  -> URL {
+//        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+//        let documentsDirectory = paths[0]
+//        let appendedURL = documentsDirectory.appendingPathComponent(caseNumber).appendingPathComponent(folderName)
+//        return appendedURL
+//    }
     
     func removeFileIfAlreadyExists(at url:URL) {
         do {
@@ -1201,39 +1254,39 @@ extension RecordVC{
         } catch { }
     }
     
-    func removeAllFilesExceptNewRecording(withFolderName : String, caseNumber : String){
-        let newRecording = "Dictation_New_\(withFolderName).m4a"
-        let newOverwrite = "Dictation_\(withFolderName)_\(caseNumber)_newOverWrite.m4a"
-        
-        let startTrim = self.getCurrentDirectory(with: withFolderName, caseNumber: caseNumber).appendingPathComponent("StartTrim.m4a")
-        let endTrim = getCurrentDirectory(with: withFolderName, caseNumber: caseNumber).appendingPathComponent("EndTrim.m4a")
-        let newRec = getCurrentDirectory(with: withFolderName, caseNumber: caseNumber).appendingPathComponent(newRecording)
-        let newOver = getCurrentDirectory(with: withFolderName, caseNumber: caseNumber).appendingPathComponent(newOverwrite)
-        
-        do{
-            try FileManager.default.removeItem(at: startTrim)
-        }catch{
-            print("File not Found in Directory..!!")
-        }
-        
-        do{
-            try FileManager.default.removeItem(at: endTrim)
-        }catch{
-            print("File not Found in Directory..!!")
-        }
-        
-        do{
-            try FileManager.default.removeItem(at: newRec)
-        }catch{
-            print("File not Found in Directory..!!")
-        }
-        
-        do{
-            try FileManager.default.removeItem(at: newOver)
-        }catch{
-            print("File not Found in Directory..!!")
-        }
-    }
+//    func removeAllFilesExceptNewRecording(withFolderName : String, caseNumber : String){
+//        let newRecording = "Dictation_New_\(withFolderName).m4a"
+//        let newOverwrite = "Dictation_\(withFolderName)_\(caseNumber)_newOverWrite.m4a"
+//
+//        let startTrim = self.getCurrentDirectory(with: withFolderName, caseNumber: caseNumber).appendingPathComponent("StartTrim.m4a")
+//        let endTrim = getCurrentDirectory(with: withFolderName, caseNumber: caseNumber).appendingPathComponent("EndTrim.m4a")
+//        let newRec = getCurrentDirectory(with: withFolderName, caseNumber: caseNumber).appendingPathComponent(newRecording)
+//        let newOver = getCurrentDirectory(with: withFolderName, caseNumber: caseNumber).appendingPathComponent(newOverwrite)
+//
+//        do{
+//            try FileManager.default.removeItem(at: startTrim)
+//        }catch{
+//            print("File not Found in Directory..!!")
+//        }
+//
+//        do{
+//            try FileManager.default.removeItem(at: endTrim)
+//        }catch{
+//            print("File not Found in Directory..!!")
+//        }
+//
+//        do{
+//            try FileManager.default.removeItem(at: newRec)
+//        }catch{
+//            print("File not Found in Directory..!!")
+//        }
+//
+//        do{
+//            try FileManager.default.removeItem(at: newOver)
+//        }catch{
+//            print("File not Found in Directory..!!")
+//        }
+//    }
 }
 
 extension AVMutableCompositionTrack {
@@ -1280,76 +1333,3 @@ extension CMTime {
         return self.convertScale(60000, method: .roundAwayFromZero)
     }
 }
-
-
-//extension RecordVC {
-//
-//    func visualizationViewSetup() {
-//        self.audioVisualizationViewModel.askAudioRecordingPermission()
-//
-//        self.audioVisualizationViewModel.audioMeteringLevelUpdate = { [weak self] meteringLevel in
-//            guard let self = self, self.audioVisualizationView.audioVisualizationMode == .write else {
-//                return
-//            }
-//            self.meteringLevels.append(meteringLevel)
-////            self.audioVisualizationView.add(meteringLevel: meteringLevel)
-//        }
-//
-//        self.audioVisualizationViewModel.audioDidFinish = { [weak self] in
-//            self?.currentVisualizationState = .recorded
-//            self?.audioVisualizationView.stop()
-//        }
-//    }
-//
-//    func visualizationViewControlls() {
-//        switch self.currentVisualizationState {
-//        case .ready:
-//            self.currentVisualizationState = .recording
-//            self.audioVisualizationViewModel.startRecording { [weak self] soundRecord, error in
-//                if let error = error {
-//                 //   self?.showAlert(with: error)
-//                    print(error)
-//                    return
-//                }
-//
-//                self?.currentVisualizationState = .recording
-//
-//                self?.chronometer = Chronometer()
-//                self?.chronometer?.start()
-//            }
-//        case .recording:
-//            self.chronometer?.stop()
-//            self.chronometer = nil
-//
-//            self.audioVisualizationViewModel.currentAudioRecord!.meteringLevels = self.audioVisualizationView.scaleSoundDataToFitScreen()
-//            self.audioVisualizationView.audioVisualizationMode = .read
-//
-//            do {
-//                try self.audioVisualizationViewModel.stopRecording()
-//                self.currentVisualizationState = .recorded
-//            } catch {
-//                self.currentVisualizationState = .ready
-//             //   self.showAlert(with: error)
-//            }
-//        case .recorded, .paused:
-//            do {
-//                let duration = try self.audioVisualizationViewModel.startPlaying()
-//                self.currentVisualizationState = .playing
-//                self.audioVisualizationView.meteringLevels = self.audioVisualizationViewModel.currentAudioRecord!.meteringLevels
-//                self.audioVisualizationView.play(for: duration)
-//            } catch {
-//                self.showAlert(with: error)
-//            }
-//        case .playing:
-//            do {
-//                try self.audioVisualizationViewModel.pausePlaying()
-//                self.currentVisualizationState = .paused
-//                self.audioVisualizationView.pause()
-//            } catch {
-//              //  self.showAlert(with: error)
-//            }
-//        default:
-//            break
-//        }
-//    }
-//}

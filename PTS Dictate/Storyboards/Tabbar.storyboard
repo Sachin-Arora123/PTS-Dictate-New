@@ -248,7 +248,7 @@
                                     <constraint firstAttribute="height" constant="45" id="upl-h2-e4b"/>
                                 </constraints>
                             </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RN2-wU-rAj" customClass="AudioVisualizationView" customModule="SoundWave">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RN2-wU-rAj" customClass="SCScrollableWaveformView">
                                 <rect key="frame" x="15" y="122" width="384" height="60"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
@@ -565,10 +565,6 @@
                                 <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ddF-Vw-Qe6" customClass="AudioVisualizationView" customModule="SoundWave">
-                                <rect key="frame" x="0.0" y="652" width="414" height="128"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="yo8-jP-fyy"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -578,7 +574,6 @@
                             <constraint firstItem="bmD-0y-Xqp" firstAttribute="leading" secondItem="EO8-So-pyD" secondAttribute="leading" id="1zk-pT-csI"/>
                             <constraint firstItem="IFu-Ny-Pj0" firstAttribute="leading" secondItem="yo8-jP-fyy" secondAttribute="leading" constant="15" id="29t-9n-cBF"/>
                             <constraint firstItem="yo8-jP-fyy" firstAttribute="trailing" secondItem="WHC-EH-Ct0" secondAttribute="trailing" constant="15" id="2Ah-zx-eex"/>
-                            <constraint firstItem="yo8-jP-fyy" firstAttribute="trailing" secondItem="ddF-Vw-Qe6" secondAttribute="trailing" id="2XJ-f4-sta"/>
                             <constraint firstItem="o8d-Qa-DU6" firstAttribute="leading" secondItem="yo8-jP-fyy" secondAttribute="leading" constant="20" id="2fr-LO-0ui"/>
                             <constraint firstItem="yo8-jP-fyy" firstAttribute="trailing" secondItem="GVr-qK-lEL" secondAttribute="trailing" id="2lq-22-PHf"/>
                             <constraint firstItem="tce-Oo-tbv" firstAttribute="leading" secondItem="yo8-jP-fyy" secondAttribute="leading" constant="15" id="4QH-fl-ukp"/>
@@ -602,8 +597,6 @@
                             <constraint firstItem="J8T-nC-uAX" firstAttribute="leading" secondItem="8du-Pf-dUx" secondAttribute="trailing" constant="5" id="MrT-K0-MEc"/>
                             <constraint firstItem="qhp-LO-2c5" firstAttribute="leading" secondItem="yo8-jP-fyy" secondAttribute="leading" constant="15" id="OKM-xq-Wqi"/>
                             <constraint firstItem="tce-Oo-tbv" firstAttribute="top" secondItem="qhp-LO-2c5" secondAttribute="bottom" constant="5" id="QKT-e1-VJm"/>
-                            <constraint firstItem="yo8-jP-fyy" firstAttribute="bottom" secondItem="ddF-Vw-Qe6" secondAttribute="bottom" constant="33" id="Qdn-Fn-hyd"/>
-                            <constraint firstItem="ddF-Vw-Qe6" firstAttribute="top" secondItem="bmD-0y-Xqp" secondAttribute="bottom" constant="54" id="Qkw-OQ-r2Z"/>
                             <constraint firstItem="GVr-qK-lEL" firstAttribute="bottom" secondItem="F9Z-TR-piS" secondAttribute="bottom" id="RDM-gf-y8v"/>
                             <constraint firstItem="0dl-dH-n19" firstAttribute="top" secondItem="8du-Pf-dUx" secondAttribute="bottom" constant="2" id="S5d-Rh-sZx"/>
                             <constraint firstItem="WHC-EH-Ct0" firstAttribute="leading" secondItem="u5k-jG-Lb8" secondAttribute="trailing" constant="5" id="Uej-yw-iVf"/>
@@ -627,7 +620,6 @@
                             <constraint firstItem="8du-Pf-dUx" firstAttribute="centerX" secondItem="IFu-Ny-Pj0" secondAttribute="centerX" id="mQh-a0-z2G"/>
                             <constraint firstItem="GVr-qK-lEL" firstAttribute="leading" secondItem="yo8-jP-fyy" secondAttribute="leading" id="r2V-Tc-0BD"/>
                             <constraint firstItem="yo8-jP-fyy" firstAttribute="trailing" secondItem="chE-M7-gwr" secondAttribute="trailing" constant="15" id="r4t-Vp-gtY"/>
-                            <constraint firstItem="ddF-Vw-Qe6" firstAttribute="leading" secondItem="yo8-jP-fyy" secondAttribute="leading" id="tiP-3U-pZF"/>
                             <constraint firstItem="yo8-jP-fyy" firstAttribute="trailing" secondItem="J8T-nC-uAX" secondAttribute="trailing" constant="20" id="umA-OO-eZt"/>
                             <constraint firstItem="Zkn-h4-eQj" firstAttribute="leading" secondItem="8du-Pf-dUx" secondAttribute="leading" id="vII-E6-Av9"/>
                             <constraint firstItem="vsU-k2-ZZX" firstAttribute="trailing" secondItem="IFu-Ny-Pj0" secondAttribute="trailing" id="vc8-o1-0aA"/>
@@ -1075,7 +1067,7 @@
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="f4q-eA-bx0" customClass="AudioVisualizationView" customModule="SoundWave">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="f4q-eA-bx0" customClass="SCScrollableWaveformView">
                                         <rect key="frame" x="10" y="45.5" width="394" height="50"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
@@ -1260,7 +1252,7 @@
                         <outlet property="lblPlayerStatus" destination="0Xm-yw-euV" id="ICg-k3-AXq"/>
                         <outlet property="lblPlayingTime" destination="fQt-Kg-zIL" id="hng-LG-8yg"/>
                         <outlet property="lblTotalTime" destination="Wvg-bZ-l31" id="ECc-cG-5kh"/>
-                        <outlet property="mediaProgressView" destination="f4q-eA-bx0" id="48j-YQ-cTu"/>
+                        <outlet property="mediaProgressView" destination="f4q-eA-bx0" id="WRz-4G-Rwh"/>
                         <outlet property="tableView" destination="Xr7-mS-inG" id="RUA-oc-uKX"/>
                         <outlet property="viewBottomPlayer" destination="jyk-gS-ahv" id="FNI-VO-DcU"/>
                         <outlet property="viewNoRecordedFile" destination="4Vl-SL-8WK" id="uHm-VE-fxB"/>
