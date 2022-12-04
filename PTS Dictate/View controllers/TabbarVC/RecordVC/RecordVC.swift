@@ -246,6 +246,7 @@ class RecordVC: BaseViewController {
         //need to check recording file count here as well
         self.audioFileURL = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)"
         self.lblFNameValue.text = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)" + ".m4a"
+        self.audioFileName = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)" + ".m4a" // mohit new changes
         self.lblFSizeValue.text = "0.00 Mb"
         
         //setup file url as well.
@@ -295,7 +296,7 @@ class RecordVC: BaseViewController {
             CoreData.shared.fileCount += 1
             CoreData.shared.dataSave()
         }
-        
+        AudioFiles.shared.saveNewAudioFile(name: self.audioFileName) // mohit new changes
         self.recorderState = .none
         tempAudioFileURL = self.audioFileURL
         stopwatch.stop()
@@ -701,6 +702,7 @@ class RecordVC: BaseViewController {
                     if self.isCommentsOn {
                         self.pushCommentVC()
                     } else {
+                        AudioFiles.shared.saveNewAudioFile(name: self.audioFileName)  // mohit new changes
                         let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
                         self.setPushTransitionAnimation(VC)
                         self.navigationController?.popViewController(animated: false)

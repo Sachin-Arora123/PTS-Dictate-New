@@ -56,8 +56,8 @@ class CommentsVC: BaseViewController {
         } else if fromExistingVC && !canEditComments{
             txtViewComment.isEditable = false
             txtViewComment.text = comment
-            btnSave.isUserInteractionEnabled = false
-            btnDiscard.isUserInteractionEnabled = false
+            btnSave.isHidden = true
+            btnDiscard.isHidden = true
         } else {
             txtViewComment.isEditable = true
             txtViewComment.becomeFirstResponder()
@@ -69,8 +69,6 @@ class CommentsVC: BaseViewController {
         } else {
             btnDiscard.isUserInteractionEnabled = true
         }
-        btnSave.isHidden = isUploaded
-        btnDiscard.isHidden = isUploaded
         self.navigationController?.navigationItem.hidesBackButton = true
     }
     
@@ -80,7 +78,7 @@ class CommentsVC: BaseViewController {
             popToExitingVC()
             return
         }
-        AudioFiles.shared.saveNewAudioFile(name: fileName, comment: txtViewComment.text, meteringLevels: self.meteringLevels)
+        AudioFiles.shared.saveNewAudioFile(name: fileName, comment: txtViewComment.text)
         let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
         self.setPushTransitionAnimation(VC)
         popToExitingVC()

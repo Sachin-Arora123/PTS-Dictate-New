@@ -59,13 +59,12 @@ public class AudioFileInfo: NSObject, NSCoding {
     public var uploadedAt: String?
     public var uploadingInProgress: Bool?
     public var autoSaved: Bool?
-    public var meteringLevels: [Float]?
     
     enum CodingKeys:String {
         case comment, isUploaded, archivedDays, canEdit, uploadedAt, uploadingInProgress, autoSaved, meteringLevels
     }
     
-    init(comment: String?, isUploaded: Bool?, archivedDays: Int?, canEdit: Bool?, uploadedAt: String?, uploadingInProgress: Bool?, autoSaved: Bool?, meteringLevels: [Float]?) {
+    init(comment: String?, isUploaded: Bool?, archivedDays: Int?, canEdit: Bool?, uploadedAt: String?, uploadingInProgress: Bool?, autoSaved: Bool?) {
         self.comment = comment
         self.isUploaded = isUploaded
         self.archivedDays = archivedDays
@@ -73,7 +72,6 @@ public class AudioFileInfo: NSObject, NSCoding {
         self.uploadedAt = uploadedAt
         self.uploadingInProgress = uploadingInProgress
         self.autoSaved = autoSaved
-        self.meteringLevels = meteringLevels
     }
     
     public override init() {
@@ -88,7 +86,6 @@ public class AudioFileInfo: NSObject, NSCoding {
         aCoder.encode(uploadedAt, forKey: CodingKeys.uploadedAt.rawValue)
         aCoder.encode(uploadingInProgress, forKey: CodingKeys.uploadingInProgress.rawValue)
         aCoder.encode(autoSaved, forKey: CodingKeys.autoSaved.rawValue)
-        aCoder.encode(meteringLevels, forKey: CodingKeys.meteringLevels.rawValue)
     }
     
     public required convenience init?(coder aDecoder: NSCoder) {
@@ -99,8 +96,7 @@ public class AudioFileInfo: NSObject, NSCoding {
         let uploadedAt = aDecoder.decodeObject(forKey: CodingKeys.uploadedAt.rawValue) as? String
         let uploadingInProgress = aDecoder.decodeObject(forKey: CodingKeys.uploadingInProgress.rawValue) as? Bool
         let autoSaved = aDecoder.decodeObject(forKey: CodingKeys.autoSaved.rawValue) as? Bool
-        let meteringLevels = aDecoder.decodeObject(forKey: CodingKeys.meteringLevels.rawValue) as? [Float]
         
-        self.init(comment: comment, isUploaded: isUploaded, archivedDays: archivedDays, canEdit: canEdit, uploadedAt: uploadedAt, uploadingInProgress: uploadingInProgress, autoSaved: autoSaved, meteringLevels: meteringLevels)
+        self.init(comment: comment, isUploaded: isUploaded, archivedDays: archivedDays, canEdit: canEdit, uploadedAt: uploadedAt, uploadingInProgress: uploadingInProgress, autoSaved: autoSaved)
     }
 }
