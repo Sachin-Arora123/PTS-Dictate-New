@@ -320,8 +320,6 @@ class ExistingVC: BaseViewController {
     }
     
     func setUpWave(index: Int) {
-        //        let audioFile = self.getFileInfo(name: self.totalFiles[index])
-        
         self.mediaProgressView.waveformView.asset = totalAsset[index]
         self.mediaProgressView.waveformView.normalColor = .lightGray
         self.mediaProgressView.waveformView.progressColor = .blue
@@ -343,20 +341,6 @@ class ExistingVC: BaseViewController {
         
         // Add some padding between the channels
         self.mediaProgressView.waveformView.channelsPadding = 10
-        
-        
-        
-        //        self.meteringLevels = audioFile?.fileInfo?.meteringLevels ?? []
-        //        self.mediaProgressView.meteringLevelBarWidth = 1.0
-        //        self.mediaProgressView.meteringLevelBarInterItem = 2.5
-        ////        self.mediaProgressView.add(meteringLevel: 0.8)
-        //        self.mediaProgressView.meteringLevelBarCornerRadius = 0.0
-        //        self.mediaProgressView.meteringLevelBarSingleStick = false
-        //        self.mediaProgressView.gradientStartColor = #colorLiteral(red: 0.6509803922, green: 0.8235294118, blue: 0.9529411765, alpha: 1)
-        //        self.mediaProgressView.gradientEndColor = #colorLiteral(red: 0.2273887992, green: 0.2274999917, blue: 0.9748747945, alpha: 1)
-        //        self.mediaProgressView.meteringLevels = meteringLevels
-        //        self.mediaProgressView.audioVisualizationMode = .read
-        
     }
     
     fileprivate func pushToComments(selected audio: String, index: Int) {
@@ -468,7 +452,7 @@ class ExistingVC: BaseViewController {
     private func controllAudioPlayer(controllerType: AudioControllers) {
         DispatchQueue.main.async {
             self.audioPlayer.pause()
-            let currentTime = self.audioPlayer.currentTime
+//            let currentTime = self.audioPlayer.currentTime
             switch controllerType {
             case .fastRewind:
                 self.fastBackwardByTime(timeVal: 3)
@@ -515,7 +499,7 @@ class ExistingVC: BaseViewController {
 extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if self.totalFiles.count > 0{
-            self.lblFileName.text = self.totalFiles[0] as? String
+            self.lblFileName.text = self.totalFiles[0]
             self.tableView.isHidden = false
             self.viewBottomPlayer.isHidden = false
             self.viewNoRecordedFile.isHidden = true

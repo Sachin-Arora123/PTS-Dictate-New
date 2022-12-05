@@ -180,6 +180,9 @@ class RecordVC: BaseViewController {
         audioRecorder = nil
         self.playedFirstTime = false
         self.tabBarController?.setTabBarHidden(false, animated: false)
+        
+        let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
+        self.editFromExiting = false
     }
     
     deinit {

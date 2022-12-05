@@ -74,7 +74,7 @@ class AudioFiles {
     func getAudioComment(name: String) -> String {
         for (index,audio) in audioFiles.enumerated() where audio.name == name {
             let comment = audioFiles[index].fileInfo?.comment
-            return comment ?? ""
+            return comment?.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""
         }
         return ""
     }
