@@ -135,47 +135,58 @@ class ExistingVC: BaseViewController {
         }
         return matches
     }
+    
     @objc func play(_ sender: UIButton){
+        playAudio(index: sender.tag)
+    }
+    
+    func playAudio(index:Int? = nil) {
+        //new
+        var playingMediaIndex = 0
+        if index == nil{
+            for (index, value) in self.totalFiles.enumerated() {
+                if value == self.lblFileName.text!  {
+                    playingMediaIndex = index
+                }
+            }
+        }else{
+            playingMediaIndex = index!
+        }
+        
         do {
-            let index = sender.tag
-            self.lblFileName.text = self.totalFiles[index]
+            let index                 = playingMediaIndex
+            self.lblFileName.text     = self.totalFiles[index]
             self.lblPlayerStatus.text = "Now Playing"
-            let audioFile = getFileInfo(name: self.totalFiles[index])
-            //                let file = Bundle.main.url(forResource: "file_name", withExtension: "mp3")!
-            let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            let completePath = directoryPath.absoluteString + self.totalFiles[index]
-            let completePathURL = URL(string: completePath)
-            //                let file = directoryPath + fileEndPoint
-            //                let dirURL = URL(string: file)
-            
-            audioPlayer.numberOfLoops = 0 // loop count, set -1 for infinite
-            audioPlayer.volume = 1
-            audioPlayer.prepareToPlay()
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
-            try AVAudioSession.sharedInstance().setActive(true)
+            let completePathURL       = Constants.documentDir.appendingPathComponent(self.lblFileName.text ?? "")
+                        
             if audioPlayer.isPlaying{
+                //Pause
                 if index != self.playingCellIndex {
                     audioPlayer.stop()
                     resetSoundWaves()
                 } else{
                     audioPlayer.pause()
-                    self.pausedTime = self.audioPlayer.currentTime
-                    //                    self.mediaProgressView.pause()
                 }
-                //                sender.setBackgroundImage(UIImage(named: "existing_play_btn"), for: .normal)
                 self.isPlaying = false
+                self.pausedTime = self.audioPlayer.currentTime
                 self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-                
             }else{
+                //Play new
+                //setup
+                audioPlayer.numberOfLoops = 0 // loop count, set -1 for infinite
+                audioPlayer.volume = 1
+                audioPlayer.prepareToPlay()
+                try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
+                try AVAudioSession.sharedInstance().setActive(true)
+                
                 self.playingCellIndex = index
-                self.isPlaying = true
-                audioPlayer =  try AVAudioPlayer(contentsOf: completePathURL!)
+                audioPlayer =  try AVAudioPlayer(contentsOf: completePathURL)
                 audioPlayer.delegate = self
                 audioPlayer.play()
-                //                self.mediaProgressView.meteringLevels = meteringLevels
-                //                self.mediaProgressView.play(for: self.audioPlayer.duration - self.audioPlayer.currentTime)
+                
+                self.isPlaying = true
                 self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
-                tag = sender.tag
+                tag = index
                 self.audioMeteringLevelTimer = Timer.scheduledTimer(timeInterval: 0.05, target: self, selector: #selector(timerDidUpdateMeter), userInfo: nil, repeats: true)
                 self.lblTotalTime.text = self.getTimeDuration(filePath: self.totalFiles[index])
             }
@@ -184,27 +195,24 @@ class ExistingVC: BaseViewController {
         } catch _ {
             print("catch")
         }
+        
     }
     
     @objc func timerDidUpdateMeter() {
-        
-        //        let cell = tableView.cellForRow(at: IndexPath(row: tag, section: 0)) as! ExistingFileCell
         let min = Int(audioPlayer.currentTime / 60)
         let sec = Int(audioPlayer.currentTime.truncatingRemainder(dividingBy: 60))
         let totalTimeString = String(format: "%02d:%02d",min, sec)
         print("totalTimeString ===== \(totalTimeString)")
         
-        
         let cmTime = CMTime(seconds: audioPlayer.currentTime, preferredTimescale: 1000000)
         self.mediaProgressView.waveformView.progressTime = cmTime
         
-        
-        //            cell.lblFileTime.text = totalTimeString
         self.lblPlayingTime.text = totalTimeString
         self.audioPlayer.updateMeters()
-        let averagePower = self.audioPlayer.averagePower(forChannel: 0)
-        let percentage: Float = pow(10, (0.05 * averagePower))
-        NotificationCenter.default.post(name: .audioPlayerManagerMeteringLevelDidUpdateNotification, object: self, userInfo: ["percentage": percentage])
+        
+//        let averagePower = self.audioPlayer.averagePower(forChannel: 0)
+//        let percentage: Float = pow(10, (0.05 * averagePower))
+//        NotificationCenter.default.post(name: .audioPlayerManagerMeteringLevelDidUpdateNotification, object: self, userInfo: ["percentage": percentage])
     }
     
     // MARK: - @IBActions.
@@ -379,80 +387,8 @@ class ExistingVC: BaseViewController {
         }
     }
     
-    private func getFilePath() -> URL{
-        let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let completePath = directoryPath.absoluteString +  self.lblFileName.text!
-        let completePathURL = URL(string: completePath)!
-        return completePathURL
-    }
-    
-    private func playAudio() {
-        var playingMediaIndex = 0
-        for (index, value) in self.totalFiles.enumerated() {
-            if value as? String == self.lblFileName.text!  {
-                print("Finding Index-->>",index)
-                playingMediaIndex = index
-            }
-        }
-        do {
-            let index = playingMediaIndex
-            let cell  = tableView.cellForRow(at: IndexPath(row: playingMediaIndex, section: 0)) as? ExistingFileCell
-            self.lblFileName.text = self.totalFiles[index]
-            self.lblPlayerStatus.text = "Now Playing"
-            let audioFile = getFileInfo(name: self.totalFiles[index])
-            //                let file = Bundle.main.url(forResource: "file_name", withExtension: "mp3")!
-            let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            let completePath = directoryPath.absoluteString + self.totalFiles[index]
-            let completePathURL = URL(string: completePath)
-            //                let file = directoryPath + fileEndPoint
-            //                let dirURL = URL(string: file)
-            
-            audioPlayer.numberOfLoops = 0 // loop count, set -1 for infinite
-            audioPlayer.volume = 1
-            audioPlayer.prepareToPlay()
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
-            try AVAudioSession.sharedInstance().setActive(true)
-            if audioPlayer.isPlaying{
-                if index != self.playingCellIndex {
-                    audioPlayer.stop()
-                    resetSoundWaves()
-                } else{
-                    audioPlayer.pause()
-                    //                    self.mediaProgressView.pause()
-                }
-                //                cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_play_btn"), for: .normal)
-                self.isPlaying = false
-                self.pausedTime = self.audioPlayer.currentTime
-                self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-            }else{
-                self.playingCellIndex = index
-                audioPlayer =  try AVAudioPlayer(contentsOf: completePathURL!)
-                audioPlayer.delegate = self
-                audioPlayer.play()
-                //                self.mediaProgressView.audioURL = completePathURL!
-                //                self.mediaProgressView.meteringLevels = meteringLevels
-                
-                //                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0){
-                //                    self.mediaProgressView.play(for: self.audioPlayer.duration - self.audioPlayer.currentTime)
-                //                }
-                //                cell?.btnPlay.setBackgroundImage(UIImage(named: "existing_pause_btn"), for: .normal)
-                self.isPlaying = true
-                self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
-                tag = index
-                self.audioMeteringLevelTimer = Timer.scheduledTimer(timeInterval: 0.05, target: self, selector: #selector(timerDidUpdateMeter), userInfo: nil, repeats: true)
-                self.lblTotalTime.text = self.getTimeDuration(filePath: self.totalFiles[index])
-            }
-            self.setTrimButtonInteraction(isInteractive: true)
-            self.tableView.reloadData()
-        } catch _ {
-            print("catch")
-        }
-    }
-    
     private func controllAudioPlayer(controllerType: AudioControllers) {
         DispatchQueue.main.async {
-            self.audioPlayer.pause()
-//            let currentTime = self.audioPlayer.currentTime
             switch controllerType {
             case .fastRewind:
                 self.fastBackwardByTime(timeVal: 3)
@@ -775,33 +711,6 @@ extension ExistingVC: UITabBarControllerDelegate {
         return true
     }
 }
-// MARK: - Extension for FDWaveformViewDelegate
-
-//extension ExistingVC: FDWaveformViewDelegate {
-//    func waveformViewWillRender(_ waveformView: FDWaveformView) {
-//        startRendering = Date()
-//    }
-//
-//    func waveformViewDidRender(_ waveformView: FDWaveformView) {
-//        endRendering = Date()
-//        NSLog("FDWaveformView rendering done, took %0.3f seconds", endRendering.timeIntervalSince(startRendering))
-//        profileResult.append(String(format: " render %0.3f ", endRendering.timeIntervalSince(startRendering)))
-//        UIView.animate(withDuration: 1, animations: {() -> Void in
-//            waveformView.alpha = 1.0
-//            waveformView.progressColor = #colorLiteral(red: 0.2273887992, green: 0.2274999917, blue: 0.9748747945, alpha: 1)
-//        })
-//    }
-//
-//    func waveformViewWillLoad(_ waveformView: FDWaveformView) {
-//        startLoading = Date()
-//    }
-//
-//    func waveformViewDidLoad(_ waveformView: FDWaveformView) {
-//        endLoading = Date()
-//        NSLog("FDWaveformView loading done, took %0.3f seconds", endLoading.timeIntervalSince(startLoading))
-//        profileResult.append(String(format: " load %0.3f ", endLoading.timeIntervalSince(startLoading)))
-//    }
-//}
 
 extension Notification.Name {
     static let audioPlayerManagerMeteringLevelDidUpdateNotification = Notification.Name("AudioPlayerManagerMeteringLevelDidUpdateNotification")
