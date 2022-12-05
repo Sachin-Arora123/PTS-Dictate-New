@@ -398,7 +398,7 @@ class RecordVC: BaseViewController {
             self.recorder.concatChunks(filename: self.audioFileURL){
                 success in
                 if success{
-                    self.chunkInt = 0
+//                    self.chunkInt = 0
                     DispatchQueue.main.async {
                         self.setUpStopAndPauseUI()
                     }
@@ -626,18 +626,8 @@ class RecordVC: BaseViewController {
             self.recorderState = .pause
             self.setInsert_PartialDeleteUI()
             CommonFunctions.alertMessage(view: self, title: "Insert", msg: Constants.insertMsg, btnTitle: "OK")
-            
             self.recorder.startPlayer()
-            let timeScale = CMTimeScale(NSEC_PER_SEC)
-            let time = CMTime(seconds: 0.25, preferredTimescale: timeScale)
-            self.recorder.queuePlayer?.addPeriodicTimeObserver(forInterval: time, queue: .main, using: { time in
-                    if self.recorder.queuePlayer?.currentItem?.status == .readyToPlay {
-                        let currentTime = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
-                        print("currentTime ======== \(currentTime)")
-                        self.currentPlayingTime.text = self.timeString(from: currentTime)
-                        self.playerWaveView.waveformView.progressTime = self.recorder.queuePlayer?.currentTime() ?? CMTime.zero
-                    }
-            })
+            observePlayerAfterEdit()
             break
         case 2:
             self.performingFunctionState = .overwrite
@@ -645,20 +635,33 @@ class RecordVC: BaseViewController {
             self.recorderState = .pause
             self.setInsert_PartialDeleteUI()
             CommonFunctions.alertMessage(view: self, title: "Overwrite", msg: Constants.overwriteMsg, btnTitle: "OK")
-            
             self.recorder.startPlayer()
+            observePlayerAfterEdit()
             break
         case 3:
             self.performingFunctionState = .partialDelete
             self.btnClear.tag = 4
             CommonFunctions.alertMessage(view: self, title: "Partial Delete", msg: Constants.partialDeleteMsg, btnTitle: "OK")
             self.setInsert_PartialDeleteUI()
-            
             self.recorder.startPlayer()
+            observePlayerAfterEdit()
             break
         default:
             break
         }
+    }
+    
+    func observePlayerAfterEdit(){
+        let timeScale = CMTimeScale(NSEC_PER_SEC)
+        let time = CMTime(seconds: 0.25, preferredTimescale: timeScale)
+        self.recorder.queuePlayer?.addPeriodicTimeObserver(forInterval: time, queue: .main, using: { time in
+                if self.recorder.queuePlayer?.currentItem?.status == .readyToPlay {
+                    let currentTime = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
+                    print("currentTime ======== \(currentTime)")
+                    self.currentPlayingTime.text = self.timeString(from: currentTime)
+                    self.playerWaveView.waveformView.progressTime = self.recorder.queuePlayer?.currentTime() ?? CMTime.zero
+                }
+        })
     }
 
     func setInsert_PartialDeleteUI() {
@@ -906,7 +909,7 @@ class RecordVC: BaseViewController {
                     self.btnStop.isUserInteractionEnabled = false
                     self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: UIControl.State.normal)
                     CommonFunctions.alertMessage(view: self, title: Constants.appName, msg: Constants.pDeleteMsg, btnTitle: "OK")
-                    
+                    self.setUpWave()
                     CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
                     self.tabBarController?.setTabBarHidden(true, animated: false)
                 }

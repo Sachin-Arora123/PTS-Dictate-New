@@ -169,11 +169,14 @@ class ExistingVC: BaseViewController {
             self.isPlaying = false
             self.pausedTime = self.audioPlayer.currentTime
             self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+            self.audioMeteringLevelTimer?.invalidate()
         }else{
             //Play new
             //setup
             if index != self.playingCellIndex {
+                self.audioMeteringLevelTimer?.invalidate()
                 setupPlayer(url: completePathURL)
+                setUpWave(index: index)
             }else{
                 audioPlayer.play()
             }

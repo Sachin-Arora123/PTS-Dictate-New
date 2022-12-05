@@ -179,32 +179,21 @@ public class HPRecorder: NSObject {
     public func concatChunks(filename: String ,completion: @escaping(_ result: Bool) -> Void) {
         let composition = AVMutableComposition()
         var insertAt = CMTimeRange(start: .zero, end: .zero)
-//        if self.partialDeleteAsset != nil{
-//            let assetTimeRange = CMTimeRange(start: .zero, end: partialDeleteAsset!.duration)
-//            do {
-//                try composition.insertTimeRange(assetTimeRange, of: partialDeleteAsset!, at: insertAt.end)
-//            } catch {
-//                NSLog("Unable to compose asset track.")
-//            }
-//            let nextDuration = insertAt.duration + assetTimeRange.duration
-//            insertAt = CMTimeRange( start: .zero, duration: nextDuration)
-//        }else{
-            for asset in self.articleChunks {
-                let assetTimeRange = CMTimeRange(start: .zero, end: asset.duration)
-                do {
-                    try composition.insertTimeRange(assetTimeRange, of: asset, at: insertAt.end)
-                } catch {
-                    NSLog("Unable to compose asset track.")
-                }
-                let nextDuration = insertAt.duration + assetTimeRange.duration
-                insertAt = CMTimeRange(start: .zero, duration: nextDuration)
+
+        for asset in self.articleChunks {
+            let assetTimeRange = CMTimeRange(start: .zero, end: asset.duration)
+            do {
+                try composition.insertTimeRange(assetTimeRange, of: asset, at: insertAt.end)
+            } catch {
+                NSLog("Unable to compose asset track.")
             }
-//        }
+            let nextDuration = insertAt.duration + assetTimeRange.duration
+            insertAt = CMTimeRange(start: .zero, duration: nextDuration)
+        }
 
         let exportSession = AVAssetExportSession( asset: composition,presetName: AVAssetExportPresetAppleM4A)
         exportSession?.outputFileType = AVFileType.m4a
         exportSession?.outputURL = self.createNewRecordingURL(filename)
-        
         
         print("outputURL", exportSession?.outputURL ?? "")
 
@@ -237,7 +226,6 @@ public class HPRecorder: NSObject {
                 let assetToSave = AVURLAsset(url: exportSession?.outputURL ?? URL(fileURLWithPath: ""))
                 self.articleChunks.removeAll()
                 self.articleChunks.append(assetToSave)
-//                self.partialDeleteAsset = nil
             case .failed?:
                 print("error:-->>",exportSession?.error?.localizedDescription ?? "")
                 completion(false)
