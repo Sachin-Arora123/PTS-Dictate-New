@@ -45,7 +45,7 @@ class ExistingVC: BaseViewController {
     var pausedTime: Double?
     var fileDuration = 0
     var uploadingQueue: [String] = []
-    var editFromExiting: Bool = false
+    var audioForEditing: String?
     private var audioMeteringLevelTimer: Timer?
     var tag = -1
     private var currentlyPlayingAudio: URL?
@@ -60,9 +60,9 @@ class ExistingVC: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        NotificationCenter.default.addObserver(self, selector: #selector(self.newFileSaved(notification:)), name: Notification.Name("FileSaved"), object: nil)
         self.existingViewModel.existingViewController = self
         self.tabBarController?.delegate = self
+        addObservers()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -86,7 +86,7 @@ class ExistingVC: BaseViewController {
     }
     
     deinit{
-        NotificationCenter.default.removeObserver(self, name: Notification.Name("FileSaved"), object: nil)
+        removeObservers()
     }
     
     // MARK: - UISetup
@@ -158,7 +158,7 @@ class ExistingVC: BaseViewController {
         self.lblPlayerStatus.text = "Now Playing"
         let completePathURL       = Constants.documentDir.appendingPathComponent(self.lblFileName.text ?? "")
                     
-        if audioPlayer.isPlaying{
+        if isPlaying{
             //Pause
             if index != self.playingCellIndex {
                 audioPlayer.stop()
@@ -553,7 +553,7 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
         DispatchQueue.main.async {
             let fileName = self.totalFiles[indexPath.row]
             self.lblFileName.text = fileName
-            if self.audioPlayer.isPlaying {
+            if self.isPlaying {
                 self.audioPlayer.stop()
                 self.resetSoundWaves()
                 self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
@@ -631,11 +631,11 @@ extension ExistingVC{
         pushToComments(selected: audioFile, index: sender.tag)
     }
     
-    @objc func openRenameFileVc(){
+    @objc func openRenameFileVc(_ sender: UIButton){
+        self.audioForEditing = self.totalFiles[sender.tag]
         let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
         self.setPushTransitionAnimation(VC)
         self.navigationController?.popViewController(animated: false)
-        self.editFromExiting = true
         self.tabBarController?.selectedIndex = 2
     }
     
@@ -683,6 +683,31 @@ extension ExistingVC{
         //        self.mediaProgressView.stop()
         //        self.mediaProgressView.reset()
     }
+    
+    @objc func appMovedToBackground() {
+        print("App moved to background!")
+        if isPlaying{
+            //Pause
+            self.audioPlayer.pause()
+            self.isPlaying = false
+            self.pausedTime = self.audioPlayer.currentTime
+            self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+            self.audioMeteringLevelTimer?.invalidate()
+            self.tableView.reloadData()
+        }
+    }
+    
+    private func addObservers() {
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(self, selector: #selector(appMovedToBackground), name: UIApplication.willResignActiveNotification, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(self.newFileSaved(notification:)), name: Notification.Name("FileSaved"), object: nil)
+    }
+    
+    private func removeObservers() {
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.removeObserver(self, name: UIApplication.willResignActiveNotification, object: nil)
+        notificationCenter.removeObserver(self, name: Notification.Name("FileSaved"), object: nil)
+    }
 }
 
 // MARK: - Extension for AVAudioPlayerDelegate
@@ -708,7 +733,7 @@ extension ExistingVC: UITabBarControllerDelegate {
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
         if viewController.isKind(of: RecordVC.self as AnyClass) {
             let recordVC = tabBarController.viewControllers?[2] as! RecordVC
-            recordVC.editFromExiting = false
+            recordVC.audioForEditing = nil
         } else if viewController.isKind(of: UploadProgressVC.self as AnyClass) {
             let _ = tabBarController.viewControllers?[1] as! UploadProgressVC
             self.existingViewModel.uploadingQueue = []
@@ -728,7 +753,7 @@ extension ExistingVC{
         var time: TimeInterval = audioPlayer.currentTime
         time += timeVal
         if time > audioPlayer.duration {
-            if audioPlayer.isPlaying {
+            if isPlaying {
                 audioPlayer.stop()
             }
         } else {

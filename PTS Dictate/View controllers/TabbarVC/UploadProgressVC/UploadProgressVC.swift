@@ -57,7 +57,11 @@ class UploadProgressVC: BaseViewController {
                 UpdateAudioFile.uploadingInProgress(true).update(audioName: file)
             }
             self.tableView.reloadData()
-            currentUploadingFile = 0
+            let seconds = 5.0
+            DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
+                self.currentUploadingFile = 0
+            }
+            
             
         } else {
             tableView.isHidden = true

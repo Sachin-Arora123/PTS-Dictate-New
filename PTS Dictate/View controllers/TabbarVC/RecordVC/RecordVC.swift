@@ -119,14 +119,14 @@ class RecordVC: BaseViewController {
         strongSelf.updateAudioMeter()
     })
     
-    var editFromExiting: Bool {
+    var audioForEditing: String? {
         // getting the value from exiting view controller's variable
         get {
-            return (self.tabBarController!.viewControllers![0] as! ExistingVC).editFromExiting
+            return (self.tabBarController!.viewControllers![0] as! ExistingVC).audioForEditing ?? nil
         }
         // assign the new value to this view controller's variable
         set {
-            (self.tabBarController!.viewControllers![0] as! ExistingVC).editFromExiting = newValue
+            (self.tabBarController!.viewControllers![0] as! ExistingVC).audioForEditing = newValue
         }
     }
     
@@ -165,7 +165,7 @@ class RecordVC: BaseViewController {
         setupRecorder()
         
         //If comes for editing the audio from existing dictations screen, setup the UI according to that.
-        if editFromExiting {
+        if let audioForEditing = self.audioForEditing { // if value is nil then its not for editing, if that's hold any string value then setup the ui for editing that audio
             setUpUIForEditing()
         }
         
@@ -182,7 +182,7 @@ class RecordVC: BaseViewController {
         self.tabBarController?.setTabBarHidden(false, animated: false)
         
         let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
-        self.editFromExiting = false
+        self.audioForEditing = nil
     }
     
     deinit {
