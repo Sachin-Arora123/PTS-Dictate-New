@@ -207,15 +207,36 @@ class RecordVC: BaseViewController {
         self.customRangeBar.value = -160
     }
     
+    //UI setup while the view appears mainly
     func setUpUI(){
+        //top segment
         segmentControl.isHidden = true
+        segmentHeight.constant = 0
+        
+        //microphone sensitivity range bar
+        customRangeBar.isHidden = false
+        
+        //indexing controls stack view
         stackView.isHidden = true
         stackViewHeight.constant = 0
+        
+        //player timing view
         viewPlayerTiming.isHidden = true
-        segmentHeight.constant = 0
+        
+        //view progress
         viewProgress.isHidden = true
         progressViewHeight.constant = 45
+        
+        //wave view
         self.playerWaveView.isHidden = true
+        
+        //record button
+        self.btnRecord.isUserInteractionEnabled = true
+        self.btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: .normal)
+        
+        //stop button
+        self.btnStop.isUserInteractionEnabled = false
+        self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
     }
     
     func initiallyBtnStateSetup(){
@@ -315,10 +336,17 @@ class RecordVC: BaseViewController {
     // MARK: - Setup audio waves for the recorded audio
     func setUpWave() {
         self.playerWaveView.isHidden = false
-        self.playerWaveView.waveformView.asset = self.getFullAsset()
+        if (self.audioForEditing != nil){
+            let asset = AVAsset(url: Constants.documentDir.appendingPathComponent(self.audioForEditing ?? ""))
+            self.playerWaveView.waveformView.asset = asset
+            self.playerWaveView.waveformView.progressTime = CMTimeMakeWithSeconds(asset.duration.seconds, preferredTimescale: 1)
+        }else{
+            self.playerWaveView.waveformView.asset = self.getFullAsset()
+            self.playerWaveView.waveformView.progressTime = CMTimeMakeWithSeconds(0, preferredTimescale: 1)
+        }
         self.playerWaveView.waveformView.normalColor = .lightGray
         self.playerWaveView.waveformView.progressColor = .blue
-        self.playerWaveView.waveformView.progressTime = CMTimeMakeWithSeconds(0, preferredTimescale: 1)
+        
         
         // Set the precision, 1 being the maximum
         self.playerWaveView.waveformView.precision = 0.1 // We are going to render one line per four pixels
@@ -985,13 +1013,39 @@ class RecordVC: BaseViewController {
     
     // MARK: - Editing UI setup.
     func setUpUIForEditing() {
+        //show segment control
+        segmentControl.isHidden = false
         segmentControl.selectedSegmentIndex = -1
         segmentHeight.constant = 31
-        segmentControl.isHidden = false
+        
+        //show timing view
+        self.viewPlayerTiming.isHidden = false
+        
+        //show wave view and setup according to the editing asset
+        self.setUpWave()
+        
+        //hide range bar
+        self.customRangeBar.isHidden = true
+        
+        // stop button
         btnStop.isUserInteractionEnabled = true
         btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: .normal)
+        
+        //record button
+        btnRecord.isUserInteractionEnabled = false
+        btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_disable"), for: .normal)
+        
         CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: true, animation: .transitionFlipFromBottom)
         self.tabBarController?.setTabBarHidden(false, animated: false)
+        
+        //timings
+        let asset = AVAsset(url: Constants.documentDir.appendingPathComponent(self.audioForEditing ?? ""))
+        self.lblTime.text            = self.timeString(from: asset.duration.seconds)
+        self.currentPlayingTime.text = self.lblTime.text
+        self.playerTotalTime.text    = self.lblTime.text
+        
+        //filename
+        self.lblFNameValue.text = self.audioForEditing
     }
  
     // MARK: - Upadte Timer method.
