@@ -99,6 +99,7 @@ class RecordVC: BaseViewController {
     var isPerformingOverwrite = false
     var overwritingStartingTimerPoint = 0.0
     var playedFirstTime = false
+    var editAssetDuration = 0.0
     
     private var isCommentsOn:Bool {
         return CoreData.shared.commentScreen == 1 ?  true : false
@@ -114,7 +115,7 @@ class RecordVC: BaseViewController {
             print("startPoint ===== \(strongSelf.overwritingStartingTimerPoint)")
             strongSelf.insertTimer.text = strongSelf.timeString(from: strongSelf.overwritingStartingTimerPoint)
         }else{
-            strongSelf.lblTime.text = strongSelf.timeString(from: timegap)
+            strongSelf.lblTime.text = strongSelf.timeString(from: timegap + strongSelf.editAssetDuration)
         }
         strongSelf.updateAudioMeter()
     })
@@ -237,6 +238,12 @@ class RecordVC: BaseViewController {
         //stop button
         self.btnStop.isUserInteractionEnabled = false
         self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
+        
+        //timings
+        self.lblTime.text = "00:00:00"
+        
+        //play button
+        self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_diable"), for: .normal)
     }
     
     func initiallyBtnStateSetup(){
@@ -386,18 +393,6 @@ class RecordVC: BaseViewController {
     
     // MARK: - @IBActions.
     @IBAction func onTapRecord(_ sender: UIButton) {
-
-        let index = CoreData.shared.audioQuality
-        switch index {
-        case 0:
-            sampleRateKey  = 11025
-        case 1:
-            sampleRateKey  = 22050
-        case 2:
-            sampleRateKey  = 44100
-        default:
-            sampleRateKey  = 11025
-        }
         switch recorderState {
         case .none:
             self.recorder.startRecording(fileName: self.audioFileURL)
@@ -565,7 +560,6 @@ class RecordVC: BaseViewController {
     }
     
     @objc func playerDidFinishPlaying(sender: Notification) {
-//        btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
         self.onStopPlayerSetupUI()
         self.playedFirstTime = false
         self.recorder.queuePlayerPlaying = false
@@ -1046,6 +1040,16 @@ class RecordVC: BaseViewController {
         
         //filename
         self.lblFNameValue.text = self.audioForEditing
+        
+        //play button
+        self.btnPlay.isUserInteractionEnabled = true
+        self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+        
+        //assigning editing asset to the article chunks array fot future refrence.
+        let editingAsset = AVURLAsset(url: Constants.documentDir.appendingPathComponent(self.audioForEditing ?? ""))
+        self.recorder.articleChunks = [editingAsset]
+        
+        self.editAssetDuration = editingAsset.duration.seconds
     }
  
     // MARK: - Upadte Timer method.

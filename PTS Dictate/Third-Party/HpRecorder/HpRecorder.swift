@@ -123,29 +123,15 @@ public class HPRecorder: NSObject {
     // Start player
     public func startPlayer() {
         let assetKeys = ["playable"]
-//        if partialDeleteAsset != nil{
-//            print("Audio here")
-//            let playerItems = AVPlayerItem(asset: (partialDeleteAsset!), automaticallyLoadedAssetKeys: assetKeys)
-//            self.playerItem = playerItems
-//            self.queuePlayer = AVQueuePlayer(playerItem: playerItems)//AVQueuePlayer(items: playerItems)
-//            self.queuePlayer?.actionAtItemEnd = .advance
-//            self.queuePlayer?.play()
-//            self.queuePlayerPlaying = true
-//            var playerItemArray = [AVPlayerItem]()
-//            playerItemArray.append(playerItem!)
-//            self.durationTime = self.getTimeDuration(playerItems: playerItemArray)
-//            return
-//        }else{
-            let playerItems = self.articleChunks.map {
-                AVPlayerItem(asset: $0, automaticallyLoadedAssetKeys: assetKeys)
-            }
-            self.queuePlayer = AVQueuePlayer(items: playerItems)
-            self.queuePlayer?.actionAtItemEnd = .advance
-            self.playerItem = playerItems.last
-            self.queuePlayer?.play()
-            self.queuePlayerPlaying = true
-            self.durationTime = self.getTimeDuration(playerItems: playerItems)
-//        }
+        let playerItems = self.articleChunks.map {
+            AVPlayerItem(asset: $0, automaticallyLoadedAssetKeys: assetKeys)
+        }
+        self.queuePlayer = AVQueuePlayer(items: playerItems)
+        self.queuePlayer?.actionAtItemEnd = .advance
+        self.playerItem = playerItems.last
+        self.queuePlayer?.play()
+        self.queuePlayerPlaying = true
+        self.durationTime = self.getTimeDuration(playerItems: playerItems)
     }
     
     func getTimeDuration(playerItems: [AVPlayerItem]) -> Double{
