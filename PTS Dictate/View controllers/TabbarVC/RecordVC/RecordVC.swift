@@ -321,13 +321,13 @@ class RecordVC: BaseViewController {
     // MARK: - Handle app terminate notification
     @objc func applicationWillTerminate(notification: Notification) {
         print("Notification received.")
+        AudioFiles.shared.saveNewAudioFile(name: self.audioFileName, autoSaved: true) // mohit new changes
         if self.recorder.audioRecorder != nil {
             self.recorder.endRecording()
             
             CoreData.shared.fileCount += 1
             CoreData.shared.dataSave()
         }
-        AudioFiles.shared.saveNewAudioFile(name: self.audioFileName) // mohit new changes
         self.recorderState = .none
         tempAudioFileURL = self.audioFileURL
         stopwatch.stop()

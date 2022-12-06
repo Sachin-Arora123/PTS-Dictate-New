@@ -257,6 +257,7 @@ class ExistingVC: BaseViewController {
                         self.removeAudio(itemName: file, fileExtension: "")
                         AudioFiles.shared.deleteAudio(name: file)
                     }
+                    self.totalFilesSelected.removeAll()
                     self.totalFiles = self.getSortedAudioList()
                     self.setRightBarItem()
                 }
@@ -487,7 +488,7 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
             if file?.fileInfo?.autoSaved ?? true {
                 cell.lblFileStatus.text = "Auto Saved File"
             } else{
-                cell.lblFileStatus.text = ""
+                cell.lblFileStatus.text = "Uploaded"
             }
             cell.lblFileStatus.text = "Uploaded"
             cell.btnComment.isUserInteractionEnabled = true
@@ -500,7 +501,7 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
             if file?.fileInfo?.autoSaved ?? true {
                 cell.lblFileStatus.text = "Auto Saved File"
             } else{
-                cell.lblFileStatus.text = ""
+                cell.lblFileStatus.text = "Uploaded"
             }
             cell.lblFileStatus.text = "Uploaded"
             cell.btnComment.isUserInteractionEnabled = true
@@ -760,7 +761,9 @@ extension ExistingVC{
             audioPlayer.pause()
             //            self.mediaProgressView.pause()
             audioPlayer.currentTime = time
-            audioPlayer.play()
+            if pausedTime != nil {
+                audioPlayer.play()
+            }
             let min = Int(audioPlayer.currentTime / 60)
             let sec = Int(audioPlayer.currentTime.truncatingRemainder(dividingBy: 60))
             let totalTimeString = String(format: "%02d:%02d", min, sec)
@@ -780,7 +783,9 @@ extension ExistingVC{
             audioPlayer.pause()
             //            self.mediaProgressView.pause()
             audioPlayer.currentTime = time
-            audioPlayer.play()
+            if pausedTime != nil {
+                audioPlayer.play()
+            }
             let min = Int(audioPlayer.currentTime / 60)
             let sec = Int(audioPlayer.currentTime.truncatingRemainder(dividingBy: 60))
             let totalTimeString = String(format: "%02d:%02d", min, sec)

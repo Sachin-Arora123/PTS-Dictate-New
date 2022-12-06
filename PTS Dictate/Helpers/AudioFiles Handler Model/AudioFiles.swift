@@ -55,8 +55,11 @@ class AudioFiles {
     }
     
     func deleteAudio(name: String) {
-        for (index, audio) in audioFiles.enumerated() where name == audio.name ?? "" {
-            audioFiles.remove(at: index)
+//        for (index, audio) in audioFiles.enumerated() where name == audio.name ?? "" {
+//            audioFiles.remove(at: index)
+//        }
+        audioFiles.removeAll { audio in
+            audio.name == name
         }
         updateAudioFilesOnCoreData()
     }
