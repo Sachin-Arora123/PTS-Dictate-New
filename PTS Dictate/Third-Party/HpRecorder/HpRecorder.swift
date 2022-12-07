@@ -206,12 +206,12 @@ public class HPRecorder: NSObject {
                         try! FileManager.default.removeItem(at: asset.url)
                     }
                 }
-
-                completion(true)
-                                
+              
                 let assetToSave = AVURLAsset(url: exportSession?.outputURL ?? URL(fileURLWithPath: ""))
                 self.articleChunks.removeAll()
                 self.articleChunks.append(assetToSave)
+                
+                completion(true)
             case .failed?:
                 print("error:-->>",exportSession?.error?.localizedDescription ?? "")
                 completion(false)

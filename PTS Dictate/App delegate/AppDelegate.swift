@@ -253,9 +253,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
     }
+    
     func createNewRecordingURL(_ filename: String = "") -> URL {
-                 let fileURL = filename + ".m4a"
-                 return Constants.documentDir.appendingPathComponent(fileURL)
-     }
+        let fileURL = filename + ".m4a"
+        return Constants.documentDir.appendingPathComponent(fileURL)
+    }
 }
 

@@ -395,7 +395,8 @@ class RecordVC: BaseViewController {
     @IBAction func onTapRecord(_ sender: UIButton) {
         switch recorderState {
         case .none:
-            self.recorder.startRecording(fileName: self.audioFileURL)
+            let fileName = self.audioForEditing != nil ? "\(chunkInt)" : self.audioFileURL
+            self.recorder.startRecording(fileName: fileName)
             self.recorderState = .recording
             stopwatch.start()
 
@@ -418,7 +419,12 @@ class RecordVC: BaseViewController {
             btnBackwardTrim.isUserInteractionEnabled = true
             btnBackwardTrimEnd.isUserInteractionEnabled = true
             
-            self.recorder.concatChunks(filename: self.audioFileURL){
+            var fileName = (self.audioForEditing != nil ? self.audioForEditing : self.audioFileURL) ?? ""
+            //need to remove .m4a in case of editing
+            if let dotRange = fileName.range(of: ".") {
+                fileName.removeSubrange(dotRange.lowerBound..<fileName.endIndex)
+            }
+            self.recorder.concatChunks(filename: fileName){
                 success in
                 if success{
 //                    self.chunkInt = 0
@@ -750,6 +756,7 @@ class RecordVC: BaseViewController {
         self.overwritingStartingTimerPoint = 0.0
         
         self.performingFunctionState = .append
+        self.editAssetDuration = 0.0
     }
     
     // MARK: - @IBAction Edit.
