@@ -112,7 +112,6 @@ class RecordVC: BaseViewController {
         guard let strongSelf = self else { return }
         if strongSelf.isPerformingOverwrite{
             strongSelf.overwritingStartingTimerPoint += 1
-            print("startPoint ===== \(strongSelf.overwritingStartingTimerPoint)")
             strongSelf.insertTimer.text = strongSelf.timeString(from: strongSelf.overwritingStartingTimerPoint)
         }else{
             strongSelf.lblTime.text = strongSelf.timeString(from: timegap + strongSelf.editAssetDuration)
@@ -166,7 +165,7 @@ class RecordVC: BaseViewController {
         setupRecorder()
         
         //If comes for editing the audio from existing dictations screen, setup the UI according to that.
-        if let audioForEditing = self.audioForEditing { // if value is nil then its not for editing, if that's hold any string value then setup the ui for editing that audio
+        if let _ = self.audioForEditing { // if value is nil then its not for editing, if that's hold any string value then setup the ui for editing that audio
             setUpUIForEditing()
         }
         
@@ -332,8 +331,6 @@ class RecordVC: BaseViewController {
         tempAudioFileURL = self.audioFileURL
         stopwatch.stop()
         print("temp",tempAudioFileURL)
-//        UserDefaults.standard.set(audioFileURL, forKey: "terminatedRecording")
-        
         
         for asset in self.recorder.articleChunks {
             try! FileManager.default.removeItem(at: asset.url)
@@ -393,64 +390,71 @@ class RecordVC: BaseViewController {
     
     // MARK: - @IBActions.
     @IBAction func onTapRecord(_ sender: UIButton) {
-        switch recorderState {
-        case .none:
-            let fileName = self.audioForEditing != nil ? "\(chunkInt)" : self.audioFileURL
-            self.recorder.startRecording(fileName: fileName)
-            self.recorderState = .recording
-            stopwatch.start()
+        
+        checkMicrophoneAccess(completionHandler: { value in
+            if value{
+                switch self.recorderState {
+                case .none:
+                    let fileName = self.audioForEditing != nil ? "\(self.chunkInt)" : self.audioFileURL
+                    self.recorder.startRecording(fileName: fileName)
+                    self.recorderState = .recording
+                    self.stopwatch.start()
 
-            self.lblPlayerStatus.text = "Recording"
-            self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: .normal)
-            self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: .normal)
-            self.btnStop.isUserInteractionEnabled = true
-            
-        case .recording:
-            self.recorder.pauseRecording()
-            self.recorderState = .pause
-            stopwatch.pause()
-                
-            lblPlayerStatus.text = "Paused"
-            btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: .normal)
-            btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-            btnBackwardTrim.setBackgroundImage(UIImage(named: "existing_rewind_normal"), for: .normal)
-            btnBackwardTrimEnd.setBackgroundImage(UIImage(named: "existing_backward_fast_normal"), for: .normal)
-            btnPlay.isUserInteractionEnabled = true
-            btnBackwardTrim.isUserInteractionEnabled = true
-            btnBackwardTrimEnd.isUserInteractionEnabled = true
-            
-            var fileName = (self.audioForEditing != nil ? self.audioForEditing : self.audioFileURL) ?? ""
-            //need to remove .m4a in case of editing
-            if let dotRange = fileName.range(of: ".") {
-                fileName.removeSubrange(dotRange.lowerBound..<fileName.endIndex)
-            }
-            self.recorder.concatChunks(filename: fileName){
-                success in
-                if success{
-//                    self.chunkInt = 0
-                    DispatchQueue.main.async {
-                        self.setUpStopAndPauseUI()
+                    self.lblPlayerStatus.text = "Recording"
+                    self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: .normal)
+                    self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: .normal)
+                    self.btnStop.isUserInteractionEnabled = true
+                    
+                case .recording:
+                    self.recorder.pauseRecording()
+                    self.recorderState = .pause
+                    self.stopwatch.pause()
+                        
+                    self.lblPlayerStatus.text = "Paused"
+                    self.btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: .normal)
+                    self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+                    self.btnBackwardTrim.setBackgroundImage(UIImage(named: "existing_rewind_normal"), for: .normal)
+                    self.btnBackwardTrimEnd.setBackgroundImage(UIImage(named: "existing_backward_fast_normal"), for: .normal)
+                    self.btnPlay.isUserInteractionEnabled = true
+                    self.btnBackwardTrim.isUserInteractionEnabled = true
+                    self.btnBackwardTrimEnd.isUserInteractionEnabled = true
+                    
+                    var fileName = (self.audioForEditing != nil ? self.audioForEditing : self.audioFileURL) ?? ""
+                    //need to remove .m4a in case of editing
+                    if let dotRange = fileName.range(of: ".") {
+                        fileName.removeSubrange(dotRange.lowerBound..<fileName.endIndex)
                     }
+                    self.recorder.concatChunks(filename: fileName){
+                        success in
+                        if success{
+        //                    self.chunkInt = 0
+                            DispatchQueue.main.async {
+                                self.setUpStopAndPauseUI()
+                            }
+                        }
+                    }
+                    
+                    self.btnStop.isUserInteractionEnabled = true
+                    
+                case .pause:
+                    self.stopwatch.start()
+                    self.setUpUI()
+                    self.initiallyBtnStateSetup()
+                    self.customRangeBar.isHidden = false
+                    self.customRangeBarHeight.constant = 45
+                    self.parentStackTop.constant = 35
+                    self.lblPlayerStatus.text = "Recording"
+                    self.recorder.startRecording(fileName: "\(self.chunkInt)")
+                    self.chunkInt += 1
+                    self.recorderState = .recording
+                    self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: .normal)
+                    self.btnStop.isUserInteractionEnabled = true
                 }
+                isRecording = true
+            }else{
+                CommonFunctions.alertMessage(view: self, title: "Microphone Access Denied", msg: "This app requires access to your device's Microphone. \n Please enable Microphone access for this app in Settings / Privacy / Microphone", btnTitle: "Ok")
             }
-            
-            self.btnStop.isUserInteractionEnabled = true
-            
-        case .pause:
-            stopwatch.start()
-            self.setUpUI()
-            self.initiallyBtnStateSetup()
-            self.customRangeBar.isHidden = false
-            self.customRangeBarHeight.constant = 45
-            self.parentStackTop.constant = 35
-            lblPlayerStatus.text = "Recording"
-            self.recorder.startRecording(fileName: "\(chunkInt)")
-            self.chunkInt += 1
-            self.recorderState = .recording
-            self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: .normal)
-            self.btnStop.isUserInteractionEnabled = true
-        }
-        isRecording = true
+        })
     }
     
     @IBAction func onTapStop(_ sender: UIButton) {
@@ -485,7 +489,7 @@ class RecordVC: BaseViewController {
             //need to perform insert or overwrite here.
             let startTime = (self.performingFunctionState == .insert) ? CMTimeMakeWithSeconds(Float64(self.insertStartingPoint), preferredTimescale: 1) : CMTimeMakeWithSeconds(Float64(self.overwritingStartingPoint), preferredTimescale: 1)
             if let originalUrl = self.recorder.articleChunks.first?.url, let replacingUrl = self.recorder.articleChunks.last?.url{
-                self.mergeAudioFiles(originalURL: originalUrl, replacingURL: replacingUrl, startTime: startTime, folderName: "Demo", caseNumber: "test", taskToPerform: self.performingFunctionState == .insert ? "Insert" : "Overwrite")
+                self.mergeAudioFiles(originalURL: originalUrl, replacingURL: replacingUrl, startTime: startTime, taskToPerform: self.performingFunctionState == .insert ? "Insert" : "Overwrite")
             }
         }
         
@@ -683,12 +687,12 @@ class RecordVC: BaseViewController {
         let timeScale = CMTimeScale(NSEC_PER_SEC)
         let time = CMTime(seconds: 0.25, preferredTimescale: timeScale)
         self.recorder.queuePlayer?.addPeriodicTimeObserver(forInterval: time, queue: .main, using: { time in
-                if self.recorder.queuePlayer?.currentItem?.status == .readyToPlay {
-                    let currentTime = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
-                    print("currentTime ======== \(currentTime)")
-                    self.currentPlayingTime.text = self.timeString(from: currentTime)
-                    self.playerWaveView.waveformView.progressTime = self.recorder.queuePlayer?.currentTime() ?? CMTime.zero
-                }
+            if self.recorder.queuePlayer?.currentItem?.status == .readyToPlay {
+                let currentTime = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
+                print("currentTime ======== \(currentTime)")
+                self.currentPlayingTime.text = self.timeString(from: currentTime)
+                self.playerWaveView.waveformView.progressTime = self.recorder.queuePlayer?.currentTime() ?? CMTime.zero
+            }
         })
     }
 
@@ -888,7 +892,7 @@ class RecordVC: BaseViewController {
             self.insertTimer.isHidden  = true
             self.isPerformingOverwrite = false
             if let originalUrl = self.recorder.articleChunks.first?.url, let replacingUrl = self.recorder.articleChunks.last?.url{
-                self.mergeAudioFiles(originalURL: originalUrl, replacingURL: replacingUrl, startTime: CMTimeMakeWithSeconds(Float64(self.overwritingStartingPoint), preferredTimescale: 1), folderName: "Demo", caseNumber: "test", taskToPerform: "Overwrite")
+                self.mergeAudioFiles(originalURL: originalUrl, replacingURL: replacingUrl, startTime: CMTimeMakeWithSeconds(Float64(self.overwritingStartingPoint), preferredTimescale: 1), taskToPerform: "Overwrite")
             }
         }
     }
@@ -1089,50 +1093,21 @@ class RecordVC: BaseViewController {
     }
     
     // Microphone Access
-//    func checkMicrophoneAccess() {
-//        // Check Microphone Authorization
-//        switch AVAudioSession.sharedInstance().recordPermission {
-//            
-//        case AVAudioSession.RecordPermission.granted:
-//            print(#function, " Microphone Permission Granted")
-//            break
-//            
-//        case AVAudioSession.RecordPermission.denied:
-//            // Dismiss Keyboard (on UIView level, without reference to a specific text field)
-//            UIApplication.shared.sendAction(#selector(UIView.endEditing(_:)), to:nil, from:nil, for:nil)
-//            CommonFunctions.showAlert(view: self, title: "Microphone Error!", message: "PTS Dictate is Not Authorized to Access the Microphone!", completion: {
-//                (result) in
-//                if result {
-//                    DispatchQueue.main.async {
-//                        if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
-//                            UIApplication.shared.open(settingsURL, options: self.convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
-//                        }
-//                    }
-//                }else{
-//                    print("No Message")
-//                }
-//            })
-//            return
-//            
-//        case AVAudioSession.RecordPermission.undetermined:
-//            print("Request permission here")
-//            // Dismiss Keyboard (on UIView level, without reference to a specific text field)
-//            UIApplication.shared.sendAction(#selector(UIView.endEditing(_:)), to:nil, from:nil, for:nil)
-//            
-//            AVAudioSession.sharedInstance().requestRecordPermission({ (granted) in
-//                // Handle granted
-//                if granted {
-//                    print(#function, " Now Granted")
-//                } else {
-//                    print("Pemission Not Granted")
-//                    
-//                } // end else
-//            })
-//        @unknown default:
-//            print("ERROR! Unknown Default. Check!")
-//        } // end switch
-//        
-//    }
+    func checkMicrophoneAccess(completionHandler handler: @escaping (Bool) -> Void) {
+        // Check Microphone Authorization
+        switch AVAudioSession.sharedInstance().recordPermission {
+        case .granted:
+            print(#function, " Microphone Permission Granted")
+            handler(true)
+            break
+            
+        case .denied, .undetermined:
+            handler(false)
+            return
+        @unknown default:
+            print("ERROR! Unknown Default. Check!")
+        }
+    }
 
     // Helper function inserted by Swift migrator.
     fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
@@ -1174,7 +1149,7 @@ extension RecordVC: AVAudioRecorderDelegate,AVAudioPlayerDelegate {
 }
 
 extension RecordVC{
-    func mergeAudioFiles(originalURL: URL, replacingURL:URL, startTime:CMTime, folderName:String, caseNumber:String, taskToPerform:String) {
+    func mergeAudioFiles(originalURL: URL, replacingURL:URL, startTime:CMTime, taskToPerform:String) {
             
         let options = [AVURLAssetPreferPreciseDurationAndTimingKey:true]
         let originalAsset  = AVURLAsset(url: originalURL, options: options)
@@ -1184,8 +1159,8 @@ extension RecordVC{
             let duration = replacingTrack.timeRange.duration.scaled
             let replacingRange = CMTimeRange(start: startTime, duration: duration)
             
-            self.trimOriginalAssetFor(taskToPerform: taskToPerform, asset: originalAsset, replacingRange: replacingRange, replacingURL: replacingURL, folderName: folderName,  caseNumber:caseNumber) { (finalURLs) in
-                self.exportFinalOutput(from: finalURLs, folderName: folderName,  caseNumber:caseNumber, completionHandler: { (isCompleted) in
+            self.trimOriginalAssetFor(taskToPerform: taskToPerform, asset: originalAsset, replacingRange: replacingRange, replacingURL: replacingURL) { (finalURLs) in
+                self.exportFinalOutput(from: finalURLs, completionHandler: { (isCompleted) in
                     if isCompleted {
                         print("Merge Successful")
                         //if merge successful, then remove all chunks except final.m4a from the doc directory and change its name as well.
@@ -1230,12 +1205,9 @@ extension RecordVC{
         }catch  { print(error) }
     }
     
-    func trimOriginalAssetFor(taskToPerform:String, asset:AVAsset, replacingRange:CMTimeRange, replacingURL:URL, folderName:String, caseNumber:String, completionHandler handler: @escaping (_ finalURLs:[URL]) -> Void) {
+    func trimOriginalAssetFor(taskToPerform:String, asset:AVAsset, replacingRange:CMTimeRange, replacingURL:URL, completionHandler handler: @escaping (_ finalURLs:[URL]) -> Void) {
             
         var finalURLs = [URL]()
-        
-//        let startURL = self.getCurrentDirectory(with: folderName, caseNumber: caseNumber).appendingPathComponent("StartTrim.m4a")
-//        let endURL = self.getCurrentDirectory(with: folderName, caseNumber: caseNumber).appendingPathComponent("EndTrim.m4a")
         
         let startURL = Constants.documentDir.appendingPathComponent("StartTrim.m4a")
         let endURL = Constants.documentDir.appendingPathComponent("EndTrim.m4a")
@@ -1294,7 +1266,7 @@ extension RecordVC{
         }
     }
 
-    func exportFinalOutput(from urls:[URL] , folderName:String, caseNumber:String, completionHandler handler: @escaping (Bool) -> Void) {
+    func exportFinalOutput(from urls:[URL], completionHandler handler: @escaping (Bool) -> Void) {
         let options = [AVURLAssetPreferPreciseDurationAndTimingKey:true]
         let composition = AVMutableComposition(urlAssetInitializationOptions: options)
         let compositionAudioTrack = composition.addMutableTrack(withMediaType: AVMediaType.audio, preferredTrackID: kCMPersistentTrackID_Invalid)
@@ -1306,60 +1278,16 @@ extension RecordVC{
             print("Error Occured while apending", error.localizedDescription)
         }
         
-        //Export Final Audio //Dictation_10162018095338_20424047
-//        let finalAudioURL = self.getCurrentDirectory(with: folderName, caseNumber: caseNumber).appendingPathComponent("Dictation_\(folderName)_\(caseNumber).m4a")
         let finalAudioURL = Constants.documentDir.appendingPathComponent("final.m4a")
         self.removeFileIfAlreadyExists(at: finalAudioURL)
-//        self.removeAllFilesExceptNewRecording(withFolderName: folderName, caseNumber: caseNumber)
         composition.export(to: finalAudioURL, completionHandler: handler)
     }
-
-//    func getCurrentDirectory(with folderName:String, caseNumber:String)  -> URL {
-//        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-//        let documentsDirectory = paths[0]
-//        let appendedURL = documentsDirectory.appendingPathComponent(caseNumber).appendingPathComponent(folderName)
-//        return appendedURL
-//    }
     
     func removeFileIfAlreadyExists(at url:URL) {
         do {
             try FileManager.default.removeItem(at: url)
         } catch { }
     }
-    
-//    func removeAllFilesExceptNewRecording(withFolderName : String, caseNumber : String){
-//        let newRecording = "Dictation_New_\(withFolderName).m4a"
-//        let newOverwrite = "Dictation_\(withFolderName)_\(caseNumber)_newOverWrite.m4a"
-//
-//        let startTrim = self.getCurrentDirectory(with: withFolderName, caseNumber: caseNumber).appendingPathComponent("StartTrim.m4a")
-//        let endTrim = getCurrentDirectory(with: withFolderName, caseNumber: caseNumber).appendingPathComponent("EndTrim.m4a")
-//        let newRec = getCurrentDirectory(with: withFolderName, caseNumber: caseNumber).appendingPathComponent(newRecording)
-//        let newOver = getCurrentDirectory(with: withFolderName, caseNumber: caseNumber).appendingPathComponent(newOverwrite)
-//
-//        do{
-//            try FileManager.default.removeItem(at: startTrim)
-//        }catch{
-//            print("File not Found in Directory..!!")
-//        }
-//
-//        do{
-//            try FileManager.default.removeItem(at: endTrim)
-//        }catch{
-//            print("File not Found in Directory..!!")
-//        }
-//
-//        do{
-//            try FileManager.default.removeItem(at: newRec)
-//        }catch{
-//            print("File not Found in Directory..!!")
-//        }
-//
-//        do{
-//            try FileManager.default.removeItem(at: newOver)
-//        }catch{
-//            print("File not Found in Directory..!!")
-//        }
-//    }
 }
 
 extension AVMutableCompositionTrack {
