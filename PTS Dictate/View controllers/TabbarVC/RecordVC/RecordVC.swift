@@ -420,11 +420,11 @@ class RecordVC: BaseViewController {
                     self.lblPlayerStatus.text = "Paused"
                     self.btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: .normal)
                     self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-                    self.btnBackwardTrim.setBackgroundImage(UIImage(named: "existing_rewind_normal"), for: .normal)
-                    self.btnBackwardTrimEnd.setBackgroundImage(UIImage(named: "existing_backward_fast_normal"), for: .normal)
+//                    self.btnBackwardTrim.setBackgroundImage(UIImage(named: "existing_rewind_normal"), for: .normal)
+//                    self.btnBackwardTrimEnd.setBackgroundImage(UIImage(named: "existing_backward_fast_normal"), for: .normal)
                     self.btnPlay.isUserInteractionEnabled = true
-                    self.btnBackwardTrim.isUserInteractionEnabled = true
-                    self.btnBackwardTrimEnd.isUserInteractionEnabled = true
+//                    self.btnBackwardTrim.isUserInteractionEnabled = true
+//                    self.btnBackwardTrimEnd.isUserInteractionEnabled = true
                     
                     var fileName = (self.audioForEditing != nil ? self.audioForEditing : self.audioFileURL) ?? ""
                     //need to remove .m4a in case of editing
@@ -473,12 +473,8 @@ class RecordVC: BaseViewController {
         btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
         btnRecord.isUserInteractionEnabled = false
         btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-        btnBackwardTrim.setBackgroundImage(UIImage(named: "existing_rewind_normal"), for: .normal)
-        btnBackwardTrimEnd.setBackgroundImage(UIImage(named: "existing_backward_fast_normal"), for: .normal)
         btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_disable"), for: .normal)
         btnPlay.isUserInteractionEnabled = true
-        btnBackwardTrim.isUserInteractionEnabled = true
-        btnBackwardTrimEnd.isUserInteractionEnabled = true
         btnStop.isUserInteractionEnabled = false
         CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
         lblPlayerStatus.text = "Stopped"
@@ -546,6 +542,8 @@ class RecordVC: BaseViewController {
             btnRecord.isUserInteractionEnabled = false
             btnStop.isUserInteractionEnabled = false
             
+            self.enableDisableForwardBackwardButtons(enable: true)
+            
             NotificationCenter.default.addObserver(self, selector: #selector(self.playerDidFinishPlaying(sender:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.recorder.playerItem)
             
             let timeScale = CMTimeScale(NSEC_PER_SEC)
@@ -564,7 +562,25 @@ class RecordVC: BaseViewController {
             //pause the recording
             self.recorder.stopPlayer()
             self.onStopPlayerSetupUI()
+            self.enableDisableForwardBackwardButtons(enable: false)
         }
+    }
+    
+    func enableDisableForwardBackwardButtons(enable:Bool){
+        self.btnBackwardTrim.isUserInteractionEnabled    = enable
+        self.btnBackwardTrimEnd.isUserInteractionEnabled = enable
+        self.btnForwardTrim.isUserInteractionEnabled     = enable
+        self.btnForwardTrimEnd.isUserInteractionEnabled  = enable
+        
+        let imageBtnBackward     = enable ? UIImage(named: "existing_rewind_normal") : UIImage(named: "existing_rewind_disable")
+        let imageBtnFastBackward = enable ? UIImage(named: "existing_backward_fast_normal") : UIImage(named: "existing_backward_fast_disable")
+        let imageBtnForward      = enable ? UIImage(named: "existing_forward_normal") : UIImage(named: "existing_forward_disable")
+        let imageBtnFastForward  = enable ? UIImage(named: "existing_forward_fast_normal") : UIImage(named: "existing_forward_fast_disable")
+        
+        self.btnBackwardTrim.setBackgroundImage(imageBtnBackward, for: .normal)
+        self.btnBackwardTrimEnd.setBackgroundImage(imageBtnFastBackward, for: .normal)
+        self.btnForwardTrim.setBackgroundImage(imageBtnForward, for: .normal)
+        self.btnForwardTrimEnd.setBackgroundImage(imageBtnFastForward, for: .normal)
     }
     
     func onStopPlayerSetupUI(){
@@ -580,6 +596,8 @@ class RecordVC: BaseViewController {
         self.onStopPlayerSetupUI()
         self.playedFirstTime = false
         self.recorder.queuePlayerPlaying = false
+        
+        self.enableDisableForwardBackwardButtons(enable: false)
         print("Finished playing")
     }
     
