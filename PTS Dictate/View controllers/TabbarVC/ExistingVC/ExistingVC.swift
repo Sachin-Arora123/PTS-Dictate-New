@@ -55,6 +55,56 @@ class ExistingVC: BaseViewController {
     fileprivate var startLoading = Date()
     fileprivate var endLoading = Date()
     fileprivate var profileResult = ""
+    
+    final fileprivate let fastBackDisabled: UIImage? = UIImage(named: "existing_backward_fast_disable")
+    final fileprivate let backDisabled: UIImage? = UIImage(named: "existing_rewind_disable")
+    final fileprivate let fastNextDisabled: UIImage? = UIImage(named: "existing_forward_fast_disable")
+    final fileprivate let nextDisabled: UIImage? = UIImage(named: "existing_forward_disable")
+    
+    final fileprivate let fastBackNormal: UIImage? = UIImage(named: "existing_backward_fast_normal")
+    final fileprivate let backNormal: UIImage? = UIImage(named: "existing_rewind_normal")
+    final fileprivate let fastNextNormal: UIImage? = UIImage(named: "existing_forward_fast_normal")
+    final fileprivate let nextNormal: UIImage? = UIImage(named: "existing_forward_normal")
+    
+    fileprivate var audioTimer: TimeInterval? {
+        didSet {
+            if let time = audioTimer {
+                DispatchQueue.main.async {
+                    if time <= 3 {
+                        self.btnBackwardTrim.setBackgroundImage(self.backDisabled, for: .normal)
+                        self.btnBackwardTrimEnd.setBackgroundImage(self.fastBackDisabled, for: .normal)
+                        self.btnForwardTrim.setBackgroundImage(self.nextNormal, for: .normal)
+                        self.btnForwardTrimEnd.setBackgroundImage(self.fastNextNormal, for: .normal)
+                        
+                        self.btnBackwardTrim.isEnabled = false
+                        self.btnBackwardTrimEnd.isEnabled = false
+                        self.btnForwardTrim.isEnabled = true
+                        self.btnForwardTrimEnd.isEnabled = true
+                    } else if time >= self.audioPlayer.duration - 3 {
+                        self.btnBackwardTrim.setBackgroundImage(self.backNormal, for: .normal)
+                        self.btnBackwardTrimEnd.setBackgroundImage(self.fastBackNormal, for: .normal)
+                        self.btnForwardTrim.setBackgroundImage(self.nextDisabled, for: .normal)
+                        self.btnForwardTrimEnd.setBackgroundImage(self.fastNextDisabled, for: .normal)
+                        
+                        self.btnBackwardTrim.isEnabled = true
+                        self.btnBackwardTrimEnd.isEnabled = true
+                        self.btnForwardTrim.isEnabled = false
+                        self.btnForwardTrimEnd.isEnabled = false
+                    } else {
+                        self.btnBackwardTrim.setBackgroundImage(self.backNormal, for: .normal)
+                        self.btnBackwardTrimEnd.setBackgroundImage(self.fastBackNormal, for: .normal)
+                        self.btnForwardTrim.setBackgroundImage(self.nextNormal, for: .normal)
+                        self.btnForwardTrimEnd.setBackgroundImage(self.fastNextNormal, for: .normal)
+                        
+                        self.btnBackwardTrim.isEnabled = true
+                        self.btnBackwardTrimEnd.isEnabled = true
+                        self.btnForwardTrim.isEnabled = true
+                        self.btnForwardTrimEnd.isEnabled = true
+                    }
+                }
+            }
+        }
+    }
     // MARK: - View Life-Cycle.
     
     override func viewDidLoad() {
@@ -62,6 +112,7 @@ class ExistingVC: BaseViewController {
         // Do any additional setup after loading the view.
         self.existingViewModel.existingViewController = self
         self.tabBarController?.delegate = self
+        self.audioTimer = 0
         addObservers()
     }
     
@@ -212,7 +263,7 @@ class ExistingVC: BaseViewController {
         let sec = Int(audioPlayer.currentTime.truncatingRemainder(dividingBy: 60))
         let totalTimeString = String(format: "%02d:%02d",min, sec)
         print("totalTimeString ===== \(totalTimeString)")
-        
+        self.audioTimer = audioPlayer.currentTime
         let cmTime = CMTime(seconds: audioPlayer.currentTime, preferredTimescale: 1000000)
         self.mediaProgressView.waveformView.progressTime = cmTime
         
@@ -721,6 +772,15 @@ extension ExistingVC: AVAudioPlayerDelegate {
             self.resetSoundWaves()
             self.setUpWave(index: playingCellIndex)
             self.playingCellIndex = -1
+            self.btnBackwardTrim.setBackgroundImage(self.backNormal, for: .normal)
+            self.btnBackwardTrimEnd.setBackgroundImage(self.fastBackNormal, for: .normal)
+            self.btnForwardTrim.setBackgroundImage(self.nextNormal, for: .normal)
+            self.btnForwardTrimEnd.setBackgroundImage(self.fastNextNormal, for: .normal)
+            
+            self.btnBackwardTrim.isEnabled = true
+            self.btnBackwardTrimEnd.isEnabled = true
+            self.btnForwardTrim.isEnabled = true
+            self.btnForwardTrimEnd.isEnabled = true
             self.tableView.reloadData()
             print("Playing Completed")
             
@@ -754,12 +814,9 @@ extension ExistingVC{
         var time: TimeInterval = audioPlayer.currentTime
         time += timeVal
         if time > audioPlayer.duration {
-            if isPlaying {
                 audioPlayer.stop()
-            }
         } else {
             audioPlayer.pause()
-            //            self.mediaProgressView.pause()
             audioPlayer.currentTime = time
             if pausedTime != nil {
                 audioPlayer.play()
@@ -767,8 +824,8 @@ extension ExistingVC{
             let min = Int(audioPlayer.currentTime / 60)
             let sec = Int(audioPlayer.currentTime.truncatingRemainder(dividingBy: 60))
             let totalTimeString = String(format: "%02d:%02d", min, sec)
+            self.audioTimer = audioPlayer.currentTime
             self.lblPlayingTime.text = totalTimeString
-            //            self.mediaProgressView.play(for: time)
             audioPlayer.updateMeters()
         }
     }
@@ -781,7 +838,6 @@ extension ExistingVC{
             audioPlayer.stop()
         } else {
             audioPlayer.pause()
-            //            self.mediaProgressView.pause()
             audioPlayer.currentTime = time
             if pausedTime != nil {
                 audioPlayer.play()
@@ -789,8 +845,8 @@ extension ExistingVC{
             let min = Int(audioPlayer.currentTime / 60)
             let sec = Int(audioPlayer.currentTime.truncatingRemainder(dividingBy: 60))
             let totalTimeString = String(format: "%02d:%02d", min, sec)
+            self.audioTimer = audioPlayer.currentTime
             self.lblPlayingTime.text = totalTimeString
-            //            self.mediaProgressView.play(for: time)
             audioPlayer.updateMeters()
         }
     }
