@@ -108,13 +108,17 @@ class RecordVC: BaseViewController {
         return CoreData.shared.commentScreenMandatory == 1 ?  true : false
     }
     
-    private lazy var stopwatch = Stopwatch(timeUpdated: { [weak self] timegap in
+    private lazy var stopwatch = Stopwatch(timeUpdated: { [weak self] timeVal in
         guard let strongSelf = self else { return }
+        
+        print("timeVal ====== \(timeVal)")
+        
+        
         if strongSelf.isPerformingOverwrite{
             strongSelf.overwritingStartingTimerPoint += 1
             strongSelf.insertTimer.text = strongSelf.timeString(from: strongSelf.overwritingStartingTimerPoint)
         }else{
-            strongSelf.lblTime.text = strongSelf.timeString(from: timegap + strongSelf.editAssetDuration)
+            strongSelf.lblTime.text = strongSelf.timeString(from: timeVal + strongSelf.editAssetDuration)
         }
         strongSelf.updateAudioMeter()
     })
@@ -166,6 +170,16 @@ class RecordVC: BaseViewController {
         
         //If comes for editing the audio from existing dictations screen, setup the UI according to that.
         if let _ = self.audioForEditing { // if value is nil then its not for editing, if that's hold any string value then setup the ui for editing that audio
+            
+            //assigning editing asset to the article chunks array fot future refrence.
+            let editingAsset = AVURLAsset(url: Constants.documentDir.appendingPathComponent(self.audioForEditing ?? ""))
+            self.recorder.articleChunks = [editingAsset]
+            self.editAssetDuration = editingAsset.duration.seconds
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
+                self.playerWaveView.waveformView.progressTime = CMTimeMakeWithSeconds(editingAsset.duration.seconds, preferredTimescale: 1)
+            })
+            
             setUpUIForEditing()
         }
         
@@ -180,9 +194,8 @@ class RecordVC: BaseViewController {
         audioRecorder = nil
         self.playedFirstTime = false
         self.tabBarController?.setTabBarHidden(false, animated: false)
-        
-        let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
         self.audioForEditing = nil
+        self.editAssetDuration = 0.0
     }
     
     deinit {
@@ -340,17 +353,11 @@ class RecordVC: BaseViewController {
     // MARK: - Setup audio waves for the recorded audio
     func setUpWave() {
         self.playerWaveView.isHidden = false
-        if (self.audioForEditing != nil){
-            let asset = AVAsset(url: Constants.documentDir.appendingPathComponent(self.audioForEditing ?? ""))
-            self.playerWaveView.waveformView.asset = asset
-            self.playerWaveView.waveformView.progressTime = CMTimeMakeWithSeconds(asset.duration.seconds, preferredTimescale: 1)
-        }else{
-            self.playerWaveView.waveformView.asset = self.getFullAsset()
-            self.playerWaveView.waveformView.progressTime = CMTimeMakeWithSeconds(0, preferredTimescale: 1)
-        }
+
+        self.playerWaveView.waveformView.asset = self.getFullAsset()
+        self.playerWaveView.waveformView.progressTime = CMTimeMakeWithSeconds(self.playerWaveView.waveformView.asset.duration.seconds, preferredTimescale: 1)
         self.playerWaveView.waveformView.normalColor = .lightGray
         self.playerWaveView.waveformView.progressColor = .blue
-        
         
         // Set the precision, 1 being the maximum
         self.playerWaveView.waveformView.precision = 0.1 // We are going to render one line per four pixels
@@ -413,21 +420,21 @@ class RecordVC: BaseViewController {
                     self.lblPlayerStatus.text = "Paused"
                     self.btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: .normal)
                     self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-                    self.btnBackwardTrim.setBackgroundImage(UIImage(named: "existing_rewind_normal"), for: .normal)
-                    self.btnBackwardTrimEnd.setBackgroundImage(UIImage(named: "existing_backward_fast_normal"), for: .normal)
+//                    self.btnBackwardTrim.setBackgroundImage(UIImage(named: "existing_rewind_normal"), for: .normal)
+//                    self.btnBackwardTrimEnd.setBackgroundImage(UIImage(named: "existing_backward_fast_normal"), for: .normal)
                     self.btnPlay.isUserInteractionEnabled = true
-                    self.btnBackwardTrim.isUserInteractionEnabled = true
-                    self.btnBackwardTrimEnd.isUserInteractionEnabled = true
+//                    self.btnBackwardTrim.isUserInteractionEnabled = true
+//                    self.btnBackwardTrimEnd.isUserInteractionEnabled = true
                     
                     var fileName = (self.audioForEditing != nil ? self.audioForEditing : self.audioFileURL) ?? ""
                     //need to remove .m4a in case of editing
                     if let dotRange = fileName.range(of: ".") {
                         fileName.removeSubrange(dotRange.lowerBound..<fileName.endIndex)
                     }
+                    
                     self.recorder.concatChunks(filename: fileName){
                         success in
                         if success{
-        //                    self.chunkInt = 0
                             DispatchQueue.main.async {
                                 self.setUpStopAndPauseUI()
                             }
@@ -466,12 +473,8 @@ class RecordVC: BaseViewController {
         btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
         btnRecord.isUserInteractionEnabled = false
         btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-        btnBackwardTrim.setBackgroundImage(UIImage(named: "existing_rewind_normal"), for: .normal)
-        btnBackwardTrimEnd.setBackgroundImage(UIImage(named: "existing_backward_fast_normal"), for: .normal)
         btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_disable"), for: .normal)
         btnPlay.isUserInteractionEnabled = true
-        btnBackwardTrim.isUserInteractionEnabled = true
-        btnBackwardTrimEnd.isUserInteractionEnabled = true
         btnStop.isUserInteractionEnabled = false
         CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
         lblPlayerStatus.text = "Stopped"
@@ -539,6 +542,8 @@ class RecordVC: BaseViewController {
             btnRecord.isUserInteractionEnabled = false
             btnStop.isUserInteractionEnabled = false
             
+            self.enableDisableForwardBackwardButtons(enable: true)
+            
             NotificationCenter.default.addObserver(self, selector: #selector(self.playerDidFinishPlaying(sender:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.recorder.playerItem)
             
             let timeScale = CMTimeScale(NSEC_PER_SEC)
@@ -557,7 +562,25 @@ class RecordVC: BaseViewController {
             //pause the recording
             self.recorder.stopPlayer()
             self.onStopPlayerSetupUI()
+            self.enableDisableForwardBackwardButtons(enable: false)
         }
+    }
+    
+    func enableDisableForwardBackwardButtons(enable:Bool){
+        self.btnBackwardTrim.isUserInteractionEnabled    = enable
+        self.btnBackwardTrimEnd.isUserInteractionEnabled = enable
+        self.btnForwardTrim.isUserInteractionEnabled     = enable
+        self.btnForwardTrimEnd.isUserInteractionEnabled  = enable
+        
+        let imageBtnBackward     = enable ? UIImage(named: "existing_rewind_normal") : UIImage(named: "existing_rewind_disable")
+        let imageBtnFastBackward = enable ? UIImage(named: "existing_backward_fast_normal") : UIImage(named: "existing_backward_fast_disable")
+        let imageBtnForward      = enable ? UIImage(named: "existing_forward_normal") : UIImage(named: "existing_forward_disable")
+        let imageBtnFastForward  = enable ? UIImage(named: "existing_forward_fast_normal") : UIImage(named: "existing_forward_fast_disable")
+        
+        self.btnBackwardTrim.setBackgroundImage(imageBtnBackward, for: .normal)
+        self.btnBackwardTrimEnd.setBackgroundImage(imageBtnFastBackward, for: .normal)
+        self.btnForwardTrim.setBackgroundImage(imageBtnForward, for: .normal)
+        self.btnForwardTrimEnd.setBackgroundImage(imageBtnFastForward, for: .normal)
     }
     
     func onStopPlayerSetupUI(){
@@ -573,30 +596,30 @@ class RecordVC: BaseViewController {
         self.onStopPlayerSetupUI()
         self.playedFirstTime = false
         self.recorder.queuePlayerPlaying = false
+        
+        self.enableDisableForwardBackwardButtons(enable: false)
         print("Finished playing")
     }
     
     // MARK: - @IBAction Forward.
     @IBAction func onTapForwardTrim(_ sender: UIButton) {
-        print("Forward Trim")
         self.recorder.seekForward(timeInterval: 1)
     }
     
     // MARK: - @IBAction Fast Forward.
     @IBAction func onTapForwardTrimEnd(_ sender: UIButton) {
-        print("Forward Trimfast End")
         self.recorder.seekForward(timeInterval: 3)
     }
     
     // MARK: - @IBAction Backward Trim.
     @IBAction func onTapBackwardTrim(_ sender: UIButton) {
-        print("Backward Trim")
         self.recorder.seekBackwards(timeInterval: 1)
+        
+//        self.fastBackwardByTime(timeVal: 1)
     }
     
     // MARK: - @IBAction Fast Backward Trim.
     @IBAction func onTapBackwardTrimEnd(_ sender: UIButton) {
-        print("Backward TrimFast End")
         self.recorder.seekBackwards(timeInterval: 3)
     }
     
@@ -1044,23 +1067,19 @@ class RecordVC: BaseViewController {
         self.tabBarController?.setTabBarHidden(false, animated: false)
         
         //timings
-        let asset = AVAsset(url: Constants.documentDir.appendingPathComponent(self.audioForEditing ?? ""))
-        self.lblTime.text            = self.timeString(from: asset.duration.seconds)
-        self.currentPlayingTime.text = self.lblTime.text
-        self.playerTotalTime.text    = self.lblTime.text
-        
-        //filename
-        self.lblFNameValue.text = self.audioForEditing
+        if self.audioForEditing != nil{
+            let asset = AVAsset(url: Constants.documentDir.appendingPathComponent(self.audioForEditing ?? ""))
+            self.lblTime.text            = self.timeString(from: asset.duration.seconds)
+            self.currentPlayingTime.text = self.lblTime.text
+            self.playerTotalTime.text    = self.lblTime.text
+            
+            //filename
+            self.lblFNameValue.text = self.audioForEditing
+        }
         
         //play button
         self.btnPlay.isUserInteractionEnabled = true
         self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-        
-        //assigning editing asset to the article chunks array fot future refrence.
-        let editingAsset = AVURLAsset(url: Constants.documentDir.appendingPathComponent(self.audioForEditing ?? ""))
-        self.recorder.articleChunks = [editingAsset]
-        
-        self.editAssetDuration = editingAsset.duration.seconds
     }
  
     // MARK: - Upadte Timer method.
@@ -1165,6 +1184,10 @@ extension RecordVC{
                         print("Merge Successful")
                         //if merge successful, then remove all chunks except final.m4a from the doc directory and change its name as well.
                         self.removeFileChunksInDocDirectory()
+                        
+                        DispatchQueue.main.async {
+                            self.setUpWave()
+                        }
                     } else {
                         print("Merge Failed")
                     }
@@ -1192,17 +1215,26 @@ extension RecordVC{
         
         //change the name of final.url
         let sourcePath = Constants.documentDir.appendingPathComponent("final.m4a")
-        let destPath = Constants.documentDir.appendingPathComponent(self.audioFileURL + ".m4a")
-        do{
-            _ = try FileManager.default.replaceItemAt(destPath, withItemAt: sourcePath)
+        
+        DispatchQueue.main.async {
+            var fileName = (self.audioForEditing != nil ? self.audioForEditing : self.audioFileURL) ?? ""
+            //need to remove .m4a in case of editing
+            if let dotRange = fileName.range(of: ".") {
+                fileName.removeSubrange(dotRange.lowerBound..<fileName.endIndex)
+            }
             
-            //now the destPath has updated result. we can give that value to articleChunks array as well so that it can play the final one.
-            let assetToAdd = AVURLAsset(url: destPath)
-            self.recorder.articleChunks.removeAll()
-            self.recorder.articleChunks.append(assetToAdd)
-            
-            self.updateTimer()
-        }catch  { print(error) }
+            let destPath = Constants.documentDir.appendingPathComponent(fileName + ".m4a")
+            do{
+                _ = try FileManager.default.replaceItemAt(destPath, withItemAt: sourcePath)
+                
+                //now the destPath has updated result. we can give that value to articleChunks array as well so that it can play the final one.
+                let assetToAdd = AVURLAsset(url: destPath)
+                self.recorder.articleChunks.removeAll()
+                self.recorder.articleChunks.append(assetToAdd)
+                
+                self.updateTimer()
+            }catch  { print(error) }
+        }
     }
     
     func trimOriginalAssetFor(taskToPerform:String, asset:AVAsset, replacingRange:CMTimeRange, replacingURL:URL, completionHandler handler: @escaping (_ finalURLs:[URL]) -> Void) {
