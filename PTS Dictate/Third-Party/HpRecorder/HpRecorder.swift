@@ -12,7 +12,7 @@ public class HPRecorder: NSObject {
 //    open var partialDeleteAsset : AVAsset?
     open var recordingSession: AVAudioSession!
     open var audioRecorder: AVAudioRecorder!
-    open var queuePlayer:      AVQueuePlayer?
+    open var queuePlayer: AVQueuePlayer?
     open var articleChunks = [AVURLAsset]()
     open var playerItem: AVPlayerItem?
     open var durationTime: Double = 0.0
@@ -148,7 +148,6 @@ public class HPRecorder: NSObject {
     // Stop player
     public  func stopPlayer() {
         self.queuePlayer?.pause()
-//        self.queuePlayer = nil
         self.queuePlayerPlaying = false
     }
     
@@ -275,10 +274,10 @@ public class HPRecorder: NSObject {
     
     // MARK: - seek Backward
     public func seekBackwards(timeInterval: Int) {
-        let seconds : Int64 = Int64(timeInterval)
-        let targetTime:CMTime = CMTimeMake(value: seconds, timescale: 1)
+        let seconds    = Int64(timeInterval)
+        let targetTime = CMTimeMake(value: seconds, timescale: 1)
         let newCurrentTime = (self.queuePlayer?.currentTime())! - targetTime
-        self.queuePlayer?.seek(to: newCurrentTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero, completionHandler: { result in
+        self.queuePlayer?.seek(to: newCurrentTime, toleranceBefore: .zero, toleranceAfter: .zero, completionHandler: { result in
             print("finished seeking")
         })
     }
