@@ -811,23 +811,63 @@ extension Notification.Name {
 extension ExistingVC{
     // MARK: Seek Forward
     func fastForwardByTime(timeVal: Double) {
-        var time: TimeInterval = audioPlayer.currentTime
-        time += timeVal
-        if time > audioPlayer.duration {
-                audioPlayer.stop()
-        } else {
-            audioPlayer.pause()
-            audioPlayer.currentTime = time
-            if pausedTime != nil {
-                audioPlayer.play()
-            }
-            let min = Int(audioPlayer.currentTime / 60)
-            let sec = Int(audioPlayer.currentTime.truncatingRemainder(dividingBy: 60))
-            let totalTimeString = String(format: "%02d:%02d", min, sec)
-            self.audioTimer = audioPlayer.currentTime
-            self.lblPlayingTime.text = totalTimeString
-            audioPlayer.updateMeters()
-        }
+        //old one
+//        var time: TimeInterval = audioPlayer.currentTime
+//        time += timeVal
+//        if time > audioPlayer.duration {
+//                audioPlayer.stop()
+//        } else {
+//            audioPlayer.pause()
+//            audioPlayer.currentTime = time
+//            if pausedTime != nil {
+//                audioPlayer.play()
+//            }
+//            let min = Int(audioPlayer.currentTime / 60)
+//            let sec = Int(audioPlayer.currentTime.truncatingRemainder(dividingBy: 60))
+//            let totalTimeString = String(format: "%02d:%02d", min, sec)
+//            self.audioTimer = audioPlayer.currentTime
+//            self.lblPlayingTime.text = totalTimeString
+//            audioPlayer.updateMeters()
+//        }
+        
+        //new one
+        //we need to change three things(timing label, audio player's current time and sound wave progress)
+        var currentTime = audioPlayer.currentTime
+        currentTime += timeVal
+        audioPlayer.currentTime = TimeInterval(integerLiteral: currentTime)
+        audioPlayer.updateMeters()
+        
+        //update timings
+        self.lblPlayingTime.text = self.timeString(from: currentTime)
+        
+        //update waves
+        self.mediaProgressView.waveformView.progressTime = CMTimeMakeWithSeconds(currentTime, preferredTimescale: 1)
+        
+//        let seconds : Int64 = Int64(time)
+//        let targetTime:CMTime = CMTimeMake(value: seconds, timescale: 1)
+//        let newCurrentTime = audioPlayer.currentTime + targetTime
+//
+//        audioPlayer.currentTime = TimeInterval(integerLiteral: time)
+        
+        
+//        if pausedTime != nil {
+//            audioPlayer.play()
+//        }
+        
+        
+//        let min = Int(audioPlayer.currentTime / 60)
+//        let sec = Int(audioPlayer.currentTime.truncatingRemainder(dividingBy: 60))
+//        let totalTimeString = String(format: "%02d:%02d", min, sec)
+//        self.audioTimer = audioPlayer.currentTime
+//        self.lblPlayingTime.text = totalTimeString
+//        audioPlayer.updateMeters()
+    }
+    
+    func timeString(from timeInterval: TimeInterval) -> String {
+        let seconds = Int(timeInterval.truncatingRemainder(dividingBy: 60))
+        let minutes = Int(timeInterval.truncatingRemainder(dividingBy: 60 * 60) / 60)
+        let hours = Int(timeInterval / 3600)
+        return String(format: "%.2d:%.2d:%.2d", hours, minutes, seconds)
     }
     
     // MARK: - Seek Backward

@@ -150,7 +150,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
-        
+        print(#function)
+        print("isRecording == \(isRecording)")
+        print("audioFileName == \(audioFileName)")
+        if isRecording{
+            //increase file count by 1
+            CoreData.shared.fileCount += 1
+            AudioFiles.shared.saveNewAudioFile(name: audioFileName, autoSaved: true)
+            audioFileName = ""
+        }
     }
     
     

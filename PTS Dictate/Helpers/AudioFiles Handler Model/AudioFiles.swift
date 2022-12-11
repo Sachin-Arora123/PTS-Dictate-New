@@ -65,6 +65,7 @@ class AudioFiles {
     }
     
     func saveNewAudioFile(name: String, autoSaved: Bool = false) {
+        print("==== Saving New File ====")
         AudioFiles.shared.audioFiles.append(AudioFile(name: name, fileInfo: AudioFileInfo(comment: nil, isUploaded: false, archivedDays: archiveFile == 1 ? archiveFileDays : 0, canEdit: false, uploadedAt: nil, uploadingInProgress: false, autoSaved: autoSaved)))
         updateAudioFilesOnCoreData()
     }

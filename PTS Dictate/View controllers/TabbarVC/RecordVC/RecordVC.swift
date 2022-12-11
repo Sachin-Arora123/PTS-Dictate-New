@@ -12,10 +12,11 @@ import SCWaveformView
 
 var isRecording: Bool = false
 var audioRecorder:AVAudioRecorder?
-var audioPlayer:AVAudioPlayer?
-var player: AVAudioPlayer?
+//var audioPlayer:AVAudioPlayer?
+//var player: AVAudioPlayer?
 var tempChunks : [AVURLAsset] = []
 var tempAudioFileURL: String = ""
+var audioFileName: String = ""
 
 enum RecorderState: Int {
     case none = 0
@@ -84,7 +85,7 @@ class RecordVC: BaseViewController {
     var chunkInt = 0
     let fileManager = FileManager.default
     var recordTimer:Timer!
-    var audioFileName: String = ""
+    
     var articleChunks = [AVURLAsset]()
     var settings         = [String : Any]()
     var currentRecordUpdateTimer: Timer!
@@ -183,7 +184,6 @@ class RecordVC: BaseViewController {
             setUpUIForEditing()
         }
         
-        //isRecording flag
         isRecording = false
         
         insertTimer.isHidden = true
@@ -191,7 +191,7 @@ class RecordVC: BaseViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        audioRecorder = nil
+//        audioRecorder = nil
         self.playedFirstTime = false
         self.tabBarController?.setTabBarHidden(false, animated: false)
         self.audioForEditing = nil
@@ -289,7 +289,7 @@ class RecordVC: BaseViewController {
         //need to check recording file count here as well
         self.audioFileURL = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)"
         self.lblFNameValue.text = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)" + ".m4a"
-        self.audioFileName = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)" + ".m4a" // mohit new changes
+        audioFileName = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)" + ".m4a" // mohit new changes
         self.lblFSizeValue.text = "0.00 Mb"
         
         //setup file url as well.
@@ -333,7 +333,7 @@ class RecordVC: BaseViewController {
     // MARK: - Handle app terminate notification
     @objc func applicationWillTerminate(notification: Notification) {
         print("Notification received.")
-        AudioFiles.shared.saveNewAudioFile(name: self.audioFileName, autoSaved: true) // mohit new changes
+//        AudioFiles.shared.saveNewAudioFile(name: audioFileName, autoSaved: true) // mohit new changes
         if self.recorder.audioRecorder != nil {
             self.recorder.endRecording()
             
@@ -614,8 +614,6 @@ class RecordVC: BaseViewController {
     // MARK: - @IBAction Backward Trim.
     @IBAction func onTapBackwardTrim(_ sender: UIButton) {
         self.recorder.seekBackwards(timeInterval: 1)
-        
-//        self.fastBackwardByTime(timeVal: 1)
     }
     
     // MARK: - @IBAction Fast Backward Trim.
@@ -623,42 +621,42 @@ class RecordVC: BaseViewController {
         self.recorder.seekBackwards(timeInterval: 3)
     }
     
-    func fastForwardByTime(timeVal: Double) {
-        audioPlayer = try? AVAudioPlayer(contentsOf: self.recorder.audioRecorder.url)
-        audioPlayer?.delegate = self
-        var time: TimeInterval = audioPlayer?.currentTime ?? 0.0
-        time += timeVal
-        if time > audioPlayer!.duration {
-            if let player = audioPlayer {
-                if player.isPlaying {
-                    player.stop()
-                }
-            }
-        } else {
-            audioPlayer?.currentTime = time
-            let min = Int(audioPlayer!.currentTime / 60)
-            let sec = Int(audioPlayer!.currentTime.truncatingRemainder(dividingBy: 60))
-            let totalTimeString = String(format: "%02d:%02d", min, sec)
-            self.lblTime.text = totalTimeString
-            audioPlayer?.updateMeters()
-        }
-    }
+//    func fastForwardByTime(timeVal: Double) {
+//        audioPlayer = try? AVAudioPlayer(contentsOf: self.recorder.audioRecorder.url)
+//        audioPlayer?.delegate = self
+//        var time: TimeInterval = audioPlayer?.currentTime ?? 0.0
+//        time += timeVal
+//        if time > audioPlayer!.duration {
+//            if let player = audioPlayer {
+//                if player.isPlaying {
+//                    player.stop()
+//                }
+//            }
+//        } else {
+//            audioPlayer?.currentTime = time
+//            let min = Int(audioPlayer!.currentTime / 60)
+//            let sec = Int(audioPlayer!.currentTime.truncatingRemainder(dividingBy: 60))
+//            let totalTimeString = String(format: "%02d:%02d", min, sec)
+//            self.lblTime.text = totalTimeString
+//            audioPlayer?.updateMeters()
+//        }
+//    }
     
-    func fastBackwardByTime(timeVal: Double) {
-        audioPlayer = try? AVAudioPlayer(contentsOf:   self.recorder.audioRecorder.url)
-        var time: TimeInterval = audioPlayer?.currentTime ?? 0.0
-        time -= timeVal
-        if time < 0 {
-            audioPlayer?.stop()
-        } else {
-            audioPlayer?.currentTime = time
-            let min = Int(audioPlayer!.currentTime / 60)
-            let sec = Int(audioPlayer!.currentTime.truncatingRemainder(dividingBy: 60))
-            let totalTimeString = String(format: "%02d:%02d", min, sec)
-            self.lblTime.text = totalTimeString
-            audioPlayer?.updateMeters()
-        }
-    }
+//    func fastBackwardByTime(timeVal: Double) {
+//        audioPlayer = try? AVAudioPlayer(contentsOf:   self.recorder.audioRecorder.url)
+//        var time: TimeInterval = audioPlayer?.currentTime ?? 0.0
+//        time -= timeVal
+//        if time < 0 {
+//            audioPlayer?.stop()
+//        } else {
+//            audioPlayer?.currentTime = time
+//            let min = Int(audioPlayer!.currentTime / 60)
+//            let sec = Int(audioPlayer!.currentTime.truncatingRemainder(dividingBy: 60))
+//            let totalTimeString = String(format: "%02d:%02d", min, sec)
+//            self.lblTime.text = totalTimeString
+//            audioPlayer?.updateMeters()
+//        }
+//    }
     
     // MARK: - @IBAction Segment Control.
     @IBAction func segmentChanged(_ sender: Any) {
@@ -751,10 +749,15 @@ class RecordVC: BaseViewController {
                 self.lblTime.text = "00:00:00"
                 self.recorderState = .none
                 
-                CoreData.shared.fileCount += 1
+                //not in case of edit
+                if self.audioForEditing == nil{
+                    CoreData.shared.fileCount += 1
+                }
+                
                 CoreData.shared.dataSave()
                 
                 isRecording = false
+                audioFileName = ""
                 self.onDiscardRecorderSetUp()
                 
                 self.resetValues()
@@ -763,7 +766,7 @@ class RecordVC: BaseViewController {
                     if self.isCommentsOn {
                         self.pushCommentVC()
                     } else {
-                        AudioFiles.shared.saveNewAudioFile(name: self.audioFileName)  // mohit new changes
+                        AudioFiles.shared.saveNewAudioFile(name: audioFileName)  // mohit new changes
                         let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
                         self.setPushTransitionAnimation(VC)
                         self.navigationController?.popViewController(animated: false)
@@ -798,6 +801,7 @@ class RecordVC: BaseViewController {
             if success{
                 self.lblPlayerStatus.text = ""
                 isRecording = false
+                audioFileName = ""
                 for asset in self.recorder.articleChunks {
                     try? FileManager.default.removeItem(at: asset.url)
                 }
@@ -831,6 +835,7 @@ class RecordVC: BaseViewController {
     func onTapEditPerformInsertFunction(_ sender: UIButton){
         if sender.imageView?.image == UIImage(named: "btn_start_point_normal") {
             self.insertStartingPoint = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
+            print("")
             self.recorder.stopPlayer()
             self.btnClear.setImage(UIImage(named: "btn_start_inserting_normal"), for: .normal)
         }else if sender.imageView?.image == UIImage(named: "btn_start_inserting_normal") {
@@ -842,14 +847,18 @@ class RecordVC: BaseViewController {
         stopwatch.start()
         self.setUpUI()
         self.initiallyBtnStateSetup()
-        self.customRangeBar.isHidden = false
+        
         self.customRangeBarHeight.constant = 45
         self.parentStackTop.constant = 35
         lblPlayerStatus.text = "Recording"
         self.recorder.startRecording(fileName: "file_to_insert")
         self.chunkInt += 1
         self.recorderState = .recording
-        self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: .normal)
+        
+        self.btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_disable"), for: .normal)
+        self.btnRecord.isUserInteractionEnabled = true
+        
+        self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: .normal)
         self.btnStop.isUserInteractionEnabled = true
     }
     
@@ -1101,7 +1110,6 @@ class RecordVC: BaseViewController {
         if let recorder = self.recorder.audioRecorder {
             if success {
                 recorder.stop()
-//                audioRecorder = nil
 //                recordTimer.invalidate()
 //                currentRecordUpdateTimer.invalidate()
                 print("recorded successfully.")
