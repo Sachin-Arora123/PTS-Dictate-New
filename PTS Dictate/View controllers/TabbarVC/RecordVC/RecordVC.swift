@@ -732,7 +732,7 @@ class RecordVC: BaseViewController {
         self.setPushTransitionAnimation(VC)
         VC.hidesBottomBarWhenPushed = true
         VC.isCommentsMandotary = isCommentsMandotary
-        VC.fileName = audioFileName
+        VC.fileName = self.audioFileURL + ".m4a"  // mohit changes
         self.navigationController?.pushViewController(VC, animated: false)
     }
     
@@ -766,7 +766,7 @@ class RecordVC: BaseViewController {
                     if self.isCommentsOn {
                         self.pushCommentVC()
                     } else {
-                        AudioFiles.shared.saveNewAudioFile(name: audioFileName)  // mohit new changes
+                        AudioFiles.shared.saveNewAudioFile(name: self.audioFileURL + ".m4a")  // mohit new changes
                         let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
                         self.setPushTransitionAnimation(VC)
                         self.navigationController?.popViewController(animated: false)

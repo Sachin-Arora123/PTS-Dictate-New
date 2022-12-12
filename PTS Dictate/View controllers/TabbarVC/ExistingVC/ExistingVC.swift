@@ -70,7 +70,17 @@ class ExistingVC: BaseViewController {
         didSet {
             if let time = audioTimer {
                 DispatchQueue.main.async {
-                    if time <= 3 {
+                    if time <= 3 && time >= 1 {
+                        self.btnBackwardTrim.setBackgroundImage(self.backNormal, for: .normal)
+                        self.btnBackwardTrimEnd.setBackgroundImage(self.fastBackDisabled, for: .normal)
+                        self.btnForwardTrim.setBackgroundImage(self.nextNormal, for: .normal)
+                        self.btnForwardTrimEnd.setBackgroundImage(self.fastNextNormal, for: .normal)
+                        
+                        self.btnBackwardTrim.isEnabled = true
+                        self.btnBackwardTrimEnd.isEnabled = false
+                        self.btnForwardTrim.isEnabled = true
+                        self.btnForwardTrimEnd.isEnabled = true
+                    } else if time <= 1 {
                         self.btnBackwardTrim.setBackgroundImage(self.backDisabled, for: .normal)
                         self.btnBackwardTrimEnd.setBackgroundImage(self.fastBackDisabled, for: .normal)
                         self.btnForwardTrim.setBackgroundImage(self.nextNormal, for: .normal)
@@ -80,7 +90,17 @@ class ExistingVC: BaseViewController {
                         self.btnBackwardTrimEnd.isEnabled = false
                         self.btnForwardTrim.isEnabled = true
                         self.btnForwardTrimEnd.isEnabled = true
-                    } else if time >= self.audioPlayer.duration - 3 {
+                    } else if time >= self.audioPlayer.duration - 3 && time >= self.audioPlayer.duration -  1 {
+                        self.btnBackwardTrim.setBackgroundImage(self.backNormal, for: .normal)
+                        self.btnBackwardTrimEnd.setBackgroundImage(self.fastBackNormal, for: .normal)
+                        self.btnForwardTrim.setBackgroundImage(self.nextNormal, for: .normal)
+                        self.btnForwardTrimEnd.setBackgroundImage(self.fastNextDisabled, for: .normal)
+                        
+                        self.btnBackwardTrim.isEnabled = true
+                        self.btnBackwardTrimEnd.isEnabled = true
+                        self.btnForwardTrim.isEnabled = true
+                        self.btnForwardTrimEnd.isEnabled = false
+                    } else if time >= self.audioPlayer.duration -  1 {
                         self.btnBackwardTrim.setBackgroundImage(self.backNormal, for: .normal)
                         self.btnBackwardTrimEnd.setBackgroundImage(self.fastBackNormal, for: .normal)
                         self.btnForwardTrim.setBackgroundImage(self.nextDisabled, for: .normal)
@@ -229,6 +249,9 @@ class ExistingVC: BaseViewController {
                 setupPlayer(url: completePathURL)
                 setUpWave(index: index)
             }else{
+                if let audioTimer = self.audioTimer {
+                    self.audioPlayer.currentTime = audioTimer
+                }
                 audioPlayer.play()
             }
             
@@ -319,7 +342,7 @@ class ExistingVC: BaseViewController {
     func checkFilesAlreadyUploadedOrNot() -> Bool {
         for file in totalFilesSelected {
             let audioFile = getFileInfo(name: file)
-            if audioFile?.fileInfo?.isUploaded ?? true {
+            if audioFile?.fileInfo?.isUploaded ?? false {
                 return true
             } else {
                 return false
@@ -512,7 +535,7 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
         let file = getFileInfo(name: audioName)
         if !(file?.fileInfo?.isUploaded ?? false) && file?.fileInfo?.comment != nil {
             cell.lblFileStatus.textColor = UIColor.black
-            if file?.fileInfo?.autoSaved ?? true {
+            if file?.fileInfo?.autoSaved ?? false {
                 cell.lblFileStatus.text = "Auto Saved File"
             }else{
                 cell.lblFileStatus.text = ""
@@ -524,7 +547,7 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
             cell.btnEdit.setBackgroundImage(UIImage(named: "music_edit_normal"), for: .normal)
         } else if !(file?.fileInfo?.isUploaded ?? false) && file?.fileInfo?.comment == nil {
             cell.lblFileStatus.textColor = UIColor.black
-            if file?.fileInfo?.autoSaved ?? true {
+            if file?.fileInfo?.autoSaved ?? false {
                 cell.lblFileStatus.text = "Auto Saved File"
             } else{
                 cell.lblFileStatus.text = ""
@@ -536,10 +559,10 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
             cell.btnEdit.setBackgroundImage(UIImage(named: "music_edit_normal"), for: .normal)
         } else if file?.fileInfo?.isUploaded ?? true && file?.fileInfo?.comment != nil{
             cell.lblFileStatus.textColor = UIColor(red: 62/255, green: 116/255, blue: 36/255, alpha: 1.0)
-            if file?.fileInfo?.autoSaved ?? true {
+            if file?.fileInfo?.autoSaved ?? false {
                 cell.lblFileStatus.text = "Auto Saved File"
             } else{
-                cell.lblFileStatus.text = "Uploaded"
+                cell.lblFileStatus.text = ""
             }
             cell.lblFileStatus.text = "Uploaded"
             cell.btnComment.isUserInteractionEnabled = true
@@ -549,10 +572,10 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
             cell.btnEdit.setBackgroundImage(UIImage(named: "music_edit_disable"), for: .normal)
         } else if file?.fileInfo?.isUploaded ?? true && file?.fileInfo?.comment == nil {
             cell.lblFileStatus.textColor = UIColor(red: 62/255, green: 116/255, blue: 36/255, alpha: 1.0)
-            if file?.fileInfo?.autoSaved ?? true {
+            if file?.fileInfo?.autoSaved ?? false {
                 cell.lblFileStatus.text = "Auto Saved File"
             } else{
-                cell.lblFileStatus.text = "Uploaded"
+                cell.lblFileStatus.text = ""
             }
             cell.lblFileStatus.text = "Uploaded"
             cell.btnComment.isUserInteractionEnabled = true
@@ -772,15 +795,9 @@ extension ExistingVC: AVAudioPlayerDelegate {
             self.resetSoundWaves()
             self.setUpWave(index: playingCellIndex)
             self.playingCellIndex = -1
-            self.btnBackwardTrim.setBackgroundImage(self.backNormal, for: .normal)
-            self.btnBackwardTrimEnd.setBackgroundImage(self.fastBackNormal, for: .normal)
-            self.btnForwardTrim.setBackgroundImage(self.nextNormal, for: .normal)
-            self.btnForwardTrimEnd.setBackgroundImage(self.fastNextNormal, for: .normal)
-            
-            self.btnBackwardTrim.isEnabled = true
-            self.btnBackwardTrimEnd.isEnabled = true
-            self.btnForwardTrim.isEnabled = true
-            self.btnForwardTrimEnd.isEnabled = true
+            self.audioTimer = 0
+            self.isPlaying = false
+            self.lblPlayingTime.text = "00:00:00"
             self.tableView.reloadData()
             print("Playing Completed")
             
@@ -830,19 +847,6 @@ extension ExistingVC{
 //            audioPlayer.updateMeters()
 //        }
         
-        //new one
-        //we need to change three things(timing label, audio player's current time and sound wave progress)
-        var currentTime = audioPlayer.currentTime
-        currentTime += timeVal
-        audioPlayer.currentTime = TimeInterval(integerLiteral: currentTime)
-        audioPlayer.updateMeters()
-        
-        //update timings
-        self.lblPlayingTime.text = self.timeString(from: currentTime)
-        
-        //update waves
-        self.mediaProgressView.waveformView.progressTime = CMTimeMakeWithSeconds(currentTime, preferredTimescale: 1)
-        
 //        let seconds : Int64 = Int64(time)
 //        let targetTime:CMTime = CMTimeMake(value: seconds, timescale: 1)
 //        let newCurrentTime = audioPlayer.currentTime + targetTime
@@ -861,6 +865,25 @@ extension ExistingVC{
 //        self.audioTimer = audioPlayer.currentTime
 //        self.lblPlayingTime.text = totalTimeString
 //        audioPlayer.updateMeters()
+        
+        //new one
+        //we need to change three things(timing label, audio player's current time and sound wave progress)
+        var currentTime = audioPlayer.currentTime
+        currentTime += timeVal
+        
+        //update timings
+        if currentTime <= audioPlayer.currentTime {
+            self.lblPlayingTime.text = self.timeString(from: currentTime)
+        } else {
+            self.lblPlayingTime.text = self.timeString(from: audioPlayer.duration)
+        }
+        
+        audioPlayer.currentTime = TimeInterval(integerLiteral: currentTime)
+        self.audioTimer = self.audioPlayer.currentTime
+        audioPlayer.updateMeters()
+        
+        //update waves
+        self.mediaProgressView.waveformView.progressTime = CMTimeMakeWithSeconds(currentTime, preferredTimescale: 1)
     }
     
     func timeString(from timeInterval: TimeInterval) -> String {
