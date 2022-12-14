@@ -229,10 +229,6 @@ class RecordVC: BaseViewController {
         //microphone sensitivity range bar
         customRangeBar.isHidden = false
         
-        //indexing controls stack view
-        stackView.isHidden = true
-        stackViewHeight.constant = 0
-        
         //player timing view
         viewPlayerTiming.isHidden = true
         
@@ -256,6 +252,17 @@ class RecordVC: BaseViewController {
         
         //play button
         self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_diable"), for: .normal)
+        
+        if CoreData.shared.indexing == 1{
+            //show indexing view as well
+            //indexing controls stack view
+            stackView.isHidden = false
+            stackViewHeight.constant = 150
+        }else{
+            //hide it
+            stackView.isHidden = true
+            stackViewHeight.constant = 0
+        }
     }
     
     func initiallyBtnStateSetup(){
@@ -666,7 +673,7 @@ class RecordVC: BaseViewController {
             self.btnClear.tag = 1
             self.viewClear.isHidden = true
             self.recorderState = .pause
-            self.stackViewHeight.constant = 0
+//            self.stackViewHeight.constant = 0
             self.btnRecord.isUserInteractionEnabled = true
             self.btnStop.isUserInteractionEnabled = true
             btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: .normal)
@@ -719,7 +726,7 @@ class RecordVC: BaseViewController {
 
     func setInsert_PartialDeleteUI() {
         self.stackView.isHidden = false
-        self.stackViewHeight.constant = 50
+//        self.stackViewHeight.constant = 50
         self.viewClear.isHidden = false
         self.bookMarkView.isHidden = true
         self.bookmarkWaveTime.isHidden = true
@@ -968,7 +975,7 @@ class RecordVC: BaseViewController {
                 self.removeFileChunksInDocDirectory()
                 DispatchQueue.main.async {
                     self.stackView.isHidden = true
-                    self.stackViewHeight.constant = 0
+//                    self.stackViewHeight.constant = 0
                     self.segmentControl.isHidden = true
                     self.segmentHeight.constant = 0
                     self.btnStop.isUserInteractionEnabled = false
@@ -1039,7 +1046,7 @@ class RecordVC: BaseViewController {
         audioRangeMeterSetUp()
         segmentControl.isHidden = true
         stackView.isHidden = true
-        stackViewHeight.constant = 0
+//        stackViewHeight.constant = 0
         viewPlayerTiming.isHidden = true
         insertTimer.isHidden = true
         segmentHeight.constant = 0

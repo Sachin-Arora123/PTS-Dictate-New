@@ -141,7 +141,6 @@ class ExistingVC: BaseViewController {
         setUpUI()
         //        CoreData.shared.audioFiles = []
         //        CoreData.shared.dataSave()
-        resetSoundWaves()
         if totalFiles.count > 0 {
             self.setUpWave(index: 0)
         }
@@ -152,7 +151,6 @@ class ExistingVC: BaseViewController {
         super.viewWillDisappear(animated)
         self.totalFilesSelected.removeAll()
         self.audioPlayer.stop()
-        self.resetSoundWaves()
         self.tabBarController?.navigationItem.rightBarButtonItem = nil
     }
     
@@ -233,7 +231,6 @@ class ExistingVC: BaseViewController {
             //Pause
             if index != self.playingCellIndex {
                 audioPlayer.stop()
-//                    resetSoundWaves()
             } else{
                 audioPlayer.pause()
             }
@@ -628,11 +625,11 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
         DispatchQueue.main.async {
             let fileName = self.totalFiles[indexPath.row]
             self.lblFileName.text = fileName
-            if self.isPlaying {
-                self.audioPlayer.stop()
-                self.resetSoundWaves()
-                self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-            }
+//            if self.isPlaying {
+//                self.audioPlayer.stop()
+//                self.resetSoundWaves()
+//                self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+//            }
             self.playingCellIndex = -1
             self.setUpWave(index: indexPath.row)
             self.lblPlayerStatus.text  = ""
@@ -754,11 +751,6 @@ extension ExistingVC{
         return String(format: "%4.2f %@", convertedValue, tokens[multiplyFactor])
     }
     
-    private func resetSoundWaves() {
-        //        self.mediaProgressView.stop()
-        //        self.mediaProgressView.reset()
-    }
-    
     @objc func appMovedToBackground() {
         print("App moved to background!")
         if isPlaying{
@@ -792,7 +784,6 @@ extension ExistingVC: AVAudioPlayerDelegate {
         if flag {
             self.lblPlayerStatus.text  = ""
             self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-            self.resetSoundWaves()
             self.setUpWave(index: playingCellIndex)
             self.playingCellIndex = -1
             self.audioTimer = 0
