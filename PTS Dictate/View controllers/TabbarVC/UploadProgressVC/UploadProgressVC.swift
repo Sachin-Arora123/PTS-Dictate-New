@@ -36,11 +36,9 @@ class UploadProgressVC: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-//        self.tabBarController?.navigationItem.hidesBackButton = true
         let uploadingInProgress = ExistingViewModel.shared.uploadingInProgress
-        
         if !uploadingInProgress {
-            setUpUI()
+            self.startUploading()
         }
     }
     
@@ -48,8 +46,11 @@ class UploadProgressVC: BaseViewController {
         tableView.delegate = self
         tableView.dataSource = self
         self.tabBarController?.navigationItem.leftBarButtonItem = nil
-        files = ExistingViewModel.shared.uploadingQueue
         setTitleWithImage("Uploads", andImage: UIImage(named: "settings_upload.png") ?? UIImage())
+    }
+    
+    fileprivate func startUploading() {
+        files = ExistingViewModel.shared.uploadingQueue
         if files.count > 0 {
             tableView.isHidden = false
             viewNoUpload.isHidden = true
@@ -57,17 +58,20 @@ class UploadProgressVC: BaseViewController {
                 UpdateAudioFile.uploadingInProgress(true).update(audioName: file)
             }
             self.tableView.reloadData()
-            let seconds = 5.0
-            DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
+            let seconds = 1.0
+            if files.count == 1 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
+                    self.currentUploadingFile = 0
+                }
+            } else {
                 self.currentUploadingFile = 0
             }
-            
-            
         } else {
             tableView.isHidden = true
             viewNoUpload.isHidden = false
         }
     }
+    
     fileprivate func uploadFiles(file: String) {
             let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
             let completePath = directoryPath.absoluteString + file
@@ -83,7 +87,7 @@ class UploadProgressVC: BaseViewController {
             } failure: { error in
                 print(error)
                 UpdateAudioFile.isUploaded(false).update(audioName: file)
-                self.currentUploadingFile = self.files.count - 1
+                if self.currentUploadingFile < self.files.count - 1 { self.currentUploadingFile += 1 }
                 CommonFunctions.alertMessage(view: self, title: "PTS Dictate", msg: "Can't upload audio files at the moment, Please try again after some time.", btnTitle: "OK")
                 self.tableView.reloadData()
             }
