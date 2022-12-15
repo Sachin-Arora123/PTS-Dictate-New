@@ -77,9 +77,6 @@ class RecordVC: BaseViewController {
     @IBOutlet weak var viewPlayerTiming: UIView!
     @IBOutlet weak var progressView: UIProgressView!
     
-    var totalBookmarkLabels     = [UILabel]()
-    var totalBookmarkTimeLabels = [UILabel]()
-
     // MARK: - Variables.
     var sampleRateKey = 0
     var recorder: HPRecorder!
@@ -105,7 +102,10 @@ class RecordVC: BaseViewController {
     var overwritingStartingTimerPoint = 0.0
     var playedFirstTime = false
     var editAssetDuration = 0.0
+    
     var bookmarkTimingsArray = [Int]()
+    var totalBookmarkLabels     = [UILabel]()
+    var totalBookmarkTimeLabels = [UILabel]()
     
     private var isCommentsOn:Bool {
         return CoreData.shared.commentScreen == 1 ?  true : false
@@ -445,11 +445,7 @@ class RecordVC: BaseViewController {
                     self.lblPlayerStatus.text = "Paused"
                     self.btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: .normal)
                     self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-//                    self.btnBackwardTrim.setBackgroundImage(UIImage(named: "existing_rewind_normal"), for: .normal)
-//                    self.btnBackwardTrimEnd.setBackgroundImage(UIImage(named: "existing_backward_fast_normal"), for: .normal)
                     self.btnPlay.isUserInteractionEnabled = true
-//                    self.btnBackwardTrim.isUserInteractionEnabled = true
-//                    self.btnBackwardTrimEnd.isUserInteractionEnabled = true
                     
                     var fileName = (self.audioForEditing != nil ? self.audioForEditing : self.audioFileURL) ?? ""
                     //need to remove .m4a in case of editing
@@ -529,6 +525,7 @@ class RecordVC: BaseViewController {
         lblPlayerStatus.text = "Stopped"
         self.setUpStopAndPauseUI()
         
+        
         if self.performingFunctionState == .append{
             self.recorder.concatChunks(filename: self.audioFileURL){
                 success in
@@ -565,6 +562,10 @@ class RecordVC: BaseViewController {
         playerTotalTime.text = self.lblTime.text
         
         setUpWave()
+        
+        if CoreData.shared.indexing == 1{
+            self.enableDisableBookmarkButton()
+        }
     }
             
     // MARK: - Slide View - Top To Bottom
@@ -597,6 +598,8 @@ class RecordVC: BaseViewController {
             
             self.enableDisableForwardBackwardButtons(enable: true)
             
+            enableBookmarkButton(enable: true)
+            
             NotificationCenter.default.addObserver(self, selector: #selector(self.playerDidFinishPlaying(sender:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.recorder.playerItem)
             
             let timeScale = CMTimeScale(NSEC_PER_SEC)
@@ -616,6 +619,8 @@ class RecordVC: BaseViewController {
             self.recorder.stopPlayer()
             self.onStopPlayerSetupUI()
             self.enableDisableForwardBackwardButtons(enable: false)
+            
+            enableBookmarkButton(enable: false)
         }
     }
     
@@ -636,6 +641,14 @@ class RecordVC: BaseViewController {
         self.btnForwardTrimEnd.setBackgroundImage(imageBtnFastForward, for: .normal)
     }
     
+    func enableBookmarkButton(enable:Bool){
+        if CoreData.shared.indexing == 1{
+            self.btnBookmark.isUserInteractionEnabled = enable
+            let image = enable ? UIImage(named: "record_bookmark_btn_normal") : UIImage(named: "record_bookmark_btn_disable")
+            self.btnBookmark.setImage(image, for: .normal)
+        }
+    }
+    
     func onStopPlayerSetupUI(){
         btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
         btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: .normal)
@@ -651,11 +664,13 @@ class RecordVC: BaseViewController {
         self.recorder.queuePlayerPlaying = false
         
         self.enableDisableForwardBackwardButtons(enable: false)
+        enableBookmarkButton(enable: false)
         print("Finished playing")
     }
     
     // MARK: - @IBAction Forward.
     @IBAction func onTapForwardTrim(_ sender: UIButton) {
+        print(self.recorder.audioRecorder.currentTime)
         self.recorder.seekForward(timeInterval: 1)
     }
     
@@ -1081,7 +1096,7 @@ class RecordVC: BaseViewController {
             addBookmark(time: Int(currentTime))
         }else{
             //playing
-            let currentTime = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
+            let currentTime = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? .zero)
             addBookmark(time: Int(currentTime))
         }
     }
@@ -1096,8 +1111,6 @@ class RecordVC: BaseViewController {
             self.bookmarkTimingsArray.append(time)
             self.showBookmark(timeVal: time)
         }
-        
-        print("self.bookmarkTimingsArray ======= \(print(self.bookmarkTimingsArray))")
     }
     
     func showBookmark(timeVal:Int){
@@ -1107,6 +1120,7 @@ class RecordVC: BaseViewController {
         if width != 0{
             let bookmarkLbl = UILabel(frame: CGRect(x: width - 2, y: yVal, width: 1.5, height: height))
             bookmarkLbl.backgroundColor = .black
+            bookmarkLbl.tag = timeVal
             self.bookmarkWaveTime.addSubview(bookmarkLbl)
             self.totalBookmarkLabels.append(bookmarkLbl)
             
@@ -1145,9 +1159,16 @@ class RecordVC: BaseViewController {
     }
     
     @IBAction func forwardBookmarkAction(_ sender: Any) {
+        print(#function)
+        print(bookmarkTimingsArray)
+        print(totalBookmarkLabels)
+        print(totalBookmarkTimeLabels)
+        
+        //need to change the timing, player duration, waves progress, bookmark label selection
     }
     
     @IBAction func backwardBookmarkAction(_ sender: Any) {
+        print(#function)
     }
     
     // MARK: - Discard Recorder setUp.
