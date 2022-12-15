@@ -35,7 +35,7 @@ class RecordVC: BaseViewController {
     
     // MARK: - @IBOutlets
     @IBOutlet weak var customRangeBar: F3BarGauge!
-    @IBOutlet weak var viewProgress: UIView!
+//    @IBOutlet weak var viewProgress: UIView!
     @IBOutlet weak var btnRecord: UIButton!
     @IBOutlet weak var btnStop: UIButton!
     @IBOutlet weak var btnPlay: UIButton!
@@ -71,10 +71,14 @@ class RecordVC: BaseViewController {
     @IBOutlet weak var insertTimer: UILabel!
     @IBOutlet weak var stackViewHeight: NSLayoutConstraint!
     @IBOutlet weak var segmentHeight: NSLayoutConstraint!
-    @IBOutlet weak var progressViewHeight: NSLayoutConstraint!
+//    @IBOutlet weak var progressViewHeight: NSLayoutConstraint!
     @IBOutlet weak var customRangeBarHeight: NSLayoutConstraint!
     @IBOutlet weak var parentStackTop: NSLayoutConstraint!
     @IBOutlet weak var viewPlayerTiming: UIView!
+    @IBOutlet weak var progressView: UIProgressView!
+    
+    var totalBookmarkLabels     = [UILabel]()
+    var totalBookmarkTimeLabels = [UILabel]()
 
     // MARK: - Variables.
     var sampleRateKey = 0
@@ -101,6 +105,7 @@ class RecordVC: BaseViewController {
     var overwritingStartingTimerPoint = 0.0
     var playedFirstTime = false
     var editAssetDuration = 0.0
+    var bookmarkTimingsArray = [Int]()
     
     private var isCommentsOn:Bool {
         return CoreData.shared.commentScreen == 1 ?  true : false
@@ -111,10 +116,6 @@ class RecordVC: BaseViewController {
     
     private lazy var stopwatch = Stopwatch(timeUpdated: { [weak self] timeVal in
         guard let strongSelf = self else { return }
-        
-        print("timeVal ====== \(timeVal)")
-        
-        
         if strongSelf.isPerformingOverwrite{
             strongSelf.overwritingStartingTimerPoint += 1
             strongSelf.insertTimer.text = strongSelf.timeString(from: strongSelf.overwritingStartingTimerPoint)
@@ -233,8 +234,8 @@ class RecordVC: BaseViewController {
         viewPlayerTiming.isHidden = true
         
         //view progress
-        viewProgress.isHidden = true
-        progressViewHeight.constant = 45
+//        viewProgress.isHidden = true
+//        progressViewHeight.constant = 45
         
         //wave view
         self.playerWaveView.isHidden = true
@@ -258,10 +259,27 @@ class RecordVC: BaseViewController {
             //indexing controls stack view
             stackView.isHidden = false
             stackViewHeight.constant = 150
+            self.btnBookmark.isUserInteractionEnabled = false
+            self.btnLeftBookmark.isUserInteractionEnabled = false
+            self.btnRightBookmark.isUserInteractionEnabled = false
+            
+            addIntialHandle()
         }else{
             //hide it
             stackView.isHidden = true
             stackViewHeight.constant = 0
+        }
+      
+    }
+    
+    func addIntialHandle(){
+        let width = -2.0
+        let yVal = bookmarkWaveTime.frame.origin.y + 7.5
+        let height = bookmarkWaveTime.frame.size.height - 20
+        if width != 0{
+            let lbl = UILabel(frame: CGRect(x: width, y: yVal, width: 1.5, height: height))
+            lbl.backgroundColor = .red
+            self.bookmarkWaveTime.addSubview(lbl)
         }
     }
     
@@ -465,10 +483,34 @@ class RecordVC: BaseViewController {
                     self.btnStop.isUserInteractionEnabled = true
                 }
                 isRecording = true
+                if CoreData.shared.indexing == 1{
+                    self.enableDisableBookmarkButton()
+                }
             }else{
                 CommonFunctions.alertMessage(view: self, title: "Microphone Access Denied", msg: "This app requires access to your device's Microphone. \n Please enable Microphone access for this app in Settings / Privacy / Microphone", btnTitle: "Ok")
             }
         })
+    }
+    
+    func enableDisableBookmarkButton(){
+        if self.recorderState == .pause{
+            //disable bookmark buttons, enable right bookmark button, show initial bookmark label if it is hide.
+            self.btnBookmark.isUserInteractionEnabled = false
+            self.btnBookmark.setImage(UIImage(named: "record_bookmark_btn_disable"), for: .normal)
+            
+            self.btnRightBookmark.isUserInteractionEnabled = true
+            self.btnRightBookmark.setImage(UIImage(named: "record_bookmark_forward_btn_normal"), for: .normal)
+            
+            //show initial bookmark label
+            
+        }else{
+            //enable bookmark button, disable right buttons,
+            self.btnBookmark.isUserInteractionEnabled = true
+            self.btnBookmark.setImage(UIImage(named: "record_bookmark_btn_normal"), for: .normal)
+            
+            self.btnRightBookmark.isUserInteractionEnabled = false
+            self.btnRightBookmark.setImage(UIImage(named: "record_bookmark_forward_btn_disable"), for: .normal)
+        }
     }
     
     @IBAction func onTapStop(_ sender: UIButton) {
@@ -508,13 +550,17 @@ class RecordVC: BaseViewController {
     func setUpStopAndPauseUI(){
         self.customRangeBar.isHidden = true
         self.customRangeBarHeight.constant = 0
-        progressViewHeight.constant = 0
-        viewProgress.isHidden = true
-        stackView.isHidden = true
-        bookMarkView.isHidden = true
-        viewClear.isHidden = true
+//        progressViewHeight.constant = 0
+//        viewProgress.isHidden = true
+//        stackView.isHidden = true
+        
+        
+//        bookMarkView.isHidden = true
+//        viewClear.isHidden = true
+        
         viewPlayerTiming.isHidden = false
-        parentStackTop.constant = 60
+        
+        parentStackTop.constant = 100
         currentPlayingTime.text = self.lblTime.text
         playerTotalTime.text = self.lblTime.text
         
@@ -725,7 +771,7 @@ class RecordVC: BaseViewController {
     }
 
     func setInsert_PartialDeleteUI() {
-        self.stackView.isHidden = false
+//        self.stackView.isHidden = false
 //        self.stackViewHeight.constant = 50
         self.viewClear.isHidden = false
         self.bookMarkView.isHidden = true
@@ -817,6 +863,9 @@ class RecordVC: BaseViewController {
                 self.viewBottomButton.isHidden = true
                 self.updateTimer()
                 self.resetValues()
+                if CoreData.shared.indexing == 1{
+                    self.removeAllBookmarks()
+                }
                 self.tabBarController?.setTabBarHidden(false, animated: true)
             }
         })
@@ -974,7 +1023,7 @@ class RecordVC: BaseViewController {
             if status{
                 self.removeFileChunksInDocDirectory()
                 DispatchQueue.main.async {
-                    self.stackView.isHidden = true
+//                    self.stackView.isHidden = true
 //                    self.stackViewHeight.constant = 0
                     self.segmentControl.isHidden = true
                     self.segmentHeight.constant = 0
@@ -1023,6 +1072,84 @@ class RecordVC: BaseViewController {
         }
     }
     
+    // MARK: - Bookmark view actions.
+    @IBAction func addBookmarkAction(_ sender: Any) {
+        //need to get current timing and add that into an array.
+        if self.recorderState == .recording{
+            //recording
+            let currentTime = self.recorder.audioRecorder.currentTime
+            addBookmark(time: Int(currentTime))
+        }else{
+            //playing
+            let currentTime = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
+            addBookmark(time: Int(currentTime))
+        }
+    }
+    
+    func addBookmark(time:Int){
+        if self.bookmarkTimingsArray.contains(time){
+            //show banner
+            DispatchQueue.main.async {
+                CommonFunctions.toster("PTS Dictate", titleDesc: "Already indexed", true)
+            }
+        }else{
+            self.bookmarkTimingsArray.append(time)
+            self.showBookmark(timeVal: time)
+        }
+        
+        print("self.bookmarkTimingsArray ======= \(print(self.bookmarkTimingsArray))")
+    }
+    
+    func showBookmark(timeVal:Int){
+        let width = Double(self.progressView.frame.width) * Double(timeVal) / 60
+        let yVal = bookmarkWaveTime.frame.origin.y + 7.5
+        let height = bookmarkWaveTime.frame.size.height - 20
+        if width != 0{
+            let bookmarkLbl = UILabel(frame: CGRect(x: width - 2, y: yVal, width: 1.5, height: height))
+            bookmarkLbl.backgroundColor = .black
+            self.bookmarkWaveTime.addSubview(bookmarkLbl)
+            self.totalBookmarkLabels.append(bookmarkLbl)
+            
+            let yVal = (self.progressView.frame.origin.y + self.progressView.frame.size.height + 6)
+            let xVal = width - 2
+            let timeLbl = UILabel(frame: CGRect(x: CGFloat(xVal), y: yVal, width: 12, height: 15))
+            timeLbl.text = "\(timeVal)"
+            timeLbl.font = UIFont.boldSystemFont(ofSize: 7)
+            timeLbl.textColor = .gray
+            self.bookmarkWaveTime.addSubview(timeLbl)
+            self.totalBookmarkTimeLabels.append(timeLbl)
+        }
+    }
+    
+    func removeAllBookmarks(){
+        //remove labels from superviews
+        self.totalBookmarkLabels.forEach { (label) in
+            label.removeFromSuperview()
+        }
+        //remove labels from array
+        self.totalBookmarkLabels.removeAll()
+        
+        //remove labels from superviews
+        self.totalBookmarkTimeLabels.forEach { (label) in
+            label.removeFromSuperview()
+        }
+        //remove labels from array
+        self.totalBookmarkTimeLabels.removeAll()
+        
+        //remove bookmarkTimingsArray
+        self.bookmarkTimingsArray.removeAll()
+        
+        //disable right bookmark button.
+        self.btnRightBookmark.isUserInteractionEnabled = false
+        self.btnRightBookmark.setImage(UIImage(named: "record_bookmark_forward_btn_disable"), for: .normal)
+    }
+    
+    @IBAction func forwardBookmarkAction(_ sender: Any) {
+    }
+    
+    @IBAction func backwardBookmarkAction(_ sender: Any) {
+    }
+    
     // MARK: - Discard Recorder setUp.
     @objc func onDiscardRecorderSetUp(){
 //        self.recordTimer.invalidate()
@@ -1045,13 +1172,13 @@ class RecordVC: BaseViewController {
         self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
         audioRangeMeterSetUp()
         segmentControl.isHidden = true
-        stackView.isHidden = true
+//        stackView.isHidden = true
 //        stackViewHeight.constant = 0
         viewPlayerTiming.isHidden = true
         insertTimer.isHidden = true
         segmentHeight.constant = 0
-        viewProgress.isHidden = true
-        progressViewHeight.constant = 45
+//        viewProgress.isHidden = true
+//        progressViewHeight.constant = 45
         self.playerWaveView.isHidden = true
     }
     

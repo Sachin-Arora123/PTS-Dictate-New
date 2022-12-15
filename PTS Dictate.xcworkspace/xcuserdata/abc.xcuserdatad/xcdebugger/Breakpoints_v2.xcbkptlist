@@ -135,22 +135,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "93406AC8-C254-422A-AA49-C0960F8ABEF3"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "427"
-            endingLineNumber = "427"
-            landmarkName = "onTapRecord(_:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "72249383-64C7-4E0A-8E49-44745817A155"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -174,8 +158,8 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1198"
-            endingLineNumber = "1198"
+            startingLineNumber = "1325"
+            endingLineNumber = "1325"
             landmarkName = "mergeAudioFiles(originalURL:replacingURL:startTime:taskToPerform:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -190,8 +174,8 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1216"
-            endingLineNumber = "1216"
+            startingLineNumber = "1343"
+            endingLineNumber = "1343"
             landmarkName = "removeFileChunksInDocDirectory()"
             landmarkType = "7">
          </BreakpointContent>
@@ -206,8 +190,8 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1232"
-            endingLineNumber = "1232"
+            startingLineNumber = "1359"
+            endingLineNumber = "1359"
             landmarkName = "removeFileChunksInDocDirectory()"
             landmarkType = "7">
          </BreakpointContent>
@@ -222,13 +206,13 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1237"
-            endingLineNumber = "1237"
+            startingLineNumber = "1364"
+            endingLineNumber = "1364"
             landmarkName = "removeFileChunksInDocDirectory()"
             landmarkType = "7">
             <Locations>
                <Location
-                  uuid = "91D0FACB-C9A7-472F-8D9A-35F55C12003C - 375e8a229d402cd6"
+                  uuid = "91D0FACB-C9A7-472F-8D9A-35F55C12003C - 375e8a229d401c77"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
@@ -238,12 +222,12 @@
                   urlString = "file:///Users/abc/Desktop/PTS%20Dictate/PTS%20Dictate/View%20controllers/TabbarVC/RecordVC/RecordVC.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "1237"
-                  endingLineNumber = "1237"
-                  offsetFromSymbolStart = "696">
+                  startingLineNumber = "1364"
+                  endingLineNumber = "1364"
+                  offsetFromSymbolStart = "624">
                </Location>
                <Location
-                  uuid = "91D0FACB-C9A7-472F-8D9A-35F55C12003C - 375e8a229d402cd6"
+                  uuid = "91D0FACB-C9A7-472F-8D9A-35F55C12003C - 375e8a229d401c77"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
@@ -253,9 +237,9 @@
                   urlString = "file:///Users/abc/Desktop/PTS%20Dictate/PTS%20Dictate/View%20controllers/TabbarVC/RecordVC/RecordVC.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "1237"
-                  endingLineNumber = "1237"
-                  offsetFromSymbolStart = "992">
+                  startingLineNumber = "1364"
+                  endingLineNumber = "1364"
+                  offsetFromSymbolStart = "952">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -311,22 +295,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "DF251452-78CD-42D5-AB79-6185709D0E3E"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "256"
-            endingLineNumber = "256"
-            landmarkName = "setUpUI()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "267837B9-ED23-47C9-A8A6-6D658C7C81CC"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -368,7 +336,7 @@
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "339"
                   endingLineNumber = "339"
-                  offsetFromSymbolStart = "1084">
+                  offsetFromSymbolStart = "1416">
                </Location>
                <Location
                   uuid = "4FD79E14-BA30-4BA6-8A7A-C738D915FA5E - d0c711905c1a6ad5"
@@ -383,7 +351,7 @@
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "340"
                   endingLineNumber = "340"
-                  offsetFromSymbolStart = "92">
+                  offsetFromSymbolStart = "64">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -416,7 +384,7 @@
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "75"
                   endingLineNumber = "75"
-                  offsetFromSymbolStart = "596">
+                  offsetFromSymbolStart = "584">
                </Location>
                <Location
                   uuid = "76CB864A-2F24-4766-B6C5-62C53F659D94 - 9e23891a0d75e750"
@@ -431,7 +399,7 @@
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "76"
                   endingLineNumber = "76"
-                  offsetFromSymbolStart = "220">
+                  offsetFromSymbolStart = "138">
                </Location>
             </Locations>
          </BreakpointContent>
