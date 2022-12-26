@@ -248,7 +248,7 @@ class CoreData: NSObject {
         microSensitivityValue = 1.0
         userInfo.removeAll()
         fileName = ""
-        audioFiles = []
+//        audioFiles = []
         
         if !self.isRemeberMe{
             self.userId = ""

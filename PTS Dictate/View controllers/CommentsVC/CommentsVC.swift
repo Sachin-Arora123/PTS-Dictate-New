@@ -24,7 +24,8 @@ class CommentsVC: BaseViewController {
     var selectedAudio = ""
     var fileName = ""
     var comment = ""
-    var meteringLevels: [Float] = []
+//    var meteringLevels: [Float] = []
+    
     // MARK: - View Life-Cycle.
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -64,15 +65,21 @@ class CommentsVC: BaseViewController {
             btnSave.isUserInteractionEnabled = true
             btnDiscard.isUserInteractionEnabled = true
         }
-        if isCommentsMandotary {
-            btnDiscard.isUserInteractionEnabled = false
-        } else {
-            btnDiscard.isUserInteractionEnabled = true
-        }
+        
+//        if isCommentsMandotary {
+//            btnDiscard.isUserInteractionEnabled = false
+//        } else {
+//            btnDiscard.isUserInteractionEnabled = true
+//        }
         self.navigationController?.navigationItem.hidesBackButton = true
     }
     
     fileprivate func saveComment() {
+        if txtViewComment.text.isEmpty && isCommentsMandotary{
+            CommonFunctions.alertMessage(view: self, title: "PTS Dictate", msg: "Mandatory Comment Entry required", btnTitle: "OK")
+            return
+        }
+        
         if fromExistingVC {
             UpdateAudioFile.comment(txtViewComment.text ?? "").update(audioName: selectedAudio)
             popToExitingVC()

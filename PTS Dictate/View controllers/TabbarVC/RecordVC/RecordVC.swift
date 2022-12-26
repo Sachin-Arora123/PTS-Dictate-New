@@ -61,7 +61,7 @@ class RecordVC: BaseViewController {
     @IBOutlet weak var playerTotalTime: UILabel!
     @IBOutlet weak var stackView: UIStackView!
     @IBOutlet weak var playerWaveView: SCScrollableWaveformView!
-    @IBOutlet weak var bookmarkWaveTime: UIView!
+    @IBOutlet weak var bookmarkWaveTimeView: UIView!
     @IBOutlet weak var bookMarkView: UIView!
     @IBOutlet weak var btnLeftBookmark: UIButton!
     @IBOutlet weak var btnRightBookmark: UIButton!
@@ -71,7 +71,6 @@ class RecordVC: BaseViewController {
     @IBOutlet weak var insertTimer: UILabel!
     @IBOutlet weak var stackViewHeight: NSLayoutConstraint!
     @IBOutlet weak var segmentHeight: NSLayoutConstraint!
-//    @IBOutlet weak var progressViewHeight: NSLayoutConstraint!
     @IBOutlet weak var customRangeBarHeight: NSLayoutConstraint!
     @IBOutlet weak var parentStackTop: NSLayoutConstraint!
     @IBOutlet weak var viewPlayerTiming: UIView!
@@ -100,12 +99,14 @@ class RecordVC: BaseViewController {
     var pdEndPoint      = 0.0
     var isPerformingOverwrite = false
     var overwritingStartingTimerPoint = 0.0
-    var playedFirstTime = false
+    var isPlayerInitialized = false
     var editAssetDuration = 0.0
     
     var bookmarkTimingsArray = [Int]()
-    var totalBookmarkLabels     = [UILabel]()
+    var totalBookmarkButtons    = [UIButton]()
     var totalBookmarkTimeLabels = [UILabel]()
+    var initialHandleLabel = UILabel()
+    var bookmarkWidth = 0.0
     
     private var isCommentsOn:Bool {
         return CoreData.shared.commentScreen == 1 ?  true : false
@@ -120,6 +121,7 @@ class RecordVC: BaseViewController {
             strongSelf.overwritingStartingTimerPoint += 1
             strongSelf.insertTimer.text = strongSelf.timeString(from: strongSelf.overwritingStartingTimerPoint)
         }else{
+            print("time ===== \(strongSelf.timeString(from: timeVal))")
             strongSelf.lblTime.text = strongSelf.timeString(from: timeVal + strongSelf.editAssetDuration)
         }
         strongSelf.updateAudioMeter()
@@ -193,7 +195,7 @@ class RecordVC: BaseViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 //        audioRecorder = nil
-        self.playedFirstTime = false
+        self.isPlayerInitialized = false
         self.tabBarController?.setTabBarHidden(false, animated: false)
         self.audioForEditing = nil
         self.editAssetDuration = 0.0
@@ -254,32 +256,31 @@ class RecordVC: BaseViewController {
         //play button
         self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_diable"), for: .normal)
         
-        if CoreData.shared.indexing == 1{
-            //show indexing view as well
-            //indexing controls stack view
-            stackView.isHidden = false
-            stackViewHeight.constant = 150
-            self.btnBookmark.isUserInteractionEnabled = false
-            self.btnLeftBookmark.isUserInteractionEnabled = false
-            self.btnRightBookmark.isUserInteractionEnabled = false
-            
-            addIntialHandle()
-        }else{
+//        if CoreData.shared.indexing == 1{
+//            //show indexing view as well
+//            //indexing controls stack view
+//            stackView.isHidden = false
+//            stackViewHeight.constant = 150
+//            self.btnBookmark.isUserInteractionEnabled = false
+//            self.btnLeftBookmark.isUserInteractionEnabled = false
+//            self.btnRightBookmark.isUserInteractionEnabled = false
+//
+//            addIntialHandle()
+//        }else{
             //hide it
             stackView.isHidden = true
             stackViewHeight.constant = 0
-        }
+//        }
       
     }
     
     func addIntialHandle(){
         let width = -2.0
-        let yVal = bookmarkWaveTime.frame.origin.y + 7.5
-        let height = bookmarkWaveTime.frame.size.height - 20
+        let yVal = bookmarkWaveTimeView.frame.origin.y + 7.5
         if width != 0{
-            let lbl = UILabel(frame: CGRect(x: width, y: yVal, width: 1.5, height: height))
-            lbl.backgroundColor = .red
-            self.bookmarkWaveTime.addSubview(lbl)
+            self.initialHandleLabel = UILabel(frame: CGRect(x: width, y: yVal, width: 1.5, height: 27))
+            self.initialHandleLabel.backgroundColor = .red
+            self.bookmarkWaveTimeView.addSubview(self.initialHandleLabel)
         }
     }
     
@@ -312,9 +313,9 @@ class RecordVC: BaseViewController {
         let nameToShow = (CoreData.shared.fileName.count != 0) ? CoreData.shared.fileName : CoreData.shared.profileName
 
         //need to check recording file count here as well
-        self.audioFileURL = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)"
-        self.lblFNameValue.text = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)" + ".m4a"
-        audioFileName = nameToShow + "_" + convertedDateStr + "_File_" + "\(CoreData.shared.fileCount)" + ".m4a" // mohit new changes
+        self.audioFileURL       = nameToShow + "_" + convertedDateStr + "_File_" + String(format: "%03d", CoreData.shared.fileCount)
+        self.lblFNameValue.text = nameToShow + "_" + convertedDateStr + "_File_" + String(format: "%03d", CoreData.shared.fileCount) + ".m4a"
+        audioFileName           = nameToShow + "_" + convertedDateStr + "_File_" + String(format: "%03d", CoreData.shared.fileCount) + ".m4a" // mohit new changes
         self.lblFSizeValue.text = "0.00 Mb"
         
         //setup file url as well.
@@ -439,6 +440,8 @@ class RecordVC: BaseViewController {
                     
                 case .recording:
                     self.recorder.pauseRecording()
+                    self.recorder.initilaizePlayer()
+                    self.isPlayerInitialized = true
                     self.recorderState = .pause
                     self.stopwatch.pause()
                         
@@ -478,6 +481,7 @@ class RecordVC: BaseViewController {
                     self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: .normal)
                     self.btnStop.isUserInteractionEnabled = true
                 }
+                
                 isRecording = true
                 if CoreData.shared.indexing == 1{
                     self.enableDisableBookmarkButton()
@@ -582,11 +586,12 @@ class RecordVC: BaseViewController {
     @IBAction func onTapPlay(_ sender: UIButton)  {
         if !self.recorder.queuePlayerPlaying {
             //play the recording
-            if !playedFirstTime{
-                //playing first time
+            if !self.isPlayerInitialized{
+                //need initialization of player
                 self.recorder.startPlayer()
-                self.playedFirstTime = true
+                self.isPlayerInitialized = true
             }else{
+                //already initialized
                 self.recorder.queuePlayerPlaying = true
                 self.recorder.queuePlayer?.play()
             }
@@ -608,7 +613,6 @@ class RecordVC: BaseViewController {
             self.recorder.queuePlayer?.addPeriodicTimeObserver(forInterval: time, queue: .main, using: { time in
                     if self.recorder.queuePlayer?.currentItem?.status == .readyToPlay {
                         let currentTime = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
-                        print("currentTime ======== \(currentTime)")
                         self.currentPlayingTime.text = self.timeString(from: currentTime)
                         self.playerWaveView.waveformView.progressTime = self.recorder.queuePlayer?.currentTime() ?? CMTime.zero
                     }
@@ -659,13 +663,13 @@ class RecordVC: BaseViewController {
     }
     
     @objc func playerDidFinishPlaying(sender: Notification) {
+        self.recorder.initilaizePlayer()
         self.onStopPlayerSetupUI()
-        self.playedFirstTime = false
+        self.isPlayerInitialized = false
         self.recorder.queuePlayerPlaying = false
         
         self.enableDisableForwardBackwardButtons(enable: false)
         enableBookmarkButton(enable: false)
-        print("Finished playing")
     }
     
     // MARK: - @IBAction Forward.
@@ -734,7 +738,6 @@ class RecordVC: BaseViewController {
             self.btnClear.tag = 1
             self.viewClear.isHidden = true
             self.recorderState = .pause
-//            self.stackViewHeight.constant = 0
             self.btnRecord.isUserInteractionEnabled = true
             self.btnStop.isUserInteractionEnabled = true
             btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: .normal)
@@ -778,7 +781,6 @@ class RecordVC: BaseViewController {
         self.recorder.queuePlayer?.addPeriodicTimeObserver(forInterval: time, queue: .main, using: { time in
             if self.recorder.queuePlayer?.currentItem?.status == .readyToPlay {
                 let currentTime = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
-                print("currentTime ======== \(currentTime)")
                 self.currentPlayingTime.text = self.timeString(from: currentTime)
                 self.playerWaveView.waveformView.progressTime = self.recorder.queuePlayer?.currentTime() ?? CMTime.zero
             }
@@ -786,11 +788,9 @@ class RecordVC: BaseViewController {
     }
 
     func setInsert_PartialDeleteUI() {
-//        self.stackView.isHidden = false
-//        self.stackViewHeight.constant = 50
         self.viewClear.isHidden = false
         self.bookMarkView.isHidden = true
-        self.bookmarkWaveTime.isHidden = true
+        self.bookmarkWaveTimeView.isHidden = true
         self.btnClear.setImage(UIImage(named: "btn_start_point_normal"), for: .normal)
         self.btnClear.setBackgroundImage(UIImage(named: ""), for: .normal)
     }
@@ -855,6 +855,7 @@ class RecordVC: BaseViewController {
         
         self.performingFunctionState = .append
         self.editAssetDuration = 0.0
+        self.bookmarkWidth = 0.0
     }
     
     // MARK: - @IBAction Edit.
@@ -880,6 +881,7 @@ class RecordVC: BaseViewController {
                 self.resetValues()
                 if CoreData.shared.indexing == 1{
                     self.removeAllBookmarks()
+                    self.initialHandleLabel.isHidden = false
                 }
                 self.tabBarController?.setTabBarHidden(false, animated: true)
             }
@@ -1038,8 +1040,6 @@ class RecordVC: BaseViewController {
             if status{
                 self.removeFileChunksInDocDirectory()
                 DispatchQueue.main.async {
-//                    self.stackView.isHidden = true
-//                    self.stackViewHeight.constant = 0
                     self.segmentControl.isHidden = true
                     self.segmentHeight.constant = 0
                     self.btnStop.isUserInteractionEnabled = false
@@ -1093,6 +1093,7 @@ class RecordVC: BaseViewController {
         if self.recorderState == .recording{
             //recording
             let currentTime = self.recorder.audioRecorder.currentTime
+            print("currentTime ==== \(currentTime)")
             addBookmark(time: Int(currentTime))
         }else{
             //playing
@@ -1114,34 +1115,43 @@ class RecordVC: BaseViewController {
     }
     
     func showBookmark(timeVal:Int){
-        let width = Double(self.progressView.frame.width) * Double(timeVal) / 60
-        let yVal = bookmarkWaveTime.frame.origin.y + 7.5
-        let height = bookmarkWaveTime.frame.size.height - 20
+        var width = Double(self.progressView.frame.width) * Double(timeVal) / 50
+        width += 15.0
+        let yVal = bookmarkWaveTimeView.frame.origin.y + 7.5
+        let height = bookmarkWaveTimeView.frame.size.height - 20
+        
+        if width > self.progressView.frame.width{
+            self.btnBookmark.isUserInteractionEnabled = false
+            self.btnBookmark.setImage(UIImage(named: "record_bookmark_btn_disable"), for: .normal)
+            return
+        }
+        
         if width != 0{
-            let bookmarkLbl = UILabel(frame: CGRect(x: width - 2, y: yVal, width: 1.5, height: height))
-            bookmarkLbl.backgroundColor = .black
-            bookmarkLbl.tag = timeVal
-            self.bookmarkWaveTime.addSubview(bookmarkLbl)
-            self.totalBookmarkLabels.append(bookmarkLbl)
+            let bookmarkButton = UIButton(frame: CGRect(x: width - 2, y: yVal, width: 1.5, height: height))
+            bookmarkButton.backgroundColor = .black
+            bookmarkButton.tag = timeVal
+            bookmarkButton.isSelected = false
+            self.bookmarkWaveTimeView.addSubview(bookmarkButton)
+            self.totalBookmarkButtons.append(bookmarkButton)
             
             let yVal = (self.progressView.frame.origin.y + self.progressView.frame.size.height + 6)
-            let xVal = width - 2
+            let xVal = width - 3
             let timeLbl = UILabel(frame: CGRect(x: CGFloat(xVal), y: yVal, width: 12, height: 15))
             timeLbl.text = "\(timeVal)"
             timeLbl.font = UIFont.boldSystemFont(ofSize: 7)
             timeLbl.textColor = .gray
-            self.bookmarkWaveTime.addSubview(timeLbl)
+            self.bookmarkWaveTimeView.addSubview(timeLbl)
             self.totalBookmarkTimeLabels.append(timeLbl)
         }
     }
     
     func removeAllBookmarks(){
         //remove labels from superviews
-        self.totalBookmarkLabels.forEach { (label) in
-            label.removeFromSuperview()
+        self.totalBookmarkButtons.forEach { (button) in
+            button.removeFromSuperview()
         }
         //remove labels from array
-        self.totalBookmarkLabels.removeAll()
+        self.totalBookmarkButtons.removeAll()
         
         //remove labels from superviews
         self.totalBookmarkTimeLabels.forEach { (label) in
@@ -1159,24 +1169,128 @@ class RecordVC: BaseViewController {
     }
     
     @IBAction func forwardBookmarkAction(_ sender: Any) {
-        print(#function)
-        print(bookmarkTimingsArray)
-        print(totalBookmarkLabels)
-        print(totalBookmarkTimeLabels)
+        //need to sort the bookmarkTimingsArray and totalBookmarkButtons first.
+        sortBookmarkArrays()
         
-        //need to change the timing, player duration, waves progress, bookmark label selection
+        //need to change the timing, player duration, waves progress, bookmark button selection
+        if bookmarkTimingsArray.count > 0{
+            //need to check which bookmark button is already selected. If no one is selected, choose the first one.
+            let selectedBookmarksArray = self.totalBookmarkButtons.filter({$0.isSelected})
+            if selectedBookmarksArray.count > 0{
+                if let selectedBookmark = selectedBookmarksArray.first{
+                    if let index = self.totalBookmarkButtons.firstIndex(of: selectedBookmark){
+                        if index == self.totalBookmarkButtons.count - 1{
+                            //last one, can't go ahaed.
+                            //make the forward trim disable.
+                            self.btnRightBookmark.isUserInteractionEnabled = false
+                            self.btnRightBookmark.setImage(UIImage(named: "record_bookmark_forward_btn_disable"), for: .normal)
+                        }else{
+                            //go ahead
+                            let targetTime = CMTime(seconds: Double(bookmarkTimingsArray[index + 1]), preferredTimescale: 1)
+                            self.seekPlayerTime(time: targetTime)
+                            
+                            let targetButton = self.totalBookmarkButtons[index + 1]
+                            
+                            self.totalBookmarkButtons.forEach { (button) in
+                                button.isSelected = false
+                                button.backgroundColor = .black
+                            }
+                            
+                            targetButton.isSelected = true
+                            targetButton.backgroundColor = .red
+                        }
+                    }
+                }
+            }else{
+                let targetTime = CMTime(seconds: Double(bookmarkTimingsArray[0]), preferredTimescale: 1)
+                self.seekPlayerTime(time: targetTime)
+                
+                self.totalBookmarkButtons[0].isSelected = true
+                self.totalBookmarkButtons[0].backgroundColor = .red
+            }
+            
+            self.initialHandleLabel.isHidden = true
+            self.btnLeftBookmark.isUserInteractionEnabled = true
+            self.btnLeftBookmark.setImage(UIImage(named: "record_bookmark_backward_btn_normal"), for: .normal)
+            self.isPlayerInitialized = true
+        }
+    }
+    
+    func sortBookmarkArrays(){
+        bookmarkTimingsArray.sort()
+        totalBookmarkButtons.sort{
+            return $0.tag < $1.tag
+        }
+    }
+    
+    func seekPlayerTime(time:CMTime){
+        self.recorder.queuePlayer?.seek(to: time, toleranceBefore: .zero, toleranceAfter: .zero, completionHandler: { result in
+            if result{
+                //update waves.
+                let currentTime = self.recorder.queuePlayer?.currentTime().seconds ?? 0.0
+                self.playerWaveView.waveformView.progressTime = CMTimeMakeWithSeconds(currentTime, preferredTimescale: 1)
+                
+                //update timings.
+                self.currentPlayingTime.text = self.timeString(from: currentTime)
+            }
+        })
     }
     
     @IBAction func backwardBookmarkAction(_ sender: Any) {
-        print(#function)
+        if bookmarkTimingsArray.count > 0{
+            //need to check which bookmark button is already selected. If no one is selected, choose the first one.
+            let selectedBookmarksArray = self.totalBookmarkButtons.filter({$0.isSelected})
+            if selectedBookmarksArray.count > 0{
+                if let selectedBookmark = selectedBookmarksArray.first{
+                    if let index = self.totalBookmarkButtons.firstIndex(of: selectedBookmark){
+                        //need to check if it is the first bookmark
+                        if index == 0{
+                            //first one
+                            //1. make the backword trim disable.
+                            self.btnLeftBookmark.isUserInteractionEnabled = false
+                            self.btnLeftBookmark.setImage(UIImage(named: "record_bookmark_backward_btn_disable"), for: .normal)
+                            
+                            //2. show the initial handle
+                            self.initialHandleLabel.isHidden = false
+                            
+                            //3. disable clear button.
+                            
+                            
+                            let targetTime = CMTime(seconds: Double(0.0), preferredTimescale: 1)
+                            self.seekPlayerTime(time: targetTime)
+                            self.totalBookmarkButtons.forEach { (button) in
+                                button.isSelected = false
+                                button.backgroundColor = .black
+                            }
+                        }else{
+                            let targetTime = CMTime(seconds: Double(bookmarkTimingsArray[index - 1]), preferredTimescale: 1)
+                            self.seekPlayerTime(time: targetTime)
+                            
+                            let targetButton = self.totalBookmarkButtons[index - 1]
+                            
+                            self.totalBookmarkButtons.forEach { (button) in
+                                button.isSelected = false
+                                button.backgroundColor = .black
+                            }
+                            
+                            targetButton.isSelected = true
+                            targetButton.backgroundColor = .red
+                        }
+                    }
+                    
+                    //enable forward bookmark button.
+                    self.btnRightBookmark.isUserInteractionEnabled = true
+                    self.btnRightBookmark.setImage(UIImage(named: "record_bookmark_forward_btn_normal"), for: .normal)
+                }
+            }
+            self.isPlayerInitialized = true
+        }
     }
     
     // MARK: - Discard Recorder setUp.
     @objc func onDiscardRecorderSetUp(){
-//        self.recordTimer.invalidate()
         stopwatch.stop()
         self.recorderState = .none
-//        self.currentRecordUpdateTimer.invalidate()
         self.customRangeBar.isHidden = false
         self.customRangeBarHeight.constant = 45
         self.parentStackTop.constant = 35
@@ -1193,13 +1307,9 @@ class RecordVC: BaseViewController {
         self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
         audioRangeMeterSetUp()
         segmentControl.isHidden = true
-//        stackView.isHidden = true
-//        stackViewHeight.constant = 0
         viewPlayerTiming.isHidden = true
         insertTimer.isHidden = true
         segmentHeight.constant = 0
-//        viewProgress.isHidden = true
-//        progressViewHeight.constant = 45
         self.playerWaveView.isHidden = true
     }
     

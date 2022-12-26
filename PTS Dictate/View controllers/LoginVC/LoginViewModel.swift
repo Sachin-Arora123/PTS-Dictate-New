@@ -31,34 +31,19 @@ class LoginViewModel {
             CommonFunctions.hideLoader()
             print(LoginAPI)
             if LoginAPI.email != nil{
-//                let vc = TabbarVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
-//                UIView.animate(withDuration: 0.50, animations: {() -> Void in
-//                    UIView.setAnimationCurve(.easeInOut)
-//                let navigationController = UINavigationController(rootViewController: vc)
-//                if UIApplication.shared.windows.count > 0 {
-//                    UIApplication.shared.windows[0].rootViewController = navigationController
-//                }
-//                    UIView.setAnimationTransition(.flipFromRight, for: (navigationController.view)!, cache: false)
-//            })
-                
                 let vc = TabbarVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
-//                    UIView.animate(withDuration: 0.50, animations: {() -> Void in
-//                    UIView.setAnimationCurve(.easeInOut)
                 let nav = UINavigationController(rootViewController: vc)
                 if UIApplication.shared.windows.count > 0 {
                     UIApplication.shared.windows[0].rootViewController = nav
-                    
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                         //show welcome banner
                         CommonFunctions.toster("Welcome", titleDesc: CoreData.shared.userName, false)
                     }
                 }
-                        AppDelegate.sharedInstance().changeRootViewController(nav, options: .transitionFlipFromRight,animated: true)
-//                        self.loginViewController?.navigationController?.pushViewController(vc, animated: true)
-//                        UIView.setAnimationTransition(.flipFromRight, for: (self.loginViewController?.navigationController?.view)!, cache: false)
-//                })
+                
+                AppDelegate.sharedInstance().changeRootViewController(nav, options: .transitionFlipFromRight,animated: true)
                 CoreData.shared.isRemeberMe = self.loginViewController?.isRemember ?? false
-                CoreData.shared.userName = LoginAPI.userName ?? userName
+                CoreData.shared.userName    = LoginAPI.userName ?? userName
                 
                 //make profile name and save
                 let notAllowedChars = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890").inverted

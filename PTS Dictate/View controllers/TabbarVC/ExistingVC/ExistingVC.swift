@@ -145,7 +145,47 @@ class ExistingVC: BaseViewController {
             self.setUpWave(index: 0)
         }
         self.checkArchiveDate()
+        
+//        showBanner()
     }
+    
+//    func showBanner(){
+//        let topWelcomeView = UIView(frame: CGRect(x: 0, y: -50, width: view.frame.size.width, height: 50))
+//        topWelcomeView.backgroundColor = UIColor.clear
+//        view.addSubview(topWelcomeView)
+//
+//        let lblWelcome = UILabel(frame: CGRect(x: 0, y: 5, width: view.frame.size.width, height: topWelcomeView.frame.size.height - 5))
+//        lblWelcome.textColor = .black
+//        lblWelcome.textAlignment = .center
+//        lblWelcome.numberOfLines = 0
+//        lblWelcome.text = "Welcome Sachin"
+//        lblWelcome.font = UIFont.boldSystemFont(ofSize: 17)
+//        lblWelcome.backgroundColor = .clear
+//
+//        var text: NSMutableAttributedString? = nil
+//        if let attributedText = lblWelcome.attributedText {
+//            text = NSMutableAttributedString(
+//                attributedString: attributedText)
+//        }
+//
+//        text?.addAttribute(
+//            .foregroundColor,
+//            value: UIColor.darkGray,
+//            range: NSRange(location: 0, length: 7))
+//
+////        text?.addAttribute(
+////            .foregroundColor,
+////            value: UIColor.black,
+////            range: NSRange(location: 9, length: "sachin".count))
+//
+//        lblWelcome.attributedText = text
+//
+//        topWelcomeView.addSubview(lblWelcome)
+//
+//        UIView.animate(withDuration: 1.0) {
+//            topWelcomeView.frame = CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: 50)
+//        }
+//    }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -377,7 +417,11 @@ class ExistingVC: BaseViewController {
                 guard let t = try? item.promisedItemResourceValues(forKeys:[.contentModificationDateKey]).contentModificationDate
                 else {return [""]}
                 print ("Hello,\(t)   \(item.lastPathComponent)")
-                sortedDateArray.append(item.lastPathComponent)
+                
+                //get only the logged in user's dictations
+                if item.lastPathComponent.contains(CoreData.shared.profileName){
+                    sortedDateArray.append(item.lastPathComponent)
+                }
             }
         } catch {
             print ("Finding date sorted error-->>",error.localizedDescription)
@@ -442,6 +486,7 @@ class ExistingVC: BaseViewController {
         VC.canEditComments = isUploaded ? false : true
         VC.selectedAudio = audio
         VC.comment = audioFile?.fileInfo?.comment ?? ""
+        VC.isCommentsMandotary = CoreData.shared.commentScreenMandatory == 1 ? true : false
         self.navigationController?.pushViewController(VC, animated: false)
     }
     

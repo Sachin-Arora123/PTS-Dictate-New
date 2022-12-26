@@ -53,10 +53,8 @@ class NamingFormatCell: UITableViewCell {
 
 extension NamingFormatCell: UITextFieldDelegate{
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-//        DispatchQueue.main.async {
         let currentText = NSString(string: textField.text!).replacingCharacters(in: range, with: string)
         self.delegate?.passData(text: currentText, id: self.txtFldDateFormat.tag)
-//        }
         return true
     }
     

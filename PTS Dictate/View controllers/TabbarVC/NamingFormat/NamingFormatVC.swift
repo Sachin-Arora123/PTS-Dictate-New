@@ -16,9 +16,7 @@ class NamingFormatVC: BaseViewController {
     @IBOutlet weak var viewHeader: UIView!
     @IBOutlet weak var lblFileNameTitle: UILabel!
     @IBOutlet weak var txtFldHeaderFileName: UITextField!
-    
     @IBOutlet weak var pickerView: UIPickerView!
-    
     @IBOutlet weak var pickerViewBottomConstant: NSLayoutConstraint!
     
     // MARK: - data var
@@ -76,6 +74,7 @@ class NamingFormatVC: BaseViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.tabBarController?.navigationItem.rightBarButtonItem = nil
+        hideBottomView()
     }
     
     // MARK: - UISetup
@@ -103,7 +102,6 @@ class NamingFormatVC: BaseViewController {
             CoreData.shared.fileName = self.fileName
             CoreData.shared.dateFormat = self.dateFormat
             CoreData.shared.dataSave()
-            
             CommonFunctions.toster("Updated successfully", titleDesc: "", false)
         })
         
@@ -147,7 +145,7 @@ extension NamingFormatVC : NamingFormatCellDelegate{
             txtFldHeaderFileName.text = self.fileName + "_" + self.currentDateStr + "_File_001" + ".m4a"
         }else{
             self.dateFormat = text
-            self.hideBottomView()
+//            self.hideBottomView()
         }
         
 //        selectedTFIndex = nil
@@ -155,21 +153,21 @@ extension NamingFormatVC : NamingFormatCellDelegate{
     }
     
     func sendTextFieldDidEditing(textField: UITextField, id: Int) {
-        if id == 1{
-            self.showBottomView()
-        }
+//        if id == 1{
+//            self.showBottomView()
+//        }
         selectedTFIndex = id
     }
     
-    func showBottomView(){
-        self.pickerViewBottomConstant.constant = 0
-        self.changeTabBar(hidden: true, animated: false)
-        UIView.animate(withDuration: 0.4, delay: 0.1, options: UIView.AnimationOptions.curveEaseInOut) {
-            self.view.layoutIfNeeded()
-        } completion: { done in
-            print(done)
-        }
-    }
+//    func showBottomView(){
+//        self.pickerViewBottomConstant.constant = 0
+//        self.changeTabBar(hidden: true, animated: false)
+//        UIView.animate(withDuration: 0.4, delay: 0.1, options: UIView.AnimationOptions.curveEaseInOut) {
+//            self.view.layoutIfNeeded()
+//        } completion: { done in
+//            self.view.endEditing(true)
+//        }
+//    }
     
     func hideBottomView(){
         self.pickerViewBottomConstant.constant = -900

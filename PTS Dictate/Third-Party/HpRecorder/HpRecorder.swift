@@ -122,15 +122,19 @@ public class HPRecorder: NSObject {
     
     // Start player
     public func startPlayer() {
+        initilaizePlayer()
+        self.queuePlayer?.actionAtItemEnd = .advance
+        self.queuePlayer?.play()
+        self.queuePlayerPlaying = true
+    }
+    
+    func initilaizePlayer(){
         let assetKeys = ["playable"]
         let playerItems = self.articleChunks.map {
             AVPlayerItem(asset: $0, automaticallyLoadedAssetKeys: assetKeys)
         }
-        self.queuePlayer = AVQueuePlayer(items: playerItems)
-        self.queuePlayer?.actionAtItemEnd = .advance
-        self.playerItem = playerItems.last
-        self.queuePlayer?.play()
-        self.queuePlayerPlaying = true
+        self.queuePlayer  = AVQueuePlayer(items: playerItems)
+        self.playerItem   = playerItems.last
         self.durationTime = self.getTimeDuration(playerItems: playerItems)
     }
     
