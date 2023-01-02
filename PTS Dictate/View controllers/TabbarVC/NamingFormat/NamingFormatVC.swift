@@ -145,49 +145,44 @@ extension NamingFormatVC : NamingFormatCellDelegate{
             txtFldHeaderFileName.text = self.fileName + "_" + self.currentDateStr + "_File_001" + ".m4a"
         }else{
             self.dateFormat = text
-//            self.hideBottomView()
         }
-        
-//        selectedTFIndex = nil
-        
     }
     
     func sendTextFieldDidEditing(textField: UITextField, id: Int) {
-//        if id == 1{
-//            self.showBottomView()
-//        }
+        if id == 1{
+            self.showPickerView()
+        }
         selectedTFIndex = id
     }
     
-//    func showBottomView(){
-//        self.pickerViewBottomConstant.constant = 0
-//        self.changeTabBar(hidden: true, animated: false)
-//        UIView.animate(withDuration: 0.4, delay: 0.1, options: UIView.AnimationOptions.curveEaseInOut) {
-//            self.view.layoutIfNeeded()
-//        } completion: { done in
-//            self.view.endEditing(true)
-//        }
-//    }
-    
-    func hideBottomView(){
-        self.pickerViewBottomConstant.constant = -900
-        self.changeTabBar(hidden: false, animated: false)
+    func showPickerView(){
+        //hide keyboard if appeared already
+        self.view.endEditing(true)
+        //hide tabbar.
+        self.changeTabBar(hidden: true, animated: false)
+        //show picker
+        self.pickerViewBottomConstant.constant = 0
+        //animate
         UIView.animate(withDuration: 0.4, delay: 0.1, options: UIView.AnimationOptions.curveEaseInOut) {
             self.view.layoutIfNeeded()
-        } completion: { done in
-            print(done)
         }
+    }
+    
+    func hideBottomView(){
+        //hide picker
+        self.pickerViewBottomConstant.constant = -900
+        //show tabbar
+        self.changeTabBar(hidden: false, animated: false)
+        //animate
+        UIView.animate(withDuration: 0.4, delay: 0.1) { self.view.layoutIfNeeded() }
     }
     
     func changeTabBar(hidden:Bool, animated: Bool){
         if let tabBar = self.tabBarController?.tabBar{
             let offset = (hidden ? UIScreen.main.bounds.size.height + 40 : UIScreen.main.bounds.size.height - (tabBar.frame.size.height) )
             if offset == tabBar.frame.origin.y {return}
-            print("changing origin y position")
             let duration:TimeInterval = (animated ? 0.2 : 0.0)
-            UIView.animate(withDuration: duration,
-                       animations: {tabBar.frame.origin.y = offset},
-                       completion:nil)
+            UIView.animate(withDuration: duration,animations: {tabBar.frame.origin.y = offset})
         }
     }
 }

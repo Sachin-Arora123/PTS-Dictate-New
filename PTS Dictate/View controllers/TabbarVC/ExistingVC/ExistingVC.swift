@@ -32,6 +32,7 @@ class ExistingVC: BaseViewController {
     @IBOutlet weak var btnDelete: UIButton!
     @IBOutlet weak var mediaProgressView: SCScrollableWaveformView!
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var tableViewTop: NSLayoutConstraint!
     
     let existingViewModel = ExistingViewModel.shared
     
@@ -145,47 +146,48 @@ class ExistingVC: BaseViewController {
             self.setUpWave(index: 0)
         }
         self.checkArchiveDate()
-        
-//        showBanner()
     }
     
-//    func showBanner(){
-//        let topWelcomeView = UIView(frame: CGRect(x: 0, y: -50, width: view.frame.size.width, height: 50))
-//        topWelcomeView.backgroundColor = UIColor.clear
-//        view.addSubview(topWelcomeView)
-//
-//        let lblWelcome = UILabel(frame: CGRect(x: 0, y: 5, width: view.frame.size.width, height: topWelcomeView.frame.size.height - 5))
-//        lblWelcome.textColor = .black
-//        lblWelcome.textAlignment = .center
-//        lblWelcome.numberOfLines = 0
-//        lblWelcome.text = "Welcome Sachin"
-//        lblWelcome.font = UIFont.boldSystemFont(ofSize: 17)
-//        lblWelcome.backgroundColor = .clear
-//
-//        var text: NSMutableAttributedString? = nil
-//        if let attributedText = lblWelcome.attributedText {
-//            text = NSMutableAttributedString(
-//                attributedString: attributedText)
-//        }
-//
-//        text?.addAttribute(
-//            .foregroundColor,
-//            value: UIColor.darkGray,
-//            range: NSRange(location: 0, length: 7))
-//
-////        text?.addAttribute(
-////            .foregroundColor,
-////            value: UIColor.black,
-////            range: NSRange(location: 9, length: "sachin".count))
-//
-//        lblWelcome.attributedText = text
-//
-//        topWelcomeView.addSubview(lblWelcome)
-//
-//        UIView.animate(withDuration: 1.0) {
-//            topWelcomeView.frame = CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: 50)
-//        }
-//    }
+    func showBanner(){
+        //view
+        let topWelcomeView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 60))
+        topWelcomeView.backgroundColor = .clear
+        view.addSubview(topWelcomeView)
+
+        //label
+        let username = CoreData.shared.userName
+        let lblWelcome = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: topWelcomeView.frame.size.height - 5))
+        lblWelcome.textColor = .black
+        lblWelcome.textAlignment = .center
+        lblWelcome.numberOfLines = 0
+        lblWelcome.text = "Welcome \n \(username)"
+        lblWelcome.font = UIFont.boldSystemFont(ofSize: 20)
+
+        var text: NSMutableAttributedString? = nil
+        if let attributedText = lblWelcome.attributedText{
+            text = NSMutableAttributedString(attributedString: attributedText)
+        }
+
+        text?.addAttribute( .foregroundColor, value: UIColor.darkGray, range: NSRange(location: 0, length: 7))
+        text?.addAttribute( .foregroundColor, value: UIColor.red, range: NSRange(location: 10, length: username.count))
+        lblWelcome.attributedText = text
+        
+        topWelcomeView.addSubview(lblWelcome)
+
+        
+        UIView.animate(withDuration: 1.0) {
+            self.tableViewTop.constant = 50
+            topWelcomeView.frame = CGRect(x: 0, y: 100, width: self.view.frame.size.width, height: 50)
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0, execute: {
+            UIView.animate(withDuration: 1.0) {
+                topWelcomeView.frame = CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: 50)
+                topWelcomeView.isHidden = true
+                self.tableViewTop.constant = 0
+            }
+        })
+    }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -342,7 +344,7 @@ class ExistingVC: BaseViewController {
         } else {
             let alreadyUploaded = self.checkFilesAlreadyUploadedOrNot()
             if alreadyUploaded {
-                CommonFunctions.showAlert(view: self, title: "PTS Dictate", message: "Are you sure you want to re-upload?") { success in
+                CommonFunctions.showAlert(view: self, title: "PTS Dictate", message: "Are you sure you want to re-upload few dictations?") { success in
                     if success {
                         self.uploadFiles()
                     } else {
@@ -377,15 +379,21 @@ class ExistingVC: BaseViewController {
     }
     
     func checkFilesAlreadyUploadedOrNot() -> Bool {
-        for file in totalFilesSelected {
-            let audioFile = getFileInfo(name: file)
-            if audioFile?.fileInfo?.isUploaded ?? false {
-                return true
-            } else {
-                return false
+        var status = false
+        if totalFilesSelected.count > 0{
+            for file in totalFilesSelected {
+                let audioFile = getFileInfo(name: file)
+                if audioFile?.fileInfo?.isUploaded ?? false {
+                    return true
+                } else {
+                    status = false
+                }
             }
+        }else{
+            return status
         }
-        return false
+        
+        return status
     }
     
     func uploadFiles() {

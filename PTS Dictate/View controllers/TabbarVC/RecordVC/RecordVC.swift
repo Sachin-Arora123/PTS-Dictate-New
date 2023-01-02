@@ -312,10 +312,17 @@ class RecordVC: BaseViewController {
 
         let nameToShow = (CoreData.shared.fileName.count != 0) ? CoreData.shared.fileName : CoreData.shared.profileName
 
-        //need to check recording file count here as well
-        self.audioFileURL       = nameToShow + "_" + convertedDateStr + "_File_" + String(format: "%03d", CoreData.shared.fileCount)
-        self.lblFNameValue.text = nameToShow + "_" + convertedDateStr + "_File_" + String(format: "%03d", CoreData.shared.fileCount) + ".m4a"
-        audioFileName           = nameToShow + "_" + convertedDateStr + "_File_" + String(format: "%03d", CoreData.shared.fileCount) + ".m4a" // mohit new changes
+        //need to check recording file count here as well(each day the file count should starts from 001)
+        var count = 1
+        if let lastUploadedDate = UserDefaults.standard.value(forKey: "FileUploadedDate") as? Date{
+            if Calendar.current.isDate(lastUploadedDate, inSameDayAs: Date()){
+                //no need to change the file count to 1
+                count = CoreData.shared.fileCount
+            }
+        }
+        self.audioFileURL       = nameToShow + "_" + convertedDateStr + "_File_" + String(format: "%03d", count)
+        self.lblFNameValue.text = nameToShow + "_" + convertedDateStr + "_File_" + String(format: "%03d", count) + ".m4a"
+        audioFileName           = nameToShow + "_" + convertedDateStr + "_File_" + String(format: "%03d", count) + ".m4a" // mohit new changes
         self.lblFSizeValue.text = "0.00 Mb"
         
         //setup file url as well.

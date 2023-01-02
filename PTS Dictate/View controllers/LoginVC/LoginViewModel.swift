@@ -22,14 +22,13 @@ class LoginViewModel {
     
     func LoginApiHit(userName : String, password: String){
         let params : [String : AnyObject] = [
-            
             "Login_Name" : userName as AnyObject,
             "Password" : password as AnyObject,
         ]
+        
         CommonFunctions.showLoader(title: "Logging In...")
         ApiHandler.callApiWithParameters(url: "\(ApiPath.login.rawValue)", withParameters: params as [String : AnyObject], ofType: LoginAPI.self, onSuccess: { (LoginAPI) in
             CommonFunctions.hideLoader()
-            print(LoginAPI)
             if LoginAPI.email != nil{
                 let vc = TabbarVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
                 let nav = UINavigationController(rootViewController: vc)
@@ -37,7 +36,7 @@ class LoginViewModel {
                     UIApplication.shared.windows[0].rootViewController = nav
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                         //show welcome banner
-                        CommonFunctions.toster("Welcome", titleDesc: CoreData.shared.userName, false)
+                        (vc.viewControllers![0] as? ExistingVC)?.showBanner()
                     }
                 }
                 
