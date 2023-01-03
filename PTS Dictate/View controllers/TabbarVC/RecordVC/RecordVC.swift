@@ -264,6 +264,7 @@ class RecordVC: BaseViewController {
 //            self.btnBookmark.isUserInteractionEnabled = false
 //            self.btnLeftBookmark.isUserInteractionEnabled = false
 //            self.btnRightBookmark.isUserInteractionEnabled = false
+////            self.btnClear.isUserInteractionEnabled = false
 //
 //            addIntialHandle()
 //        }else{
@@ -795,7 +796,7 @@ class RecordVC: BaseViewController {
     }
 
     func setInsert_PartialDeleteUI() {
-        self.viewClear.isHidden = false
+        self.viewClear.isHidden    = false
         self.bookMarkView.isHidden = true
         self.bookmarkWaveTimeView.isHidden = true
         self.btnClear.setImage(UIImage(named: "btn_start_point_normal"), for: .normal)
@@ -908,14 +909,14 @@ class RecordVC: BaseViewController {
             //Partial delete
             onTapEditPerformPartialDeleteFunction(sender)
         default:
-            print("Nothing to do")
+            print("delete bookmark functionality.")
+            
         }
     }
     
     func onTapEditPerformInsertFunction(_ sender: UIButton){
         if sender.imageView?.image == UIImage(named: "btn_start_point_normal") {
             self.insertStartingPoint = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
-            print("")
             self.recorder.stopPlayer()
             self.btnClear.setImage(UIImage(named: "btn_start_inserting_normal"), for: .normal)
         }else if sender.imageView?.image == UIImage(named: "btn_start_inserting_normal") {

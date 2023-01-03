@@ -342,7 +342,7 @@ class ExistingVC: BaseViewController {
         if self.totalFilesSelected.count == 0{
             CommonFunctions.alertMessage(view: self, title: "PTS Dictate", msg: "Please select atleast one file.", btnTitle: "OK")
         } else {
-            let alreadyUploaded = self.checkFilesAlreadyUploadedOrNot()
+            let alreadyUploaded = self.checkIfAnyFileAlreadyUploaded()
             if alreadyUploaded {
                 CommonFunctions.showAlert(view: self, title: "PTS Dictate", message: "Are you sure you want to re-upload few dictations?") { success in
                     if success {
@@ -361,11 +361,32 @@ class ExistingVC: BaseViewController {
         if self.totalFilesSelected.count == 0{
             CommonFunctions.alertMessage(view: self, title: "PTS Dictate", msg: "Please select atleast one file.", btnTitle: "OK")
         }else{
-            CommonFunctions.showAlert(view: self, title: "PTS Dictate", message: "Are you sure want to Delete?", completion: {
+            var alertMessage = ""
+            if self.totalFilesSelected.count == 1{
+                //user selected one file to delete.
+                //first check if the selected file is already uploaded or not.
+                if checkIfAnyFileAlreadyUploaded(){
+                    //already uploaded
+                    alertMessage = "File retention period is set as \(CoreData.shared.archiveFileDays) days. Do you still want to delete this file?"
+                }else{
+                    //not uploaded
+                    alertMessage = "File is not uploaded, Do you still want to delete this file?"
+                }
+            }else{
+                //greater than one.
+                //if any of the file is not uploaded, we need to show file not uploaded message.
+                if checkIfAnyFileNotAlreadyUploaded(){
+                    //Some files are not already uploaded
+                    alertMessage = "Some of the Files are not uploaded, Do you still want to delete these files?"
+                }else{
+                    //no file is uploaded from the selected files
+                    alertMessage = "File retention period is set as \(CoreData.shared.archiveFileDays) days. Do you still want to delete these files?"
+                }
+            }
+            
+            CommonFunctions.showAlert(view: self, title: "PTS Dictate", message: alertMessage, completion: {
                 (success) in
                 if success{
-                    print("tF===____>>>", self.totalFiles)
-                    print("tFSelect===____>>>", self.totalFilesSelected)
                     for file in self.totalFilesSelected {
                         self.removeAudio(itemName: file, fileExtension: "")
                         AudioFiles.shared.deleteAudio(name: file)
@@ -378,12 +399,32 @@ class ExistingVC: BaseViewController {
         }
     }
     
-    func checkFilesAlreadyUploadedOrNot() -> Bool {
+    //This function return true if any of the multiple file is already uploaded, else return false
+    func checkIfAnyFileAlreadyUploaded() -> Bool {
         var status = false
         if totalFilesSelected.count > 0{
             for file in totalFilesSelected {
                 let audioFile = getFileInfo(name: file)
                 if audioFile?.fileInfo?.isUploaded ?? false {
+                    return true
+                } else {
+                    status = false
+                }
+            }
+        }else{
+            return status
+        }
+        
+        return status
+    }
+    
+    //This function return true if any of the multiple file is not already uploaded, else return false
+    func checkIfAnyFileNotAlreadyUploaded() -> Bool {
+        var status = false
+        if totalFilesSelected.count > 0{
+            for file in totalFilesSelected {
+                let audioFile = getFileInfo(name: file)
+                if !(audioFile?.fileInfo?.isUploaded ?? false) {
                     return true
                 } else {
                     status = false

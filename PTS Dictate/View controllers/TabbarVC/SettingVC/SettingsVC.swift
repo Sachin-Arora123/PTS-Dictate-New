@@ -19,7 +19,7 @@ class SettingsVC: BaseViewController {
                      "Disable Email Notification","Comments Screen",
                      "   Comments Screen - Mandatory","Indexing","Disable Editing Help Screens"]
     let dataTitle2 = ["Profile","File Naming Date Format",
-                      "Archive file after upload","   Archived Days",
+                      "Uploaded file retention period","   File retention Days",
                       "Upload via WiFi only",
                       "Sleep Mode Override","About","Logout"]
     let iconArray = ["settings_profile","settings_edit","settings_upload","settings_archive","settings_wifi","settings_standby","settings_info","settings_logout"]
@@ -196,6 +196,7 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
         view.backgroundColor = .clear
         return view
     }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section{
         case 0:
@@ -219,38 +220,7 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
                 let vc = NamingFormatVC.instantiateFromAppStoryboard(appStoryboard: .Settings)
                 self.navigationController?.pushViewController(vc, animated: true)
             case 3:
-                    let alert = UIAlertController(title: "Enter archive days", message: nil, preferredStyle: .alert)
-
-                    //2. Add the text field. You can configure it however you need.
-                    alert.addTextField { (textField) in
-                        textField.text = "\(CoreData.shared.archiveFileDays)"
-                        textField.keyboardType = .phonePad
-                    }
-                    
-
-                    // 3. Grab the value from the text field, and print it when the user clicks OK.
-                    alert.addAction(UIAlertAction(title: "Cencel", style: .cancel, handler: { [weak alert] (_) in
-                        print("Cancel")
-                    }))
-                    
-                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
-                        let textField = alert?.textFields![0] // Force unwrapping because we know it exists.
-                        print("Text field: \(textField?.text ?? "")")
-                        let textValue =  ((textField?.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "") as NSString).integerValue
-                        if textValue >= 1{
-                            CoreData.shared.archiveFileDays = textValue
-                            CoreData.shared.dataSave()
-                            self.tableView.reloadData()
-                        }else{
-                            CoreData.shared.archiveFileDays = 1
-                            CoreData.shared.dataSave()
-                            self.tableView.reloadData()
-                        }
-                    }))
-
-                    // 4. Present the alert.
-                    self.present(alert, animated: true, completion: nil)
-
+                showArchiveAlert()
             case 6:
                 let vc = AboutVC.instantiateFromAppStoryboard(appStoryboard: .Settings)
                 self.navigationController?.pushViewController(vc, animated: true)
@@ -262,6 +232,39 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
         default:
             break
         }
+    }
+    
+    func showArchiveAlert(){
+        //1. Create the alert controller.
+        let alert = UIAlertController(title: "Enter file retention days", message: nil, preferredStyle: .alert)
+
+        //2. Add the text field. You can configure it however you need.
+        alert.addTextField { (textField) in
+            textField.text = "\(CoreData.shared.archiveFileDays)"
+            textField.delegate = self
+            textField.keyboardType = .phonePad
+        }
+        
+        alert.addAction(UIAlertAction(title: "Cencel", style: .cancel, handler: nil))
+        
+        // 3. Grab the value from the text field, and print it when the user clicks OK.
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
+            let textField = alert?.textFields![0] // Force unwrapping because we know it exists.
+            print("Text field: \(textField?.text ?? "")")
+            let textValue =  ((textField?.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "") as NSString).integerValue
+            if textValue >= 1{
+                CoreData.shared.archiveFileDays = textValue
+                CoreData.shared.dataSave()
+                self.tableView.reloadData()
+            }else{
+                CoreData.shared.archiveFileDays = 1
+                CoreData.shared.dataSave()
+                self.tableView.reloadData()
+            }
+        }))
+
+        // 4. Present the alert.
+        self.present(alert, animated: true, completion: nil)
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -278,6 +281,9 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
                 }else{
                     return 0
                 }
+            case 6 :
+                //hiding index row for now.
+                return 0
             default:
                 break
             }
@@ -368,38 +374,7 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
                 let indexPath = IndexPath(row: 3, section: 1)
                 self.tableView.reloadRows(at: [indexPath], with: UITableView.RowAnimation.bottom)
                 
-                //1. Create the alert controller.
-                let alert = UIAlertController(title: "Enter archive days", message: nil, preferredStyle: .alert)
-
-                //2. Add the text field. You can configure it however you need.
-                alert.addTextField { (textField) in
-                    textField.text = "\(CoreData.shared.archiveFileDays)"
-                    textField.keyboardType = .phonePad
-                }
-                
-
-                // 3. Grab the value from the text field, and print it when the user clicks OK.
-                alert.addAction(UIAlertAction(title: "Cencel", style: .cancel, handler: { [weak alert] (_) in
-                    print("Cancel")
-                }))
-                
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
-                    let textField = alert?.textFields![0] // Force unwrapping because we know it exists.
-                    print("Text field: \(textField?.text ?? "")")
-                    let textValue =  ((textField?.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "") as NSString).integerValue
-                    if textValue >= 1{
-                        CoreData.shared.archiveFileDays = textValue
-                        CoreData.shared.dataSave()
-                        self.tableView.reloadData()
-                    }else{
-                        CoreData.shared.archiveFileDays = 1
-                        CoreData.shared.dataSave()
-                        self.tableView.reloadData()
-                    }
-                }))
-
-                // 4. Present the alert.
-                self.present(alert, animated: true, completion: nil)
+                showArchiveAlert()
             }else{
                 CoreData.shared.archiveFile = 0
                 let indexPath = IndexPath(row: 3, section: 1)
@@ -422,5 +397,17 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
         }
         CoreData.shared.dataSave()
     }
+    
 }
 
+extension SettingsVC: UITextFieldDelegate{
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let currentText = NSString(string: textField.text!).replacingCharacters(in: range, with: string)
+        if Int(currentText) ?? 1 > 30{
+            return false
+        }else{
+            return true
+        }
+        
+    }
+}
