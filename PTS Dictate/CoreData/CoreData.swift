@@ -19,7 +19,7 @@ class CoreData: NSObject {
     var privilege: String = ""
     var isRemeberMe : Bool = false
     var password = ""
-    var audioQuality = 2
+    var audioQuality = 0
     var voiceActivation = 0 // 1 - true & 0 - false
     var disableEmailNotify = 0 // 1 - true & 0 - false
     var commentScreen = 0 // 1 - true & 0 - false
@@ -28,8 +28,8 @@ class CoreData: NSObject {
     var disableEditingHelp = 0 // 1 - true & 0 - false
     var fileCount: Int = 1
     var dateFormat: String = ""
-    var archiveFile = 0 // 1 - true & 0 - false
-    var archiveFileDays = 1 // 1 - day default
+    var archiveFile = 1 // 1 - true & 0 - false
+    var archiveFileDays = 30 // 30 - day default
     var uploadViaWifi = 0 // 1 - true & 0 - false
     var sleepModeOverride = 0 // 1 - true & 0 - false
     var microSensitivityValue : Double = 1.0
@@ -241,8 +241,8 @@ class CoreData: NSObject {
         indexing = 0
         disableEditingHelp = 0
         dateFormat = ""
-        archiveFile = 0
-        archiveFileDays = 1
+        archiveFile = CoreData.shared.archiveFile
+        archiveFileDays = CoreData.shared.archiveFileDays
         uploadViaWifi = 0
         sleepModeOverride = 0
         microSensitivityValue = 1.0

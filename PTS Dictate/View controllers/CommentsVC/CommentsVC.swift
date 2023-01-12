@@ -24,12 +24,13 @@ class CommentsVC: BaseViewController {
     var selectedAudio = ""
     var fileName = ""
     var comment = ""
+    let ACCEPTABLE_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_"
 //    var meteringLevels: [Float] = []
     
     // MARK: - View Life-Cycle.
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        txtViewComment.delegate = self
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -100,5 +101,13 @@ class CommentsVC: BaseViewController {
                 self.navigationController?.popToRootViewController(animated: true)
             }
         }
+    }
+}
+
+extension CommentsVC : UITextViewDelegate{
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        let cs = NSCharacterSet(charactersIn: ACCEPTABLE_CHARACTERS).inverted
+        let filtered = text.components(separatedBy: cs).joined(separator: "")
+        return (text == filtered)
     }
 }

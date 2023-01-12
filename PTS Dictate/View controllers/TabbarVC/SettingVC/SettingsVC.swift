@@ -389,8 +389,10 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
         case 5:
             if sender.isOn{
                 CoreData.shared.sleepModeOverride = 1
+                UIApplication.shared.isIdleTimerDisabled = true
             }else{
                 CoreData.shared.sleepModeOverride = 0
+                UIApplication.shared.isIdleTimerDisabled = false
             }
         default:
             break

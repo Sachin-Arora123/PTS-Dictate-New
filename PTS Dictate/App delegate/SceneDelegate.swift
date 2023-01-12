@@ -39,6 +39,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneDidBecomeActive(_ scene: UIScene) {
         // Called when the scene has moved from an inactive state to an active state.
         // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
+        if CoreData.shared.sleepModeOverride == 1{
+            UIApplication.shared.isIdleTimerDisabled = true
+        }else{
+            UIApplication.shared.isIdleTimerDisabled = false
+        }
     }
 
     func sceneWillResignActive(_ scene: UIScene) {

@@ -30,12 +30,12 @@ class UploadProgressVC: BaseViewController {
     // MARK: View Life-Cycle.
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
         setUpUI()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        setTitleWithImage("Uploads", andImage: UIImage(named: "settings_upload.png") ?? UIImage())
         let uploadingInProgress = ExistingViewModel.shared.uploadingInProgress
         if !uploadingInProgress {
             self.startUploading()
@@ -46,7 +46,7 @@ class UploadProgressVC: BaseViewController {
         tableView.delegate = self
         tableView.dataSource = self
         self.tabBarController?.navigationItem.leftBarButtonItem = nil
-        setTitleWithImage("Uploads", andImage: UIImage(named: "settings_upload.png") ?? UIImage())
+        
     }
     
     fileprivate func startUploading() {

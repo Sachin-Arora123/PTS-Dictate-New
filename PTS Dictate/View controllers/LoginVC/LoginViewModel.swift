@@ -21,6 +21,11 @@ class LoginViewModel {
     var loginViewController : LoginVC?
     
     func LoginApiHit(userName : String, password: String){
+        if !Reachability.isConnectedToNetwork(){
+            CommonFunctions.toster("Network Error",titleDesc: "Network is no longer available. Please reconnect your network and try again.", true, false)
+            return
+        }
+        
         let params : [String : AnyObject] = [
             "Login_Name" : userName as AnyObject,
             "Password" : password as AnyObject,
@@ -56,7 +61,7 @@ class LoginViewModel {
                 CoreData.shared.userInfo.append(LoginAPI.userName ?? userName)
                 CoreData.shared.userInfo.append(LoginAPI.email ?? "")
             }else{
-                CommonFunctions.toster("PTS Dictate",titleDesc: "Please enter valid username & password", true)
+                CommonFunctions.toster("PTS Dictate",titleDesc: "Username/Password are Incorrect", true, false)
             }
             
         }, onFailure: { (reload, error) in

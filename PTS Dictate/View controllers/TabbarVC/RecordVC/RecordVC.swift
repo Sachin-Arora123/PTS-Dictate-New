@@ -99,7 +99,10 @@ class RecordVC: BaseViewController {
     var pdEndPoint      = 0.0
     var isPerformingOverwrite = false
     var overwritingStartingTimerPoint = 0.0
-    var isPlayerInitialized = false
+    
+//    var isPlayerInitialized = false
+    var playFirstTime = false
+    
     var editAssetDuration = 0.0
     
     var bookmarkTimingsArray = [Int]()
@@ -194,8 +197,8 @@ class RecordVC: BaseViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-//        audioRecorder = nil
-        self.isPlayerInitialized = false
+//        self.isPlayerInitialized = false
+        self.playFirstTime = false
         self.tabBarController?.setTabBarHidden(false, animated: false)
         self.audioForEditing = nil
         self.editAssetDuration = 0.0
@@ -204,14 +207,14 @@ class RecordVC: BaseViewController {
     deinit {
       NotificationCenter.default.removeObserver(self, name: Notification.Name("showBottomBtnView"), object: nil)
       NotificationCenter.default.removeObserver(self)
-//      stopwatch.stop()
     }
     
     // MARK: - View life cycle end.
     // MARK: - ==== Setup components starts here ====
     func audioRangeMeterSetUp() {
         self.customRangeBar.backgroundColor = .white
-        self.customRangeBar.numBars = 30
+        print(self.customRangeBar.frame)
+        self.customRangeBar.numBars = 20
         self.customRangeBar.minLimit = -100
         self.customRangeBar.maxLimit = -10
         self.customRangeBar.normalBarColor = hexStringToUIColor(hex: "F74118")
@@ -234,10 +237,6 @@ class RecordVC: BaseViewController {
         
         //player timing view
         viewPlayerTiming.isHidden = true
-        
-        //view progress
-//        viewProgress.isHidden = true
-//        progressViewHeight.constant = 45
         
         //wave view
         self.playerWaveView.isHidden = true
@@ -275,15 +274,16 @@ class RecordVC: BaseViewController {
       
     }
     
-    func addIntialHandle(){
-        let width = -2.0
-        let yVal = bookmarkWaveTimeView.frame.origin.y + 7.5
-        if width != 0{
-            self.initialHandleLabel = UILabel(frame: CGRect(x: width, y: yVal, width: 1.5, height: 27))
-            self.initialHandleLabel.backgroundColor = .red
-            self.bookmarkWaveTimeView.addSubview(self.initialHandleLabel)
-        }
-    }
+    //need for indexing functionality
+//    func addIntialHandle(){
+//        let width = -2.0
+//        let yVal = bookmarkWaveTimeView.frame.origin.y + 7.5
+//        if width != 0{
+//            self.initialHandleLabel = UILabel(frame: CGRect(x: width, y: yVal, width: 1.5, height: 27))
+//            self.initialHandleLabel.backgroundColor = .red
+//            self.bookmarkWaveTimeView.addSubview(self.initialHandleLabel)
+//        }
+//    }
     
     func initiallyBtnStateSetup(){
         btnStop.isUserInteractionEnabled = false
@@ -367,13 +367,13 @@ class RecordVC: BaseViewController {
     // MARK: - Handle app terminate notification
     @objc func applicationWillTerminate(notification: Notification) {
         print("Notification received.")
-//        AudioFiles.shared.saveNewAudioFile(name: audioFileName, autoSaved: true) // mohit new changes
+        AudioFiles.shared.saveNewAudioFile(name: audioFileName, autoSaved: true) // mohit new changes
         if self.recorder.audioRecorder != nil {
             self.recorder.endRecording()
-            
             CoreData.shared.fileCount += 1
             CoreData.shared.dataSave()
         }
+        
         self.recorderState = .none
         tempAudioFileURL = self.audioFileURL
         stopwatch.stop()
@@ -448,8 +448,8 @@ class RecordVC: BaseViewController {
                     
                 case .recording:
                     self.recorder.pauseRecording()
-                    self.recorder.initilaizePlayer()
-                    self.isPlayerInitialized = true
+//                    self.recorder.initilaizePlayer()
+//                    self.isPlayerInitialized = true
                     self.recorderState = .pause
                     self.stopwatch.pause()
                         
@@ -491,35 +491,35 @@ class RecordVC: BaseViewController {
                 }
                 
                 isRecording = true
-                if CoreData.shared.indexing == 1{
-                    self.enableDisableBookmarkButton()
-                }
+//                if CoreData.shared.indexing == 1{
+//                    self.enableDisableBookmarkButton()
+//                }
             }else{
                 CommonFunctions.alertMessage(view: self, title: "Microphone Access Denied", msg: "This app requires access to your device's Microphone. \n Please enable Microphone access for this app in Settings / Privacy / Microphone", btnTitle: "Ok")
             }
         })
     }
     
-    func enableDisableBookmarkButton(){
-        if self.recorderState == .pause{
-            //disable bookmark buttons, enable right bookmark button, show initial bookmark label if it is hide.
-            self.btnBookmark.isUserInteractionEnabled = false
-            self.btnBookmark.setImage(UIImage(named: "record_bookmark_btn_disable"), for: .normal)
-            
-            self.btnRightBookmark.isUserInteractionEnabled = true
-            self.btnRightBookmark.setImage(UIImage(named: "record_bookmark_forward_btn_normal"), for: .normal)
-            
-            //show initial bookmark label
-            
-        }else{
-            //enable bookmark button, disable right buttons,
-            self.btnBookmark.isUserInteractionEnabled = true
-            self.btnBookmark.setImage(UIImage(named: "record_bookmark_btn_normal"), for: .normal)
-            
-            self.btnRightBookmark.isUserInteractionEnabled = false
-            self.btnRightBookmark.setImage(UIImage(named: "record_bookmark_forward_btn_disable"), for: .normal)
-        }
-    }
+//    func enableDisableBookmarkButton(){
+//        if self.recorderState == .pause{
+//            //disable bookmark buttons, enable right bookmark button, show initial bookmark label if it is hide.
+//            self.btnBookmark.isUserInteractionEnabled = false
+//            self.btnBookmark.setImage(UIImage(named: "record_bookmark_btn_disable"), for: .normal)
+//
+//            self.btnRightBookmark.isUserInteractionEnabled = true
+//            self.btnRightBookmark.setImage(UIImage(named: "record_bookmark_forward_btn_normal"), for: .normal)
+//
+//            //show initial bookmark label
+//
+//        }else{
+//            //enable bookmark button, disable right buttons,
+//            self.btnBookmark.isUserInteractionEnabled = true
+//            self.btnBookmark.setImage(UIImage(named: "record_bookmark_btn_normal"), for: .normal)
+//
+//            self.btnRightBookmark.isUserInteractionEnabled = false
+//            self.btnRightBookmark.setImage(UIImage(named: "record_bookmark_forward_btn_disable"), for: .normal)
+//        }
+//    }
     
     @IBAction func onTapStop(_ sender: UIButton) {
         self.recorder.pauseRecording()
@@ -575,9 +575,9 @@ class RecordVC: BaseViewController {
         
         setUpWave()
         
-        if CoreData.shared.indexing == 1{
-            self.enableDisableBookmarkButton()
-        }
+//        if CoreData.shared.indexing == 1{
+//            self.enableDisableBookmarkButton()
+//        }
     }
             
     // MARK: - Slide View - Top To Bottom
@@ -594,15 +594,27 @@ class RecordVC: BaseViewController {
     @IBAction func onTapPlay(_ sender: UIButton)  {
         if !self.recorder.queuePlayerPlaying {
             //play the recording
-            if !self.isPlayerInitialized{
+//            if !self.isPlayerInitialized{
+//                //need initialization of player
+//                self.recorder.startPlayer()
+//                self.isPlayerInitialized = true
+//            }else{
+//                //already initialized
+//                self.recorder.queuePlayerPlaying = true
+//                self.recorder.queuePlayer?.play()
+//            }
+            
+            
+            if !self.playFirstTime{
                 //need initialization of player
                 self.recorder.startPlayer()
-                self.isPlayerInitialized = true
+                self.playFirstTime = true
             }else{
                 //already initialized
                 self.recorder.queuePlayerPlaying = true
                 self.recorder.queuePlayer?.play()
             }
+            
             btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
             btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_disable"), for: .normal)
             btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
@@ -619,18 +631,19 @@ class RecordVC: BaseViewController {
             let time = CMTime(seconds: 0.25, preferredTimescale: timeScale)
             //observing the player after every 0.25 seconds.
             self.recorder.queuePlayer?.addPeriodicTimeObserver(forInterval: time, queue: .main, using: { time in
-                    if self.recorder.queuePlayer?.currentItem?.status == .readyToPlay {
-                        let currentTime = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
-                        self.currentPlayingTime.text = self.timeString(from: currentTime)
-                        self.playerWaveView.waveformView.progressTime = self.recorder.queuePlayer?.currentTime() ?? CMTime.zero
-                    }
+                if self.recorder.queuePlayer?.currentItem?.status == .readyToPlay {
+                    let currentTime = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
+                    print("currentTime == \(currentTime)")
+                    self.currentPlayingTime.text = self.timeString(from: currentTime)
+                    self.playerWaveView.waveformView.progressTime = self.recorder.queuePlayer?.currentTime() ?? CMTime.zero
+                }
             })
             
         }else{
             //pause the recording
             self.recorder.stopPlayer()
             self.onStopPlayerSetupUI()
-            self.enableDisableForwardBackwardButtons(enable: false)
+            self.enableDisableForwardBackwardButtons(enable: true)
             
             enableBookmarkButton(enable: false)
         }
@@ -671,9 +684,12 @@ class RecordVC: BaseViewController {
     }
     
     @objc func playerDidFinishPlaying(sender: Notification) {
-        self.recorder.initilaizePlayer()
+//        self.recorder.initilaizePlayer()
         self.onStopPlayerSetupUI()
-        self.isPlayerInitialized = false
+//        self.isPlayerInitialized = false
+        
+        self.playFirstTime = false
+        
         self.recorder.queuePlayerPlaying = false
         
         self.enableDisableForwardBackwardButtons(enable: false)
@@ -682,7 +698,7 @@ class RecordVC: BaseViewController {
     
     // MARK: - @IBAction Forward.
     @IBAction func onTapForwardTrim(_ sender: UIButton) {
-        print(self.recorder.audioRecorder.currentTime)
+//        print(self.recorder.audioRecorder.currentTime)
         self.recorder.seekForward(timeInterval: 1)
     }
     
@@ -796,6 +812,8 @@ class RecordVC: BaseViewController {
     }
 
     func setInsert_PartialDeleteUI() {
+        self.stackView.isHidden = false
+        self.stackViewHeight.constant = 50
         self.viewClear.isHidden    = false
         self.bookMarkView.isHidden = true
         self.bookmarkWaveTimeView.isHidden = true
@@ -1048,6 +1066,8 @@ class RecordVC: BaseViewController {
             if status{
                 self.removeFileChunksInDocDirectory()
                 DispatchQueue.main.async {
+                    self.stackView.isHidden = true
+                    self.stackViewHeight.constant = 0
                     self.segmentControl.isHidden = true
                     self.segmentHeight.constant = 0
                     self.btnStop.isUserInteractionEnabled = false
@@ -1114,7 +1134,7 @@ class RecordVC: BaseViewController {
         if self.bookmarkTimingsArray.contains(time){
             //show banner
             DispatchQueue.main.async {
-                CommonFunctions.toster("PTS Dictate", titleDesc: "Already indexed", true)
+                CommonFunctions.toster("PTS Dictate", titleDesc: "Already indexed", true, false)
             }
         }else{
             self.bookmarkTimingsArray.append(time)
@@ -1220,7 +1240,7 @@ class RecordVC: BaseViewController {
             self.initialHandleLabel.isHidden = true
             self.btnLeftBookmark.isUserInteractionEnabled = true
             self.btnLeftBookmark.setImage(UIImage(named: "record_bookmark_backward_btn_normal"), for: .normal)
-            self.isPlayerInitialized = true
+//            self.isPlayerInitialized = true
         }
     }
     
@@ -1291,7 +1311,7 @@ class RecordVC: BaseViewController {
                     self.btnRightBookmark.setImage(UIImage(named: "record_bookmark_forward_btn_normal"), for: .normal)
                 }
             }
-            self.isPlayerInitialized = true
+//            self.isPlayerInitialized = true
         }
     }
     

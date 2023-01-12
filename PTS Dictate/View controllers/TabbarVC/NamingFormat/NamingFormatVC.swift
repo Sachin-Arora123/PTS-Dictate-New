@@ -23,7 +23,7 @@ class NamingFormatVC: BaseViewController {
     let titleArray = ["File Name","Date Format"]
     let pickerViewData : [String] = ["yyyymmdd", "yyyyddmm", "mmyyyydd", "mmddyyyy", "ddyyyymm", "ddmmyyyy"]
     
-    var fileName = CoreData.shared.fileName
+    var fileName = CoreData.shared.fileName != "" ? CoreData.shared.fileName : CoreData.shared.profileName
     var dateFormat = CoreData.shared.dateFormat
     var currentDateStr = ""
     var selectedTFIndex : Int?
@@ -98,11 +98,16 @@ class NamingFormatVC: BaseViewController {
     
     @objc func btnDoneAction() {
         self.view.endEditing(true)
+        if self.fileName.trimmingCharacters(in: .whitespacesAndNewlines) == ""{
+            CommonFunctions.toster("PTS Dictate", titleDesc: "FileName should not be empty", true, false)
+            return
+        }
+        
         DispatchQueue.main.asyncAfter(deadline: .now()+0.1, execute: {
             CoreData.shared.fileName = self.fileName
             CoreData.shared.dateFormat = self.dateFormat
             CoreData.shared.dataSave()
-            CommonFunctions.toster("Updated successfully", titleDesc: "", false)
+            CommonFunctions.toster("Updated Successfully", titleDesc: "", false, true)
         })
         
     }

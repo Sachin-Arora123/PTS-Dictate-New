@@ -77,10 +77,10 @@ class LoginVC: UIViewController {
                 let userName = self.tfUserName.text ?? ""
                 let tfPassword = self.tfPassword.text ?? ""
                 if userName.trimmingCharacters(in: .whitespacesAndNewlines) == "" {
-                    CommonFunctions.toster("PTS Dictate", titleDesc: "User name should not be empty", true)
+                    CommonFunctions.toster("PTS Dictate", titleDesc: "User name should not be empty", true, false)
                     self.tfUserName.shake()
                 }else if tfPassword.trimmingCharacters(in: .whitespacesAndNewlines) == ""{
-                    CommonFunctions.toster("PTS Dictate", titleDesc: "Password should not be empty", true)
+                    CommonFunctions.toster("PTS Dictate", titleDesc: "Password should not be empty", true, false)
                     self.tfPassword.shake()
                 }else {
                     self.loginViewModel.LoginApiHit(userName: userName, password: tfPassword)

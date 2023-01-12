@@ -249,7 +249,7 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="chE-M7-gwr" customClass="F3BarGauge">
-                                <rect key="frame" x="15" y="123" width="363" height="45"/>
+                                <rect key="frame" x="15" y="123" width="366" height="45"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="45" id="X21-El-5RA"/>
@@ -519,7 +519,7 @@
                                 <rect key="frame" x="0.0" y="782" width="393" height="70"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vDb-ZW-bej">
-                                        <rect key="frame" x="9.6666666666666572" y="15" width="111.33333333333334" height="40"/>
+                                        <rect key="frame" x="9.6666666666666643" y="15" width="111.33333333333334" height="40"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                         <state key="normal" backgroundImage="save_btn_normal">
@@ -593,14 +593,11 @@
                             <constraint firstItem="bmD-0y-Xqp" firstAttribute="top" secondItem="EO8-So-pyD" secondAttribute="bottom" constant="10" id="5pb-GF-6QN"/>
                             <constraint firstItem="o8d-Qa-DU6" firstAttribute="top" secondItem="vsU-k2-ZZX" secondAttribute="bottom" constant="20" id="64g-V4-aVw"/>
                             <constraint firstItem="uzQ-gQ-Tw4" firstAttribute="top" secondItem="J8T-nC-uAX" secondAttribute="bottom" constant="25" id="6NA-0z-cKG"/>
-                            <constraint firstItem="vsU-k2-ZZX" firstAttribute="trailing" secondItem="chE-M7-gwr" secondAttribute="trailing" id="6oj-vf-xaA"/>
                             <constraint firstItem="lDn-VJ-Xdc" firstAttribute="bottom" secondItem="bmD-0y-Xqp" secondAttribute="bottom" id="7Ef-FQ-Cgh"/>
                             <constraint firstItem="yo8-jP-fyy" firstAttribute="trailing" secondItem="qhp-LO-2c5" secondAttribute="trailing" constant="15" id="8dC-Zx-gWD"/>
-                            <constraint firstItem="vsU-k2-ZZX" firstAttribute="leading" secondItem="chE-M7-gwr" secondAttribute="leading" id="9zA-k9-ST3"/>
                             <constraint firstItem="RN2-wU-rAj" firstAttribute="leading" secondItem="tce-Oo-tbv" secondAttribute="leading" id="B1P-cF-EX6"/>
                             <constraint firstItem="EO8-So-pyD" firstAttribute="leading" secondItem="u5k-jG-Lb8" secondAttribute="leading" id="CXB-fY-nuI"/>
                             <constraint firstItem="Zkn-h4-eQj" firstAttribute="trailing" secondItem="8du-Pf-dUx" secondAttribute="trailing" id="Cga-Gl-rnc"/>
-                            <constraint firstItem="chE-M7-gwr" firstAttribute="leading" secondItem="yo8-jP-fyy" secondAttribute="leading" constant="15" id="D9H-UV-Wst"/>
                             <constraint firstItem="J8T-nC-uAX" firstAttribute="top" secondItem="o8d-Qa-DU6" secondAttribute="top" id="Dtw-rT-zdg"/>
                             <constraint firstItem="lDn-VJ-Xdc" firstAttribute="leading" secondItem="bmD-0y-Xqp" secondAttribute="trailing" constant="5" id="EDK-f5-a78"/>
                             <constraint firstAttribute="trailing" secondItem="tce-Oo-tbv" secondAttribute="trailing" constant="15" id="GZX-fh-g8u"/>
@@ -608,6 +605,7 @@
                             <constraint firstItem="8du-Pf-dUx" firstAttribute="centerY" secondItem="o8d-Qa-DU6" secondAttribute="centerY" constant="-5" id="HFb-Vb-ky9"/>
                             <constraint firstItem="WHC-EH-Ct0" firstAttribute="bottom" secondItem="u5k-jG-Lb8" secondAttribute="bottom" id="Ivu-Vy-0VY"/>
                             <constraint firstItem="EO8-So-pyD" firstAttribute="top" secondItem="u5k-jG-Lb8" secondAttribute="bottom" constant="10" id="MiV-Sj-n48"/>
+                            <constraint firstItem="chE-M7-gwr" firstAttribute="trailing" secondItem="qhp-LO-2c5" secondAttribute="trailing" constant="3" id="Mqg-sS-e6F"/>
                             <constraint firstItem="J8T-nC-uAX" firstAttribute="leading" secondItem="8du-Pf-dUx" secondAttribute="trailing" constant="5" id="MrT-K0-MEc"/>
                             <constraint firstItem="qhp-LO-2c5" firstAttribute="leading" secondItem="yo8-jP-fyy" secondAttribute="leading" constant="15" id="OKM-xq-Wqi"/>
                             <constraint firstItem="tce-Oo-tbv" firstAttribute="top" secondItem="qhp-LO-2c5" secondAttribute="bottom" constant="5" id="QKT-e1-VJm"/>
@@ -624,14 +622,15 @@
                             <constraint firstItem="0dl-dH-n19" firstAttribute="trailing" secondItem="8du-Pf-dUx" secondAttribute="trailing" id="dmp-PY-M3z"/>
                             <constraint firstItem="8du-Pf-dUx" firstAttribute="leading" secondItem="o8d-Qa-DU6" secondAttribute="trailing" constant="5" id="edQ-dn-fnR"/>
                             <constraint firstItem="lDn-VJ-Xdc" firstAttribute="trailing" secondItem="WHC-EH-Ct0" secondAttribute="trailing" id="ejO-Ln-Q9U"/>
+                            <constraint firstItem="vsU-k2-ZZX" firstAttribute="leading" secondItem="qhp-LO-2c5" secondAttribute="leading" id="gON-Ph-odZ"/>
                             <constraint firstItem="liF-96-KCv" firstAttribute="bottom" secondItem="EO8-So-pyD" secondAttribute="bottom" id="hv6-Fg-TSZ"/>
+                            <constraint firstItem="vsU-k2-ZZX" firstAttribute="trailing" secondItem="qhp-LO-2c5" secondAttribute="trailing" id="io0-yQ-kXK"/>
                             <constraint firstItem="liF-96-KCv" firstAttribute="leading" secondItem="EO8-So-pyD" secondAttribute="trailing" constant="5" id="js5-0s-pOq"/>
                             <constraint firstItem="RN2-wU-rAj" firstAttribute="trailing" secondItem="tce-Oo-tbv" secondAttribute="trailing" id="lgZ-Ue-xoa"/>
                             <constraint firstItem="GVr-qK-lEL" firstAttribute="leading" secondItem="yo8-jP-fyy" secondAttribute="leading" id="r2V-Tc-0BD"/>
-                            <constraint firstItem="yo8-jP-fyy" firstAttribute="trailing" secondItem="chE-M7-gwr" secondAttribute="trailing" constant="15" id="r4t-Vp-gtY"/>
                             <constraint firstItem="yo8-jP-fyy" firstAttribute="trailing" secondItem="J8T-nC-uAX" secondAttribute="trailing" constant="20" id="umA-OO-eZt"/>
                             <constraint firstItem="Zkn-h4-eQj" firstAttribute="leading" secondItem="8du-Pf-dUx" secondAttribute="leading" id="vII-E6-Av9"/>
-                            <constraint firstItem="chE-M7-gwr" firstAttribute="centerX" secondItem="8du-Pf-dUx" secondAttribute="centerX" id="wJo-Fw-pqn"/>
+                            <constraint firstItem="chE-M7-gwr" firstAttribute="leading" secondItem="qhp-LO-2c5" secondAttribute="leading" id="xUA-Dt-Jes"/>
                             <constraint firstItem="uzQ-gQ-Tw4" firstAttribute="leading" secondItem="o8d-Qa-DU6" secondAttribute="leading" id="zEM-hs-pqB"/>
                         </constraints>
                     </view>
@@ -684,7 +683,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="pfX-ca-KlT" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-323.1884057971015" y="908.70535714285711"/>
+            <point key="canvasLocation" x="-324.4274809160305" y="908.45070422535218"/>
         </scene>
         <!--SettingsVC-->
         <scene sceneID="LEu-2f-n1y">

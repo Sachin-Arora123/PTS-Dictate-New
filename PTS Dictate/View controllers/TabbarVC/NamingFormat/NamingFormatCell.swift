@@ -22,6 +22,7 @@ class NamingFormatCell: UITableViewCell {
         }
     }
     
+    let ACCEPTABLE_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_"
     
     // MARK: - Variable
     weak var delegate : NamingFormatCellDelegate?
@@ -54,8 +55,15 @@ class NamingFormatCell: UITableViewCell {
 extension NamingFormatCell: UITextFieldDelegate{
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let currentText = NSString(string: textField.text!).replacingCharacters(in: range, with: string)
-        self.delegate?.passData(text: currentText, id: self.txtFldDateFormat.tag)
-        return true
+        let cs = NSCharacterSet(charactersIn: ACCEPTABLE_CHARACTERS).inverted
+        let filtered = currentText.components(separatedBy: cs).joined(separator: "")
+        
+        if currentText == filtered{
+            self.delegate?.passData(text: currentText, id: self.txtFldDateFormat.tag)
+            return true
+        }else{
+            return false
+        }
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
@@ -64,10 +72,6 @@ extension NamingFormatCell: UITextFieldDelegate{
         }
         
     }
-//
-//    func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
-//
-//    }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         DispatchQueue.main.async {

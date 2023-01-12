@@ -344,7 +344,14 @@ class ExistingVC: BaseViewController {
         } else {
             let alreadyUploaded = self.checkIfAnyFileAlreadyUploaded()
             if alreadyUploaded {
-                CommonFunctions.showAlert(view: self, title: "PTS Dictate", message: "Are you sure you want to re-upload few dictations?") { success in
+                var alertMessage = ""
+                if self.totalFilesSelected.count == 1{
+                    alertMessage = "This file is already uploaded. Do you still want to re-upload this dictation?"
+                }else{
+                    alertMessage = "Few files are already uploaded. Do you still want to re-upload these dictations?"
+                }
+                
+                CommonFunctions.showAlert(view: self, title: "PTS Dictate", message: alertMessage) { success in
                     if success {
                         self.uploadFiles()
                     } else {
@@ -377,7 +384,7 @@ class ExistingVC: BaseViewController {
                 //if any of the file is not uploaded, we need to show file not uploaded message.
                 if checkIfAnyFileNotAlreadyUploaded(){
                     //Some files are not already uploaded
-                    alertMessage = "Some of the Files are not uploaded, Do you still want to delete these files?"
+                    alertMessage = "Few files are not uploaded, Do you still want to delete these files?"
                 }else{
                     //no file is uploaded from the selected files
                     alertMessage = "File retention period is set as \(CoreData.shared.archiveFileDays) days. Do you still want to delete these files?"
@@ -579,6 +586,7 @@ class ExistingVC: BaseViewController {
         }
     }
     
+    //file which are uploaded and their file retention days are greater than the set retention days for that file will be removed from the list.
     func checkArchiveDate() {
         let currentDateString = Date().getFormattedDateString()
         let audioFiles = AudioFiles.shared.audioFiles
@@ -599,10 +607,6 @@ class ExistingVC: BaseViewController {
     
     private func daysBetween(start: Date, end: Date) -> Int {
         return Calendar.current.dateComponents([.day], from: start, to: end).day!
-    }
-    
-    func getAudioMeteringLevels(audio: String) {
-        
     }
 }
 
