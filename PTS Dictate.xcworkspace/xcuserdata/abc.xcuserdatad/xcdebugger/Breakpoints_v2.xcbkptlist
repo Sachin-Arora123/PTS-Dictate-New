@@ -23,22 +23,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "EF365D6F-4F8C-4565-8FB6-DFAE790A9736"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PTS Dictate/APIHandler/ApiHandler.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "388"
-            endingLineNumber = "388"
-            landmarkName = "uploadMediaFile(url:withParameters:ofType:onSuccess:onFailure:method:fileUrl:headerPresent:fileName:description:emailNotifications:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "C45A5031-D231-4350-9C9D-E0A6BEF76369"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -62,8 +46,8 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1275"
-            endingLineNumber = "1275"
+            startingLineNumber = "1276"
+            endingLineNumber = "1276"
             landmarkName = "backwardBookmarkAction(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -78,8 +62,8 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1240"
-            endingLineNumber = "1240"
+            startingLineNumber = "1241"
+            endingLineNumber = "1241"
             landmarkName = "forwardBookmarkAction(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -94,8 +78,8 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1282"
-            endingLineNumber = "1282"
+            startingLineNumber = "1283"
+            endingLineNumber = "1283"
             landmarkName = "backwardBookmarkAction(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -110,8 +94,8 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "919"
-            endingLineNumber = "919"
+            startingLineNumber = "920"
+            endingLineNumber = "920"
             landmarkName = "onTapClear(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -151,32 +135,48 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "A5DC9194-72DE-4919-9E37-0917FDDD9AD1"
+            uuid = "1758BFE9-C0AF-4C1F-AC91-6C2575A0C082"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "PTS Dictate/View controllers/LoginVC/LoginViewModel.swift"
+            filePath = "PTS Dictate/View controllers/TabbarVC/ExistingVC/ExistingVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "55"
-            endingLineNumber = "55"
-            landmarkName = "LoginApiHit(userName:password:)"
+            startingLineNumber = "689"
+            endingLineNumber = "689"
+            landmarkName = "setCellData(cell:audioName:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "01102C86-5EE5-4355-B42B-3D7AF0FFB4E0"
+            uuid = "4EC6E422-200D-4E11-9DB4-2AD82B9119A1"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "PTS Dictate/View controllers/LoginVC/LoginViewModel.swift"
+            filePath = "PTS Dictate/View controllers/TabbarVC/UploadProgressVC/UploadProgressVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "49"
-            endingLineNumber = "49"
-            landmarkName = "LoginApiHit(userName:password:)"
+            startingLineNumber = "90"
+            endingLineNumber = "90"
+            landmarkName = "uploadFiles(file:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "64AEBEFA-8A44-405C-8A38-90839C59EE07"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PTS Dictate/View controllers/TabbarVC/ExistingVC/ExistingViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "34"
+            endingLineNumber = "34"
+            landmarkName = "uploadAudio(userName:toUser:emailNotify:fileUrl:fileName:description:completion:failure:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

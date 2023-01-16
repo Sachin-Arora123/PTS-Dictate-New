@@ -65,16 +65,20 @@ class AudioFiles {
     }
     
     func saveNewAudioFile(name: String, autoSaved: Bool = false) {
-        print("==== Saving New File ====")
-        UserDefaults.standard.set(Date(), forKey: "FileUploadedDate")
-        UserDefaults.standard.synchronize()
+        saveFileUploadedDate()
         AudioFiles.shared.audioFiles.append(AudioFile(name: name, fileInfo: AudioFileInfo(comment: nil, isUploaded: false, archivedDays: archiveFile == 1 ? archiveFileDays : 0, canEdit: false, uploadedAt: nil, uploadingInProgress: false, autoSaved: autoSaved)))
         updateAudioFilesOnCoreData()
     }
     
     func saveNewAudioFile(name: String, comment: String?) {
+        saveFileUploadedDate()
         AudioFiles.shared.audioFiles.append(AudioFile(name: name, fileInfo: AudioFileInfo(comment: comment, isUploaded: false, archivedDays: archiveFile == 1 ? archiveFileDays : 0, canEdit: false, uploadedAt: nil, uploadingInProgress: false, autoSaved: false)))
         updateAudioFilesOnCoreData()
+    }
+    
+    func saveFileUploadedDate(){
+        UserDefaults.standard.set(Date(), forKey: "FileUploadedDate")
+        UserDefaults.standard.synchronize()
     }
     
     func getAudioComment(name: String) -> String {

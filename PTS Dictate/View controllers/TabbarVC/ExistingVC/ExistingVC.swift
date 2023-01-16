@@ -445,6 +445,11 @@ class ExistingVC: BaseViewController {
     }
     
     func uploadFiles() {
+        if !Reachability.isConnectedToNetwork(){
+            CommonFunctions.toster("Network Error",titleDesc: "Network is no longer available. Please reconnect your network and try again.", true, false)
+            return
+        }
+        
         self.existingViewModel.uploadingQueue = self.totalFilesSelected
         let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
         self.setPushTransitionAnimation(VC)
@@ -638,7 +643,12 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
             cell.btnComment.isUserInteractionEnabled = true
             cell.btnEdit.isUserInteractionEnabled = true
             cell.btnComment.isHidden = false
-            cell.btnComment.setBackgroundImage(UIImage(named: "comments_normal"), for: .normal)
+            
+            if CoreData.shared.commentScreen == 1 && file?.fileInfo?.comment == "" && CoreData.shared.commentScreenMandatory == 0{
+                cell.btnComment.setBackgroundImage(UIImage(named: "no_comments_normal"), for: .normal)
+            }else{
+                cell.btnComment.setBackgroundImage(UIImage(named: "comments_normal"), for: .normal)
+            }
             cell.btnEdit.setBackgroundImage(UIImage(named: "music_edit_normal"), for: .normal)
         } else if !(file?.fileInfo?.isUploaded ?? false) && file?.fileInfo?.comment == nil {
             cell.lblFileStatus.textColor = UIColor.black

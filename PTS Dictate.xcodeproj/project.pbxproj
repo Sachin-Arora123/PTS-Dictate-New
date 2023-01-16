@@ -60,6 +60,7 @@
 		28A4F5CF28B510DE0035137B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 28A4F5CE28B510DE0035137B /* Assets.xcassets */; };
 		28A4F5D228B510DE0035137B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 28A4F5D028B510DE0035137B /* LaunchScreen.storyboard */; };
 		28A4F5DE28B51D750035137B /* Extension+Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5DD28B51D750035137B /* Extension+Navigation.swift */; };
+		28F0125D2974066C006C7617 /* Extension+UILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F0125C2974066C006C7617 /* Extension+UILabel.swift */; };
 		4BFCB13CEA7E06C3217E3512 /* Pods_PTS_Dictate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7801E7DB3243DA4B1EF6CD0C /* Pods_PTS_Dictate.framework */; };
 		616E4A43290AB21E0011ABF2 /* F3BarGauge.m in Sources */ = {isa = PBXBuildFile; fileRef = 616E4A41290AB21E0011ABF2 /* F3BarGauge.m */; };
 		616E4A45290AB9550011ABF2 /* Extension+UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616E4A44290AB9550011ABF2 /* Extension+UIColor.swift */; };
@@ -121,6 +122,7 @@
 		28A4F5D128B510DE0035137B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		28A4F5D328B510DE0035137B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		28A4F5DD28B51D750035137B /* Extension+Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+Navigation.swift"; sourceTree = "<group>"; };
+		28F0125C2974066C006C7617 /* Extension+UILabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+UILabel.swift"; sourceTree = "<group>"; };
 		60EFDBA9037F05EEA8612299 /* Pods-PTS Dictate.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PTS Dictate.debug.xcconfig"; path = "Target Support Files/Pods-PTS Dictate/Pods-PTS Dictate.debug.xcconfig"; sourceTree = "<group>"; };
 		616E4A41290AB21E0011ABF2 /* F3BarGauge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = F3BarGauge.m; sourceTree = "<group>"; };
 		616E4A42290AB21E0011ABF2 /* F3BarGauge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = F3BarGauge.h; sourceTree = "<group>"; };
@@ -159,6 +161,7 @@
 				18CDDB0E28B7D96C006AB795 /* Storyboard.swift */,
 				616E4A44290AB9550011ABF2 /* Extension+UIColor.swift */,
 				23C89FBF291A948900999929 /* Extension+Date.swift */,
+				28F0125C2974066C006C7617 /* Extension+UILabel.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -648,6 +651,7 @@
 				18CDDB0F28B7D96C006AB795 /* Storyboard.swift in Sources */,
 				18DF4BD228BE7B5D002FC063 /* ApiConstant.swift in Sources */,
 				616E4A45290AB9550011ABF2 /* Extension+UIColor.swift in Sources */,
+				28F0125D2974066C006C7617 /* Extension+UILabel.swift in Sources */,
 				18DF4BD728BE7B5D002FC063 /* ApiHandler.swift in Sources */,
 				28A4F5C628B510D90035137B /* AppDelegate.swift in Sources */,
 				182BE0B628BD3B6000327094 /* MicroSensitivityVC.swift in Sources */,

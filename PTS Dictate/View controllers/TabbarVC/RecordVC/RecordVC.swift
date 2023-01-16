@@ -491,6 +491,7 @@ class RecordVC: BaseViewController {
                 }
                 
                 isRecording = true
+                self.lblPlayerStatus.startBlink()
 //                if CoreData.shared.indexing == 1{
 //                    self.enableDisableBookmarkButton()
 //                }
