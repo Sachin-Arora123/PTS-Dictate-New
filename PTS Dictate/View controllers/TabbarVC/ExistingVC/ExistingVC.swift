@@ -634,7 +634,8 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
     func setCellData(cell: ExistingFileCell, audioName: String) {
         let file = getFileInfo(name: audioName)
         if !(file?.fileInfo?.isUploaded ?? false) && file?.fileInfo?.comment != nil {
-            cell.lblFileStatus.textColor = UIColor.black
+            //This is the case when file is not uploaded and it has some comemnt(even it is empty)
+            cell.lblFileStatus.textColor = .black
             if file?.fileInfo?.autoSaved ?? false {
                 cell.lblFileStatus.text = "Auto Saved File"
             }else{
@@ -644,14 +645,15 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
             cell.btnEdit.isUserInteractionEnabled = true
             cell.btnComment.isHidden = false
             
-            if CoreData.shared.commentScreen == 1 && file?.fileInfo?.comment == "" && CoreData.shared.commentScreenMandatory == 0{
+            if file?.fileInfo?.comment == ""{
                 cell.btnComment.setBackgroundImage(UIImage(named: "no_comments_normal"), for: .normal)
             }else{
                 cell.btnComment.setBackgroundImage(UIImage(named: "comments_normal"), for: .normal)
             }
             cell.btnEdit.setBackgroundImage(UIImage(named: "music_edit_normal"), for: .normal)
         } else if !(file?.fileInfo?.isUploaded ?? false) && file?.fileInfo?.comment == nil {
-            cell.lblFileStatus.textColor = UIColor.black
+            //This is the case when file is not uploaded and it has no comemnt
+            cell.lblFileStatus.textColor = .black
             if file?.fileInfo?.autoSaved ?? false {
                 cell.lblFileStatus.text = "Auto Saved File"
             } else{
@@ -663,26 +665,28 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
             cell.btnComment.setBackgroundImage(UIImage(named: "no_comments_normal"), for: .normal)
             cell.btnEdit.setBackgroundImage(UIImage(named: "music_edit_normal"), for: .normal)
         } else if file?.fileInfo?.isUploaded ?? true && file?.fileInfo?.comment != nil{
-            cell.lblFileStatus.textColor = UIColor(red: 62/255, green: 116/255, blue: 36/255, alpha: 1.0)
+            //This is the case when file is uploaded and it has comemnt(even it is empty)
+            cell.lblFileStatus.textColor = (file?.fileInfo?.uploadedStatus ?? false) ? UIColor(red: 62/255, green: 116/255, blue: 36/255, alpha: 1.0) : .red
             if file?.fileInfo?.autoSaved ?? false {
                 cell.lblFileStatus.text = "Auto Saved File"
             } else{
                 cell.lblFileStatus.text = ""
             }
-            cell.lblFileStatus.text = "Uploaded"
+            cell.lblFileStatus.text = (file?.fileInfo?.uploadedStatus ?? false) ? "Uploaded" : "Failed"
             cell.btnComment.isUserInteractionEnabled = true
             cell.btnEdit.isUserInteractionEnabled = false
             cell.btnComment.isHidden = false
             cell.btnComment.setBackgroundImage(UIImage(named: "comments_active"), for: .normal)
             cell.btnEdit.setBackgroundImage(UIImage(named: "music_edit_disable"), for: .normal)
         } else if file?.fileInfo?.isUploaded ?? true && file?.fileInfo?.comment == nil {
-            cell.lblFileStatus.textColor = UIColor(red: 62/255, green: 116/255, blue: 36/255, alpha: 1.0)
+            //This is the case when file is uploaded and it has no comemnt
+            cell.lblFileStatus.textColor = (file?.fileInfo?.uploadedStatus ?? false) ? UIColor(red: 62/255, green: 116/255, blue: 36/255, alpha: 1.0) : .red
             if file?.fileInfo?.autoSaved ?? false {
                 cell.lblFileStatus.text = "Auto Saved File"
             } else{
                 cell.lblFileStatus.text = ""
             }
-            cell.lblFileStatus.text = "Uploaded"
+            cell.lblFileStatus.text = (file?.fileInfo?.uploadedStatus ?? false) ? "Uploaded" : "Failed"
             cell.btnComment.isUserInteractionEnabled = true
             cell.btnEdit.isUserInteractionEnabled = false
             cell.btnComment.isHidden = true

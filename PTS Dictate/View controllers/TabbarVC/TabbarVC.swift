@@ -37,6 +37,11 @@ class TabbarVC: UITabBarController, UITabBarControllerDelegate {
         lineView.layer.masksToBounds = true
         self.tabBar.sendSubviewToBack(lineView)
         //        self.tabBarController?.tabBar.backgroundColor = .white
+        
+        let appearance = UITabBarItem.appearance()
+        let attributes = [NSAttributedString.Key.font:UIFont(name: "HelveticaNeue-Bold", size: 10)]
+        appearance.setTitleTextAttributes(attributes as [NSAttributedString.Key : Any], for: .normal)
+        appearance.setTitleTextAttributes(attributes as [NSAttributedString.Key : Any], for: .selected)
     }
     
     override func viewDidLoad() {

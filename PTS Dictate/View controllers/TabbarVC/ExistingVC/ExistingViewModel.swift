@@ -31,7 +31,6 @@ class  ExistingViewModel{
             completion()
         }, onFailure: { (reload, error) in
             failure(error)
-            CommonFunctions.toster("Upload Error",titleDesc: "Unable to upload. Please try again.", true, false)
             print(error)
         }, method: ApiMethod.POST, fileUrl: fileUrl, headerPresent: false, fileName: fileName, description: description, emailNotifications: emailNotify ? "ON" : "OFF")
     }

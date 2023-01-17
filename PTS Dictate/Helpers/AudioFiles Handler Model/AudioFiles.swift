@@ -11,6 +11,7 @@ enum UpdateAudioFile {
     case name(String)
     case comment(String)
     case isUploaded(Bool)
+    case uploadedStatus(Bool)
     case archivedDays(Int)
     case canEdit(Bool)
     case uploadedAt(String)
@@ -28,6 +29,8 @@ enum UpdateAudioFile {
             instance.audioFiles[audio].fileInfo?.comment = newValue
         case .isUploaded(let newValue):
             instance.audioFiles[audio].fileInfo?.isUploaded = newValue
+        case .uploadedStatus(let newValue):
+            instance.audioFiles[audio].fileInfo?.uploadedStatus = newValue
         case .archivedDays(let newValue):
             instance.audioFiles[audio].fileInfo?.archivedDays = newValue
         case .canEdit(let newValue):
@@ -66,13 +69,13 @@ class AudioFiles {
     
     func saveNewAudioFile(name: String, autoSaved: Bool = false) {
         saveFileUploadedDate()
-        AudioFiles.shared.audioFiles.append(AudioFile(name: name, fileInfo: AudioFileInfo(comment: nil, isUploaded: false, archivedDays: archiveFile == 1 ? archiveFileDays : 0, canEdit: false, uploadedAt: nil, uploadingInProgress: false, autoSaved: autoSaved)))
+        AudioFiles.shared.audioFiles.append(AudioFile(name: name, fileInfo: AudioFileInfo(comment: nil, isUploaded: false, uploadedStatus: false, archivedDays: archiveFile == 1 ? archiveFileDays : 0, canEdit: false, uploadedAt: nil, uploadingInProgress: false, autoSaved: autoSaved)))
         updateAudioFilesOnCoreData()
     }
     
     func saveNewAudioFile(name: String, comment: String?) {
         saveFileUploadedDate()
-        AudioFiles.shared.audioFiles.append(AudioFile(name: name, fileInfo: AudioFileInfo(comment: comment, isUploaded: false, archivedDays: archiveFile == 1 ? archiveFileDays : 0, canEdit: false, uploadedAt: nil, uploadingInProgress: false, autoSaved: false)))
+        AudioFiles.shared.audioFiles.append(AudioFile(name: name, fileInfo: AudioFileInfo(comment: comment, isUploaded: false, uploadedStatus: false, archivedDays: archiveFile == 1 ? archiveFileDays : 0, canEdit: false, uploadedAt: nil, uploadingInProgress: false, autoSaved: false)))
         updateAudioFilesOnCoreData()
     }
     

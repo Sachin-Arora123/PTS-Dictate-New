@@ -46,7 +46,6 @@ class UploadProgressVC: BaseViewController {
         tableView.delegate = self
         tableView.dataSource = self
         self.tabBarController?.navigationItem.leftBarButtonItem = nil
-        
     }
     
     fileprivate func startUploading() {
@@ -81,16 +80,19 @@ class UploadProgressVC: BaseViewController {
         ExistingViewModel.shared.uploadAudio(userName: CoreData.shared.userId, toUser: "pts", emailNotify: emailNotify, fileUrl: url!, fileName: file, description: AudioFiles.shared.getAudioComment(name: file)) {
             print("file uploaded")
             UpdateAudioFile.isUploaded(true).update(audioName: file)
+            UpdateAudioFile.uploadedStatus(true).update(audioName: file)
             UpdateAudioFile.uploadingInProgress(false).update(audioName: file)
             let date = Date().getFormattedDateString()
             UpdateAudioFile.uploadedAt(date).update(audioName: file)
             self.tableView.reloadData()
             if self.currentUploadingFile < self.files.count - 1 { self.currentUploadingFile += 1 }
         } failure: { error in
-            print(error)
-            UpdateAudioFile.isUploaded(false).update(audioName: file)
+            print("error === \(error.description)")
+            CommonFunctions.toster("Upload Error",titleDesc: "Error in upload. Please try again.", true, false)
+            UpdateAudioFile.isUploaded(true).update(audioName: file)
+            UpdateAudioFile.uploadedStatus(false).update(audioName: file)
+            UpdateAudioFile.uploadingInProgress(false).update(audioName: file)
             if self.currentUploadingFile < self.files.count - 1 { self.currentUploadingFile += 1 }
-            CommonFunctions.alertMessage(view: self, title: "PTS Dictate", msg: "Can't upload audio files at the moment, Please try again after some time.", btnTitle: "OK")
             self.tableView.reloadData()
         }
     }
@@ -107,6 +109,14 @@ class UploadProgressVC: BaseViewController {
         let audioFiles = AudioFiles.shared.audioFiles
         for audioFile in audioFiles where audioFile.name == name {
             return audioFile.fileInfo?.uploadingInProgress ?? false
+        }
+        return false
+    }
+    
+    func checkFileUploadedStatus(name: String) -> Bool {
+        let audioFiles = AudioFiles.shared.audioFiles
+        for audioFile in audioFiles where audioFile.name == name {
+            return audioFile.fileInfo?.uploadedStatus ?? false
         }
         return false
     }
@@ -134,7 +144,8 @@ extension UploadProgressVC: UITableViewDelegate,UITableViewDataSource {
             let name = files[indexPath.row]
             let isUploaded = checkFileUploadedOrNot(name: name)
             let inProgress = checkUploadingInProgress(name: name)
-            cell.setData(name: name, isUploaded: isUploaded, inProgress: inProgress)
+            let status     = checkFileUploadedStatus(name: name)
+            cell.setData(name: name, isUploaded: isUploaded, inProgress: inProgress, uploadedStatus: status)
             return cell
         }
         return UITableViewCell()

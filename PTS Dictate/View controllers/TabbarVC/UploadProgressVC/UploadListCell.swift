@@ -31,14 +31,25 @@ class UploadListCell: UITableViewCell {
         // Configure the view for the selected state
     }
 
-    func setData(name: String, isUploaded: Bool, inProgress: Bool) {
+    func setData(name: String, isUploaded: Bool, inProgress: Bool, uploadedStatus: Bool) {
         lblFileName.text = name
         if inProgress {
+            //upload in progress
             detailStackView.isHidden = true
             viewUploadProgress.isHidden = false
             viewUploadProgress.backgroundColor = UIColor.appThemeColor
             lblUploadProgress.text = "Uploading Progress: 99%"
-        } else if isUploaded {
+        }else{
+            //upload not in progress
+            lblUploadStatus.textColor = uploadedStatus ? UIColor(red: 62/255, green: 116/255, blue: 38/255, alpha: 1.0) : .red
+            if uploadedStatus{
+                //successfully uploaded
+                lblUploadStatus.text = "Uploaded"
+            }else{
+                //failed to upload
+                lblUploadStatus.text = "Failed"
+            }
+            
             detailStackView.isHidden = false
             viewUploadProgress.isHidden = true
             let time = getTimeDuration(filePath: name)
@@ -46,12 +57,6 @@ class UploadListCell: UITableViewCell {
             lblTiming.text = time
             lblDataLimit.text = size
         }
-//        else {
-//            detailStackView.isHidden = true
-//            viewUploadProgress.isHidden = false
-//            viewUploadProgress.backgroundColor = .systemGray
-//            lblUploadProgress.text = "Uploading Progress: 0%"
-//        }
     }
     
     func getTimeDuration(filePath: String) -> String{

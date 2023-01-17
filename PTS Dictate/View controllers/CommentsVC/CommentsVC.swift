@@ -72,6 +72,7 @@ class CommentsVC: BaseViewController {
 //        } else {
 //            btnDiscard.isUserInteractionEnabled = true
 //        }
+        txtViewComment.becomeFirstResponder()
         self.navigationController?.navigationItem.hidesBackButton = true
     }
     
