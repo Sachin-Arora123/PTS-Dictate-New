@@ -14,13 +14,27 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         
+        //get data from core data
         CoreData.shared.getdata()
         
         if CoreData.shared.email != ""{
-            let vc = TabbarVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
-            let navigationController = UINavigationController(rootViewController: vc)
-            self.window?.rootViewController = navigationController
-//            navigationController.setNavigationBarHidden(true, animated: false)
+            //user is already logged in
+            //match the OS
+            let storedDeviceOS   = UserDefaults.standard.value(forKey: "currentDeviceOS") as? String
+            let currentRunningOS = UIDevice.current.systemVersion
+            if currentRunningOS != storedDeviceOS{
+                //logout user and show alert
+                CoreData.shared.deleteProfile()
+                if let controller = (self.window?.rootViewController as? UINavigationController)?.topViewController{
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
+                        CommonFunctions.alertMessage(view: controller, title: "PTS Dictate", msg: "You have been logged out due to the os upgrade. Please log in again", btnTitle: "Ok", completion: nil)
+                    })
+                }
+            }else{
+                let vc = TabbarVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
+                let navigationController = UINavigationController(rootViewController: vc)
+                self.window?.rootViewController = navigationController
+            }
         }
         
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.

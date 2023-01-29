@@ -2,7 +2,7 @@
 //  HpRecorder.swift
 //  PTS Dictate
 //
-//  Created by Hero's on 02/11/22.
+//  Created by Sachin on 02/11/22.
 //
 import Foundation
 import AVFoundation
@@ -110,7 +110,7 @@ public class HPRecorder: NSObject {
         self.levelTimer.invalidate()
     }
 
-    // Pause recorinding
+    // Pause recording
     public func pauseRecording() {
         if self.audioRecorder?.isRecording == true {
             self.endRecording()
@@ -312,6 +312,10 @@ extension HPRecorder: AVAudioRecorderDelegate {
         if let error = error {
             self.recorderOccurError?(recorder, error)
         }
+    }
+    
+    public func audioRecorderBeginInterruption(_ recorder: AVAudioRecorder) {
+        NotificationCenter.default.post(name: Notification.Name("handleInterupption"), object: nil)
     }
 }
 

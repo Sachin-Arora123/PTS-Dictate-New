@@ -43,7 +43,7 @@ class CommentsVC: BaseViewController {
     }
     
     @IBAction func discardTapped(_ sender:UIButton) {
-        saveComment()
+        popToExitingVC()
     }
     
     // MARK: UISetUp
@@ -77,8 +77,8 @@ class CommentsVC: BaseViewController {
     }
     
     fileprivate func saveComment() {
-        if txtViewComment.text.isEmpty && isCommentsMandotary{
-            CommonFunctions.alertMessage(view: self, title: "PTS Dictate", msg: "Mandatory Comment Entry required", btnTitle: "OK")
+        if (txtViewComment.text.trimmingCharacters(in: .whitespacesAndNewlines) == "") && isCommentsMandotary{
+            CommonFunctions.alertMessage(view: self, title: "PTS Dictate", msg: "Mandatory Comment Entry required", btnTitle: "OK", completion: nil)
             return
         }
         
@@ -109,6 +109,6 @@ extension CommentsVC : UITextViewDelegate{
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         let cs = NSCharacterSet(charactersIn: ACCEPTABLE_CHARACTERS).inverted
         let filtered = text.components(separatedBy: cs).joined(separator: "")
-        return (text == filtered)
+        return (text.replacingOccurrences(of: " ", with: "") == filtered)
     }
 }

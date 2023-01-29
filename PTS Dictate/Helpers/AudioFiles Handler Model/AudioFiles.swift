@@ -69,14 +69,48 @@ class AudioFiles {
     
     func saveNewAudioFile(name: String, autoSaved: Bool = false) {
         saveFileUploadedDate()
-        AudioFiles.shared.audioFiles.append(AudioFile(name: name, fileInfo: AudioFileInfo(comment: nil, isUploaded: false, uploadedStatus: false, archivedDays: archiveFile == 1 ? archiveFileDays : 0, canEdit: false, uploadedAt: nil, uploadingInProgress: false, autoSaved: autoSaved)))
-        updateAudioFilesOnCoreData()
+        if self.checkIfAlreadyExists(name: name){
+            //remove first and then save
+            self.deleteAudio(name: name)
+            self.proceedForSave(name: name, comment: nil, autoSaved: autoSaved)
+        }else{
+            self.proceedForSave(name: name, comment: nil, autoSaved: autoSaved)
+        }
     }
     
     func saveNewAudioFile(name: String, comment: String?) {
         saveFileUploadedDate()
-        AudioFiles.shared.audioFiles.append(AudioFile(name: name, fileInfo: AudioFileInfo(comment: comment, isUploaded: false, uploadedStatus: false, archivedDays: archiveFile == 1 ? archiveFileDays : 0, canEdit: false, uploadedAt: nil, uploadingInProgress: false, autoSaved: false)))
+        if self.checkIfAlreadyExists(name: name){
+            //remove first and then save
+            self.deleteAudio(name: name)
+            self.proceedForSave(name: name, comment: comment)
+        }else{
+            self.proceedForSave(name: name, comment: comment)
+        }
+    }
+    
+    func proceedForSave(name: String, comment: String?, autoSaved: Bool = false){
+        //check if changedName existed for that file(the case when a file has changedName and it is saving again after edit)
+        var changedName = ""
+        if checkIfAlreadyExists(name: name){
+            changedName = checkIfChangedName(name: name)
+        }
+        AudioFiles.shared.audioFiles.append(AudioFile(name: name, changedName: changedName, fileInfo: AudioFileInfo(comment: comment, isUploaded: false, uploadedStatus: false, archivedDays: archiveFile == 1 ? archiveFileDays : 0, canEdit: false, uploadedAt: nil, uploadingInProgress: false, autoSaved: autoSaved, uploadedBy: CoreData.shared.userId)))
         updateAudioFilesOnCoreData()
+    }
+    
+    func checkIfAlreadyExists(name:String) -> Bool{
+        for (_, audio) in audioFiles.enumerated() where audio.name == name {
+            return true
+        }
+        return false
+    }
+    
+    func checkIfChangedName(name:String) -> String{
+        for (_, audio) in audioFiles.enumerated() where audio.changedName != nil {
+            return audio.changedName ?? ""
+        }
+        return ""
     }
     
     func saveFileUploadedDate(){

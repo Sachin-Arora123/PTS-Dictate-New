@@ -77,7 +77,7 @@ class UploadProgressVC: BaseViewController {
         let url = URL(string: completePath)
         
         let emailNotify = (CoreData.shared.disableEmailNotify == 0)
-        ExistingViewModel.shared.uploadAudio(userName: CoreData.shared.userId, toUser: "pts", emailNotify: emailNotify, fileUrl: url!, fileName: file, description: AudioFiles.shared.getAudioComment(name: file)) {
+        ExistingViewModel.shared.uploadAudio(userName: CoreData.shared.userName, toUser: "pts", emailNotify: emailNotify, fileUrl: url!, fileName: file, description: AudioFiles.shared.getAudioComment(name: file)) {
             print("file uploaded")
             UpdateAudioFile.isUploaded(true).update(audioName: file)
             UpdateAudioFile.uploadedStatus(true).update(audioName: file)

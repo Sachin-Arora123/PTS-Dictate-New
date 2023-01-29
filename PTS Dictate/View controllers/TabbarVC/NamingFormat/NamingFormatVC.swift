@@ -104,7 +104,7 @@ class NamingFormatVC: BaseViewController {
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now()+0.1, execute: {
-            CoreData.shared.fileName = self.fileName
+            CoreData.shared.fileName   = self.fileName
             CoreData.shared.dateFormat = self.dateFormat
             CoreData.shared.dataSave()
             CommonFunctions.toster("Updated Successfully", titleDesc: "", false, true)

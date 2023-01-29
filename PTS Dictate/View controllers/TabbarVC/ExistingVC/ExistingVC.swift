@@ -38,7 +38,7 @@ class ExistingVC: BaseViewController {
     
     var audioRecorder:AVAudioRecorder?
     var audioPlayer = AVAudioPlayer()
-    var totalFiles = [String]()
+    var totalFiles = [AudioFile]()
     var totalAsset = [AVAsset]()
     var totalFilesSelected : [String] = []
     var playingCellIndex = -1
@@ -135,6 +135,20 @@ class ExistingVC: BaseViewController {
         self.tabBarController?.delegate = self
         self.audioTimer = 0
         addObservers()
+        
+        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(sender:)))
+        tableView.addGestureRecognizer(longPress)
+    }
+    
+    @objc private func handleLongPress(sender: UILongPressGestureRecognizer) {
+        if sender.state == .began {
+            let touchPoint = sender.location(in: tableView)
+            if let indexPath = tableView.indexPathForRow(at: touchPoint) {
+                //move to file rename screen to rename the filename.
+                let audioFile = totalFiles[indexPath.row]
+                pushToFileRenameScreen(selected: audioFile, index: indexPath.row)
+            }
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -155,7 +169,7 @@ class ExistingVC: BaseViewController {
         view.addSubview(topWelcomeView)
 
         //label
-        let username = CoreData.shared.userName
+        let username = CoreData.shared.welcomeName
         let lblWelcome = UILabel(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: topWelcomeView.frame.size.height - 5))
         lblWelcome.textColor = .black
         lblWelcome.textAlignment = .center
@@ -209,8 +223,8 @@ class ExistingVC: BaseViewController {
         totalFiles = self.getSortedAudioList()
         
         totalAsset.removeAll()
-        totalFiles.forEach { fileString in
-            let asset = AVAsset(url: Constants.documentDir.appendingPathComponent(fileString))
+        totalFiles.forEach { audio in
+            let asset = AVAsset(url: Constants.documentDir.appendingPathComponent(audio.name ?? ""))
             totalAsset.append(asset)
         }
         
@@ -255,8 +269,8 @@ class ExistingVC: BaseViewController {
         //new
         var playingMediaIndex = 0
         if index == nil{
-            for (index, value) in self.totalFiles.enumerated() {
-                if value == self.lblFileName.text!  {
+            for (index, audio) in self.totalFiles.enumerated() {
+                if audio.name == self.lblFileName.text!  {
                     playingMediaIndex = index
                 }
             }
@@ -265,7 +279,7 @@ class ExistingVC: BaseViewController {
         }
         
         let index                 = playingMediaIndex
-        self.lblFileName.text     = self.totalFiles[index]
+        self.lblFileName.text     = self.totalFiles[index].name
         self.lblPlayerStatus.text = "Now Playing"
         let completePathURL       = Constants.documentDir.appendingPathComponent(self.lblFileName.text ?? "")
                     
@@ -299,7 +313,7 @@ class ExistingVC: BaseViewController {
             self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
             tag = index
             self.audioMeteringLevelTimer = Timer.scheduledTimer(timeInterval: 0.05, target: self, selector: #selector(timerDidUpdateMeter), userInfo: nil, repeats: true)
-            self.lblTotalTime.text = self.getTimeDuration(filePath: self.totalFiles[index])
+            self.lblTotalTime.text = self.getTimeDuration(filePath: self.totalFiles[index].name ?? "")
         }
         self.setTrimButtonInteraction(isInteractive: true)
         self.tableView.reloadData()
@@ -340,7 +354,7 @@ class ExistingVC: BaseViewController {
     // MARK: - @IBActions.
     @IBAction func onTapUpload(_ sender: UIButton) {
         if self.totalFilesSelected.count == 0{
-            CommonFunctions.alertMessage(view: self, title: "PTS Dictate", msg: "Please select atleast one file.", btnTitle: "OK")
+            CommonFunctions.alertMessage(view: self, title: "PTS Dictate", msg: "Please select atleast one file.", btnTitle: "OK", completion: nil)
         } else {
             let alreadyUploaded = self.checkIfAnyFileAlreadyUploaded()
             if alreadyUploaded {
@@ -366,7 +380,7 @@ class ExistingVC: BaseViewController {
     
     @IBAction func onTapDelete(_ sender: UIButton) {
         if self.totalFilesSelected.count == 0{
-            CommonFunctions.alertMessage(view: self, title: "PTS Dictate", msg: "Please select atleast one file.", btnTitle: "OK")
+            CommonFunctions.alertMessage(view: self, title: "PTS Dictate", msg: "Please select atleast one file.", btnTitle: "OK", completion: nil)
         }else{
             var alertMessage = ""
             if self.totalFilesSelected.count == 1{
@@ -457,39 +471,49 @@ class ExistingVC: BaseViewController {
         self.tabBarController?.selectedIndex = 1
     }
     
-    func getSortedAudioList() -> [String] {
-        var sortedDateArray = [String]()
-        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        guard let directoryURL = URL(string: paths.path) else {return [""]}
-        do {
-            let contents = try
-            FileManager.default.contentsOfDirectory(at: directoryURL,
-                                                    includingPropertiesForKeys:[.contentModificationDateKey],
-                                                    options: [.skipsHiddenFiles, .skipsSubdirectoryDescendants])
-            .filter { $0.lastPathComponent.hasSuffix(".m4a") }
-            .sorted(by: {
-                let date0 = try $0.promisedItemResourceValues(forKeys:[.contentModificationDateKey]).contentModificationDate!
-                let date1 = try $1.promisedItemResourceValues(forKeys:[.contentModificationDateKey]).contentModificationDate!
-                return date0.compare(date1) == .orderedDescending
-            })
-            
-            // Print results
-            for item in contents {
-                guard let t = try? item.promisedItemResourceValues(forKeys:[.contentModificationDateKey]).contentModificationDate
-                else {return [""]}
-                print ("Hello,\(t)   \(item.lastPathComponent)")
-                
-                //get only the logged in user's dictations
-                if item.lastPathComponent.contains(CoreData.shared.profileName){
-                    sortedDateArray.append(item.lastPathComponent)
-                }
-            }
-        } catch {
-            print ("Finding date sorted error-->>",error.localizedDescription)
+    func getSortedAudioList() -> [AudioFile] {
+        var audioArray = [AudioFile]()
+//        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+//        guard let directoryURL = URL(string: paths.path) else {return [""]}
+//        do {
+//            let filePathArray = try
+//            FileManager.default.contentsOfDirectory(at: directoryURL,
+//                                                    includingPropertiesForKeys:[.contentModificationDateKey],
+//                                                    options: [.skipsHiddenFiles, .skipsSubdirectoryDescendants])
+//            .filter { $0.lastPathComponent.hasSuffix(".m4a") }
+//            .sorted(by: {
+//                let date0 = try $0.promisedItemResourceValues(forKeys:[.contentModificationDateKey]).contentModificationDate!
+//                let date1 = try $1.promisedItemResourceValues(forKeys:[.contentModificationDateKey]).contentModificationDate!
+//                return date0.compare(date1) == .orderedDescending
+//            })
+//
+//            // Print results
+//            for item in filePathArray {
+//                guard let t = try? item.promisedItemResourceValues(forKeys:[.contentModificationDateKey]).contentModificationDate
+//                else {return [""]}
+//                print ("Hello,\(t)   \(item.lastPathComponent)")
+//
+//                //get only the logged in user's dictations
+//                let file = self.getFileInfo(name: item.lastPathComponent)
+//                if file?.fileInfo?.uploadedBy == CoreData.shared.userId {
+//                    sortedDateArray.append(item.lastPathComponent)
+//                }
+//            }
+//        } catch {
+//            print ("Finding date sorted error-->>",error.localizedDescription)
+//        }
+//        print("List array-->>",sortedDateArray)
+//        return sortedDateArray
+        
+        
+        let files = AudioFiles.shared.audioFiles
+        for file in files where (file.fileInfo?.uploadedBy == CoreData.shared.userId){
+            audioArray.append(file)
         }
-        print("List array-->>",sortedDateArray)
-        return sortedDateArray
+        
+        return audioArray
     }
+    
     func removeAudio(itemName:String, fileExtension: String) {
         let fileManager = FileManager.default
         let nsDocumentDirectory = FileManager.SearchPathDirectory.documentDirectory
@@ -550,6 +574,39 @@ class ExistingVC: BaseViewController {
         VC.isCommentsMandotary = CoreData.shared.commentScreenMandatory == 1 ? true : false
         self.navigationController?.pushViewController(VC, animated: false)
     }
+    
+    fileprivate func pushToFileRenameScreen(selected audio: AudioFile, index: Int) {
+        let VC = RenameFileVC.instantiateFromAppStoryboard(appStoryboard: .Main)
+        self.setPushTransitionAnimation(VC)
+//        let audioFile = getFileInfo(name: audio)
+        let filename  = audio.changedName != "" ? audio.changedName : audio.name
+        VC.fileName   = filename ?? ""
+        VC.updatedFileNameCallback = { updatedChangedName in
+            ///update the name in core data
+            audio.changedName = updatedChangedName + ".m4a"
+            CoreData.shared.dataSave()
+        }
+        self.navigationController?.pushViewController(VC, animated: false)
+    }
+    
+//    func updateFilePathInDocDirectory(sourcefileName:String, destfileName:String){
+////        let fileURLs = try FileManager.default.contentsOfDirectory(at: Constants.documentDir, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
+////        print(fileURLs)
+////        let sourceFilePath = Constants.documentDir.appendingPathComponent(sourcefileName)
+////        let destFilePath = Constants.documentDir.appendingPathComponent(destfileName + ".m4a")
+////        do{
+////            _ = try FileManager.default.replaceItemAt(destFilePath, withItemAt: sourceFilePath)
+////
+////            //update the name in core data as well.
+////
+////        }catch{
+////            print(error)
+////        }
+//
+//        let file = self.getFileInfo(name: sourcefileName)
+//        file?.name = destfileName + ".m4a"
+//        CoreData.shared.dataSave()
+//    }
     
     // notaFIXME: need to fix those functions to controll media
     private func settingUpPlayer() {
@@ -619,7 +676,7 @@ class ExistingVC: BaseViewController {
 extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if self.totalFiles.count > 0{
-            self.lblFileName.text = self.totalFiles[0]
+            self.lblFileName.text = self.totalFiles[0].name
             self.tableView.isHidden = false
             self.viewBottomPlayer.isHidden = false
             self.viewNoRecordedFile.isHidden = true
@@ -631,13 +688,15 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
             return 0
         }
     }
-    func setCellData(cell: ExistingFileCell, audioName: String) {
-        let file = getFileInfo(name: audioName)
+    func setCellData(cell: ExistingFileCell, audio: AudioFile?) {
+        let file = audio
         if !(file?.fileInfo?.isUploaded ?? false) && file?.fileInfo?.comment != nil {
             //This is the case when file is not uploaded and it has some comemnt(even it is empty)
             cell.lblFileStatus.textColor = .black
             if file?.fileInfo?.autoSaved ?? false {
                 cell.lblFileStatus.text = "Auto Saved File"
+                cell.lblFileStatus.stopBlink()
+                cell.lblFileStatus.startBlink()
             }else{
                 cell.lblFileStatus.text = ""
             }
@@ -656,6 +715,8 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
             cell.lblFileStatus.textColor = .black
             if file?.fileInfo?.autoSaved ?? false {
                 cell.lblFileStatus.text = "Auto Saved File"
+                cell.lblFileStatus.stopBlink()
+                cell.lblFileStatus.startBlink()
             } else{
                 cell.lblFileStatus.text = ""
             }
@@ -667,11 +728,6 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
         } else if file?.fileInfo?.isUploaded ?? true && file?.fileInfo?.comment != nil{
             //This is the case when file is uploaded and it has comemnt(even it is empty)
             cell.lblFileStatus.textColor = (file?.fileInfo?.uploadedStatus ?? false) ? UIColor(red: 62/255, green: 116/255, blue: 36/255, alpha: 1.0) : .red
-            if file?.fileInfo?.autoSaved ?? false {
-                cell.lblFileStatus.text = "Auto Saved File"
-            } else{
-                cell.lblFileStatus.text = ""
-            }
             cell.lblFileStatus.text = (file?.fileInfo?.uploadedStatus ?? false) ? "Uploaded" : "Failed"
             cell.btnComment.isUserInteractionEnabled = true
             cell.btnEdit.isUserInteractionEnabled = false
@@ -681,11 +737,6 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
         } else if file?.fileInfo?.isUploaded ?? true && file?.fileInfo?.comment == nil {
             //This is the case when file is uploaded and it has no comemnt
             cell.lblFileStatus.textColor = (file?.fileInfo?.uploadedStatus ?? false) ? UIColor(red: 62/255, green: 116/255, blue: 36/255, alpha: 1.0) : .red
-            if file?.fileInfo?.autoSaved ?? false {
-                cell.lblFileStatus.text = "Auto Saved File"
-            } else{
-                cell.lblFileStatus.text = ""
-            }
             cell.lblFileStatus.text = (file?.fileInfo?.uploadedStatus ?? false) ? "Uploaded" : "Failed"
             cell.btnComment.isUserInteractionEnabled = true
             cell.btnEdit.isUserInteractionEnabled = false
@@ -705,49 +756,52 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ExistingFileCell", for: indexPath) as! ExistingFileCell
-        if self.totalFilesSelected.contains(self.totalFiles[indexPath.row]){
+        if self.totalFilesSelected.contains(self.totalFiles[indexPath.row].name ?? ""){
             cell.btnSelection.setImage(UIImage(named: "checked_checkbox"), for: .normal)
         }else{
             cell.btnSelection.setImage(UIImage(named: "unchecked_checkbox"), for: .normal)
         }
         cell.isUserInteractionEnabled = true
         cell.btnEdit.isHidden = false
-        cell.lblFileSize.text = fileSize(itemName:  self.totalFiles[indexPath.row])
-        cell.btnSelection.tag = indexPath.row
+        cell.lblFileSize.text = fileSize(itemName:  self.totalFiles[indexPath.row].name ?? "")
+        
         cell.btnSelection.removeTarget(self, action: nil, for: .touchUpInside)
         cell.btnSelection.addTarget(self, action: #selector(btnActCheckBox(_:)), for: .touchUpInside)
-        cell.lblFileName.text = self.totalFiles[indexPath.row]
-        cell.btnComment.tag = indexPath.row
-        cell.btnEdit.tag = indexPath.row
-        cell.btnPlay.tag = indexPath.row
+        cell.lblFileName.text = self.totalFiles[indexPath.row].changedName != "" ? self.totalFiles[indexPath.row].changedName : self.totalFiles[indexPath.row].name
+        
+        cell.btnSelection.tag = indexPath.row
+        cell.btnComment.tag   = indexPath.row
+        cell.btnEdit.tag      = indexPath.row
+        cell.btnPlay.tag      = indexPath.row
+        
         cell.btnPlay.addTarget(self, action: #selector(play), for: .touchUpInside)
         let playBtnImage = (indexPath.row == playingCellIndex && isPlaying) ? UIImage(named: "existing_pause_btn") : UIImage(named: "existing_play_btn")
         cell.btnPlay.setBackgroundImage(playBtnImage, for: .normal)
         cell.btnComment.addTarget(self, action: #selector(openCommentVC), for: .touchUpInside)
         cell.btnEdit.addTarget(self, action: #selector(openRenameFileVc), for: .touchUpInside)
-        setCellData(cell: cell, audioName: totalFiles[indexPath.row])
+        setCellData(cell: cell, audio: totalFiles[indexPath.row])
         DispatchQueue.main.async {
-            let time = self.getTimeDuration(filePath: self.totalFiles[indexPath.row])
+            let time = self.getTimeDuration(filePath: self.totalFiles[indexPath.row].name ?? "")
             cell.lblFileTime.text = time
         }
         return cell
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        DispatchQueue.main.async {
-            let fileName = self.totalFiles[indexPath.row]
-            self.lblFileName.text = fileName
-//            if self.isPlaying {
-//                self.audioPlayer.stop()
-//                self.resetSoundWaves()
-//                self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-//            }
-            self.playingCellIndex = -1
-            self.setUpWave(index: indexPath.row)
-            self.lblPlayerStatus.text  = ""
-            self.tableView.reloadData()
-        }
-    }
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//        DispatchQueue.main.async {
+//            let fileName = self.totalFiles[indexPath.row]
+//            self.lblFileName.text = fileName
+////            if self.isPlaying {
+////                self.audioPlayer.stop()
+////                self.resetSoundWaves()
+////                self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+////            }
+//            self.playingCellIndex = -1
+//            self.setUpWave(index: indexPath.row)
+//            self.lblPlayerStatus.text  = ""
+//            self.tableView.reloadData()
+//        }
+//    }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
@@ -811,12 +865,12 @@ extension ExistingVC{
         return String(format: "%.1f GB", floatSize)
     }
     @objc func openCommentVC(_ sender: UIButton){
-        let audioFile = totalFiles[sender.tag]
+        let audioFile = totalFiles[sender.tag].name ?? ""
         pushToComments(selected: audioFile, index: sender.tag)
     }
     
     @objc func openRenameFileVc(_ sender: UIButton){
-        self.audioForEditing = self.totalFiles[sender.tag]
+        self.audioForEditing = self.totalFiles[sender.tag].name ?? ""
         let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
         self.setPushTransitionAnimation(VC)
         self.navigationController?.popViewController(animated: false)
@@ -824,12 +878,12 @@ extension ExistingVC{
     }
     
     @objc func btnActCheckBox(_ sender : UIButton){
-        if self.totalFilesSelected.contains(self.totalFiles[sender.tag]){
-            if let ind = self.totalFilesSelected.firstIndex(of: self.totalFiles[sender.tag]){
+        if self.totalFilesSelected.contains(self.totalFiles[sender.tag].name ?? ""){
+            if let ind = self.totalFilesSelected.firstIndex(of: self.totalFiles[sender.tag].name ?? ""){
                 self.totalFilesSelected.remove(at: ind)
             }
         }else{
-            self.totalFilesSelected.append(self.totalFiles[sender.tag])
+            self.totalFilesSelected.append(self.totalFiles[sender.tag].name ?? "")
         }
         self.tableView.reloadData()
     }
@@ -837,7 +891,7 @@ extension ExistingVC{
     @objc func onTapRightImage() {
         if totalFiles.count > 0 {
             if self.tabBarController?.navigationItem.rightBarButtonItem?.image == getRighButtonImage(imageName: "unchecked_checkbox") {
-                self.totalFilesSelected = self.totalFiles
+                self.totalFilesSelected = self.totalFiles.map({$0.name ?? ""})
                 setRighButtonImage(imageName: "checked_checkbox", selector: #selector(onTapRightImage))
             }else if self.tabBarController?.navigationItem.rightBarButtonItem?.image == getRighButtonImage(imageName: "unchecked_checkbox"){
                 setRighButtonImage(imageName: "unchecked_checkbox", selector: #selector(onTapRightImage))

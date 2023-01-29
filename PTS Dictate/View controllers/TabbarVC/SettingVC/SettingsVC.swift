@@ -344,7 +344,6 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
         case 6:
             if sender.isOn {
                 CoreData.shared.indexing = 1
-                CommonFunctions.alertMessage(view: self, title: "Alert", msg: "This functionality is in progress", btnTitle: "Ok")
             }else{
                 CoreData.shared.indexing = 0
             }

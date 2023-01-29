@@ -45,7 +45,7 @@ class ContactUsVC: BaseViewController {
                 }
             }else{
                 //show alert
-                CommonFunctions.alertMessage(view: self, title: "PTS Dictate", msg: "Device does not support phone calls.", btnTitle: "OK")
+                CommonFunctions.alertMessage(view: self, title: "PTS Dictate", msg: "Device does not support phone calls.", btnTitle: "OK", completion: nil)
             }
         }
     }
@@ -87,7 +87,7 @@ class ContactUsVC: BaseViewController {
             composeViewController.viewControllers.last?.navigationItem.title = "Compose mail"
         }else{
             //show alert
-            CommonFunctions.alertMessage(view: self, title: "No mail account", msg: "Please set up a mail account in order to send a mail.", btnTitle: "OK")
+            CommonFunctions.alertMessage(view: self, title: "No mail account", msg: "Please set up a mail account in order to send a mail.", btnTitle: "OK", completion: nil)
         }
     }
 }
@@ -130,7 +130,7 @@ extension ContactUsVC: MFMailComposeViewControllerDelegate{
         case MFMailComposeResult.saved:
             dismiss(animated: true)
         case MFMailComposeResult.sent:
-            CommonFunctions.alertMessage(view: self, title: "PTS Dictate", msg: "Mail sent successfully.", btnTitle: "OK")
+            CommonFunctions.alertMessage(view: self, title: "PTS Dictate", msg: "Mail sent successfully.", btnTitle: "OK", completion: nil)
         case MFMailComposeResult.failed:
             dismiss(animated: true)
             print("Mail sent failure: \(String(describing: error?.localizedDescription))")

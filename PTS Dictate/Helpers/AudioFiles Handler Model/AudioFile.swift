@@ -26,27 +26,31 @@ public class AudioFile: NSObject, NSSecureCoding {
     
     
     public var name: String?
+    public var changedName: String?
     public var fileInfo: AudioFileInfo?
     
     enum CodingKeys:String {
-        case name, fileInfo
+        case name, changedName, fileInfo
     }
     
-    init(name: String?, fileInfo: AudioFileInfo?) {
+    init(name: String?, changedName: String?, fileInfo: AudioFileInfo?) {
         self.name = name
+        self.changedName = changedName
         self.fileInfo = fileInfo
     }
     
     public func encode(with aCoder: NSCoder) {
         aCoder.encode(name, forKey: CodingKeys.name.rawValue)
+        aCoder.encode(changedName, forKey: CodingKeys.changedName.rawValue)
         aCoder.encode(fileInfo, forKey: CodingKeys.fileInfo.rawValue)
     }
     
     public required convenience init?(coder aDecoder: NSCoder) {
         let name = aDecoder.decodeObject(forKey: CodingKeys.name.rawValue) as? String
+        let changedName = aDecoder.decodeObject(forKey: CodingKeys.changedName.rawValue) as? String
         let fileInfo = aDecoder.decodeObject(forKey: CodingKeys.fileInfo.rawValue) as? AudioFileInfo
         
-        self.init(name: name, fileInfo: fileInfo)
+        self.init(name: name, changedName: changedName, fileInfo: fileInfo)
     }
 }
 
@@ -60,12 +64,13 @@ public class AudioFileInfo: NSObject, NSCoding {
     public var uploadedAt: String?
     public var uploadingInProgress: Bool?
     public var autoSaved: Bool?
+    public var uploadedBy: String?
     
     enum CodingKeys:String {
-        case comment, isUploaded, uploadedStatus, archivedDays, canEdit, uploadedAt, uploadingInProgress, autoSaved, meteringLevels
+        case comment, isUploaded, uploadedStatus, archivedDays, canEdit, uploadedAt, uploadingInProgress, autoSaved, uploadedBy, meteringLevels
     }
     
-    init(comment: String?, isUploaded: Bool?, uploadedStatus: Bool?, archivedDays: Int?, canEdit: Bool?, uploadedAt: String?, uploadingInProgress: Bool?, autoSaved: Bool?) {
+    init(comment: String?, isUploaded: Bool?, uploadedStatus: Bool?, archivedDays: Int?, canEdit: Bool?, uploadedAt: String?, uploadingInProgress: Bool?, autoSaved: Bool?, uploadedBy:String?) {
         self.comment = comment
         self.isUploaded = isUploaded
         self.uploadedStatus = uploadedStatus
@@ -74,6 +79,7 @@ public class AudioFileInfo: NSObject, NSCoding {
         self.uploadedAt = uploadedAt
         self.uploadingInProgress = uploadingInProgress
         self.autoSaved = autoSaved
+        self.uploadedBy = uploadedBy
     }
     
     public override init() {
@@ -89,6 +95,7 @@ public class AudioFileInfo: NSObject, NSCoding {
         aCoder.encode(uploadedAt, forKey: CodingKeys.uploadedAt.rawValue)
         aCoder.encode(uploadingInProgress, forKey: CodingKeys.uploadingInProgress.rawValue)
         aCoder.encode(autoSaved, forKey: CodingKeys.autoSaved.rawValue)
+        aCoder.encode(uploadedBy, forKey: CodingKeys.uploadedBy.rawValue)
     }
     
     public required convenience init?(coder aDecoder: NSCoder) {
@@ -100,7 +107,8 @@ public class AudioFileInfo: NSObject, NSCoding {
         let uploadedAt = aDecoder.decodeObject(forKey: CodingKeys.uploadedAt.rawValue) as? String
         let uploadingInProgress = aDecoder.decodeObject(forKey: CodingKeys.uploadingInProgress.rawValue) as? Bool
         let autoSaved = aDecoder.decodeObject(forKey: CodingKeys.autoSaved.rawValue) as? Bool
+        let uploadedBy = aDecoder.decodeObject(forKey: CodingKeys.uploadedBy.rawValue) as? String
         
-        self.init(comment: comment, isUploaded: isUploaded, uploadedStatus: uploadedStatus, archivedDays: archivedDays, canEdit: canEdit, uploadedAt: uploadedAt, uploadingInProgress: uploadingInProgress, autoSaved: autoSaved)
+        self.init(comment: comment, isUploaded: isUploaded, uploadedStatus: uploadedStatus, archivedDays: archivedDays, canEdit: canEdit, uploadedAt: uploadedAt, uploadingInProgress: uploadingInProgress, autoSaved: autoSaved, uploadedBy: uploadedBy)
     }
 }

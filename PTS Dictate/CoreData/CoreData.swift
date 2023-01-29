@@ -12,8 +12,16 @@ import Foundation
 class CoreData: NSObject {
     // 1 - true for switch on & 0 - false for switch off
     var accessToken: String =  ""
+    
+    //username entered by user while login
     var userName : String = ""
+    
+    //created by app for user to creating file name for upload
     var profileName : String = ""
+    
+    //return by login api to show in welcome mesaage
+    var welcomeName : String = ""
+    
     var userId : String = ""
     var email: String = ""
     var privilege: String = ""
@@ -79,6 +87,7 @@ class CoreData: NSObject {
         newData.setValue(accessToken, forKey: "accessToken")
         newData.setValue(userName, forKey: "userName")
         newData.setValue(profileName, forKey: "profileName")
+        newData.setValue(welcomeName, forKey: "welcomeName")
         newData.setValue(userId, forKey: "userId")
         newData.setValue(isRemeberMe, forKey: "isRemeberMe")
         newData.setValue(password, forKey: "password")
@@ -130,6 +139,14 @@ class CoreData: NSObject {
                     if let profileName = result.value(forKey: "profileName") as? String{
                         self.profileName = profileName
                         print("data get profileName \(profileName)")
+                    }
+                    if let welcomeName = result.value(forKey: "welcomeName") as? String{
+                        self.welcomeName = welcomeName
+                        print("data get welcomeName \(welcomeName)")
+                    }
+                    if let fileName = result.value(forKey: "fileName") as? String{
+                        self.fileName = fileName
+                        print("data get fileName \(fileName)")
                     }
                     if let userId = result.value(forKey: "userId") as? String{
                         self.userId = userId
@@ -230,28 +247,28 @@ class CoreData: NSObject {
         let DelAllReqVar = NSBatchDeleteRequest(fetchRequest: NSFetchRequest<NSFetchRequestResult>(entityName: "Login"))
         accessToken =  ""
         email = ""
-        userName = ""
-        profileName = ""
+        userName = CoreData.shared.userName
+        profileName = CoreData.shared.profileName
+        welcomeName = ""
         privilege = ""
-        audioQuality = 0
-        voiceActivation = 0
-        disableEmailNotify = 0
-        commentScreen = 0
-        commentScreenMandatory = 0
+        audioQuality = CoreData.shared.audioQuality
+        voiceActivation = CoreData.shared.voiceActivation
+        disableEmailNotify = CoreData.shared.disableEmailNotify
+        commentScreen = CoreData.shared.commentScreen
+        commentScreenMandatory = CoreData.shared.commentScreenMandatory
         indexing = 0
-        disableEditingHelp = 0
-        dateFormat = ""
-        archiveFile = CoreData.shared.archiveFile
+        disableEditingHelp = CoreData.shared.disableEditingHelp
+        dateFormat      = CoreData.shared.dateFormat
+        archiveFile     = CoreData.shared.archiveFile
         archiveFileDays = CoreData.shared.archiveFileDays
-        uploadViaWifi = 0
-        sleepModeOverride = 0
-        microSensitivityValue = 1.0
+        uploadViaWifi   = CoreData.shared.uploadViaWifi
+        sleepModeOverride = CoreData.shared.sleepModeOverride
+        microSensitivityValue = CoreData.shared.microSensitivityValue
         userInfo.removeAll()
-        fileName = ""
-//        audioFiles = []
+        fileName = CoreData.shared.fileName
         
         if !self.isRemeberMe{
-            self.userId = ""
+            self.userName = ""
             self.password = ""
         }
         do {

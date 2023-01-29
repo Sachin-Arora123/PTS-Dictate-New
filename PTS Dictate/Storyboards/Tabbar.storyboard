@@ -198,6 +198,7 @@
                                     <segment title="Overwrite"/>
                                     <segment title="Partial Delete"/>
                                 </segments>
+                                <color key="selectedSegmentTintColor" name="AppThemeColor"/>
                                 <connections>
                                     <action selector="segmentChanged:" destination="7Dt-rL-rdk" eventType="valueChanged" id="JHz-mT-HA7"/>
                                 </connections>
@@ -902,7 +903,7 @@
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rNK-QJ-ayt">
                                                     <rect key="frame" x="0.0" y="0.0" width="393" height="100"/>
                                                     <subviews>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="pixel_002450323_File_001.m4a" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aPs-DA-jtF">
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="pixel_002450323_File_001.m4a" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aPs-DA-jtF">
                                                             <rect key="frame" x="59" y="10" width="279" height="14.666666666666664"/>
                                                             <fontDescription key="fontDescription" name="Arial-BoldMT" family="Arial" pointSize="15"/>
                                                             <color key="textColor" name="BlackTextColor"/>

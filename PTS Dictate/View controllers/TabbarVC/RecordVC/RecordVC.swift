@@ -146,6 +146,39 @@ class RecordVC: BaseViewController {
         super.viewDidLoad()
         NotificationCenter.default.addObserver(self, selector: #selector(self.showBottomView), name: Notification.Name("showBottomBtnView"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(applicationWillTerminate(notification:)), name: UIApplication.willTerminateNotification, object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleInterupption), name: Notification.Name("handleInterupption"), object: nil)
+    }
+    
+    @objc func handleInterupption(){
+        //stop the recording
+        self.recorder.endRecording()
+        self.recorderState = .pause
+        stopwatch.pause()
+        
+        self.tabBarController?.setTabBarHidden(true, animated: false)
+        btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
+        btnRecord.isUserInteractionEnabled = false
+        btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+        btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_disable"), for: .normal)
+        btnPlay.isUserInteractionEnabled = true
+        btnStop.isUserInteractionEnabled = false
+        CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
+        lblPlayerStatus.text = "Stopped"
+        self.setUpStopAndPauseUI()
+        
+        CommonFunctions.alertMessage(view: self, title: "PTS Dictate", msg: "Due to a phone call, the recording has been auto saved. Please go back to Existing Dictations screen, and choose Edit/Append to continue recording.", btnTitle: "Ok") {
+            self.recorder.concatChunks(filename: self.audioFileURL){
+                success in
+                if success{
+                    self.chunkInt = 0
+                    print("Success save chunks removed")
+                    DispatchQueue.main.async {
+                        self.proceedAutoSave()
+                    }
+                }
+            }
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -183,9 +216,9 @@ class RecordVC: BaseViewController {
             self.recorder.articleChunks = [editingAsset]
             self.editAssetDuration = editingAsset.duration.seconds
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
-                self.playerWaveView.waveformView.progressTime = CMTimeMakeWithSeconds(editingAsset.duration.seconds, preferredTimescale: 1)
-            })
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
+//                self.playerWaveView.waveformView.progressTime = CMTimeMakeWithSeconds(editingAsset.duration.seconds, preferredTimescale: 0)
+//            })
             
             setUpUIForEditing()
         }
@@ -205,8 +238,9 @@ class RecordVC: BaseViewController {
     }
     
     deinit {
-      NotificationCenter.default.removeObserver(self, name: Notification.Name("showBottomBtnView"), object: nil)
-      NotificationCenter.default.removeObserver(self)
+        NotificationCenter.default.removeObserver(self, name: Notification.Name("showBottomBtnView"), object: nil)
+        NotificationCenter.default.removeObserver(self, name: Notification.Name("handleInterupption"), object: nil)
+        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: - View life cycle end.
@@ -321,10 +355,24 @@ class RecordVC: BaseViewController {
                 count = CoreData.shared.fileCount
             }
         }
-        self.audioFileURL       = nameToShow + "_" + convertedDateStr + "_File_" + String(format: "%03d", count)
-        self.lblFNameValue.text = nameToShow + "_" + convertedDateStr + "_File_" + String(format: "%03d", count) + ".m4a"
-        audioFileName           = nameToShow + "_" + convertedDateStr + "_File_" + String(format: "%03d", count) + ".m4a" // mohit new changes
+        
+        if self.audioForEditing != nil{
+            //editing
+            var fileName = self.audioForEditing ?? ""
+            if let dotRange = fileName.range(of: ".") {
+                fileName.removeSubrange(dotRange.lowerBound..<fileName.endIndex)
+            }
+            self.audioFileURL       = fileName
+            self.lblFNameValue.text = fileName + ".m4a"
+            audioFileName           = fileName + ".m4a"
+        }else{
+            self.audioFileURL       = nameToShow + "_" + convertedDateStr + "_File_" + String(format: "%03d", count)
+            self.lblFNameValue.text = nameToShow + "_" + convertedDateStr + "_File_" + String(format: "%03d", count) + ".m4a"
+            audioFileName           = nameToShow + "_" + convertedDateStr + "_File_" + String(format: "%03d", count) + ".m4a"
+        }
         self.lblFSizeValue.text = "0.00 Mb"
+        
+        
         
         //setup file url as well.
         self.fileURL1 = Constants.documentDir.appendingPathComponent((self.lblFNameValue.text ?? "") + ".m4a")
@@ -389,7 +437,7 @@ class RecordVC: BaseViewController {
         self.playerWaveView.isHidden = false
 
         self.playerWaveView.waveformView.asset = self.getFullAsset()
-        self.playerWaveView.waveformView.progressTime = CMTimeMakeWithSeconds(self.playerWaveView.waveformView.asset.duration.seconds, preferredTimescale: 1)
+        self.playerWaveView.waveformView.progressTime = CMTimeMakeWithSeconds(self.playerWaveView.waveformView.asset.duration.seconds, preferredTimescale: 0)
         self.playerWaveView.waveformView.normalColor = .lightGray
         self.playerWaveView.waveformView.progressColor = .blue
         
@@ -488,6 +536,7 @@ class RecordVC: BaseViewController {
                     self.recorderState = .recording
                     self.btnRecord.setBackgroundImage(UIImage(named: "record_pause_btn_normal"), for: .normal)
                     self.btnStop.isUserInteractionEnabled = true
+                    self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: .normal)
                 }
                 
                 isRecording = true
@@ -496,7 +545,7 @@ class RecordVC: BaseViewController {
 //                    self.enableDisableBookmarkButton()
 //                }
             }else{
-                CommonFunctions.alertMessage(view: self, title: "Microphone Access Denied", msg: "This app requires access to your device's Microphone. \n Please enable Microphone access for this app in Settings / Privacy / Microphone", btnTitle: "Ok")
+                CommonFunctions.alertMessage(view: self, title: "Microphone Access Denied", msg: "This app requires access to your device's Microphone. \n Please enable Microphone access for this app in Settings / Privacy / Microphone", btnTitle: "Ok", completion: nil)
             }
         })
     }
@@ -767,14 +816,14 @@ class RecordVC: BaseViewController {
             self.btnStop.isUserInteractionEnabled = true
             btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: .normal)
             btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: .normal)
-            CommonFunctions.alertMessage(view: self, title: "Append", msg: Constants.appendMsg, btnTitle: "OK")
+            CommonFunctions.alertMessage(view: self, title: "Append", msg: Constants.appendMsg, btnTitle: "OK", completion: nil)
             break
         case 1:
             self.performingFunctionState = .insert
             self.btnClear.tag = 2
             self.recorderState = .pause
             self.setInsert_PartialDeleteUI()
-            CommonFunctions.alertMessage(view: self, title: "Insert", msg: Constants.insertMsg, btnTitle: "OK")
+            CommonFunctions.alertMessage(view: self, title: "Insert", msg: Constants.insertMsg, btnTitle: "OK", completion: nil)
             self.recorder.startPlayer()
             observePlayerAfterEdit()
             break
@@ -783,14 +832,14 @@ class RecordVC: BaseViewController {
             self.btnClear.tag = 3
             self.recorderState = .pause
             self.setInsert_PartialDeleteUI()
-            CommonFunctions.alertMessage(view: self, title: "Overwrite", msg: Constants.overwriteMsg, btnTitle: "OK")
+            CommonFunctions.alertMessage(view: self, title: "Overwrite", msg: Constants.overwriteMsg, btnTitle: "OK", completion: nil)
             self.recorder.startPlayer()
             observePlayerAfterEdit()
             break
         case 3:
             self.performingFunctionState = .partialDelete
             self.btnClear.tag = 4
-            CommonFunctions.alertMessage(view: self, title: "Partial Delete", msg: Constants.partialDeleteMsg, btnTitle: "OK")
+            CommonFunctions.alertMessage(view: self, title: "Partial Delete", msg: Constants.partialDeleteMsg, btnTitle: "OK", completion: nil)
             self.setInsert_PartialDeleteUI()
             self.recorder.startPlayer()
             observePlayerAfterEdit()
@@ -833,7 +882,6 @@ class RecordVC: BaseViewController {
     
     // MARK: - @IBAction Save.
     @IBAction func onTapSave(_ sender: UIButton) {
-        print("Saved")
         CommonFunctions.showAlert(view: self, title: "PTS Dictate", message: "Do you want to save the current Recording ?", completion: {
             (success) in
             if success{
@@ -870,6 +918,33 @@ class RecordVC: BaseViewController {
                 }
             }
         })
+    }
+    
+    func proceedAutoSave(){
+        if self.recorder.audioRecorder != nil {
+            self.recorder.endRecording()
+        }
+        self.lblTime.text = "00:00:00"
+        self.recorderState = .none
+        
+        //not in case of edit
+        if self.audioForEditing == nil{
+            CoreData.shared.fileCount += 1
+        }
+        
+        CoreData.shared.dataSave()
+        
+        isRecording = false
+        audioFileName = ""
+        self.onDiscardRecorderSetUp()
+        
+        self.resetValues()
+        
+        AudioFiles.shared.saveNewAudioFile(name: self.audioFileURL + ".m4a", autoSaved: true)
+        let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
+        self.setPushTransitionAnimation(VC)
+        self.navigationController?.popViewController(animated: false)
+        self.tabBarController?.selectedIndex = 0
     }
     
     func resetValues(){
@@ -1020,7 +1095,7 @@ class RecordVC: BaseViewController {
             
             self.overwriteTimer?.invalidate()
             
-            CommonFunctions.alertMessage(view: self, title: "PTS", msg: "Overwrite complete", btnTitle: "Ok")
+            CommonFunctions.alertMessage(view: self, title: "PTS", msg: "Overwrite complete", btnTitle: "Ok", completion: nil)
             self.insertTimer.isHidden  = true
             self.isPerformingOverwrite = false
             if let originalUrl = self.recorder.articleChunks.first?.url, let replacingUrl = self.recorder.articleChunks.last?.url{
@@ -1073,7 +1148,7 @@ class RecordVC: BaseViewController {
                     self.segmentHeight.constant = 0
                     self.btnStop.isUserInteractionEnabled = false
                     self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: UIControl.State.normal)
-                    CommonFunctions.alertMessage(view: self, title: Constants.appName, msg: Constants.pDeleteMsg, btnTitle: "OK")
+                    CommonFunctions.alertMessage(view: self, title: Constants.appName, msg: Constants.pDeleteMsg, btnTitle: "OK", completion: nil)
                     self.setUpWave()
                     CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
                     self.tabBarController?.setTabBarHidden(true, animated: false)
@@ -1375,9 +1450,6 @@ class RecordVC: BaseViewController {
             self.lblTime.text            = self.timeString(from: asset.duration.seconds)
             self.currentPlayingTime.text = self.lblTime.text
             self.playerTotalTime.text    = self.lblTime.text
-            
-            //filename
-            self.lblFNameValue.text = self.audioForEditing
         }
         
         //play button
@@ -1515,7 +1587,7 @@ extension RecordVC{
             }
         } catch  { print(error) }
         
-        //change the name of final.url
+        //change the name of final.m4a
         let sourcePath = Constants.documentDir.appendingPathComponent("final.m4a")
         
         DispatchQueue.main.async {

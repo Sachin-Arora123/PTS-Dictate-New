@@ -105,13 +105,13 @@ class CommonFunctions: iProgressHUDDelegete {
             completion(true)
         }))
       }
-    static func alertMessage(view: UIViewController, title: String, msg: String, btnTitle: String) {
+    static func alertMessage(view: UIViewController, title: String, msg: String, btnTitle: String, completion:(() -> Void)?) {
         // Create new Alert
         let alertMessage = UIAlertController(title: title, message: msg, preferredStyle: .alert)
         
         // Create OK button with action handler
         let ok = UIAlertAction(title: btnTitle, style: .default, handler: { (action) -> Void in
-            print("Ok button tapped")
+            completion?()
          })
         
         //Add OK button to a dialog message

@@ -58,7 +58,7 @@ extension NamingFormatCell: UITextFieldDelegate{
         let cs = NSCharacterSet(charactersIn: ACCEPTABLE_CHARACTERS).inverted
         let filtered = currentText.components(separatedBy: cs).joined(separator: "")
         
-        if currentText == filtered{
+        if currentText.replacingOccurrences(of: " ", with: "") == filtered{
             self.delegate?.passData(text: currentText, id: self.txtFldDateFormat.tag)
             return true
         }else{

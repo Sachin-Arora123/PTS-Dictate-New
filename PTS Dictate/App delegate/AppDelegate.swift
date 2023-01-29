@@ -25,38 +25,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         IQKeyboardManager.shared.enableAutoToolbar = false
         IQKeyboardManager.shared.shouldShowToolbarPlaceholder = false
         
-        CoreData.shared.getdata()
-        if CoreData.shared.email != "" {
-            let vc = TabbarVC.instantiateFromAppStoryboard(appStoryboard: AppStoryboard.Tabbar)
-            let navigationController = UINavigationController(rootViewController: vc)
-            if UIApplication.shared.windows.count > 0 {
-                UIApplication.shared.windows[0].rootViewController = navigationController
-                navigationController.setNavigationBarHidden(true, animated: false)
-            }
-//            let fileURL = UserDefaults.standard.object(forKey: "terminatedRecording") as? String
-//            tempChunks = UserDefaults.standard.array(forKey: "assetChunks")  as? [AVURLAsset] ?? [AVURLAsset]()
-//            let decoded  = UserDefaults.standard.data(forKey: "assetChunks")
-//            tempChunks = NSKeyedUnarchiver.unarchiveObject(with: decoded) as? [AVURLAsset] ?? [AVURLAsset]()
-//            do{
-//                if let colorAsData = UserDefaults.standard.object(forKey: "assetChunks") as? Data{
-//                    if let color = try NSKeyedUnarchiver.unarchiveObject(with: colorAsData) as? [AVURLAsset] {
-//                        // Use Color
-//                        print(color)
-//                        tempChunks = color
-//                    }
-//                }
-//            }catch (let error){
-//                #if DEBUG
-//                    print("Failed to convert UIColor to Data : \(error.localizedDescription)")
-//                #endif
+//        CoreData.shared.getdata()
+//        if CoreData.shared.email != "" {
+//            let vc = TabbarVC.instantiateFromAppStoryboard(appStoryboard: AppStoryboard.Tabbar)
+//            let navigationController = UINavigationController(rootViewController: vc)
+//            if UIApplication.shared.windows.count > 0 {
+//                UIApplication.shared.windows[0].rootViewController = navigationController
+//                navigationController.setNavigationBarHidden(true, animated: false)
 //            }
-//
-//            print("launch-->>",fileURL ?? "")
-//            self.concatTempChunks(filename: fileURL ?? "") {
-//                (success) in
-//                print("Success launch")
-//            }
-        }
+////            let fileURL = UserDefaults.standard.object(forKey: "terminatedRecording") as? String
+////            tempChunks = UserDefaults.standard.array(forKey: "assetChunks")  as? [AVURLAsset] ?? [AVURLAsset]()
+////            let decoded  = UserDefaults.standard.data(forKey: "assetChunks")
+////            tempChunks = NSKeyedUnarchiver.unarchiveObject(with: decoded) as? [AVURLAsset] ?? [AVURLAsset]()
+////            do{
+////                if let colorAsData = UserDefaults.standard.object(forKey: "assetChunks") as? Data{
+////                    if let color = try NSKeyedUnarchiver.unarchiveObject(with: colorAsData) as? [AVURLAsset] {
+////                        // Use Color
+////                        print(color)
+////                        tempChunks = color
+////                    }
+////                }
+////            }catch (let error){
+////                #if DEBUG
+////                    print("Failed to convert UIColor to Data : \(error.localizedDescription)")
+////                #endif
+////            }
+////
+////            print("launch-->>",fileURL ?? "")
+////            self.concatTempChunks(filename: fileURL ?? "") {
+////                (success) in
+////                print("Success launch")
+////            }
+//        }
 //        sleep(2)
         
         return true
