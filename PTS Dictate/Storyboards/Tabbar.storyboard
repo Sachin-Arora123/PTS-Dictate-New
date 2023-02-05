@@ -10,7 +10,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Uploads in progress-->
+        <!--Uploaded Files-->
         <scene sceneID="FhX-fb-Qs3">
             <objects>
                 <viewController storyboardIdentifier="UploadProgressVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="3QY-iH-fju" customClass="UploadProgressVC" customModule="PTS_Dictate" customModuleProvider="target" sceneMemberID="viewController">
@@ -169,7 +169,7 @@
                             <constraint firstItem="ZCm-q4-rxv" firstAttribute="top" secondItem="Wls-yj-wpc" secondAttribute="top" id="vlg-kt-MEN"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Uploads in progress" image="tabbar_upload_normal" selectedImage="tabbar_upload_highlighted" id="V41-JT-xmo"/>
+                    <tabBarItem key="tabBarItem" title="Uploaded Files" image="tabbar_upload_normal" selectedImage="tabbar_upload_highlighted" id="V41-JT-xmo"/>
                     <connections>
                         <outlet property="tableView" destination="ZCm-q4-rxv" id="sJU-Pv-UUk"/>
                         <outlet property="viewNoUpload" destination="16g-mG-TXv" id="eya-rc-9ee"/>

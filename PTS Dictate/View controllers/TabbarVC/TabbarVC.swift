@@ -13,7 +13,7 @@ class TabbarVC: UITabBarController, UITabBarControllerDelegate {
     var thirdTabbarItemImageView: UIImageView!
     var viewControllerToSelect: UIViewController?
     
-    let tabbarNames : [String] = ["Existing\rDictations","Uploads\rin progress","Record","Settings","Logout"]
+    let tabbarNames : [String] = ["Existing\rDictations","Uploaded Files","Record","Settings","Logout"]
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)

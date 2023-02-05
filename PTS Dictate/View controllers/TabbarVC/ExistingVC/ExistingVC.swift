@@ -511,7 +511,7 @@ class ExistingVC: BaseViewController {
             audioArray.append(file)
         }
         
-        return audioArray
+        return audioArray.reversed()
     }
     
     func removeAudio(itemName:String, fileExtension: String) {
