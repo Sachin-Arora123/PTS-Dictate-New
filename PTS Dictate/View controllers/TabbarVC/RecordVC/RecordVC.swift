@@ -104,6 +104,7 @@ class RecordVC: BaseViewController {
 //    var isPlayerInitialized = false
     var playFirstTime           = false
     var editAssetDuration       = 0.0
+    var originalEditAssetPath   : URL?
     var bookmarkTimingsArray    = [Int]()
     var totalBookmarkButtons    = [UIButton]()
     var totalBookmarkTimeLabels = [UILabel]()
@@ -213,11 +214,12 @@ class RecordVC: BaseViewController {
         //If comes for editing the audio from existing dictations screen, setup the UI according to that.
         if let _ = self.audioForEditing { // if value is nil then its not for editing, if that's hold any string value then setup the ui for editing that audio
             
-            //assigning editing asset to the article chunks array fot future refrence.
+            //assigning editing asset to the article chunks array for future refrence.
             let editingAsset = AVURLAsset(url: Constants.documentDir.appendingPathComponent(self.audioForEditing ?? ""))
             self.recorder.articleChunks = [editingAsset]
             self.editAssetDuration = editingAsset.duration.seconds
             
+            self.originalEditAssetPath = self.copyEditFileToTemporaryDirectory(sourceUrl: editingAsset.url)
 //            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
 //                self.playerWaveView.waveformView.progressTime = CMTimeMakeWithSeconds(editingAsset.duration.seconds, preferredTimescale: 0)
 //            })
@@ -227,6 +229,35 @@ class RecordVC: BaseViewController {
         
         isRecording = false
         insertTimer.isHidden = true
+    }
+    
+    func copyEditFileToTemporaryDirectory(sourceUrl: URL) -> URL?{
+        // Get the file path in the bundle
+        let tempDirectoryURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
+        // Create a destination URL.
+        let targetURL = tempDirectoryURL.appendingPathComponent(self.audioForEditing ?? "")
+        // Copy the file.
+        do {
+            try FileManager.default.copyItem(at: sourceUrl, to: targetURL)
+            return targetURL
+        } catch let error {
+            print("Unable to copy file: \(error)")
+        }
+
+        return nil
+    }
+    
+    func clearTmpDirectory() {
+        do {
+            let tmpDirURL = FileManager.default.temporaryDirectory
+            let tmpDirectory = try fileManager.contentsOfDirectory(atPath: tmpDirURL.path)
+            try tmpDirectory.forEach { file in
+                let fileUrl = tmpDirURL.appendingPathComponent(file)
+                try fileManager.removeItem(atPath: fileUrl.path)
+            }
+        } catch {
+            print(error.localizedDescription)
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -239,6 +270,7 @@ class RecordVC: BaseViewController {
         
         self.removeInsertStartingPoint()
         self.removeOverwritePoints()
+        self.clearTmpDirectory()
     }
     
     deinit {
@@ -994,8 +1026,10 @@ class RecordVC: BaseViewController {
         CommonFunctions.showAlert(view: self, title: Constants.appName, message: "Do you want to discard the current Recording?", completion: {
             (success) in
             if success{
-                //in case of edit, not delete the dictation and simply go back to existing dictation screen.
+                //in case of edit, don't delete the dictation, don't change anything in existing dictation and simply go back to existing dictation screen.
                 if let _ = self.audioForEditing {
+                    self.descardEditingAsset()
+                    self.stopwatch.stop()
                     let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
                     self.setPushTransitionAnimation(VC)
                     self.navigationController?.popViewController(animated: false)
@@ -1815,6 +1849,17 @@ extension RecordVC{
                 self.updateTimer()
             }catch  { print(error) }
         }
+    }
+    
+    func descardEditingAsset(){
+        //try FileManager.default.contentsOfDirectory(at: Constants.documentDir, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
+        //the source path is what where the original edit asset placed in the doc directory
+        let sourcePath = self.originalEditAssetPath ?? URL(fileURLWithPath: "")
+        let destPath   = Constants.documentDir.appendingPathComponent(self.audioForEditing ?? "")
+        do{
+            _ = try FileManager.default.replaceItemAt(destPath, withItemAt: sourcePath)
+            self.updateTimer()
+        }catch  { print(error) }
     }
     
     func trimOriginalAssetFor(taskToPerform:String, asset:AVAsset, replacingRange:CMTimeRange, replacingURL:URL, completionHandler handler: @escaping (_ finalURLs:[URL]) -> Void) {

@@ -31,8 +31,8 @@ class UploadListCell: UITableViewCell {
         // Configure the view for the selected state
     }
 
-    func setData(name: String, isUploaded: Bool, inProgress: Bool, uploadedStatus: Bool) {
-        lblFileName.text = name
+    func setData(file: AudioFile, isUploaded: Bool, inProgress: Bool, uploadedStatus: Bool) {
+        lblFileName.text = file.changedName != "" ? file.changedName : file.name
         if inProgress {
             //upload in progress
             detailStackView.isHidden = true
@@ -52,8 +52,8 @@ class UploadListCell: UITableViewCell {
             
             detailStackView.isHidden = false
             viewUploadProgress.isHidden = true
-            let time = getTimeDuration(filePath: name)
-            let size = fileSize(itemName: name)
+            let time = getTimeDuration(filePath: file.name ?? "")
+            let size = fileSize(itemName: file.name ?? "")
             lblTiming.text = time
             lblDataLimit.text = size
         }

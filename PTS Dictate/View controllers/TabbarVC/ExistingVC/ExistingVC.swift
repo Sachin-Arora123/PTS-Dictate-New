@@ -36,26 +36,25 @@ class ExistingVC: BaseViewController {
     
     let existingViewModel = ExistingViewModel.shared
     
-    var audioRecorder:AVAudioRecorder?
     var audioPlayer = AVAudioPlayer()
-    var totalFiles = [AudioFile]()
-    var totalAsset = [AVAsset]()
-    var totalFilesSelected : [String] = []
+    var totalFiles  = [AudioFile]()
+    var totalAsset  = [AVAsset]()
+    var totalFilesSelected = [AudioFile]()
     var playingCellIndex = -1
     var isPlaying: Bool = false
     var pausedTime: Double?
-    var fileDuration = 0
+//    var fileDuration = 0
     var uploadingQueue: [String] = []
     var audioForEditing: String?
     private var audioMeteringLevelTimer: Timer?
     var tag = -1
-    private var currentlyPlayingAudio: URL?
+//    private var currentlyPlayingAudio: URL?
     // wave form var
-    fileprivate var startRendering = Date()
-    fileprivate var endRendering = Date()
-    fileprivate var startLoading = Date()
-    fileprivate var endLoading = Date()
-    fileprivate var profileResult = ""
+//    fileprivate var startRendering = Date()
+//    fileprivate var endRendering = Date()
+//    fileprivate var startLoading = Date()
+//    fileprivate var endLoading = Date()
+//    fileprivate var profileResult = ""
     
     final fileprivate let fastBackDisabled: UIImage? = UIImage(named: "existing_backward_fast_disable")
     final fileprivate let backDisabled: UIImage? = UIImage(named: "existing_rewind_disable")
@@ -126,11 +125,11 @@ class ExistingVC: BaseViewController {
             }
         }
     }
+    
     // MARK: - View Life-Cycle.
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
         self.existingViewModel.existingViewController = self
         self.tabBarController?.delegate = self
         self.audioTimer = 0
@@ -247,8 +246,7 @@ class ExistingVC: BaseViewController {
         self.tableView.reloadData()
     }
     
-    func findFilesWith(fileExtension: String) -> [AnyObject]
-    {
+    func findFilesWith(fileExtension: String) -> [AnyObject]{
         var matches = [AnyObject]()
         let files = FileManager.default.enumerator(atPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0])
         // *** this section here adds all files with the chosen extension to an array ***
@@ -409,8 +407,8 @@ class ExistingVC: BaseViewController {
                 (success) in
                 if success{
                     for file in self.totalFilesSelected {
-                        self.removeAudio(itemName: file, fileExtension: "")
-                        AudioFiles.shared.deleteAudio(name: file)
+                        self.removeAudio(itemName: file.name ?? "", fileExtension: "")
+                        AudioFiles.shared.deleteAudio(name: file.name ?? "")
                     }
                     self.totalFilesSelected.removeAll()
                     self.totalFiles = self.getSortedAudioList()
@@ -425,7 +423,7 @@ class ExistingVC: BaseViewController {
         var status = false
         if totalFilesSelected.count > 0{
             for file in totalFilesSelected {
-                let audioFile = getFileInfo(name: file)
+                let audioFile = getFileInfo(name: file.name ?? "")
                 if audioFile?.fileInfo?.isUploaded ?? false {
                     return true
                 } else {
@@ -444,7 +442,7 @@ class ExistingVC: BaseViewController {
         var status = false
         if totalFilesSelected.count > 0{
             for file in totalFilesSelected {
-                let audioFile = getFileInfo(name: file)
+                let audioFile = getFileInfo(name: file.name ?? "")
                 if !(audioFile?.fileInfo?.isUploaded ?? false) {
                     return true
                 } else {
@@ -473,45 +471,23 @@ class ExistingVC: BaseViewController {
     
     func getSortedAudioList() -> [AudioFile] {
         var audioArray = [AudioFile]()
-//        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-//        guard let directoryURL = URL(string: paths.path) else {return [""]}
-//        do {
-//            let filePathArray = try
-//            FileManager.default.contentsOfDirectory(at: directoryURL,
-//                                                    includingPropertiesForKeys:[.contentModificationDateKey],
-//                                                    options: [.skipsHiddenFiles, .skipsSubdirectoryDescendants])
-//            .filter { $0.lastPathComponent.hasSuffix(".m4a") }
-//            .sorted(by: {
-//                let date0 = try $0.promisedItemResourceValues(forKeys:[.contentModificationDateKey]).contentModificationDate!
-//                let date1 = try $1.promisedItemResourceValues(forKeys:[.contentModificationDateKey]).contentModificationDate!
-//                return date0.compare(date1) == .orderedDescending
-//            })
-//
-//            // Print results
-//            for item in filePathArray {
-//                guard let t = try? item.promisedItemResourceValues(forKeys:[.contentModificationDateKey]).contentModificationDate
-//                else {return [""]}
-//                print ("Hello,\(t)   \(item.lastPathComponent)")
-//
-//                //get only the logged in user's dictations
-//                let file = self.getFileInfo(name: item.lastPathComponent)
-//                if file?.fileInfo?.uploadedBy == CoreData.shared.userId {
-//                    sortedDateArray.append(item.lastPathComponent)
-//                }
-//            }
-//        } catch {
-//            print ("Finding date sorted error-->>",error.localizedDescription)
-//        }
-//        print("List array-->>",sortedDateArray)
-//        return sortedDateArray
-        
         
         let files = AudioFiles.shared.audioFiles
+        var uploadedFiles   = [AudioFile]()
+        var unUploadedFiles = [AudioFile]()
         for file in files where (file.fileInfo?.uploadedBy == CoreData.shared.userId){
-            audioArray.append(file)
+            if let isUploaded = file.fileInfo?.isUploaded, isUploaded{
+                //uploaded already
+                uploadedFiles.append(file)
+            }else{
+                //not uploaded
+                unUploadedFiles.append(file)
+            }
         }
         
-        return audioArray.reversed()
+        audioArray.append(contentsOf: unUploadedFiles)
+        audioArray.append(contentsOf: uploadedFiles)
+        return audioArray
     }
     
     func removeAudio(itemName:String, fileExtension: String) {
@@ -756,7 +732,7 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ExistingFileCell", for: indexPath) as! ExistingFileCell
-        if self.totalFilesSelected.contains(self.totalFiles[indexPath.row].name ?? ""){
+        if self.totalFilesSelected.contains(self.totalFiles[indexPath.row]){
             cell.btnSelection.setImage(UIImage(named: "checked_checkbox"), for: .normal)
         }else{
             cell.btnSelection.setImage(UIImage(named: "unchecked_checkbox"), for: .normal)
@@ -820,17 +796,15 @@ extension ExistingVC{
     func getTimeDuration(filePath: String) -> String{
         let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let completePath = directoryPath.absoluteString + filePath
-        //            if let completePathURL = URL(string: completePath){
         let completePathURL = URL(string: completePath)
         
         let audioAsset = AVURLAsset.init(url: completePathURL!, options: nil)
         let duration = audioAsset.duration
         let durationInSeconds = CMTimeGetSeconds(duration)
-        self.fileDuration = Int(durationInSeconds)
+//        self.fileDuration = Int(durationInSeconds)
         let min = Int(durationInSeconds / 60)
         let sec = Int(durationInSeconds.truncatingRemainder(dividingBy: 60))
         let totalTimeString = String(format: "%02d:%02d",min, sec)
-        //            }
         return totalTimeString
     }
     func fileSize(itemName: String) -> String? {
@@ -878,12 +852,12 @@ extension ExistingVC{
     }
     
     @objc func btnActCheckBox(_ sender : UIButton){
-        if self.totalFilesSelected.contains(self.totalFiles[sender.tag].name ?? ""){
-            if let ind = self.totalFilesSelected.firstIndex(of: self.totalFiles[sender.tag].name ?? ""){
+        if self.totalFilesSelected.contains(self.totalFiles[sender.tag]){
+            if let ind = self.totalFilesSelected.firstIndex(of: self.totalFiles[sender.tag]){
                 self.totalFilesSelected.remove(at: ind)
             }
         }else{
-            self.totalFilesSelected.append(self.totalFiles[sender.tag].name ?? "")
+            self.totalFilesSelected.append(self.totalFiles[sender.tag])
         }
         self.tableView.reloadData()
     }
@@ -891,7 +865,7 @@ extension ExistingVC{
     @objc func onTapRightImage() {
         if totalFiles.count > 0 {
             if self.tabBarController?.navigationItem.rightBarButtonItem?.image == getRighButtonImage(imageName: "unchecked_checkbox") {
-                self.totalFilesSelected = self.totalFiles.map({$0.name ?? ""})
+                self.totalFilesSelected = self.totalFiles.filter({!($0.fileInfo?.isUploaded ?? false)})
                 setRighButtonImage(imageName: "checked_checkbox", selector: #selector(onTapRightImage))
             }else if self.tabBarController?.navigationItem.rightBarButtonItem?.image == getRighButtonImage(imageName: "unchecked_checkbox"){
                 setRighButtonImage(imageName: "unchecked_checkbox", selector: #selector(onTapRightImage))

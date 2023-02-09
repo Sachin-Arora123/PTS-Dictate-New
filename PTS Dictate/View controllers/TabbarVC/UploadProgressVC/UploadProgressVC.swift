@@ -15,7 +15,7 @@ class UploadProgressVC: BaseViewController {
     
     // MARK: Properties
     
-    var files: [String] = []
+    var files: [AudioFile] = []
     var inProgressFiles: [String] = []
     var currentUploadingFile: Int = Int(){
         didSet {
@@ -54,7 +54,7 @@ class UploadProgressVC: BaseViewController {
             tableView.isHidden = false
             viewNoUpload.isHidden = true
             for file in files {
-                UpdateAudioFile.uploadingInProgress(true).update(audioName: file)
+                UpdateAudioFile.uploadingInProgress(true).update(audioName: file.name ?? "")
             }
             self.tableView.reloadData()
             let seconds = 1.0
@@ -71,27 +71,27 @@ class UploadProgressVC: BaseViewController {
         }
     }
     
-    fileprivate func uploadFiles(file: String) {
+    fileprivate func uploadFiles(file: AudioFile) {
         let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let completePath = directoryPath.absoluteString + file
-        let url = URL(string: completePath)
+        let completePath  = directoryPath.absoluteString + (file.name ?? "")
+        let url           = URL(string: completePath)
         
         let emailNotify = (CoreData.shared.disableEmailNotify == 0)
-        ExistingViewModel.shared.uploadAudio(userName: CoreData.shared.userName, toUser: "pts", emailNotify: emailNotify, fileUrl: url!, fileName: file, description: AudioFiles.shared.getAudioComment(name: file)) {
+        ExistingViewModel.shared.uploadAudio(userName: CoreData.shared.userName, toUser: "pts", emailNotify: emailNotify, fileUrl: url!, fileName: (file.changedName != "" ? file.changedName : file.name) ?? "", description: AudioFiles.shared.getAudioComment(name: file.name ?? "")) {
             print("file uploaded")
-            UpdateAudioFile.isUploaded(true).update(audioName: file)
-            UpdateAudioFile.uploadedStatus(true).update(audioName: file)
-            UpdateAudioFile.uploadingInProgress(false).update(audioName: file)
+            UpdateAudioFile.isUploaded(true).update(audioName: file.name ?? "")
+            UpdateAudioFile.uploadedStatus(true).update(audioName: file.name ?? "")
+            UpdateAudioFile.uploadingInProgress(false).update(audioName: file.name ?? "")
             let date = Date().getFormattedDateString()
-            UpdateAudioFile.uploadedAt(date).update(audioName: file)
+            UpdateAudioFile.uploadedAt(date).update(audioName: file.name ?? "")
             self.tableView.reloadData()
             if self.currentUploadingFile < self.files.count - 1 { self.currentUploadingFile += 1 }
         } failure: { error in
             print("error === \(error.description)")
             CommonFunctions.toster("Upload Error",titleDesc: "Error in upload. Please try again.", true, false)
-            UpdateAudioFile.isUploaded(true).update(audioName: file)
-            UpdateAudioFile.uploadedStatus(false).update(audioName: file)
-            UpdateAudioFile.uploadingInProgress(false).update(audioName: file)
+            UpdateAudioFile.isUploaded(true).update(audioName: file.name ?? "")
+            UpdateAudioFile.uploadedStatus(false).update(audioName: file.name ?? "")
+            UpdateAudioFile.uploadingInProgress(false).update(audioName: file.name ?? "")
             if self.currentUploadingFile < self.files.count - 1 { self.currentUploadingFile += 1 }
             self.tableView.reloadData()
         }
@@ -140,12 +140,12 @@ extension UploadProgressVC: UITableViewDelegate,UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if files.count > 0 {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "UploadListCell", for: indexPath) as! UploadListCell
-            let name = files[indexPath.row]
-            let isUploaded = checkFileUploadedOrNot(name: name)
-            let inProgress = checkUploadingInProgress(name: name)
-            let status     = checkFileUploadedStatus(name: name)
-            cell.setData(name: name, isUploaded: isUploaded, inProgress: inProgress, uploadedStatus: status)
+            let cell       = tableView.dequeueReusableCell(withIdentifier: "UploadListCell", for: indexPath) as! UploadListCell
+            let file       = files[indexPath.row]
+            let isUploaded = checkFileUploadedOrNot(name: file.name ?? "")
+            let inProgress = checkUploadingInProgress(name: file.name ?? "")
+            let status     = checkFileUploadedStatus(name: file.name ?? "")
+            cell.setData(file: file, isUploaded: isUploaded, inProgress: inProgress, uploadedStatus: status)
             return cell
         }
         return UITableViewCell()
