@@ -9,6 +9,7 @@ import UIKit
 import IQKeyboardManagerSwift
 import CoreData
 import AVFoundation
+import Firebase
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -25,39 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         IQKeyboardManager.shared.enableAutoToolbar = false
         IQKeyboardManager.shared.shouldShowToolbarPlaceholder = false
         
-//        CoreData.shared.getdata()
-//        if CoreData.shared.email != "" {
-//            let vc = TabbarVC.instantiateFromAppStoryboard(appStoryboard: AppStoryboard.Tabbar)
-//            let navigationController = UINavigationController(rootViewController: vc)
-//            if UIApplication.shared.windows.count > 0 {
-//                UIApplication.shared.windows[0].rootViewController = navigationController
-//                navigationController.setNavigationBarHidden(true, animated: false)
-//            }
-////            let fileURL = UserDefaults.standard.object(forKey: "terminatedRecording") as? String
-////            tempChunks = UserDefaults.standard.array(forKey: "assetChunks")  as? [AVURLAsset] ?? [AVURLAsset]()
-////            let decoded  = UserDefaults.standard.data(forKey: "assetChunks")
-////            tempChunks = NSKeyedUnarchiver.unarchiveObject(with: decoded) as? [AVURLAsset] ?? [AVURLAsset]()
-////            do{
-////                if let colorAsData = UserDefaults.standard.object(forKey: "assetChunks") as? Data{
-////                    if let color = try NSKeyedUnarchiver.unarchiveObject(with: colorAsData) as? [AVURLAsset] {
-////                        // Use Color
-////                        print(color)
-////                        tempChunks = color
-////                    }
-////                }
-////            }catch (let error){
-////                #if DEBUG
-////                    print("Failed to convert UIColor to Data : \(error.localizedDescription)")
-////                #endif
-////            }
-////
-////            print("launch-->>",fileURL ?? "")
-////            self.concatTempChunks(filename: fileURL ?? "") {
-////                (success) in
-////                print("Success launch")
-////            }
-//        }
-//        sleep(2)
+        FirebaseApp.configure()
         
         return true
     }
@@ -161,110 +130,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //        }
     }
     
-    
-//     func concatTempChunks(filename: String, completion: @escaping(_ result: Bool) -> Void) {
-//        let composition = AVMutableComposition()
-//
-//        var insertAt = CMTimeRange(start: CMTime.zero, end: CMTime.zero)
-//        for asset in tempChunks {
-//            let assetTimeRange = CMTimeRange(
-//                start: CMTime.zero,
-//                end:   asset.duration)
-//
-//            do {
-//                try composition.insertTimeRange(assetTimeRange,
-//                                                of: asset,
-//                                                at: insertAt.end)
-//            } catch {
-//                NSLog("Unable to compose asset track.")
-//            }
-//
-//            let nextDuration = insertAt.duration + assetTimeRange.duration
-//            insertAt = CMTimeRange(
-//                start:    CMTime.zero,
-//                duration: nextDuration)
-//        }
-//
-//        let exportSession =
-//            AVAssetExportSession(
-//                asset:      composition,
-//                presetName: AVAssetExportPresetAppleM4A)
-//
-//        exportSession?.outputFileType = AVFileType.m4a
-//        exportSession?.outputURL = self.createNewRecordingURL(filename)
-//        print("OP",   exportSession?.outputURL)
-//
-//     // Leaving here for debugging purposes.
-//     // exportSession?.outputURL = self.createNewRecordingURL("exported-")
-//
-//     // TODO: #36
-//     // exportSession?.metadata = ...
-//
-//        exportSession?.canPerformMultiplePassesOverSourceMediaData = true
-//        /* TODO? According to the docs, if multiple passes are enabled and
-//         "When the value of this property is nil, the export session
-//         will choose a suitable location when writing temporary files."
-//         */
-//        // exportSession?.directoryForTemporaryFiles = ...
-//
-//        /* TODO?
-//         Listing all cases for completeness sake, but may just use `.completed`
-//         and ignore the rest with a `default` clause.
-//         OR
-//         because the completion handler is run async, KVO would be more appropriate
-//         */
-//        exportSession?.exportAsynchronously {
-//
-//            switch exportSession?.status {
-//            case .unknown?:
-//                completion(false)
-//                break
-//            case .waiting?:
-//                completion(false)
-//                break
-//            case .exporting?:
-//                completion(false)
-//                break
-//            case .completed?:
-//                /* Cleaning up partial recordings
-//                 */
-//                for asset in tempChunks {
-//                    try! FileManager.default.removeItem(at: asset.url)
-//                }
-//
-//                /* https://stackoverflow.com/questions/26277371/swift-uitableview-reloaddata-in-a-closure
-//                */
-////                DispatchQueue.main.async {
-////                    self.listRecordings.tableView.reloadData()
-////                }
-//                completion(true)
-//                /* Resetting `articleChunks` here, because this function is
-//                 called asynchronously and calling it from `queueTapped` or
-//                 `submitTapped` may delete the files prematurely.
-//                 */
-//                tempChunks = [AVURLAsset]()
-//                tempAudioFileURL = ""
-//                UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier!)
-//            case .failed?:
-//                print("error:-->>",exportSession?.error?.localizedDescription ?? "")
-//                completion(false)
-//                break
-//            case .cancelled?:
-//                completion(false)
-//                break
-//            case .none:
-//                completion(false)
-//                break
-//            case .some(_):
-//                completion(false)
-//                break
-//            }
-//        }
-//    }
-    
-//    func createNewRecordingURL(_ filename: String = "") -> URL {
-//        let fileURL = filename + ".m4a"
-//        return Constants.documentDir.appendingPathComponent(fileURL)
-//    }
 }
 

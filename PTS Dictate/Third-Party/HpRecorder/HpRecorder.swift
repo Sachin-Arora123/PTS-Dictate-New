@@ -100,11 +100,11 @@ public class HPRecorder: NSObject {
     // End recording
     public func endRecording() {
         audioRecorder?.stop()
-        let assetURL = self.audioRecorder!.url
+        let assetURL  = self.audioRecorder!.url
         let assetOpts = [AVURLAssetPreferPreciseDurationAndTimingKey: true]
         let asset     = AVURLAsset(url: assetURL, options: assetOpts)
         self.articleChunks.append(asset)
-        tempChunks.append(asset)
+//        tempChunks.append(asset)
         isRecording = false
         audioRecorder = nil
         self.levelTimer.invalidate()

@@ -48,13 +48,6 @@ class ExistingVC: BaseViewController {
     var audioForEditing: String?
     private var audioMeteringLevelTimer: Timer?
     var tag = -1
-//    private var currentlyPlayingAudio: URL?
-    // wave form var
-//    fileprivate var startRendering = Date()
-//    fileprivate var endRendering = Date()
-//    fileprivate var startLoading = Date()
-//    fileprivate var endLoading = Date()
-//    fileprivate var profileResult = ""
     
     final fileprivate let fastBackDisabled: UIImage? = UIImage(named: "existing_backward_fast_disable")
     final fileprivate let backDisabled: UIImage? = UIImage(named: "existing_rewind_disable")
@@ -485,8 +478,8 @@ class ExistingVC: BaseViewController {
             }
         }
         
-        audioArray.append(contentsOf: unUploadedFiles)
-        audioArray.append(contentsOf: uploadedFiles)
+        audioArray.append(contentsOf: unUploadedFiles.reversed())
+        audioArray.append(contentsOf: uploadedFiles.reversed())
         return audioArray
     }
     
@@ -666,12 +659,13 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
     }
     func setCellData(cell: ExistingFileCell, audio: AudioFile?) {
         let file = audio
+        cell.lblFileStatus.text = ""
+        cell.lblFileStatus.stopBlink()
         if !(file?.fileInfo?.isUploaded ?? false) && file?.fileInfo?.comment != nil {
             //This is the case when file is not uploaded and it has some comemnt(even it is empty)
             cell.lblFileStatus.textColor = .black
             if file?.fileInfo?.autoSaved ?? false {
                 cell.lblFileStatus.text = "Auto Saved File"
-                cell.lblFileStatus.stopBlink()
                 cell.lblFileStatus.startBlink()
             }else{
                 cell.lblFileStatus.text = ""
@@ -691,7 +685,6 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
             cell.lblFileStatus.textColor = .black
             if file?.fileInfo?.autoSaved ?? false {
                 cell.lblFileStatus.text = "Auto Saved File"
-                cell.lblFileStatus.stopBlink()
                 cell.lblFileStatus.startBlink()
             } else{
                 cell.lblFileStatus.text = ""
@@ -739,7 +732,10 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
         }
         cell.isUserInteractionEnabled = true
         cell.btnEdit.isHidden = false
-        cell.lblFileSize.text = fileSize(itemName:  self.totalFiles[indexPath.row].name ?? "")
+        
+        
+        let fileUrl = Constants.documentDir.appendingPathComponent(self.totalFiles[indexPath.row].name ?? "")
+        cell.lblFileSize.text = fileUrl.fileSizeString
         
         cell.btnSelection.removeTarget(self, action: nil, for: .touchUpInside)
         cell.btnSelection.addTarget(self, action: #selector(btnActCheckBox(_:)), for: .touchUpInside)
@@ -762,23 +758,7 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
         }
         return cell
     }
-    
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        DispatchQueue.main.async {
-//            let fileName = self.totalFiles[indexPath.row]
-//            self.lblFileName.text = fileName
-////            if self.isPlaying {
-////                self.audioPlayer.stop()
-////                self.resetSoundWaves()
-////                self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-////            }
-//            self.playingCellIndex = -1
-//            self.setUpWave(index: indexPath.row)
-//            self.lblPlayerStatus.text  = ""
-//            self.tableView.reloadData()
-//        }
-//    }
-    
+
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
@@ -807,37 +787,38 @@ extension ExistingVC{
         let totalTimeString = String(format: "%02d:%02d",min, sec)
         return totalTimeString
     }
-    func fileSize(itemName: String) -> String? {
-        let nsDocumentDirectory = FileManager.SearchPathDirectory.documentDirectory
-        let nsUserDomainMask = FileManager.SearchPathDomainMask.userDomainMask
-        let paths = NSSearchPathForDirectoriesInDomains(nsDocumentDirectory, nsUserDomainMask, true)
-        guard let dirPath = paths.first else {
-            return ""
-        }
-        let filePath = "\(dirPath)/\(itemName)"
-        guard let size = try? FileManager.default.attributesOfItem(atPath: filePath)[FileAttributeKey.size],
-              let fileSize = size as? UInt64 else {
-            return nil
-        }
-        
-        // bytes
-        if fileSize < 1023 {
-            return String(format: "%lu bytes", CUnsignedLong(fileSize))
-        }
-        // KB
-        var floatSize = Float(fileSize / 1024)
-        if floatSize < 1023 {
-            return String(format: "%.1f KB", floatSize)
-        }
-        // MB
-        floatSize = floatSize / 1024
-        if floatSize < 1023 {
-            return String(format: "%.1f MB", floatSize)
-        }
-        // GB
-        floatSize = floatSize / 1024
-        return String(format: "%.1f GB", floatSize)
-    }
+//    func fileSize(itemName: String) -> String? {
+//        let nsDocumentDirectory = FileManager.SearchPathDirectory.documentDirectory
+//        let nsUserDomainMask = FileManager.SearchPathDomainMask.userDomainMask
+//        let paths = NSSearchPathForDirectoriesInDomains(nsDocumentDirectory, nsUserDomainMask, true)
+//        guard let dirPath = paths.first else {
+//            return ""
+//        }
+//        let filePath = Constants.documentDir.appendingPathComponent(itemName).absoluteString
+////        let filePath = "\(dirPath)/\(itemName)"
+//        guard let size = try? FileManager.default.attributesOfItem(atPath: filePath)[FileAttributeKey.size],
+//              let fileSize = size as? UInt64 else {
+//            return nil
+//        }
+//
+//        // bytes
+//        if fileSize < 1023 {
+//            return String(format: "%lu bytes", CUnsignedLong(fileSize))
+//        }
+//        // KB
+//        var floatSize = Float(fileSize / 1024)
+//        if floatSize < 1023 {
+//            return String(format: "%.1f KB", floatSize)
+//        }
+//        // MB
+//        floatSize = floatSize / 1024
+//        if floatSize < 1023 {
+//            return String(format: "%.1f MB", floatSize)
+//        }
+//        // GB
+//        floatSize = floatSize / 1024
+//        return String(format: "%.1f GB", floatSize)
+//    }
     @objc func openCommentVC(_ sender: UIButton){
         let audioFile = totalFiles[sender.tag].name ?? ""
         pushToComments(selected: audioFile, index: sender.tag)
@@ -1044,4 +1025,24 @@ extension ExistingVC{
             audioPlayer.updateMeters()
         }
     }
+}
+
+extension URL {
+    var attributes: [FileAttributeKey : Any]? {
+        do {
+            return try FileManager.default.attributesOfItem(atPath: path)
+        } catch let error as NSError {
+            print("FileAttribute error: \(error)")
+        }
+        return nil
+    }
+
+    var fileSize: UInt64 {
+        return attributes?[.size] as? UInt64 ?? UInt64(0)
+    }
+
+    var fileSizeString: String {
+        return ByteCountFormatter.string(fromByteCount: Int64(fileSize), countStyle: .file)
+    }
+
 }

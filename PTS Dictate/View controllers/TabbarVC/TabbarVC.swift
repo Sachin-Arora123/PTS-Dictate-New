@@ -100,8 +100,14 @@ class TabbarVC: UITabBarController, UITabBarControllerDelegate {
     override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
         let currentIndex = tabBar.items?.firstIndex(of: item)
         let tabbarItemTag = item.tag
+        print(self.navigationItem.hidesBackButton)
         switch tabbarItemTag {
         case 0:
+            if currentIndex == 3{
+                if let settingsVC = self.viewControllers?[3] as? UINavigationController{
+                    settingsVC.popToRootViewController(animated: false)
+                }
+            }
             break
         case 2:
             if currentIndex != selectedIndex {
@@ -130,16 +136,11 @@ class TabbarVC: UITabBarController, UITabBarControllerDelegate {
             return false
         }else if viewController.title != "Record" {
             if isRecording{
-                audioRecorder?.pause()
                 CommonFunctions.showAlert(view: viewController, title: "PTS Dictate", message: "Do you want to stop the current Recording ?", completion: {
                     (result) in
                     if result{
                         self.setTabBarHidden(true, animated: false)
                         NotificationCenter.default.post(name: Notification.Name("showBottomBtnView"), object: nil)
-                        print("Tapped Yes")
-                    }else{
-                        audioRecorder?.record()
-                        print("Tapped No")
                     }
                 })
                 return false

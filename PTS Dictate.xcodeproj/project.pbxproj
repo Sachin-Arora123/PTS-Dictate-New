@@ -60,6 +60,9 @@
 		28A4F5CF28B510DE0035137B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 28A4F5CE28B510DE0035137B /* Assets.xcassets */; };
 		28A4F5D228B510DE0035137B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 28A4F5D028B510DE0035137B /* LaunchScreen.storyboard */; };
 		28A4F5DE28B51D750035137B /* Extension+Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5DD28B51D750035137B /* Extension+Navigation.swift */; };
+		28B6424F299D07B10059A876 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 28B6424E299D07B10059A876 /* FirebaseAnalytics */; };
+		28B64251299D07B10059A876 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 28B64250299D07B10059A876 /* FirebaseCrashlytics */; };
+		28B64254299D0D7A0059A876 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 28B64253299D0D7A0059A876 /* GoogleService-Info.plist */; };
 		28F0125D2974066C006C7617 /* Extension+UILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F0125C2974066C006C7617 /* Extension+UILabel.swift */; };
 		4BFCB13CEA7E06C3217E3512 /* Pods_PTS_Dictate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7801E7DB3243DA4B1EF6CD0C /* Pods_PTS_Dictate.framework */; };
 		616E4A43290AB21E0011ABF2 /* F3BarGauge.m in Sources */ = {isa = PBXBuildFile; fileRef = 616E4A41290AB21E0011ABF2 /* F3BarGauge.m */; };
@@ -122,6 +125,7 @@
 		28A4F5D128B510DE0035137B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		28A4F5D328B510DE0035137B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		28A4F5DD28B51D750035137B /* Extension+Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+Navigation.swift"; sourceTree = "<group>"; };
+		28B64253299D0D7A0059A876 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		28F0125C2974066C006C7617 /* Extension+UILabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+UILabel.swift"; sourceTree = "<group>"; };
 		60EFDBA9037F05EEA8612299 /* Pods-PTS Dictate.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PTS Dictate.debug.xcconfig"; path = "Target Support Files/Pods-PTS Dictate/Pods-PTS Dictate.debug.xcconfig"; sourceTree = "<group>"; };
 		616E4A41290AB21E0011ABF2 /* F3BarGauge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = F3BarGauge.m; sourceTree = "<group>"; };
@@ -137,6 +141,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				28B64251299D07B10059A876 /* FirebaseCrashlytics in Frameworks */,
+				28B6424F299D07B10059A876 /* FirebaseAnalytics in Frameworks */,
 				4BFCB13CEA7E06C3217E3512 /* Pods_PTS_Dictate.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -427,6 +433,7 @@
 				28A4F5DA28B517C10035137B /* Storyboards */,
 				180EB43728B6A52200F1A3FB /* Extras */,
 				28A4F5D328B510DE0035137B /* Info.plist */,
+				28B64253299D0D7A0059A876 /* GoogleService-Info.plist */,
 			);
 			path = "PTS Dictate";
 			sourceTree = "<group>";
@@ -513,12 +520,17 @@
 				28A4F5BF28B510D90035137B /* Frameworks */,
 				28A4F5C028B510D90035137B /* Resources */,
 				E5299E48A690929EFA4A5FBE /* [CP] Embed Pods Frameworks */,
+				28B64252299D0A290059A876 /* ShellScript */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = "PTS Dictate";
+			packageProductDependencies = (
+				28B6424E299D07B10059A876 /* FirebaseAnalytics */,
+				28B64250299D07B10059A876 /* FirebaseCrashlytics */,
+			);
 			productName = "PTS Dictate";
 			productReference = 28A4F5C228B510D90035137B /* PTS Dictate.app */;
 			productType = "com.apple.product-type.application";
@@ -548,6 +560,9 @@
 				Base,
 			);
 			mainGroup = 28A4F5B928B510D90035137B;
+			packageReferences = (
+				28B6424D299D07B10059A876 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			productRefGroup = 28A4F5C328B510D90035137B /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -564,6 +579,7 @@
 			files = (
 				18CDDB0A28B7D493006AB795 /* Tabbar.storyboard in Resources */,
 				1837EC0028D790FC0046B4AA /* NoticeView.bundle in Resources */,
+				28B64254299D0D7A0059A876 /* GoogleService-Info.plist in Resources */,
 				28A4F5D228B510DE0035137B /* LaunchScreen.storyboard in Resources */,
 				28A4F5CF28B510DE0035137B /* Assets.xcassets in Resources */,
 				182BE0B328BD332300327094 /* Settings.storyboard in Resources */,
@@ -575,6 +591,25 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		28B64252299D0A290059A876 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
+				"$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
+		};
 		3E812B9D0A100DEBD49CB0F0 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -821,6 +856,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = W34HD83689;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "PTS Dictate/Info.plist";
@@ -858,6 +894,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = W34HD83689;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "PTS Dictate/Info.plist";
@@ -907,6 +944,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		28B6424D299D07B10059A876 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		28B6424E299D07B10059A876 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 28B6424D299D07B10059A876 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		28B64250299D07B10059A876 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 28B6424D299D07B10059A876 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		18DF4BD928BE7D81002FC063 /* CoreData.xcdatamodeld */ = {

@@ -55,6 +55,9 @@ class LoginViewModel {
                 let resultString = userName.components(separatedBy: notAllowedChars).joined(separator: "")
                 CoreData.shared.profileName = resultString
                 
+                let filename = CoreData.shared.fileName
+                CoreData.shared.fileName = filename != "" ? filename : CoreData.shared.profileName
+                
                 //save
                 let currentDeviceOS = UIDevice.current.systemVersion
                 UserDefaults.standard.set(currentDeviceOS, forKey: "currentDeviceOS")

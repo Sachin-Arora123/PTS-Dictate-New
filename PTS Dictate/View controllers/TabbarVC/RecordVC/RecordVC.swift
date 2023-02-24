@@ -11,12 +11,6 @@ import AVFoundation
 import SCWaveformView
 
 var isRecording: Bool = false
-var audioRecorder:AVAudioRecorder?
-//var audioPlayer:AVAudioPlayer?
-//var player: AVAudioPlayer?
-var tempChunks : [AVURLAsset] = []
-var tempAudioFileURL: String = ""
-var audioFileName: String = ""
 
 enum RecorderState: Int {
     case none = 0
@@ -105,11 +99,11 @@ class RecordVC: BaseViewController {
     var playFirstTime           = false
     var editAssetDuration       = 0.0
     var originalEditAssetPath   : URL?
-    var bookmarkTimingsArray    = [Int]()
-    var totalBookmarkButtons    = [UIButton]()
-    var totalBookmarkTimeLabels = [UILabel]()
-    var initialHandleLabel      = UILabel()
-    var bookmarkWidth           = 0.0
+//    var bookmarkTimingsArray    = [Int]()
+//    var totalBookmarkButtons    = [UIButton]()
+//    var totalBookmarkTimeLabels = [UILabel]()
+//    var initialHandleLabel      = UILabel()
+//    var bookmarkWidth           = 0.0
     
     private var isCommentsOn:Bool {
         return CoreData.shared.commentScreen == 1 ?  true : false
@@ -148,9 +142,12 @@ class RecordVC: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         NotificationCenter.default.addObserver(self, selector: #selector(self.showBottomView), name: Notification.Name("showBottomBtnView"), object: nil)
-//        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillTerminate(notification:)), name: UIApplication.willTerminateNotification, object: nil)
-        
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleInterupption), name: Notification.Name("handleInterupption"), object: nil)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.playerDidFinishPlaying(sender:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.recorder.playerItem)
     }
     
     @objc func handleInterupption(){
@@ -158,6 +155,12 @@ class RecordVC: BaseViewController {
         self.recorder.endRecording()
         self.recorderState = .pause
         stopwatch.pause()
+        
+        //we need to insert the audio asset in articleChunks Array anyhow.
+        if self.recorder.articleChunks.first?.duration.seconds == 0{
+            print("Here we are")
+            print(AVURLAsset(url: Constants.documentDir.appendingPathComponent(self.audioFileURL + ".m4a")).duration.seconds)
+        }
         
         self.tabBarController?.setTabBarHidden(true, animated: false)
         btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
@@ -175,7 +178,6 @@ class RecordVC: BaseViewController {
                 success in
                 if success{
                     self.chunkInt = 0
-                    print("Success save chunks removed")
                     DispatchQueue.main.async {
                         self.proceedAutoSave()
                     }
@@ -394,6 +396,8 @@ class RecordVC: BaseViewController {
             }
         }
         
+        CoreData.shared.fileCount = count
+        
         if self.audioForEditing != nil{
             //editing
             var fileName = self.audioForEditing ?? ""
@@ -402,11 +406,9 @@ class RecordVC: BaseViewController {
             }
             self.audioFileURL       = fileName
             self.lblFNameValue.text = fileName + ".m4a"
-            audioFileName           = fileName + ".m4a"
         }else{
             self.audioFileURL       = nameToShow + "_" + convertedDateStr + "_File_" + String(format: "%03d", count)
             self.lblFNameValue.text = nameToShow + "_" + convertedDateStr + "_File_" + String(format: "%03d", count) + ".m4a"
-            audioFileName           = nameToShow + "_" + convertedDateStr + "_File_" + String(format: "%03d", count) + ".m4a"
         }
         self.lblFSizeValue.text = "0.00 Mb"
         
@@ -509,6 +511,10 @@ class RecordVC: BaseViewController {
         btnStop.isUserInteractionEnabled = false
         CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
         lblPlayerStatus.text = "Stopped"
+        
+        self.recorder.pauseRecording()
+        self.recorderState = .pause
+        self.stopwatch.pause()
     }
         
     
@@ -705,9 +711,9 @@ class RecordVC: BaseViewController {
             
             self.enableDisableForwardBackwardButtons(enable: true)
             
-            enableBookmarkButton(enable: true)
+//            enableBookmarkButton(enable: true)
             
-            NotificationCenter.default.addObserver(self, selector: #selector(self.playerDidFinishPlaying(sender:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.recorder.playerItem)
+            
             
             let timeScale = CMTimeScale(NSEC_PER_SEC)
             let time = CMTime(seconds: 0.25, preferredTimescale: timeScale)
@@ -727,7 +733,7 @@ class RecordVC: BaseViewController {
             self.onStopPlayerSetupUI()
             self.enableDisableForwardBackwardButtons(enable: true)
             
-            enableBookmarkButton(enable: false)
+//            enableBookmarkButton(enable: false)
         }
     }
     
@@ -748,13 +754,13 @@ class RecordVC: BaseViewController {
         self.btnForwardTrimEnd.setBackgroundImage(imageBtnFastForward, for: .normal)
     }
     
-    func enableBookmarkButton(enable:Bool){
-        if CoreData.shared.indexing == 1{
-            self.btnBookmark.isUserInteractionEnabled = enable
-            let image = enable ? UIImage(named: "record_bookmark_btn_normal") : UIImage(named: "record_bookmark_btn_disable")
-            self.btnBookmark.setImage(image, for: .normal)
-        }
-    }
+//    func enableBookmarkButton(enable:Bool){
+//        if CoreData.shared.indexing == 1{
+//            self.btnBookmark.isUserInteractionEnabled = enable
+//            let image = enable ? UIImage(named: "record_bookmark_btn_normal") : UIImage(named: "record_bookmark_btn_disable")
+//            self.btnBookmark.setImage(image, for: .normal)
+//        }
+//    }
     
     func onStopPlayerSetupUI(){
         btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
@@ -775,7 +781,7 @@ class RecordVC: BaseViewController {
         self.recorder.queuePlayerPlaying = false
         
         self.enableDisableForwardBackwardButtons(enable: false)
-        enableBookmarkButton(enable: false)
+//        enableBookmarkButton(enable: false)
     }
     
     // MARK: - @IBAction Forward.
@@ -856,36 +862,31 @@ class RecordVC: BaseViewController {
                     }
                     break
                 case 1:
-                    self.performingFunctionState = .insert
-                    self.btnClear.tag = 2
-                    self.recorderState = .pause
-                    self.setInsert_PartialDeleteUI()
                     if CoreData.shared.disableEditingHelp == 0{
-                        CommonFunctions.alertMessage(view: self, title: "Insert", msg: Constants.insertMsg, btnTitle: "OK", completion: nil)
+                        CommonFunctions.alertMessage(view: self, title: "Insert", msg: Constants.insertMsg, btnTitle: "OK") {
+                            self.handleInsert()
+                        }
+                    }else{
+                        self.handleInsert()
                     }
-                    self.recorder.startPlayer()
-                    self.observePlayerAfterEdit()
                     break
                 case 2:
-                    self.performingFunctionState = .overwrite
-                    self.btnClear.tag = 3
-                    self.recorderState = .pause
-                    self.setInsert_PartialDeleteUI()
                     if CoreData.shared.disableEditingHelp == 0{
-                        CommonFunctions.alertMessage(view: self, title: "Overwrite", msg: Constants.overwriteMsg, btnTitle: "OK", completion: nil)
+                        CommonFunctions.alertMessage(view: self, title: "Overwrite", msg: Constants.overwriteMsg, btnTitle: "OK"){
+                            self.handleOverwrite()
+                        }
+                    }else{
+                        self.handleOverwrite()
                     }
-                    self.recorder.startPlayer()
-                    self.observePlayerAfterEdit()
                     break
                 case 3:
-                    self.performingFunctionState = .partialDelete
-                    self.btnClear.tag = 4
                     if CoreData.shared.disableEditingHelp == 0{
-                        CommonFunctions.alertMessage(view: self, title: "Partial Delete", msg: Constants.partialDeleteMsg, btnTitle: "OK", completion: nil)
+                        CommonFunctions.alertMessage(view: self, title: "Partial Delete", msg: Constants.partialDeleteMsg, btnTitle: "OK"){
+                            self.handlePartialDelete()
+                        }
+                    }else{
+                        self.handlePartialDelete()
                     }
-                    self.setInsert_PartialDeleteUI()
-                    self.recorder.startPlayer()
-                    self.observePlayerAfterEdit()
                     break
                 default:
                     break
@@ -894,6 +895,35 @@ class RecordVC: BaseViewController {
                 CommonFunctions.alertMessage(view: self, title: "Microphone Access Denied", msg: "This app requires access to your device's Microphone. \n Please enable Microphone access for this app in Settings / Privacy / Microphone", btnTitle: "Ok", completion: nil)
             }
         }
+    }
+    
+    func handleInsert(){
+        self.performingFunctionState = .insert
+        self.btnClear.tag = 2
+        self.recorderState = .pause
+        self.setInsert_PartialDeleteUI()
+        
+        self.recorder.startPlayer()
+        self.observePlayerAfterEdit()
+    }
+    
+    func handleOverwrite(){
+        self.performingFunctionState = .overwrite
+        self.btnClear.tag = 3
+        self.recorderState = .pause
+        self.setInsert_PartialDeleteUI()
+        
+        self.recorder.startPlayer()
+        self.observePlayerAfterEdit()
+    }
+    
+    func handlePartialDelete(){
+        self.performingFunctionState = .partialDelete
+        self.btnClear.tag = 4
+        
+        self.setInsert_PartialDeleteUI()
+        self.recorder.startPlayer()
+        self.observePlayerAfterEdit()
     }
     
     func observePlayerAfterEdit(){
@@ -951,7 +981,7 @@ class RecordVC: BaseViewController {
                 CoreData.shared.dataSave()
                 
                 isRecording = false
-                audioFileName = ""
+//                audioFileName = ""
                 self.onDiscardRecorderSetUp()
                 
                 self.resetValues()
@@ -986,7 +1016,7 @@ class RecordVC: BaseViewController {
         CoreData.shared.dataSave()
         
         isRecording = false
-        audioFileName = ""
+//        audioFileName = ""
         self.onDiscardRecorderSetUp()
         
         self.resetValues()
@@ -1009,7 +1039,7 @@ class RecordVC: BaseViewController {
         
         self.performingFunctionState = .append
         self.editAssetDuration = 0.0
-        self.bookmarkWidth = 0.0
+//        self.bookmarkWidth = 0.0
     }
     
     // MARK: - @IBAction Edit.
@@ -1037,7 +1067,7 @@ class RecordVC: BaseViewController {
                 }else{
                     self.lblPlayerStatus.text = ""
                     isRecording               = false
-                    audioFileName             = ""
+//                    audioFileName             = ""
                     for asset in self.recorder.articleChunks {
                         try? FileManager.default.removeItem(at: asset.url)
                     }
@@ -1088,6 +1118,7 @@ class RecordVC: BaseViewController {
             
             self.recorder.stopPlayer()
             self.btnClear.setImage(UIImage(named: "btn_start_inserting_normal"), for: .normal)
+            self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
         }else if sender.imageView?.image == UIImage(named: "btn_start_inserting_normal") {
             removeInsertStartingPoint()
             self.insertTimer.isHidden = false
@@ -1172,7 +1203,7 @@ class RecordVC: BaseViewController {
         }else if sender.imageView?.image == UIImage(named: "btn_end_point_normal") {
             overwritingEndPoint = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? .zero)
             //need to check if endpoint is equal to start point.
-            if Int(self.overwritingStartingPoint) == Int(self.overwritingEndPoint){
+            if Int(self.overwritingStartingPoint) >= Int(self.overwritingEndPoint){
                 CommonFunctions.alertMessage(view: self, title: Constants.appName, msg: "End Point should be greater than Start Point", btnTitle: "Ok", completion: nil)
                 return
             }
@@ -1254,7 +1285,7 @@ class RecordVC: BaseViewController {
             self.btnClear.setImage(UIImage(named: "btn_end_point_normal"), for: .normal)
         }else if sender.imageView?.image == UIImage(named: "btn_end_point_normal") {
             self.pdEndPoint = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
-            if Int(self.pdStartingPoint) == Int(self.pdEndPoint){
+            if Int(self.pdStartingPoint) >= Int(self.pdEndPoint){
                 CommonFunctions.alertMessage(view: self, title: Constants.appName, msg: "End Point should be greater than Start Point", btnTitle: "Ok", completion: nil)
                 return
             }
@@ -1622,18 +1653,18 @@ class RecordVC: BaseViewController {
         }
     }
     
-    func seekPlayerTime(time:CMTime){
-        self.recorder.queuePlayer?.seek(to: time, toleranceBefore: .zero, toleranceAfter: .zero, completionHandler: { result in
-            if result{
-                //update waves.
-                let currentTime = self.recorder.queuePlayer?.currentTime().seconds ?? 0.0
-                self.playerWaveView.waveformView.progressTime = CMTimeMakeWithSeconds(currentTime, preferredTimescale: 1)
-                
-                //update timings.
-                self.currentPlayingTime.text = self.timeString(from: currentTime)
-            }
-        })
-    }
+//    func seekPlayerTime(time:CMTime){
+//        self.recorder.queuePlayer?.seek(to: time, toleranceBefore: .zero, toleranceAfter: .zero, completionHandler: { result in
+//            if result{
+//                //update waves.
+//                let currentTime = self.recorder.queuePlayer?.currentTime().seconds ?? 0.0
+//                self.playerWaveView.waveformView.progressTime = CMTimeMakeWithSeconds(currentTime, preferredTimescale: 1)
+//
+//                //update timings.
+//                self.currentPlayingTime.text = self.timeString(from: currentTime)
+//            }
+//        })
+//    }
     
     // MARK: - Discard Recorder setUp.
     @objc func onDiscardRecorderSetUp(){
@@ -1772,13 +1803,13 @@ extension RecordVC: AVAudioRecorderDelegate,AVAudioPlayerDelegate {
     }
     
     // Completion of playing
-    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        if player == self.recorder.queuePlayer{
-            if flag{
-                btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-            }
-        }
-    }
+//    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+//        if player == self.recorder.queuePlayer{
+//            if flag{
+//                btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+//            }
+//        }
+//    }
 }
 
 extension RecordVC{
@@ -1812,40 +1843,46 @@ extension RecordVC{
     
     func removeFileChunksInDocDirectory(){
         do {
-            let fileURLs = try FileManager.default.contentsOfDirectory(at: Constants.documentDir, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
-            for fileURL in fileURLs{
-                //Do not remove the files which are already saved.
-                
-                if fileURL.standardizedFileURL.absoluteString.contains(CoreData.shared.profileName){
-                    //that is some old saved file which we don't need to delete.
-                    
-                }else{
-                    if fileURL.standardizedFileURL.absoluteString != Constants.documentDir.appendingPathComponent("final.m4a").absoluteString{
-                        try FileManager.default.removeItem(at: fileURL)
-                    }
+            let fileURLsArray = try FileManager.default.contentsOfDirectory(at: Constants.documentDir, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
+            let audioFiles = AudioFiles.shared.audioFiles
+            
+            //We need to extract the array of extra urls and remove them from document directory.
+            var audioFileNames = audioFiles.map({($0.name ?? "")})
+            audioFileNames.append("final")
+            
+            var extraUrlsArray = [URL]()
+            
+            for fileUrl in fileURLsArray{
+                if !fileUrl.absoluteString.contains(audioFileNames){
+                    extraUrlsArray.append(fileUrl)
                 }
             }
+            
+            for extraUrl in extraUrlsArray{
+                try FileManager.default.removeItem(at: extraUrl)
+            }
+
         } catch  { print(error) }
         
         //change the name of final.m4a
         let sourcePath = Constants.documentDir.appendingPathComponent("final.m4a")
-        
+
         DispatchQueue.main.async {
             var fileName = (self.audioForEditing != nil ? self.audioForEditing : self.audioFileURL) ?? ""
             //need to remove .m4a in case of editing
             if let dotRange = fileName.range(of: ".") {
                 fileName.removeSubrange(dotRange.lowerBound..<fileName.endIndex)
             }
-            
+
             let destPath = Constants.documentDir.appendingPathComponent(fileName + ".m4a")
             do{
                 _ = try FileManager.default.replaceItemAt(destPath, withItemAt: sourcePath)
-                
+
                 //now the destPath has updated result. we can give that value to articleChunks array as well so that it can play the final one.
                 let assetToAdd = AVURLAsset(url: destPath)
                 self.recorder.articleChunks.removeAll()
                 self.recorder.articleChunks.append(assetToAdd)
-                
+
                 self.updateTimer()
             }catch  { print(error) }
         }

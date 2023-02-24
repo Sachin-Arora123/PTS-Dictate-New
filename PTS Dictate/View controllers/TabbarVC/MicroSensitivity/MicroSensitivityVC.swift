@@ -24,6 +24,11 @@ class MicroSensitivityVC: BaseViewController {
         setUpUI()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationItem.hidesBackButton = true
+    }
+    
     @IBAction func sliderValueChanged(sender: UISlider) {
         let currentValue = Double(sender.value)
         print("->>", currentValue )

@@ -26,4 +26,7 @@ extension String {
         return formatter.date(from: self) ?? Date()
     }
     
+    func contains(_ strings: [String]) -> Bool {
+        strings.contains { contains($0) }
+    }
 }

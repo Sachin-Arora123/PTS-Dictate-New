@@ -75,6 +75,9 @@ class NamingFormatVC: BaseViewController {
         super.viewWillDisappear(animated)
         self.tabBarController?.navigationItem.rightBarButtonItem = nil
         hideBottomView()
+        
+//        navigationController?.popToRootViewController(animated: false)
+        self.navigationItem.hidesBackButton = true
     }
     
     // MARK: - UISetup
