@@ -12,13 +12,10 @@ class TabbarVC: UITabBarController, UITabBarControllerDelegate {
     
     var thirdTabbarItemImageView: UIImageView!
     var viewControllerToSelect: UIViewController?
-    
-    let tabbarNames : [String] = ["Existing\rDictations","Uploads\rin progress","Record","Settings","Logout"]
-    
+        
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.delegate = self
-        // Do any additional setup after loading the view.
         
         let thirdItemView = self.tabBar.subviews[2]
         self.thirdTabbarItemImageView = thirdItemView.subviews.first as? UIImageView
@@ -38,10 +35,10 @@ class TabbarVC: UITabBarController, UITabBarControllerDelegate {
         self.tabBar.sendSubviewToBack(lineView)
         //        self.tabBarController?.tabBar.backgroundColor = .white
         
-        let appearance = UITabBarItem.appearance()
-        let attributes = [NSAttributedString.Key.font:UIFont(name: "HelveticaNeue-Bold", size: 10)]
-        appearance.setTitleTextAttributes(attributes as [NSAttributedString.Key : Any], for: .normal)
-        appearance.setTitleTextAttributes(attributes as [NSAttributedString.Key : Any], for: .selected)
+//        let appearance = UITabBarItem.appearance()
+//        let attributes = [NSAttributedString.Key.font:UIFont(name: "HelveticaNeue-Bold", size: 10)]
+//        appearance.setTitleTextAttributes(attributes as [NSAttributedString.Key : Any], for: .normal)
+//        appearance.setTitleTextAttributes(attributes as [NSAttributedString.Key : Any], for: .selected)
     }
     
     override func viewDidLoad() {
@@ -61,15 +58,11 @@ class TabbarVC: UITabBarController, UITabBarControllerDelegate {
                 itemt.imageInsets = UIEdgeInsets(top: 8, left: 0, bottom: -5, right: 0)
                 let viewTabBar = itemt.value(forKey: "view") as? UIView
                 if viewTabBar?.subviews.count == 2 {
-                    // here customise the label
-                    
                     if let label = viewTabBar?.subviews[1] as? UILabel {
                         label.numberOfLines = 2
                         label.textAlignment = .center
-                        //                        label.lineBreakMode = .byWordWrapping
                         DispatchQueue.main.asyncAfter(deadline: .now()) {
                             label.frame = CGRect(x: label.frame.minX, y: label.frame.minY, width: ind == 0 ? UIScreen.main.bounds.width/9.8 : 44, height: 25)
-                            label.text = self.tabbarNames[ind]
                             viewTabBar?.layoutIfNeeded()
                             viewTabBar?.setNeedsLayout()
                             viewTabBar?.layoutSubviews()

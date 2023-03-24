@@ -73,7 +73,7 @@ class UploadProgressVC: BaseViewController {
     
     fileprivate func uploadFiles(file: AudioFile) {
         let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let completePath  = directoryPath.absoluteString + (file.name ?? "")
+        let completePath  = directoryPath.absoluteString + (file.filePath ?? "")
         let url           = URL(string: completePath)
         
         let emailNotify = (CoreData.shared.disableEmailNotify == 0)
@@ -82,7 +82,8 @@ class UploadProgressVC: BaseViewController {
             UpdateAudioFile.isUploaded(true).update(audioName: file.name ?? "")
             UpdateAudioFile.uploadedStatus(true).update(audioName: file.name ?? "")
             UpdateAudioFile.uploadingInProgress(false).update(audioName: file.name ?? "")
-            let date = Date().getFormattedDateString()
+            let date = Date().getUTCDateString()
+            print(Date().getFormattedDateString())
             UpdateAudioFile.uploadedAt(date).update(audioName: file.name ?? "")
             self.tableView.reloadData()
             if self.currentUploadingFile < self.files.count - 1 { self.currentUploadingFile += 1 }

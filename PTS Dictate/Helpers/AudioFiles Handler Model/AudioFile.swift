@@ -27,30 +27,34 @@ public class AudioFile: NSObject, NSSecureCoding {
     
     public var name: String?
     public var changedName: String?
+    public var filePath: String?
     public var fileInfo: AudioFileInfo?
     
     enum CodingKeys:String {
-        case name, changedName, fileInfo
+        case name, changedName, filePath, fileInfo
     }
     
-    init(name: String?, changedName: String?, fileInfo: AudioFileInfo?) {
+    init(name: String?, changedName: String?, filePath: String?, fileInfo: AudioFileInfo?) {
         self.name = name
         self.changedName = changedName
+        self.filePath = filePath
         self.fileInfo = fileInfo
     }
     
     public func encode(with aCoder: NSCoder) {
         aCoder.encode(name, forKey: CodingKeys.name.rawValue)
         aCoder.encode(changedName, forKey: CodingKeys.changedName.rawValue)
+        aCoder.encode(filePath, forKey: CodingKeys.filePath.rawValue)
         aCoder.encode(fileInfo, forKey: CodingKeys.fileInfo.rawValue)
     }
     
     public required convenience init?(coder aDecoder: NSCoder) {
         let name = aDecoder.decodeObject(forKey: CodingKeys.name.rawValue) as? String
         let changedName = aDecoder.decodeObject(forKey: CodingKeys.changedName.rawValue) as? String
+        let filePath = aDecoder.decodeObject(forKey: CodingKeys.filePath.rawValue) as? String
         let fileInfo = aDecoder.decodeObject(forKey: CodingKeys.fileInfo.rawValue) as? AudioFileInfo
         
-        self.init(name: name, changedName: changedName, fileInfo: fileInfo)
+        self.init(name: name, changedName: changedName, filePath: filePath, fileInfo: fileInfo)
     }
 }
 

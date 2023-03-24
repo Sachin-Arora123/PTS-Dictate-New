@@ -57,50 +57,43 @@ class AudioFiles {
         return singleTon.instance
     }
     
-    func deleteAudio(name: String) {
+    func deleteAudio(path: String) {
 //        for (index, audio) in audioFiles.enumerated() where name == audio.name ?? "" {
 //            audioFiles.remove(at: index)
 //        }
         audioFiles.removeAll { audio in
-            audio.name == name
+            audio.filePath == path
         }
         updateAudioFilesOnCoreData()
     }
     
-    func saveNewAudioFile(name: String, autoSaved: Bool = false) {
+    func saveNewAudioFile(fileName: String, filePath: String, comment: String?, autoSaved: Bool = false) {
         saveFileUploadedDate()
-        if self.checkIfAlreadyExists(name: name){
+        if self.checkIfAlreadyExists(path: filePath){
             //remove first and then save
-            self.deleteAudio(name: name)
-            self.proceedForSave(name: name, comment: nil, autoSaved: autoSaved)
+            self.deleteAudio(path: filePath)
+            self.proceedForSave(fileName: fileName, filePath: filePath, comment: comment)
         }else{
-            self.proceedForSave(name: name, comment: nil, autoSaved: autoSaved)
+            self.proceedForSave(fileName: fileName, filePath: filePath, comment: comment)
         }
     }
     
-    func saveNewAudioFile(name: String, comment: String?) {
-        saveFileUploadedDate()
-        if self.checkIfAlreadyExists(name: name){
-            //remove first and then save
-            self.deleteAudio(name: name)
-            self.proceedForSave(name: name, comment: comment)
-        }else{
-            self.proceedForSave(name: name, comment: comment)
-        }
-    }
-    
-    func proceedForSave(name: String, comment: String?, autoSaved: Bool = false){
+    func proceedForSave(fileName: String, filePath: String, comment: String?, autoSaved: Bool = false){
         //check if changedName existed for that file(the case when a file has changedName and it is saving again after edit)
         var changedName = ""
-        if checkIfAlreadyExists(name: name){
-            changedName = checkIfChangedName(name: name)
+        if checkIfAlreadyExists(path: filePath){
+            changedName = checkIfChangedName(name: fileName)
         }
-        AudioFiles.shared.audioFiles.append(AudioFile(name: name, changedName: changedName, fileInfo: AudioFileInfo(comment: comment, isUploaded: false, uploadedStatus: false, archivedDays: archiveFile == 1 ? archiveFileDays : 0, canEdit: false, uploadedAt: nil, uploadingInProgress: false, autoSaved: autoSaved, uploadedBy: CoreData.shared.userId)))
+        
+        let archiveFile     = CoreData.shared.archiveFile
+        let archiveFileDays = CoreData.shared.archiveFileDays
+        
+        AudioFiles.shared.audioFiles.append(AudioFile(name: fileName, changedName: changedName, filePath: filePath, fileInfo: AudioFileInfo(comment: comment, isUploaded: false, uploadedStatus: false, archivedDays: archiveFile == 1 ? archiveFileDays : 0, canEdit: false, uploadedAt: nil, uploadingInProgress: false, autoSaved: autoSaved, uploadedBy: CoreData.shared.userId)))
         updateAudioFilesOnCoreData()
     }
     
-    func checkIfAlreadyExists(name:String) -> Bool{
-        for (_, audio) in audioFiles.enumerated() where audio.name == name {
+    func checkIfAlreadyExists(path:String) -> Bool{
+        for (_, audio) in audioFiles.enumerated() where audio.filePath == path {
             return true
         }
         return false

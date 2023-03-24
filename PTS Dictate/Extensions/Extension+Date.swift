@@ -15,6 +15,14 @@ extension Date {
         return formatter.string(from: self)
     }
     
+    func getUTCDateString() -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .long
+        formatter.timeStyle = .short
+        formatter.timeZone  = TimeZone(abbreviation: "UTC")
+        return formatter.string(from: self)
+    }
+    
 }
 
 extension String {

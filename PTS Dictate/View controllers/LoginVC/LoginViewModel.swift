@@ -55,6 +55,8 @@ class LoginViewModel {
                 let resultString = userName.components(separatedBy: notAllowedChars).joined(separator: "")
                 CoreData.shared.profileName = resultString
                 
+                CoreData.shared.filePath = CoreData.shared.profileName
+                
                 let filename = CoreData.shared.fileName
                 CoreData.shared.fileName = filename != "" ? filename : CoreData.shared.profileName
                 

@@ -127,7 +127,7 @@ class RecordVC: BaseViewController {
         strongSelf.updateAudioMeter()
     })
     
-    var audioForEditing: String? {
+    var audioForEditing: AudioFile? {
         // getting the value from exiting view controller's variable
         get {
             return (self.tabBarController!.viewControllers![0] as! ExistingVC).audioForEditing ?? nil
@@ -155,12 +155,6 @@ class RecordVC: BaseViewController {
         self.recorder.endRecording()
         self.recorderState = .pause
         stopwatch.pause()
-        
-        //we need to insert the audio asset in articleChunks Array anyhow.
-        if self.recorder.articleChunks.first?.duration.seconds == 0{
-            print("Here we are")
-            print(AVURLAsset(url: Constants.documentDir.appendingPathComponent(self.audioFileURL + ".m4a")).duration.seconds)
-        }
         
         self.tabBarController?.setTabBarHidden(true, animated: false)
         btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
@@ -217,7 +211,7 @@ class RecordVC: BaseViewController {
         if let _ = self.audioForEditing { // if value is nil then its not for editing, if that's hold any string value then setup the ui for editing that audio
             
             //assigning editing asset to the article chunks array for future refrence.
-            let editingAsset = AVURLAsset(url: Constants.documentDir.appendingPathComponent(self.audioForEditing ?? ""))
+            let editingAsset = AVURLAsset(url: Constants.documentDir.appendingPathComponent(self.audioForEditing?.filePath ?? ""))
             self.recorder.articleChunks = [editingAsset]
             self.editAssetDuration = editingAsset.duration.seconds
             
@@ -237,7 +231,7 @@ class RecordVC: BaseViewController {
         // Get the file path in the bundle
         let tempDirectoryURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
         // Create a destination URL.
-        let targetURL = tempDirectoryURL.appendingPathComponent(self.audioForEditing ?? "")
+        let targetURL = tempDirectoryURL.appendingPathComponent(self.audioForEditing?.filePath ?? "")
         // Copy the file.
         do {
             try FileManager.default.copyItem(at: sourceUrl, to: targetURL)
@@ -400,14 +394,15 @@ class RecordVC: BaseViewController {
         
         if self.audioForEditing != nil{
             //editing
-            var fileName = self.audioForEditing ?? ""
+            var fileName = (self.audioForEditing?.changedName != "" ? self.audioForEditing?.changedName : self.audioForEditing?.name) ?? ""
             if let dotRange = fileName.range(of: ".") {
                 fileName.removeSubrange(dotRange.lowerBound..<fileName.endIndex)
             }
             self.audioFileURL       = fileName
             self.lblFNameValue.text = fileName + ".m4a"
         }else{
-            self.audioFileURL       = nameToShow + "_" + convertedDateStr + "_File_" + String(format: "%03d", count)
+            //audioFileURL should be the actual file url without spaces.(self.lblFNameValue.text may be different than that)
+            self.audioFileURL       = CoreData.shared.filePath + "_" + convertedDateStr + "_File_" + String(format: "%03d", count)
             self.lblFNameValue.text = nameToShow + "_" + convertedDateStr + "_File_" + String(format: "%03d", count) + ".m4a"
         }
         self.lblFSizeValue.text = "0.00 Mb"
@@ -450,26 +445,6 @@ class RecordVC: BaseViewController {
         }
     }
     
-    // MARK: - Handle app terminate notification
-//    @objc func applicationWillTerminate(notification: Notification) {
-//        print("Notification received.")
-//        AudioFiles.shared.saveNewAudioFile(name: audioFileName, autoSaved: true) // mohit new changes
-//        if self.recorder.audioRecorder != nil {
-//            self.recorder.endRecording()
-//            CoreData.shared.fileCount += 1
-//            CoreData.shared.dataSave()
-//        }
-//
-//        self.recorderState = .none
-//        tempAudioFileURL = self.audioFileURL
-//        stopwatch.stop()
-//        print("temp",tempAudioFileURL)
-//
-//        for asset in self.recorder.articleChunks {
-//            try! FileManager.default.removeItem(at: asset.url)
-//        }
-//    }
-        
     // MARK: - Setup audio waves for the recorded audio
     func setUpWave() {
         self.playerWaveView.isHidden = false
@@ -546,14 +521,13 @@ class RecordVC: BaseViewController {
                     self.btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: .normal)
                     self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
                     self.btnPlay.isUserInteractionEnabled = true
-                    
-                    var fileName = (self.audioForEditing != nil ? self.audioForEditing : self.audioFileURL) ?? ""
-                    //need to remove .m4a in case of editing
-                    if let dotRange = fileName.range(of: ".") {
-                        fileName.removeSubrange(dotRange.lowerBound..<fileName.endIndex)
+                                        
+                    var editFilepath = self.audioForEditing?.filePath ?? ""
+                    if let dotRange = editFilepath.range(of: ".") {
+                        editFilepath.removeSubrange(dotRange.lowerBound..<editFilepath.endIndex)
                     }
                     
-                    self.recorder.concatChunks(filename: fileName){
+                    self.recorder.concatChunks(filename: self.audioForEditing != nil ? editFilepath : self.audioFileURL){
                         success in
                         if success{
                             DispatchQueue.main.async {
@@ -634,7 +608,11 @@ class RecordVC: BaseViewController {
         
         
         if self.performingFunctionState == .append{
-            self.recorder.concatChunks(filename: self.audioFileURL){
+            var editFilepath = self.audioForEditing?.filePath ?? ""
+            if let dotRange = editFilepath.range(of: ".") {
+                editFilepath.removeSubrange(dotRange.lowerBound..<editFilepath.endIndex)
+            }
+            self.recorder.concatChunks(filename: self.audioForEditing != nil ? editFilepath : self.audioFileURL){
                 success in
                 if success{
                     self.chunkInt = 0
@@ -957,7 +935,8 @@ class RecordVC: BaseViewController {
         self.setPushTransitionAnimation(VC)
         VC.hidesBottomBarWhenPushed = true
         VC.isCommentsMandotary = isCommentsMandotary
-        VC.fileName = self.audioFileURL + ".m4a"  // mohit changes
+        VC.filePath = self.audioFileURL + ".m4a"
+        VC.fileName = self.lblFNameValue.text ?? ""
         self.navigationController?.pushViewController(VC, animated: false)
     }
     
@@ -990,7 +969,8 @@ class RecordVC: BaseViewController {
                     if self.isCommentsOn {
                         self.pushCommentVC()
                     } else {
-                        AudioFiles.shared.saveNewAudioFile(name: self.audioFileURL + ".m4a")  // mohit new changes
+                        AudioFiles.shared.saveNewAudioFile(fileName: self.lblFNameValue.text ?? "", filePath: self.audioForEditing != nil ? self.audioForEditing?.filePath ?? "" : self.audioFileURL + ".m4a", comment: nil)
+//                        AudioFiles.shared.saveNewAudioFile(name: self.audioFileURL + ".m4a")  // mohit new changes
                         let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
                         self.setPushTransitionAnimation(VC)
                         self.navigationController?.popViewController(animated: false)
@@ -1021,7 +1001,9 @@ class RecordVC: BaseViewController {
         
         self.resetValues()
         
-        AudioFiles.shared.saveNewAudioFile(name: self.audioFileURL + ".m4a", autoSaved: true)
+        AudioFiles.shared.saveNewAudioFile(fileName: self.lblFNameValue.text ?? "", filePath: self.audioFileURL + ".m4a", comment: nil, autoSaved: true)
+        
+//        AudioFiles.shared.saveNewAudioFile(name: self.audioFileURL + ".m4a", autoSaved: true)
         let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
         self.setPushTransitionAnimation(VC)
         self.navigationController?.popViewController(animated: false)
@@ -1131,7 +1113,7 @@ class RecordVC: BaseViewController {
     
     func checkIfStartPointIsAtEnd() -> Bool{
         let currentTime = Int(self.playerWaveView.waveformView.progressTime.seconds)
-        let editAsset   = AVAsset(url: Constants.documentDir.appendingPathComponent(self.audioForEditing ?? ""))
+        let editAsset   = AVAsset(url: Constants.documentDir.appendingPathComponent(self.audioForEditing?.filePath ?? ""))
         if currentTime == Int(editAsset.duration.seconds){
             return true
         }
@@ -1177,7 +1159,7 @@ class RecordVC: BaseViewController {
         lblPlayerStatus.text = "Inserting"
         lblPlayerStatus.stopBlink()
         lblPlayerStatus.startBlink()
-        let asset = AVAsset(url: Constants.documentDir.appendingPathComponent(self.audioForEditing ?? ""))
+        let asset = AVAsset(url: Constants.documentDir.appendingPathComponent(self.audioForEditing?.filePath ?? ""))
         self.lblTime.text = self.timeString(from: asset.duration.seconds)
         self.recorder.startRecording(fileName: "file_to_insert")
         self.chunkInt += 1
@@ -1232,7 +1214,7 @@ class RecordVC: BaseViewController {
         self.customRangeBarHeight.constant = 45
         self.parentStackTop.constant = 35
         lblPlayerStatus.text = "Overwriting"
-        let asset = AVAsset(url: Constants.documentDir.appendingPathComponent(self.audioForEditing ?? ""))
+        let asset = AVAsset(url: Constants.documentDir.appendingPathComponent(self.audioForEditing?.filePath ?? ""))
         self.lblTime.text = self.timeString(from: asset.duration.seconds)
         lblPlayerStatus.stopBlink()
         lblPlayerStatus.startBlink()
@@ -1585,7 +1567,7 @@ class RecordVC: BaseViewController {
     */
      
     func showInsertStartingPoint(timeVal:Double){
-        let editAsset = AVAsset(url: Constants.documentDir.appendingPathComponent(self.audioForEditing ?? ""))
+        let editAsset = AVAsset(url: Constants.documentDir.appendingPathComponent(self.audioForEditing?.filePath ?? ""))
         let xVal = (Double(self.playerWaveView.frame.width) * timeVal / editAsset.duration.seconds) + 15
         let yVal = playerWaveView.frame.origin.y
         let height = playerWaveView.frame.size.height
@@ -1608,7 +1590,7 @@ class RecordVC: BaseViewController {
     }
     
     func showOverwritePoint(startingPoint:Bool){
-        let editAsset = AVAsset(url: Constants.documentDir.appendingPathComponent(self.audioForEditing ?? ""))
+        let editAsset = AVAsset(url: Constants.documentDir.appendingPathComponent(self.audioForEditing?.filePath ?? ""))
         let xVal = (Double(self.playerWaveView.frame.width) * self.playerWaveView.waveformView.progressTime.seconds / editAsset.duration.seconds) + 15
         let yVal = playerWaveView.frame.origin.y
         let height = playerWaveView.frame.size.height
@@ -1631,7 +1613,7 @@ class RecordVC: BaseViewController {
     }
     
     func showPartialPoint(startingPoint:Bool){
-        let editAsset = AVAsset(url: Constants.documentDir.appendingPathComponent(self.audioForEditing ?? ""))
+        let editAsset = AVAsset(url: Constants.documentDir.appendingPathComponent(self.audioForEditing?.filePath ?? ""))
         let xVal = (Double(self.playerWaveView.frame.width) * self.playerWaveView.waveformView.progressTime.seconds / editAsset.duration.seconds) + 15
         let yVal = playerWaveView.frame.origin.y
         let height = playerWaveView.frame.size.height
@@ -1720,7 +1702,7 @@ class RecordVC: BaseViewController {
         self.tabBarController?.setTabBarHidden(false, animated: false)
         
         //timings
-        let asset = AVAsset(url: Constants.documentDir.appendingPathComponent(self.audioForEditing ?? ""))
+        let asset = AVAsset(url: Constants.documentDir.appendingPathComponent(self.audioForEditing?.filePath ?? ""))
         self.lblTime.text            = self.timeString(from: asset.duration.seconds)
         self.currentPlayingTime.text = self.lblTime.text
         self.playerTotalTime.text    = self.lblTime.text
@@ -1847,7 +1829,7 @@ extension RecordVC{
             let audioFiles = AudioFiles.shared.audioFiles
             
             //We need to extract the array of extra urls and remove them from document directory.
-            var audioFileNames = audioFiles.map({($0.name ?? "")})
+            var audioFileNames = audioFiles.map({($0.filePath ?? "")})
             audioFileNames.append("final")
             
             var extraUrlsArray = [URL]()
@@ -1868,7 +1850,7 @@ extension RecordVC{
         let sourcePath = Constants.documentDir.appendingPathComponent("final.m4a")
 
         DispatchQueue.main.async {
-            var fileName = (self.audioForEditing != nil ? self.audioForEditing : self.audioFileURL) ?? ""
+            var fileName = (self.audioForEditing != nil ? self.audioForEditing?.filePath : self.audioFileURL) ?? ""
             //need to remove .m4a in case of editing
             if let dotRange = fileName.range(of: ".") {
                 fileName.removeSubrange(dotRange.lowerBound..<fileName.endIndex)
@@ -1892,7 +1874,7 @@ extension RecordVC{
         //try FileManager.default.contentsOfDirectory(at: Constants.documentDir, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
         //the source path is what where the original edit asset placed in the doc directory
         let sourcePath = self.originalEditAssetPath ?? URL(fileURLWithPath: "")
-        let destPath   = Constants.documentDir.appendingPathComponent(self.audioForEditing ?? "")
+        let destPath   = Constants.documentDir.appendingPathComponent(self.audioForEditing?.filePath ?? "")
         do{
             _ = try FileManager.default.replaceItemAt(destPath, withItemAt: sourcePath)
             self.updateTimer()

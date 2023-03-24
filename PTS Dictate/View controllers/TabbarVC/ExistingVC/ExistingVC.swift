@@ -45,7 +45,7 @@ class ExistingVC: BaseViewController {
     var pausedTime: Double?
 //    var fileDuration = 0
     var uploadingQueue: [String] = []
-    var audioForEditing: String?
+    var audioForEditing: AudioFile?
     private var audioMeteringLevelTimer: Timer?
     var tag = -1
     
@@ -146,11 +146,13 @@ class ExistingVC: BaseViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setUpUI()
-        //        CoreData.shared.audioFiles = []
-        //        CoreData.shared.dataSave()
         if totalFiles.count > 0 {
             self.setUpWave(index: 0)
         }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         self.checkArchiveDate()
     }
     
@@ -216,7 +218,7 @@ class ExistingVC: BaseViewController {
         
         totalAsset.removeAll()
         totalFiles.forEach { audio in
-            let asset = AVAsset(url: Constants.documentDir.appendingPathComponent(audio.name ?? ""))
+            let asset = AVAsset(url: Constants.documentDir.appendingPathComponent(audio.filePath ?? ""))
             totalAsset.append(asset)
         }
         
@@ -225,8 +227,12 @@ class ExistingVC: BaseViewController {
     
     fileprivate func setRightBarItem() {
         if totalFiles.count > 0{
+            if totalFiles.filter({$0.fileInfo?.isUploaded == false}).count > 0{
+                setRighButtonImage(imageName: "unchecked_checkbox", selector: #selector(onTapRightImage))
+            }else{
+                self.navigationItem.rightBarButtonItem = nil
+            }
             self.lblPlayerStatus.text  = ""
-            setRighButtonImage(imageName: "unchecked_checkbox", selector: #selector(onTapRightImage))
         }else{
             setRighButtonImage(imageName: "quickAdd", selector: #selector(onTapRightImage))
         }
@@ -270,9 +276,9 @@ class ExistingVC: BaseViewController {
         }
         
         let index                 = playingMediaIndex
-        self.lblFileName.text     = self.totalFiles[index].name
+        self.lblFileName.text     = self.totalFiles[index].changedName != "" ? self.totalFiles[index].changedName : self.totalFiles[index].name
         self.lblPlayerStatus.text = "Now Playing"
-        let completePathURL       = Constants.documentDir.appendingPathComponent(self.lblFileName.text ?? "")
+        let completePathURL       = Constants.documentDir.appendingPathComponent(self.totalFiles[index].filePath ?? "")
                     
         if isPlaying{
             //Pause
@@ -304,7 +310,7 @@ class ExistingVC: BaseViewController {
             self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_pause_btn_normal"), for: .normal)
             tag = index
             self.audioMeteringLevelTimer = Timer.scheduledTimer(timeInterval: 0.05, target: self, selector: #selector(timerDidUpdateMeter), userInfo: nil, repeats: true)
-            self.lblTotalTime.text = self.getTimeDuration(filePath: self.totalFiles[index].name ?? "")
+            self.lblTotalTime.text = self.getTimeDuration(filePath: self.totalFiles[index].filePath ?? "")
         }
         self.setTrimButtonInteraction(isInteractive: true)
         self.tableView.reloadData()
@@ -401,7 +407,7 @@ class ExistingVC: BaseViewController {
                 if success{
                     for file in self.totalFilesSelected {
                         self.removeAudio(itemName: file.name ?? "", fileExtension: "")
-                        AudioFiles.shared.deleteAudio(name: file.name ?? "")
+                        AudioFiles.shared.deleteAudio(path: file.filePath ?? "")
                     }
                     self.totalFilesSelected.removeAll()
                     self.totalFiles = self.getSortedAudioList()
@@ -617,21 +623,27 @@ class ExistingVC: BaseViewController {
         }
     }
     
-    //file which are uploaded and their file retention days are greater than the set retention days for that file will be removed from the list.
+    //Files which are uploaded and their file retention days are greater than the set retention days for that file will be removed from the list.
     func checkArchiveDate() {
-        let currentDateString = Date().getFormattedDateString()
         let audioFiles = AudioFiles.shared.audioFiles
-        
-        for file in audioFiles where file.fileInfo?.isUploaded ?? false && file.fileInfo?.archivedDays != 0 {
-            let uploadedDate = file.fileInfo?.uploadedAt ?? ""
-            let archivedDays = file.fileInfo?.archivedDays ?? 0
-            let diffDays = daysBetween(start: uploadedDate.getDateFromFormattedString(), end: currentDateString.getDateFromFormattedString())
-            if diffDays > archivedDays {
-                let fileName = file.name ?? ""
-                self.removeAudio(itemName: fileName, fileExtension: "")
-                AudioFiles.shared.deleteAudio(name: fileName)
-                self.totalFiles = self.getSortedAudioList()
-                self.setRightBarItem()
+        audioFiles.forEach { file in
+            if file.fileInfo?.isUploaded ?? false && file.fileInfo?.archivedDays != 0{
+                let currentDate  = Date().getUTCDateString()
+                let uploadedDate = file.fileInfo?.uploadedAt ?? ""
+                
+                //number of days till it gets uploaded
+                let diffDays = daysBetween(start: uploadedDate.getDateFromFormattedString(), end: currentDate.getDateFromFormattedString())
+                
+                //archive days value for that file
+                let archivedDays = file.fileInfo?.archivedDays ?? 0
+                
+                if (archivedDays < diffDays || archivedDays == diffDays){
+                    let fileName = file.name ?? ""
+                    self.removeAudio(itemName: fileName, fileExtension: "")
+                    AudioFiles.shared.deleteAudio(path: file.filePath ?? "")
+                    self.totalFiles = self.getSortedAudioList()
+                    self.setRightBarItem()
+                }
             }
         }
     }
@@ -645,7 +657,7 @@ class ExistingVC: BaseViewController {
 extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if self.totalFiles.count > 0{
-            self.lblFileName.text = self.totalFiles[0].name
+            self.lblFileName.text = self.totalFiles[0].changedName != "" ? self.totalFiles[0].changedName : self.totalFiles[0].name
             self.tableView.isHidden = false
             self.viewBottomPlayer.isHidden = false
             self.viewNoRecordedFile.isHidden = true
@@ -734,7 +746,7 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
         cell.btnEdit.isHidden = false
         
         
-        let fileUrl = Constants.documentDir.appendingPathComponent(self.totalFiles[indexPath.row].name ?? "")
+        let fileUrl = Constants.documentDir.appendingPathComponent(self.totalFiles[indexPath.row].filePath ?? "")
         cell.lblFileSize.text = fileUrl.fileSizeString
         
         cell.btnSelection.removeTarget(self, action: nil, for: .touchUpInside)
@@ -753,7 +765,7 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
         cell.btnEdit.addTarget(self, action: #selector(openRenameFileVc), for: .touchUpInside)
         setCellData(cell: cell, audio: totalFiles[indexPath.row])
         DispatchQueue.main.async {
-            let time = self.getTimeDuration(filePath: self.totalFiles[indexPath.row].name ?? "")
+            let time = self.getTimeDuration(filePath: self.totalFiles[indexPath.row].filePath ?? "")
             cell.lblFileTime.text = time
         }
         return cell
@@ -825,7 +837,7 @@ extension ExistingVC{
     }
     
     @objc func openRenameFileVc(_ sender: UIButton){
-        self.audioForEditing = self.totalFiles[sender.tag].name ?? ""
+        self.audioForEditing = self.totalFiles[sender.tag]
         let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
         self.setPushTransitionAnimation(VC)
         self.navigationController?.popViewController(animated: false)

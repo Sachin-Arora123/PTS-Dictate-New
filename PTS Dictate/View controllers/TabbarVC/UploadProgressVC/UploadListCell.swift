@@ -52,8 +52,8 @@ class UploadListCell: UITableViewCell {
             
             detailStackView.isHidden = false
             viewUploadProgress.isHidden = true
-            let time = getTimeDuration(filePath: file.name ?? "")
-            let size = fileSize(itemName: file.name ?? "")
+            let time = getTimeDuration(filePath: file.filePath ?? "")
+            let size = fileSize(itemName: file.filePath ?? "")
             lblTiming.text = time
             lblDataLimit.text = size
         }

@@ -37,11 +37,12 @@ class CoreData: NSObject {
     var fileCount: Int = 1
     var dateFormat: String = ""
     var archiveFile = 1 // 1 - true & 0 - false
-    var archiveFileDays = 30 // 30 - day default
+    var archiveFileDays = 3 // 3 - day default
     var uploadViaWifi = 0 // 1 - true & 0 - false
     var sleepModeOverride = 0 // 1 - true & 0 - false
     var microSensitivityValue : Double = 1.0
     var fileName : String = ""
+    var filePath : String = ""
     var userInfo = [String]()
     var audioFiles: [AudioFile] = [] {
         didSet {
@@ -108,6 +109,7 @@ class CoreData: NSObject {
         newData.setValue(sleepModeOverride, forKey: "sleepModeOverride")
         newData.setValue(microSensitivityValue, forKey: "microSensitivityValue")
         newData.setValue(fileName, forKey: "fileName")
+        newData.setValue(filePath, forKey: "filePath")
         newData.setValue(audioFiles, forKey: "audioFiles")
         do {
             try context.save()
@@ -147,6 +149,10 @@ class CoreData: NSObject {
                     if let fileName = result.value(forKey: "fileName") as? String{
                         self.fileName = fileName
                         print("data get fileName \(fileName)")
+                    }
+                    if let filePath = result.value(forKey: "filePath") as? String{
+                        self.filePath = filePath
+                        print("data get filePath \(filePath)")
                     }
                     if let userId = result.value(forKey: "userId") as? String{
                         self.userId = userId
@@ -266,6 +272,7 @@ class CoreData: NSObject {
         microSensitivityValue = CoreData.shared.microSensitivityValue
         userInfo.removeAll()
         fileName = CoreData.shared.fileName
+        filePath = CoreData.shared.filePath
         
         if !self.isRemeberMe{
             self.userName = ""

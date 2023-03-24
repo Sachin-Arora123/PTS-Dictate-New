@@ -23,6 +23,7 @@ class CommentsVC: BaseViewController {
     var isUploaded = false
     var selectedAudio = ""
     var fileName = ""
+    var filePath = ""
     var comment = ""
     let ACCEPTABLE_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_"
 //    var meteringLevels: [Float] = []
@@ -87,7 +88,10 @@ class CommentsVC: BaseViewController {
             popToExitingVC()
             return
         }
-        AudioFiles.shared.saveNewAudioFile(name: fileName, comment: txtViewComment.text)
+//        AudioFiles.shared.saveNewAudioFile(name: fileName, comment: txtViewComment.text)
+        
+        AudioFiles.shared.saveNewAudioFile(fileName: self.fileName, filePath: self.filePath, comment: txtViewComment.text)
+        
         let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
         self.setPushTransitionAnimation(VC)
         popToExitingVC()
