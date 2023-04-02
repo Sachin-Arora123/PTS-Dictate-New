@@ -70,7 +70,7 @@ class CoreData: NSObject {
 //        {
 //            let appDelegate = UIApplication.shared.delegate as! AppDelegate
 //            let context = appDelegate.persistentContainer.viewContext
-//            let newUser = NSManagedObject(entity: entity!, insertInto: context)
+//            let b newUser = NSManagedObject(entity: entity!, insertInto: context)
 //            saveData(UserDBObj:newUser)
 //        }
     
@@ -248,40 +248,44 @@ class CoreData: NSObject {
     
     // MARK: - deleteLocalData
     func deleteProfile() {
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        let context = appDelegate.persistentContainer.viewContext
-        let DelAllReqVar = NSBatchDeleteRequest(fetchRequest: NSFetchRequest<NSFetchRequestResult>(entityName: "Login"))
-        accessToken =  ""
-        email = ""
-        userName = CoreData.shared.userName
-        profileName = CoreData.shared.profileName
+//        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+//        let context = appDelegate.persistentContainer.viewContext
+//        let DelAllReqVar = NSBatchDeleteRequest(fetchRequest: NSFetchRequest<NSFetchRequestResult>(entityName: "Login"))
+        CoreData.shared.accessToken = ""
+        CoreData.shared.email       = ""
         welcomeName = ""
         privilege = ""
-        audioQuality = CoreData.shared.audioQuality
-        voiceActivation = CoreData.shared.voiceActivation
-        disableEmailNotify = CoreData.shared.disableEmailNotify
-        commentScreen = CoreData.shared.commentScreen
-        commentScreenMandatory = CoreData.shared.commentScreenMandatory
-        indexing = 0
-        disableEditingHelp = CoreData.shared.disableEditingHelp
-        dateFormat      = CoreData.shared.dateFormat
-        archiveFile     = CoreData.shared.archiveFile
-        archiveFileDays = CoreData.shared.archiveFileDays
-        uploadViaWifi   = CoreData.shared.uploadViaWifi
-        sleepModeOverride = CoreData.shared.sleepModeOverride
-        microSensitivityValue = CoreData.shared.microSensitivityValue
-        userInfo.removeAll()
-        fileName = CoreData.shared.fileName
-        filePath = CoreData.shared.filePath
+        self.dataSave()
+        
+        
+//        userName = CoreData.shared.userName
+//        isRemeberMe = CoreData.shared.isRemeberMe
+//        profileName = CoreData.shared.profileName
+//        audioQuality = CoreData.shared.audioQuality
+//        voiceActivation = CoreData.shared.voiceActivation
+//        disableEmailNotify = CoreData.shared.disableEmailNotify
+//        commentScreen = CoreData.shared.commentScreen
+//        commentScreenMandatory = CoreData.shared.commentScreenMandatory
+//        indexing = 0
+//        disableEditingHelp = CoreData.shared.disableEditingHelp
+//        dateFormat      = CoreData.shared.dateFormat
+//        archiveFile     = CoreData.shared.archiveFile
+//        archiveFileDays = CoreData.shared.archiveFileDays
+//        uploadViaWifi   = CoreData.shared.uploadViaWifi
+//        sleepModeOverride = CoreData.shared.sleepModeOverride
+//        microSensitivityValue = CoreData.shared.microSensitivityValue
+//        userInfo.removeAll()
+//        fileName = CoreData.shared.fileName
+//        filePath = CoreData.shared.filePath
         
         if !self.isRemeberMe{
             self.userName = ""
             self.password = ""
         }
-        do {
-            try context.execute(DelAllReqVar)
-        } catch {
-            print(error)
-        }
+//        do {
+//            try context.execute(DelAllReqVar)
+//        } catch {
+//            print(error)
+//        }
     }
 }

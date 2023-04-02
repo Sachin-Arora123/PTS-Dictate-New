@@ -115,18 +115,22 @@ class TabbarVC: UITabBarController, UITabBarControllerDelegate {
     
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
         if viewController.title == "logout"{
-            print("logout")
-            CommonFunctions.showAlert(view: viewController, title: "PTS Dictate", message: "Are you sure you want to Logout?", completion: {
-                (result) in
-                if result{
-                    print("Tapped Yes")
-                    CoreData.shared.deleteProfile()
-                    AppDelegate.sharedInstance().moveToLoginVC()
-                }else{
-                    print("Tapped No")
-                }
-            })
-            return false
+            if isUploading{
+                CommonFunctions.alertMessage(view: viewController, title: "PTS Dictate", msg: "Uploading In progress", btnTitle: "Ok", completion: nil)
+                return false
+            }else{
+                CommonFunctions.showAlert(view: viewController, title: "PTS Dictate", message: "Are you sure you want to Logout?", completion: {
+                    (result) in
+                    if result{
+                        print("Tapped Yes")
+                        CoreData.shared.deleteProfile()
+                        AppDelegate.sharedInstance().moveToLoginVC()
+                    }else{
+                        print("Tapped No")
+                    }
+                })
+                return false
+            }
         }else if viewController.title != "Record" {
             if isRecording{
                 CommonFunctions.showAlert(view: viewController, title: "PTS Dictate", message: "Do you want to stop the current Recording ?", completion: {

@@ -6,7 +6,7 @@
 //
 
 import UIKit
-
+var isUploading: Bool = false
 class UploadProgressVC: BaseViewController {
     
     // MARK: @IBOutlets.
@@ -72,6 +72,7 @@ class UploadProgressVC: BaseViewController {
     }
     
     fileprivate func uploadFiles(file: AudioFile) {
+        isUploading = true
         let directoryPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let completePath  = directoryPath.absoluteString + (file.filePath ?? "")
         let url           = URL(string: completePath)
@@ -87,6 +88,7 @@ class UploadProgressVC: BaseViewController {
             UpdateAudioFile.uploadedAt(date).update(audioName: file.name ?? "")
             self.tableView.reloadData()
             if self.currentUploadingFile < self.files.count - 1 { self.currentUploadingFile += 1 }
+            if self.files.count - 1 == self.currentUploadingFile{ isUploading = false }
         } failure: { error in
             print("error === \(error.description)")
             CommonFunctions.toster("Upload Error",titleDesc: "Error in upload. Please try again.", true, false)
@@ -94,6 +96,7 @@ class UploadProgressVC: BaseViewController {
             UpdateAudioFile.uploadedStatus(false).update(audioName: file.name ?? "")
             UpdateAudioFile.uploadingInProgress(false).update(audioName: file.name ?? "")
             if self.currentUploadingFile < self.files.count - 1 { self.currentUploadingFile += 1 }
+            if self.files.count - 1 == self.currentUploadingFile{ isUploading = false }
             self.tableView.reloadData()
         }
     }

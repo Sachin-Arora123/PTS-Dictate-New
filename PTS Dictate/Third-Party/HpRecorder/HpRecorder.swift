@@ -174,7 +174,7 @@ public class HPRecorder: NSObject {
             do {
                 try composition.insertTimeRange(assetTimeRange, of: asset, at: insertAt.end)
             } catch {
-                NSLog("Unable to compose asset track.")
+                print("Unable to compose asset track.")
             }
             let nextDuration = insertAt.duration + assetTimeRange.duration
             insertAt = CMTimeRange(start: .zero, duration: nextDuration)

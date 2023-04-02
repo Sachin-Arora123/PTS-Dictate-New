@@ -227,7 +227,7 @@ class ExistingVC: BaseViewController {
     
     fileprivate func setRightBarItem() {
         if totalFiles.count > 0{
-            if totalFiles.filter({$0.fileInfo?.isUploaded == false}).count > 0{
+            if totalFiles.filter({$0.fileInfo?.isUploaded == false || $0.fileInfo?.uploadedStatus == false}).count > 0{
                 setRighButtonImage(imageName: "unchecked_checkbox", selector: #selector(onTapRightImage))
             }else{
                 self.navigationItem.rightBarButtonItem = nil
@@ -423,7 +423,7 @@ class ExistingVC: BaseViewController {
         if totalFilesSelected.count > 0{
             for file in totalFilesSelected {
                 let audioFile = getFileInfo(name: file.name ?? "")
-                if audioFile?.fileInfo?.isUploaded ?? false {
+                if audioFile?.fileInfo?.isUploaded ?? false && audioFile?.fileInfo?.uploadedStatus == true{
                     return true
                 } else {
                     status = false
@@ -553,7 +553,9 @@ class ExistingVC: BaseViewController {
     fileprivate func pushToFileRenameScreen(selected audio: AudioFile, index: Int) {
         let VC = RenameFileVC.instantiateFromAppStoryboard(appStoryboard: .Main)
         self.setPushTransitionAnimation(VC)
-//        let audioFile = getFileInfo(name: audio)
+//        let changedNames = self.totalFiles.map({$0.changedName})
+        let names = self.totalFiles.map({($0.changedName !=  "" ? $0.changedName : $0.name) ?? ""})
+        VC.alreadyPresentNames = names
         let filename  = audio.changedName != "" ? audio.changedName : audio.name
         VC.fileName   = filename ?? ""
         VC.updatedFileNameCallback = { updatedChangedName in
@@ -707,23 +709,25 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
             cell.btnComment.setBackgroundImage(UIImage(named: "no_comments_normal"), for: .normal)
             cell.btnEdit.setBackgroundImage(UIImage(named: "music_edit_normal"), for: .normal)
         } else if file?.fileInfo?.isUploaded ?? true && file?.fileInfo?.comment != nil{
-            //This is the case when file is uploaded and it has comemnt(even it is empty)
-            cell.lblFileStatus.textColor = (file?.fileInfo?.uploadedStatus ?? false) ? UIColor(red: 62/255, green: 116/255, blue: 36/255, alpha: 1.0) : .red
-            cell.lblFileStatus.text = (file?.fileInfo?.uploadedStatus ?? false) ? "Uploaded" : "Failed"
+            //This is the case when file is uploaded and it has comment(even it is empty)
+            if let uploadStatus = file?.fileInfo?.uploadedStatus{
+                cell.lblFileStatus.textColor = uploadStatus ? UIColor(red: 62/255, green: 116/255, blue: 36/255, alpha: 1.0) : .red
+                cell.lblFileStatus.text = uploadStatus ? "Uploaded" : "Failed"
+                cell.btnEdit.isUserInteractionEnabled = !uploadStatus
+                cell.btnEdit.setBackgroundImage(UIImage(named: uploadStatus ? "music_edit_disable" : "music_edit_normal"), for: .normal)
+            }
             cell.btnComment.isUserInteractionEnabled = true
-            cell.btnEdit.isUserInteractionEnabled = false
             cell.btnComment.isHidden = false
             cell.btnComment.setBackgroundImage(UIImage(named: "comments_active"), for: .normal)
-            cell.btnEdit.setBackgroundImage(UIImage(named: "music_edit_disable"), for: .normal)
         } else if file?.fileInfo?.isUploaded ?? true && file?.fileInfo?.comment == nil {
-            //This is the case when file is uploaded and it has no comemnt
-            cell.lblFileStatus.textColor = (file?.fileInfo?.uploadedStatus ?? false) ? UIColor(red: 62/255, green: 116/255, blue: 36/255, alpha: 1.0) : .red
-            cell.lblFileStatus.text = (file?.fileInfo?.uploadedStatus ?? false) ? "Uploaded" : "Failed"
-            cell.btnComment.isUserInteractionEnabled = true
-            cell.btnEdit.isUserInteractionEnabled = false
+            //This is the case when file is uploaded and it has no comment
+            if let uploadStatus = file?.fileInfo?.uploadedStatus{
+                cell.lblFileStatus.textColor = uploadStatus ? UIColor(red: 62/255, green: 116/255, blue: 36/255, alpha: 1.0) : .red
+                cell.lblFileStatus.text = uploadStatus ? "Uploaded" : "Failed"
+                cell.btnEdit.isUserInteractionEnabled = !uploadStatus
+                cell.btnEdit.setBackgroundImage(UIImage(named: uploadStatus ? "music_edit_disable" : "music_edit_normal"), for: .normal)
+            }
             cell.btnComment.isHidden = true
-            cell.btnComment.setBackgroundImage(UIImage(named: "no_comments_active"), for: .normal)
-            cell.btnEdit.setBackgroundImage(UIImage(named: "music_edit_disable"), for: .normal)
         }
     }
     
@@ -858,7 +862,7 @@ extension ExistingVC{
     @objc func onTapRightImage() {
         if totalFiles.count > 0 {
             if self.tabBarController?.navigationItem.rightBarButtonItem?.image == getRighButtonImage(imageName: "unchecked_checkbox") {
-                self.totalFilesSelected = self.totalFiles.filter({!($0.fileInfo?.isUploaded ?? false)})
+                self.totalFilesSelected = self.totalFiles.filter({!($0.fileInfo?.isUploaded ?? false) || $0.fileInfo?.uploadedStatus == false})
                 setRighButtonImage(imageName: "checked_checkbox", selector: #selector(onTapRightImage))
             }else if self.tabBarController?.navigationItem.rightBarButtonItem?.image == getRighButtonImage(imageName: "unchecked_checkbox"){
                 setRighButtonImage(imageName: "unchecked_checkbox", selector: #selector(onTapRightImage))

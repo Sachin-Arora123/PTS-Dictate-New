@@ -935,7 +935,7 @@ class RecordVC: BaseViewController {
         self.setPushTransitionAnimation(VC)
         VC.hidesBottomBarWhenPushed = true
         VC.isCommentsMandotary = isCommentsMandotary
-        VC.filePath = self.audioFileURL + ".m4a"
+        VC.filePath = self.audioForEditing != nil ? self.audioForEditing?.filePath ?? "" : self.audioFileURL + ".m4a"
         VC.fileName = self.lblFNameValue.text ?? ""
         self.navigationController?.pushViewController(VC, animated: false)
     }

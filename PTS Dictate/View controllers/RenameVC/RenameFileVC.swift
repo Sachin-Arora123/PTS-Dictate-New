@@ -18,6 +18,7 @@ class RenameFileVC: BaseViewController {
     var fileName = ""
     var updatedFileNameCallback : ((String) -> Void)?
     let ACCEPTABLE_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_"
+    var alreadyPresentNames : [String]?
     
     // MARK: - View Life-Cycle.
     override func viewDidLoad() {
@@ -48,6 +49,13 @@ class RenameFileVC: BaseViewController {
         
         //User enter a file name.
         //send callaback with updated filename and update it in the core data as well.
+        if let names = self.alreadyPresentNames{
+            if names.contains(self.fileName + ".m4a"){
+                CommonFunctions.alertMessage(view: self, title: "PTS Dictate", msg: "Already name present", btnTitle: "OK", completion: nil)
+                return
+            }
+        }
+        
         updatedFileNameCallback?(self.fileName)
         self.navigationController?.popViewController(animated: true)
     }
@@ -59,7 +67,7 @@ extension RenameFileVC : UITextFieldDelegate{
         let cs = NSCharacterSet(charactersIn: ACCEPTABLE_CHARACTERS).inverted
         let filtered = currentText.components(separatedBy: cs).joined(separator: "")
         
-        if currentText.replacingOccurrences(of: " ", with: "") == filtered{
+        if currentText.replacingOccurrences(of: " ", with: "") == filtered && currentText.count <= 100{
             self.fileName = currentText
             return true
         }else{
