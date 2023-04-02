@@ -169,7 +169,7 @@ class ExistingVC: BaseViewController {
         lblWelcome.textAlignment = .center
         lblWelcome.numberOfLines = 0
         lblWelcome.text = "Welcome \n \(username)"
-        lblWelcome.font = UIFont.boldSystemFont(ofSize: 20)
+        lblWelcome.font = UIFont.systemFont(ofSize: 20.0, weight: .bold)
 
         var text: NSMutableAttributedString? = nil
         if let attributedText = lblWelcome.attributedText{

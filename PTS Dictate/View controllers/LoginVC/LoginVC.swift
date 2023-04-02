@@ -130,8 +130,12 @@ extension LoginVC{
     }
     
     func setUpUI(){
+        let titleLbl = UILabel()
+        titleLbl.text = "PTS Dictate"
+        titleLbl.textColor = .appThemeColor
+        titleLbl.font = UIFont.systemFont(ofSize: 20.0, weight: .bold)
+        self.navigationItem.titleView = titleLbl
         
-        self.title = "PTS Dictate"
         let textAttributes = [NSAttributedString.Key.foregroundColor:UIColor.appThemeColor]
         navigationController?.navigationBar.titleTextAttributes = textAttributes
         
