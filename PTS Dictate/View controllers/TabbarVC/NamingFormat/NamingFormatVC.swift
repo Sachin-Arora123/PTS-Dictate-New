@@ -42,7 +42,7 @@ class NamingFormatVC: BaseViewController {
         let convertedDate = dateFormatter.date(from: currentDateStr) ?? Date()
         
         if self.dateFormat.count == 0 {
-            dateFormatter.dateFormat = "ddMMyyyy"
+            dateFormatter.dateFormat = "ddmmyyyy"
         }else{
             dateFormatter.dateFormat = self.dateFormat.replacingOccurrences(of: "mm", with: "MM")
         }
@@ -91,7 +91,11 @@ class NamingFormatVC: BaseViewController {
         
         pickerView.delegate = self
         pickerView.dataSource = self
-        
+          
+        var selectedDateFormat = CoreData.shared.dateFormat != "" ? CoreData.shared.dateFormat : "ddmmyyyy"
+        if let index = pickerViewData.firstIndex(of: selectedDateFormat){
+            pickerView.selectRow(index, inComponent: 0, animated: false)
+        }
     }
     
     @IBAction func btnDonePickerViewAction(_ sender: Any) {
