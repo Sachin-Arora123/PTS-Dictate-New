@@ -16,6 +16,8 @@
         <attribute name="fileName" optional="YES" attributeType="String"/>
         <attribute name="filePath" optional="YES" attributeType="String"/>
         <attribute name="indexing" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="isLastLoggedIn" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="isLoggedIn" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="isRemeberMe" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="microSensitivityValue" optional="YES" attributeType="Double" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="password" optional="YES" attributeType="String"/>

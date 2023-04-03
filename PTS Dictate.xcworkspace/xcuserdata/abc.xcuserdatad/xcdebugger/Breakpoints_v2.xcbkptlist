@@ -110,8 +110,8 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1054"
-            endingLineNumber = "1054"
+            startingLineNumber = "1055"
+            endingLineNumber = "1055"
             landmarkName = "onTapDiscard(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -167,38 +167,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "F301F2ED-C8D3-463E-9547-26CF14AF4C42"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PTS Dictate/CoreData/CoreData.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "281"
-            endingLineNumber = "281"
-            landmarkName = "deleteProfile()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "B1A0565A-7DE6-456B-BF2B-AAEDDD1BBDEA"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PTS Dictate/View controllers/TabbarVC/ExistingVC/ExistingVC.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "678"
-            endingLineNumber = "678"
-            landmarkName = "setCellData(cell:audio:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "1D2F7511-1F67-41B3-B882-BFB6354ED60F"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -206,13 +174,13 @@
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1004"
-            endingLineNumber = "1004"
+            startingLineNumber = "1005"
+            endingLineNumber = "1005"
             landmarkName = "proceedAutoSave()"
             landmarkType = "7">
             <Locations>
                <Location
-                  uuid = "1D2F7511-1F67-41B3-B882-BFB6354ED60F - 77709e5284457e55"
+                  uuid = "1D2F7511-1F67-41B3-B882-BFB6354ED60F - 77709e5284457e74"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
@@ -222,12 +190,12 @@
                   urlString = "file:///Users/abc/Desktop/PTS%20Dictate/PTS%20Dictate/View%20controllers/TabbarVC/RecordVC/RecordVC.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "1004"
-                  endingLineNumber = "1004"
-                  offsetFromSymbolStart = "1244">
+                  startingLineNumber = "1005"
+                  endingLineNumber = "1005"
+                  offsetFromSymbolStart = "1300">
                </Location>
                <Location
-                  uuid = "1D2F7511-1F67-41B3-B882-BFB6354ED60F - 77709e5284457e55"
+                  uuid = "1D2F7511-1F67-41B3-B882-BFB6354ED60F - 77709e5284457e74"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
@@ -237,9 +205,9 @@
                   urlString = "file:///Users/abc/Desktop/PTS%20Dictate/PTS%20Dictate/View%20controllers/TabbarVC/RecordVC/RecordVC.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "1004"
-                  endingLineNumber = "1004"
-                  offsetFromSymbolStart = "1464">
+                  startingLineNumber = "1005"
+                  endingLineNumber = "1005"
+                  offsetFromSymbolStart = "1520">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -321,6 +289,22 @@
             startingLineNumber = "168"
             endingLineNumber = "168"
             landmarkName = "handleInterupption()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "12C92DA3-C636-4AC2-B498-5E3DD64B4C63"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1194"
+            endingLineNumber = "1194"
+            landmarkName = "onTapEditPerformOverwriteFunction(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

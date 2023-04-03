@@ -71,6 +71,7 @@ class LoginViewModel {
                 CoreData.shared.userInfo.append(userName)
                 CoreData.shared.userInfo.append(response.userName ?? userName)
                 CoreData.shared.userInfo.append(response.email ?? "")
+                CoreData.shared.getdata()
             }else{
                 CommonFunctions.toster("PTS Dictate",titleDesc: "Username/Password are Incorrect", true, false)
             }

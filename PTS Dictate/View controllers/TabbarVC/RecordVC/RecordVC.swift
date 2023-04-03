@@ -266,6 +266,7 @@ class RecordVC: BaseViewController {
         
         self.removeInsertStartingPoint()
         self.removeOverwritePoints()
+        self.removePartialDeletePoints()
         self.clearTmpDirectory()
     }
     
@@ -1112,12 +1113,16 @@ class RecordVC: BaseViewController {
     }
     
     func checkIfStartPointIsAtEnd() -> Bool{
-        let currentTime = Int(self.playerWaveView.waveformView.progressTime.seconds)
-        let editAsset   = AVAsset(url: Constants.documentDir.appendingPathComponent(self.audioForEditing?.filePath ?? ""))
-        if currentTime == Int(editAsset.duration.seconds){
+        if self.playerWaveView.waveformView.progressTime.value == 0{
             return true
+        }else{
+            let currentTime = Int(self.playerWaveView.waveformView.progressTime.seconds)
+            let editAsset   = AVAsset(url: Constants.documentDir.appendingPathComponent(self.audioForEditing?.filePath ?? ""))
+            if currentTime == Int(editAsset.duration.seconds){
+                return true
+            }
+            return false
         }
-        return false
     }
     
     func removeInsertStartingPoint(){
@@ -1170,6 +1175,8 @@ class RecordVC: BaseViewController {
         
         self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: .normal)
         self.btnStop.isUserInteractionEnabled = true
+        
+        isRecording = true
     }
     
     func onTapEditPerformOverwriteFunction(_ sender: UIButton){
@@ -1183,18 +1190,23 @@ class RecordVC: BaseViewController {
             overwritingStartingPoint = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? .zero)
             self.btnClear.setImage(UIImage(named: "btn_end_point_normal"), for: .normal)
         }else if sender.imageView?.image == UIImage(named: "btn_end_point_normal") {
-            overwritingEndPoint = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? .zero)
             //need to check if endpoint is equal to start point.
-            if Int(self.overwritingStartingPoint) >= Int(self.overwritingEndPoint){
+            if self.recorder.queuePlayer?.currentTime().value == 0{
                 CommonFunctions.alertMessage(view: self, title: Constants.appName, msg: "End Point should be greater than Start Point", btnTitle: "Ok", completion: nil)
                 return
+            }else{
+                overwritingEndPoint = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? .zero)
+                if Int(self.overwritingStartingPoint) >= Int(self.overwritingEndPoint){
+                    CommonFunctions.alertMessage(view: self, title: Constants.appName, msg: "End Point should be greater than Start Point", btnTitle: "Ok", completion: nil)
+                    return
+                }
+                self.showOverwritePoint(startingPoint: false)
+                self.btnClear.setImage(UIImage(named: "btn_start_overwriting_normal"), for: .normal)
+                self.recorder.stopPlayer()
+                self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+                self.btnStop.isUserInteractionEnabled = true
+                self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: .normal)
             }
-            self.showOverwritePoint(startingPoint: false)
-            self.btnClear.setImage(UIImage(named: "btn_start_overwriting_normal"), for: .normal)
-            self.recorder.stopPlayer()
-            self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
-            self.btnStop.isUserInteractionEnabled = true
-            self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_normal"), for: .normal)
         }else {
             //Here we need to start recording from the start point to the end point and stop the recorder as soon as users records till end point.
             self.insertTimer.isHidden = false
@@ -1221,6 +1233,7 @@ class RecordVC: BaseViewController {
         self.recorder.startRecording(fileName: "\(chunkInt)")
         self.chunkInt += 1
         self.recorderState = .recording
+        isRecording = true
         
         //need to start a timer which will observe and stop recording when user reach at the end point.
         let time = overwritingEndPoint - overwritingStartingPoint
@@ -1263,18 +1276,23 @@ class RecordVC: BaseViewController {
                 return
             }
             self.showPartialPoint(startingPoint: true)
-            self.pdStartingPoint = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
+            self.pdStartingPoint = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? .zero)
             self.btnClear.setImage(UIImage(named: "btn_end_point_normal"), for: .normal)
         }else if sender.imageView?.image == UIImage(named: "btn_end_point_normal") {
-            self.pdEndPoint = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? CMTime.zero)
-            if Int(self.pdStartingPoint) >= Int(self.pdEndPoint){
+            if self.recorder.queuePlayer?.currentTime().value == 0{
                 CommonFunctions.alertMessage(view: self, title: Constants.appName, msg: "End Point should be greater than Start Point", btnTitle: "Ok", completion: nil)
                 return
+            }else{
+                self.pdEndPoint = CMTimeGetSeconds(self.recorder.queuePlayer?.currentTime() ?? .zero)
+                if Int(self.pdStartingPoint) >= Int(self.pdEndPoint){
+                    CommonFunctions.alertMessage(view: self, title: Constants.appName, msg: "End Point should be greater than Start Point", btnTitle: "Ok", completion: nil)
+                    return
+                }
+                
+                self.showPartialPoint(startingPoint: false)
+                self.btnClear.setImage(UIImage(named: "btn_start_deleting_normal"), for: .normal)
+                self.recorder.stopPlayer()
             }
-            
-            self.showPartialPoint(startingPoint: false)
-            self.btnClear.setImage(UIImage(named: "btn_start_deleting_normal"), for: .normal)
-            self.recorder.stopPlayer()
         }else if sender.imageView?.image == UIImage(named: "btn_start_deleting_normal") {
             self.removePartialDeletePoints()
             self.partialDeleteAudio(outputUrl: Constants.documentDir.appendingPathComponent("final.m4a"), startTime: Double(self.pdStartingPoint), endTime: Double(self.pdEndPoint)) { result in

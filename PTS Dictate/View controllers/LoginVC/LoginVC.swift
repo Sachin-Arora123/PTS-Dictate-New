@@ -110,7 +110,8 @@ extension LoginVC{
     
     func setViewWillAppearData(){
         self.tfPassword.isSecureTextEntry = true
-        CoreData.shared.getdata()
+//        CoreData.shared.getdata()
+        CoreData.shared.getremembereddata()
         if CoreData.shared.isRemeberMe{
             self.setRemeberMeButton()
             self.tfPassword.text = CoreData.shared.password
