@@ -127,9 +127,16 @@ class ExistingVC: BaseViewController {
         self.tabBarController?.delegate = self
         self.audioTimer = 0
         addObservers()
-        
+        totalFiles = self.getSortedAudioList()
         let longPress = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(sender:)))
         tableView.addGestureRecognizer(longPress)
+        if totalFiles.count > 0{
+            let completePathURL       = Constants.documentDir.appendingPathComponent(self.totalFiles[0].filePath ?? "")
+            setupPlayer(url: completePathURL)
+            playingCellIndex = 0
+            self.lblFileName.text = self.totalFiles[0].changedName != "" ? self.totalFiles[0].changedName : self.totalFiles[0].name
+            self.lblTotalTime.text = self.getTimeDuration(filePath: self.totalFiles[0].filePath ?? "")
+        }
     }
     
     @objc private func handleLongPress(sender: UILongPressGestureRecognizer) {
@@ -297,6 +304,7 @@ class ExistingVC: BaseViewController {
             if index != self.playingCellIndex {
                 self.audioMeteringLevelTimer?.invalidate()
                 setupPlayer(url: completePathURL)
+                audioPlayer.play()
                 setUpWave(index: index)
             }else{
                 if let audioTimer = self.audioTimer {
@@ -325,7 +333,7 @@ class ExistingVC: BaseViewController {
             try AVAudioSession.sharedInstance().setActive(true)
             audioPlayer =  try AVAudioPlayer(contentsOf: url)
             audioPlayer.delegate = self
-            audioPlayer.play()
+//            audioPlayer.play()
         }catch _ {
             print("catch")
         }
@@ -659,7 +667,7 @@ class ExistingVC: BaseViewController {
 extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if self.totalFiles.count > 0{
-            self.lblFileName.text = self.totalFiles[0].changedName != "" ? self.totalFiles[0].changedName : self.totalFiles[0].name
+//            self.lblFileName.text = self.totalFiles[0].changedName != "" ? self.totalFiles[0].changedName : self.totalFiles[0].name
             self.tableView.isHidden = false
             self.viewBottomPlayer.isHidden = false
             self.viewNoRecordedFile.isHidden = true
@@ -1003,7 +1011,7 @@ extension ExistingVC{
         if currentTime <= audioPlayer.currentTime {
             self.lblPlayingTime.text = self.timeString(from: currentTime)
         } else {
-            self.lblPlayingTime.text = self.timeString(from: audioPlayer.duration)
+            self.lblPlayingTime.text = self.timeString(from: currentTime)
         }
         
         audioPlayer.currentTime = TimeInterval(integerLiteral: currentTime)
@@ -1028,17 +1036,25 @@ extension ExistingVC{
         if time < 0 {
             audioPlayer.stop()
         } else {
-            audioPlayer.pause()
+        //    audioPlayer.pause()
             audioPlayer.currentTime = time
-            if pausedTime != nil {
-                audioPlayer.play()
-            }
-            let min = Int(audioPlayer.currentTime / 60)
-            let sec = Int(audioPlayer.currentTime.truncatingRemainder(dividingBy: 60))
-            let totalTimeString = String(format: "%02d:%02d", min, sec)
-            self.audioTimer = audioPlayer.currentTime
-            self.lblPlayingTime.text = totalTimeString
+//            if pausedTime != nil {
+//                audioPlayer.play()
+//            }
+//            let min = Int(audioPlayer.currentTime / 60)
+//            let sec = Int(audioPlayer.currentTime.truncatingRemainder(dividingBy: 60))
+//            let totalTimeString = String(format: "%02d:%02d", min, sec)
+//            self.audioTimer = audioPlayer.currentTime
+            //self.lblPlayingTime.text = totalTimeString
+            self.lblPlayingTime.text = self.timeString(from: time)
+            audioPlayer.currentTime = TimeInterval(integerLiteral: time)
+            self.audioTimer = self.audioPlayer.currentTime
+
+            
             audioPlayer.updateMeters()
+            
+            //update waves
+            self.mediaProgressView.waveformView.progressTime = CMTimeMakeWithSeconds(time, preferredTimescale: 1)
         }
     }
 }

@@ -105,6 +105,7 @@ class CoreData: NSObject {
                 managedObject?.setValue(true, forKey: "isLoggedIn")
                 managedObject?.setValue(true, forKey: "isLastLoggedIn")
                 managedObject?.setValue(isRemeberMe, forKey: "isRemeberMe")
+                managedObject?.setValue(filePath, forKey: "filePath")
                 try context.save()
                 return true
             }else{
@@ -140,6 +141,8 @@ class CoreData: NSObject {
             }
         }
       
+        fileName = self.fileName != "" ? self.fileName : profileName
+        
         let newData = NSEntityDescription.insertNewObject(forEntityName: "Login", into: context)
         newData.setValue(accessToken, forKey: "accessToken")
         newData.setValue(userName, forKey: "userName")
@@ -165,7 +168,7 @@ class CoreData: NSObject {
         newData.setValue(sleepModeOverride, forKey: "sleepModeOverride")
         newData.setValue(microSensitivityValue, forKey: "microSensitivityValue")
         newData.setValue(fileName, forKey: "fileName")
-        newData.setValue(filePath, forKey: "filePath")
+        newData.setValue(profileName, forKey: "filePath")
         newData.setValue(audioFiles, forKey: "audioFiles")
         newData.setValue(true, forKey: "isLoggedIn")
         newData.setValue(true, forKey: "isLastLoggedIn")

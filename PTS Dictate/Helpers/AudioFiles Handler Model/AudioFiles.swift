@@ -72,9 +72,9 @@ class AudioFiles {
         if self.checkIfAlreadyExists(path: filePath){
             //remove first and then save
             self.deleteAudio(path: filePath)
-            self.proceedForSave(fileName: fileName, filePath: filePath, comment: comment)
+            self.proceedForSave(fileName: fileName, filePath: filePath, comment: comment, autoSaved: autoSaved)
         }else{
-            self.proceedForSave(fileName: fileName, filePath: filePath, comment: comment)
+            self.proceedForSave(fileName: fileName, filePath: filePath, comment: comment, autoSaved: autoSaved)
         }
     }
     

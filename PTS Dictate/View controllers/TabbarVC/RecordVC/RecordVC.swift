@@ -70,6 +70,8 @@ class RecordVC: BaseViewController {
     @IBOutlet weak var progressView: UIProgressView!
     
     // MARK: - Variables.
+    var acceptableDecibal:Float = -30.0
+    var recorderSilenceTime = 0.0
     var sampleRateKey = 0
     var recorder: HPRecorder!
     var recorderState: RecorderState = .none
@@ -112,6 +114,25 @@ class RecordVC: BaseViewController {
         return CoreData.shared.commentScreenMandatory == 1 ?  true : false
     }
     
+    var backgroundrecorder: HPRecorder!
+    private lazy var backgroundStopwatch = Stopwatch(timeUpdated: { [weak self] timeVal in
+
+        debugPrint("value background \(timeVal)")
+      
+
+        if let recorder = self?.backgroundrecorder.audioRecorder{
+           
+            recorder.updateMeters()
+            let decibels = Float(recorder.peakPower(forChannel: 0))
+            debugPrint("decibels  stop \(decibels)")
+            
+            if timeVal > 0 && decibels > self?.acceptableDecibal ?? -30.0 && CoreData.shared.voiceActivation == 1{
+                self?.onTapRecordActivity()
+                debugPrint("worked")
+            }
+        }
+    })
+    
     private lazy var stopwatch = Stopwatch(timeUpdated: { [weak self] timeVal in
         guard let strongSelf = self else { return }
         if strongSelf.isPerformingOverwrite{
@@ -124,7 +145,7 @@ class RecordVC: BaseViewController {
             print("time ===== \(strongSelf.timeString(from: timeVal))")
             strongSelf.lblTime.text = strongSelf.timeString(from: timeVal + strongSelf.editAssetDuration)
         }
-        strongSelf.updateAudioMeter()
+        strongSelf.updateAudioMeter(timeVal: timeVal)
     })
     
     var audioForEditing: AudioFile? {
@@ -155,7 +176,6 @@ class RecordVC: BaseViewController {
         self.recorder.endRecording()
         self.recorderState = .pause
         stopwatch.pause()
-        
         self.tabBarController?.setTabBarHidden(true, animated: false)
         btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
         btnRecord.isUserInteractionEnabled = false
@@ -258,7 +278,6 @@ class RecordVC: BaseViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-//        self.isPlayerInitialized = false
         self.playFirstTime = false
         self.tabBarController?.setTabBarHidden(false, animated: false)
         self.audioForEditing = nil
@@ -268,6 +287,9 @@ class RecordVC: BaseViewController {
         self.removeOverwritePoints()
         self.removePartialDeletePoints()
         self.clearTmpDirectory()
+        
+        self.recorder.pauseRecording()
+        self.recorderState = .none
     }
     
     deinit {
@@ -412,7 +434,7 @@ class RecordVC: BaseViewController {
         self.fileURL1 = Constants.documentDir.appendingPathComponent((self.lblFNameValue.text ?? "") + ".m4a")
     }
     
-    func setupRecorder(){
+    func setupRecorder(isBackground:Bool=false){
         let index = CoreData.shared.audioQuality
         var sampleRateKey = 0
 
@@ -436,7 +458,7 @@ class RecordVC: BaseViewController {
         ] as [String : Any]
         
         self.recorder = HPRecorder(settings: recorderSetting, audioFilename: self.fileURL1, audioInput: AudioInput().defaultAudioInput())
-        
+        self.backgroundrecorder = HPRecorder(settings: recorderSetting, audioFilename: Constants.documentDir.appendingPathComponent(("test" ) + ".m4a"), audioInput: AudioInput().defaultAudioInput())
         self.recorder.askPermission { (granted) in
             DispatchQueue.main.async {
                 if !granted {
@@ -496,7 +518,10 @@ class RecordVC: BaseViewController {
     
     // MARK: - @IBActions.
     @IBAction func onTapRecord(_ sender: UIButton) {
-        
+        onTapRecordActivity()
+    }
+    
+    fileprivate func onTapRecordActivity() {
         checkMicrophoneAccess(completionHandler: { value in
             if value{
                 switch self.recorderState {
@@ -513,6 +538,10 @@ class RecordVC: BaseViewController {
                     
                 case .recording:
                     self.recorder.pauseRecording()
+                    self.backgroundStopwatch.stop()
+                    if let recorder = self.backgroundrecorder.audioRecorder{
+                        recorder.stop()
+                    }
 //                    self.recorder.initilaizePlayer()
 //                    self.isPlayerInitialized = true
                     self.recorderState = .pause
@@ -522,7 +551,7 @@ class RecordVC: BaseViewController {
                     self.btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_normal"), for: .normal)
                     self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
                     self.btnPlay.isUserInteractionEnabled = true
-                                        
+                    
                     var editFilepath = self.audioForEditing?.filePath ?? ""
                     if let dotRange = editFilepath.range(of: ".") {
                         editFilepath.removeSubrange(dotRange.lowerBound..<editFilepath.endIndex)
@@ -540,6 +569,10 @@ class RecordVC: BaseViewController {
                     self.btnStop.isUserInteractionEnabled = true
                     
                 case .pause:
+                    self.backgroundStopwatch.stop()
+                    if let recorder = self.backgroundrecorder.audioRecorder{
+                        recorder.stop()
+                    }
                     self.stopwatch.start()
                     self.setUpUI()
                     self.initiallyBtnStateSetup()
@@ -558,9 +591,9 @@ class RecordVC: BaseViewController {
                 isRecording = true
                 self.lblPlayerStatus.stopBlink()
                 self.lblPlayerStatus.startBlink()
-//                if CoreData.shared.indexing == 1{
-//                    self.enableDisableBookmarkButton()
-//                }
+                //                if CoreData.shared.indexing == 1{
+                //                    self.enableDisableBookmarkButton()
+                //                }
             }else{
                 CommonFunctions.alertMessage(view: self, title: "Microphone Access Denied", msg: "This app requires access to your device's Microphone. \n Please enable Microphone access for this app in Settings / Privacy / Microphone", btnTitle: "Ok", completion: nil)
             }
@@ -568,7 +601,13 @@ class RecordVC: BaseViewController {
     }
     
     @IBAction func onTapStop(_ sender: UIButton) {
-        self.recorder.pauseRecording()
+        onTapStopActivity()
+    }
+    
+    fileprivate func onTapStopActivity() {
+        if let recorder =  self.recorder{
+            recorder.pauseRecording()
+        }
         self.recorderState = .pause
         stopwatch.pause()
         
@@ -627,7 +666,6 @@ class RecordVC: BaseViewController {
                 self.mergeAudioFiles(originalURL: originalUrl, replacingURL: replacingUrl, startTime: startTime, taskToPerform: self.performingFunctionState == .insert ? "Insert" : "Overwrite")
             }
         }
-        
     }
     
     func setUpStopAndPauseUI(){
@@ -1731,17 +1769,32 @@ class RecordVC: BaseViewController {
     }
  
     // MARK: - Upadte Timer method.
-    @objc func updateAudioMeter() {
-       if let recorder = self.recorder.audioRecorder {
-            if recorder.isRecording{
-                self.lblFSizeValue.text = String(format: "%.2f", Float(try! Data(contentsOf: recorder.url).count) / 1024.0 / 1024.0) + " Mb"
-                recorder.updateMeters()
-                
-                let decibels = Float(recorder.peakPower(forChannel: 0))
-//                let value = [3.5, 3.4, 3.3, 3.2, 3.1, 3.0]
-                self.customRangeBar.value = decibels * 3.5
-             }
-        }
+    @objc func updateAudioMeter(timeVal:Double) {
+        if let recorder = self.recorder.audioRecorder {
+             if recorder.isRecording{
+                 self.lblFSizeValue.text = String(format: "%.2f", Float(try! Data(contentsOf: recorder.url).count) / 1024.0 / 1024.0) + " Mb"
+                 recorder.updateMeters()
+                 
+                 let decibels = Float(recorder.peakPower(forChannel: 0))
+ //                let value = [3.5, 3.4, 3.3, 3.2, 3.1, 3.0]
+                 print("decibels \(decibels)")
+                 if decibels < acceptableDecibal && CoreData.shared.voiceActivation == 1{
+                     if recorderSilenceTime == 0.0 {
+                         recorderSilenceTime = timeVal
+                     }
+                     if (timeVal - recorderSilenceTime) == 10.0{
+                         print("stop \(timeVal) - \(recorderSilenceTime)")
+                         onTapRecordActivity()
+                         backgroundStopwatch.start()
+                        backgroundrecorder.startRecording(fileName: "test")
+                     }
+                     print("decibels power \(decibels) :: \(timeVal)")
+                 }else{
+                     recorderSilenceTime = 0.0
+                 }
+                 self.customRangeBar.value = decibels * 3.5
+              }
+         }
     }
     
     // MARK: - finishAudioRecording.
