@@ -106,6 +106,7 @@ class RecordVC: BaseViewController {
 //    var totalBookmarkTimeLabels = [UILabel]()
 //    var initialHandleLabel      = UILabel()
 //    var bookmarkWidth           = 0.0
+    var isToastVisible = false
     
     private var isCommentsOn:Bool {
         return CoreData.shared.commentScreen == 1 ?  true : false
@@ -414,7 +415,7 @@ class RecordVC: BaseViewController {
         }
         
         CoreData.shared.fileCount = count
-        
+        self.lblFSizeValue.text = "0.00 Mb"
         if self.audioForEditing != nil{
             //editing
             var fileName = (self.audioForEditing?.changedName != "" ? self.audioForEditing?.changedName : self.audioForEditing?.name) ?? ""
@@ -423,12 +424,14 @@ class RecordVC: BaseViewController {
             }
             self.audioFileURL       = fileName
             self.lblFNameValue.text = fileName + ".m4a"
+            let fileUrl = Constants.documentDir.appendingPathComponent(self.audioForEditing?.filePath ?? "")
+            self.lblFSizeValue.text = String(format:"%.2f",Double(fileUrl.fileSize)/(1024.0*1024.0)) + "Mb"
         }else{
             //audioFileURL should be the actual file url without spaces.(self.lblFNameValue.text may be different than that)
             self.audioFileURL       = CoreData.shared.filePath + "_" + convertedDateStr + "_File_" + String(format: "%03d", count)
             self.lblFNameValue.text = nameToShow + "_" + convertedDateStr + "_File_" + String(format: "%03d", count) + ".m4a"
         }
-        self.lblFSizeValue.text = "0.00 Mb"
+       
         
         //setup file url as well.
         self.fileURL1 = Constants.documentDir.appendingPathComponent((self.lblFNameValue.text ?? "") + ".m4a")
@@ -518,7 +521,14 @@ class RecordVC: BaseViewController {
     
     // MARK: - @IBActions.
     @IBAction func onTapRecord(_ sender: UIButton) {
-        onTapRecordActivity()
+        let fileUrl = Constants.documentDir.appendingPathComponent(self.audioForEditing?.filePath ?? "")
+
+        if audioForEditing != nil  ,  (Double(fileUrl.fileSize)/(1024*1024) <= recorder.maxFileSize){
+            recorder.usedFileSize = Double(fileUrl.fileSize)/(1024*1024)
+            onTapRecordActivity()
+        }else if audioForEditing == nil{
+            onTapRecordActivity()
+        }
     }
     
     fileprivate func onTapRecordActivity() {
@@ -556,7 +566,7 @@ class RecordVC: BaseViewController {
                     if let dotRange = editFilepath.range(of: ".") {
                         editFilepath.removeSubrange(dotRange.lowerBound..<editFilepath.endIndex)
                     }
-                    
+                 //   self.usedFileSize += Double(Float(try! Data(contentsOf: self.recorder.audioRecorder.url).count) / 1024.0 / 1024.0)
                     self.recorder.concatChunks(filename: self.audioForEditing != nil ? editFilepath : self.audioFileURL){
                         success in
                         if success{
@@ -620,6 +630,21 @@ class RecordVC: BaseViewController {
         btnStop.isUserInteractionEnabled = false
         CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
         
+        
+//        var editFilepath = self.audioForEditing?.filePath ?? ""
+//        if let dotRange = editFilepath.range(of: ".") {
+//            editFilepath.removeSubrange(dotRange.lowerBound..<editFilepath.endIndex)
+//        }
+        if self.audioForEditing == nil{
+            self.recorder.concatChunks(filename:  self.audioFileURL){
+                success in
+                if success{
+                    DispatchQueue.main.async {
+                        self.setUpStopAndPauseUI()
+                    }
+                }
+            }
+        }
         if (self.audioForEditing != nil) && lblPlayerStatus.text == ""{
             //user is here for editing and press stop button without doing anything.
             print("Here we are.")
@@ -643,9 +668,13 @@ class RecordVC: BaseViewController {
             self.insertTimer.isHidden  = true
             CommonFunctions.alertMessage(view: self, title: Constants.appName, msg: "Insert complete", btnTitle: "Ok", completion: nil)
         }
-        lblPlayerStatus.text = "Stopped"
-        self.setUpStopAndPauseUI()
-        
+        DispatchQueue.main.async {
+            self.lblPlayerStatus.text = "Stopped"
+            
+            self.setUpStopAndPauseUI()
+            
+        }
+     
         
         if self.performingFunctionState == .append{
             var editFilepath = self.audioForEditing?.filePath ?? ""
@@ -657,6 +686,9 @@ class RecordVC: BaseViewController {
                 if success{
                     self.chunkInt = 0
                     print("Success save chunks removed")
+                    DispatchQueue.main.async {
+                        self.setUpStopAndPauseUI()
+                    }
                 }
             }
         }else if (self.performingFunctionState == .insert || self.performingFunctionState == .overwrite){
@@ -671,6 +703,8 @@ class RecordVC: BaseViewController {
     func setUpStopAndPauseUI(){
         self.customRangeBar.isHidden = true
         self.customRangeBarHeight.constant = 0
+        
+        self.lblFSizeValue.text = String(format: "%.2f", self.recorder.usedFileSize) + " Mb"
     
         viewPlayerTiming.isHidden = false
         
@@ -861,6 +895,8 @@ class RecordVC: BaseViewController {
     
     // MARK: - @IBAction Segment Control.
     @IBAction func segmentChanged(_ sender: Any) {
+        let fileUrl = Constants.documentDir.appendingPathComponent(self.audioForEditing?.filePath ?? "")
+
         checkMicrophoneAccess { value in
             if value{
                 switch self.segmentControl.selectedSegmentIndex {
@@ -881,11 +917,21 @@ class RecordVC: BaseViewController {
                 case 1:
                     if CoreData.shared.disableEditingHelp == 0{
                         CommonFunctions.alertMessage(view: self, title: "Insert", msg: Constants.insertMsg, btnTitle: "OK") {
-                            self.handleInsert()
+                           // self.handleInsert()
+                            if (Double(fileUrl.fileSize) / (1024.0*1024.0)) < self.recorder.maxFileSize{
+                                self.handleInsert()
+                            }else{
+                                self.showToast(controller: self, message: "You reached max file size limit")
+                            }
                         }
                     }else{
-                        self.handleInsert()
+                        if (Double(fileUrl.fileSize) / (1024.0*1024.0)) < self.recorder.maxFileSize{
+                            self.handleInsert()
+                        }else{
+                            self.showToast(controller: self, message: "You reached max file size limit")
+                        }
                     }
+                   
                     break
                 case 2:
                     if CoreData.shared.disableEditingHelp == 0{
@@ -971,6 +1017,14 @@ class RecordVC: BaseViewController {
 
     func pushCommentVC(){
         let VC = CommentsVC.instantiateFromAppStoryboard(appStoryboard: .Main)
+        if audioForEditing != nil{
+            let isUploaded = audioForEditing?.fileInfo?.uploadedStatus ?? false
+            VC.fromExistingVC = true
+            VC.canEditComments = isUploaded ? false : true
+            VC.comment = audioForEditing?.fileInfo?.comment ?? ""
+            VC.selectedAudio = audioForEditing?.name ?? ""
+            VC.isCommentsMandotary = CoreData.shared.commentScreenMandatory == 1 ? true : false
+        }
         self.setPushTransitionAnimation(VC)
         VC.hidesBottomBarWhenPushed = true
         VC.isCommentsMandotary = isCommentsMandotary
@@ -1009,7 +1063,6 @@ class RecordVC: BaseViewController {
                         self.pushCommentVC()
                     } else {
                         AudioFiles.shared.saveNewAudioFile(fileName: self.lblFNameValue.text ?? "", filePath: self.audioForEditing != nil ? self.audioForEditing?.filePath ?? "" : self.audioFileURL + ".m4a", comment: nil)
-//                        AudioFiles.shared.saveNewAudioFile(name: self.audioFileURL + ".m4a")  // mohit new changes
                         let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
                         self.setPushTransitionAnimation(VC)
                         self.navigationController?.popViewController(animated: false)
@@ -1042,7 +1095,6 @@ class RecordVC: BaseViewController {
         
         AudioFiles.shared.saveNewAudioFile(fileName: self.lblFNameValue.text ?? "", filePath: self.audioFileURL + ".m4a", comment: nil, autoSaved: true)
         
-//        AudioFiles.shared.saveNewAudioFile(name: self.audioFileURL + ".m4a", autoSaved: true)
         let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
         self.setPushTransitionAnimation(VC)
         self.navigationController?.popViewController(animated: false)
@@ -1257,6 +1309,10 @@ class RecordVC: BaseViewController {
     }
     
     func proceedForOverwrite(){
+        
+        self.lblFSizeValue.isHidden = true
+        self.lblFSize.isHidden = true
+
         stopwatch.start()
         self.setUpUI()
         self.initiallyBtnStateSetup()
@@ -1294,6 +1350,7 @@ class RecordVC: BaseViewController {
             self.btnStop.isUserInteractionEnabled = false
             CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
             self.lblPlayerStatus.text = "Stopped"
+            self.recorder.usedFileSize =  Double(Constants.documentDir.appendingPathComponent(self.audioForEditing?.filePath ?? "").fileSize)/(1024.0*1024.0)
             self.setUpStopAndPauseUI()
             
             self.overwriteTimer?.invalidate()
@@ -1333,8 +1390,29 @@ class RecordVC: BaseViewController {
             }
         }else if sender.imageView?.image == UIImage(named: "btn_start_deleting_normal") {
             self.removePartialDeletePoints()
+            self.recorder.pauseRecording()
+            self.recorderState = .pause
+            self.stopwatch.pause()
+           
+            self.tabBarController?.setTabBarHidden(true, animated: false)
+            self.btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
+            self.btnRecord.isUserInteractionEnabled = false
+            self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+            self.btnBackwardTrim.setBackgroundImage(UIImage(named: "existing_rewind_normal"), for: .normal)
+            self.btnBackwardTrimEnd.setBackgroundImage(UIImage(named: "existing_backward_fast_normal"), for: .normal)
+            self.btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_disable"), for: .normal)
+            self.btnPlay.isUserInteractionEnabled = true
+            self.btnBackwardTrim.isUserInteractionEnabled = true
+            self.btnBackwardTrimEnd.isUserInteractionEnabled = true
+            self.btnStop.isUserInteractionEnabled = false
+            CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
+            self.lblPlayerStatus.text = "Stopped"
+            self.recorder.usedFileSize =  Double(Constants.documentDir.appendingPathComponent(self.audioForEditing?.filePath ?? "").fileSize)/(1024.0*1024.0)
+            self.setUpStopAndPauseUI()
+            
             self.partialDeleteAudio(outputUrl: Constants.documentDir.appendingPathComponent("final.m4a"), startTime: Double(self.pdStartingPoint), endTime: Double(self.pdEndPoint)) { result in
-                print(result)
+                
+                print("result")
             }
         }
     }
@@ -1713,6 +1791,7 @@ class RecordVC: BaseViewController {
         self.parentStackTop.constant = 35
         self.lblTime.text = "00:00:00"
         self.lblFSizeValue.text = "0.00 Mb"
+        self.recorder.usedFileSize = 0
         self.btnRecord.isUserInteractionEnabled = true
         self.btnPlay.isUserInteractionEnabled = false
         self.btnBackwardTrim.isUserInteractionEnabled = false
@@ -1767,13 +1846,49 @@ class RecordVC: BaseViewController {
         self.btnPlay.isUserInteractionEnabled = true
         self.btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
     }
- 
+
     // MARK: - Upadte Timer method.
     @objc func updateAudioMeter(timeVal:Double) {
         if let recorder = self.recorder.audioRecorder {
              if recorder.isRecording{
-                 self.lblFSizeValue.text = String(format: "%.2f", Float(try! Data(contentsOf: recorder.url).count) / 1024.0 / 1024.0) + " Mb"
+                 let newfileSize =  Double(Float(try! Data(contentsOf: recorder.url).count) / 1024.0 / 1024.0)
+                 self.lblFSizeValue.text = String(format: "%.2f",self.recorder.usedFileSize+newfileSize) + " Mb"
                  recorder.updateMeters()
+                 
+                 if  Double(Float(try! Data(contentsOf: recorder.url).count) / 1024.0 / 1024.0) > self.recorder.maxFileSize - self.recorder.usedFileSize - 5,isToastVisible == false{
+                     isToastVisible = true
+                     showToast(controller: self, message: "You are approaching your file size upload limit of \(self.recorder.maxFileSize)Mb")
+                 }
+                 
+                 if  Double(Float(try! Data(contentsOf: recorder.url).count) / 1024.0 / 1024.0) > self.recorder.maxFileSize - self.recorder.usedFileSize,isToastVisible == true{
+                     isToastVisible = false
+                     self.recorder.endRecording()
+                     self.recorderState = .pause
+                     stopwatch.pause()
+                     self.tabBarController?.setTabBarHidden(true, animated: false)
+                     btnStop.setBackgroundImage(UIImage(named: "record_stop_btn_active"), for: .normal)
+                     btnRecord.isUserInteractionEnabled = false
+                     btnPlay.setBackgroundImage(UIImage(named: "existing_controls_play_btn_normal"), for: .normal)
+                     btnRecord.setBackgroundImage(UIImage(named: "record_record_btn_disable"), for: .normal)
+                     btnPlay.isUserInteractionEnabled = true
+                     btnStop.isUserInteractionEnabled = false
+                     CommonFunctions.showHideViewWithAnimation(view:  self.viewBottomButton, hidden: false, animation: .transitionFlipFromBottom)
+                     lblPlayerStatus.text = "Stopped"
+                     self.setUpStopAndPauseUI()
+                     
+                         self.recorder.concatChunks(filename: self.audioFileURL){
+                             success in
+                             if success{
+                                 self.chunkInt = 0
+                                 DispatchQueue.main.async {
+                                     self.proceedAutoSave()
+                                     self.dismiss(animated: true, completion: nil)
+                                    
+                                 }
+                             }
+                         
+                     }
+                 }
                  
                  let decibels = Float(recorder.peakPower(forChannel: 0))
  //                let value = [3.5, 3.4, 3.3, 3.2, 3.1, 3.0]
@@ -1782,7 +1897,7 @@ class RecordVC: BaseViewController {
                      if recorderSilenceTime == 0.0 {
                          recorderSilenceTime = timeVal
                      }
-                     if (timeVal - recorderSilenceTime) == 10.0{
+                     if (timeVal - recorderSilenceTime) == 30.0{
                          print("stop \(timeVal) - \(recorderSilenceTime)")
                          onTapRecordActivity()
                          backgroundStopwatch.start()
@@ -1884,6 +1999,8 @@ extension RecordVC{
                         self.removeFileChunksInDocDirectory()
                         
                         DispatchQueue.main.async {
+                            self.lblFSizeValue.isHidden = false
+                            self.lblFSize.isHidden = false
                             self.setUpWave()
                         }
                     } else {
@@ -2036,7 +2153,17 @@ extension RecordVC{
         } catch { }
     }
 }
-
+extension RecordVC{
+    func showToast (controller: UIViewController, message : String) {
+        let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+        alert.view.backgroundColor = UIColor.black
+        alert.view.alpha = 0.6
+        alert.view.layer.cornerRadius = 15
+        alert.addAction(UIAlertAction(title: "OK", style: .cancel))
+        controller.present (alert, animated: true)
+      
+    }
+}
 extension AVMutableCompositionTrack {
     func append(urls: [URL]) throws {
         for url in urls {

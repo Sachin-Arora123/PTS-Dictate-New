@@ -16,6 +16,8 @@ enum UpdateAudioFile {
     case canEdit(Bool)
     case uploadedAt(String)
     case uploadingInProgress(Bool)
+    case autoSaved(Bool)
+    
     func update(audioName: String) {
         let instance = AudioFiles.shared
         var audio = 0
@@ -39,6 +41,8 @@ enum UpdateAudioFile {
             instance.audioFiles[audio].fileInfo?.uploadedAt = newValue
         case .uploadingInProgress(let newValue):
             instance.audioFiles[audio].fileInfo?.uploadingInProgress = newValue
+        case .autoSaved(let newValue):
+            instance.audioFiles[audio].fileInfo?.autoSaved = newValue
         }
         instance.updateAudioFilesOnCoreData()
     }

@@ -10,6 +10,8 @@ import UIKit
 
 public class HPRecorder: NSObject {
 //    open var partialDeleteAsset : AVAsset?
+    var maxFileSize = 80.0 //80 mb
+    var usedFileSize = 0.0
     open var recordingSession: AVAudioSession!
     open var audioRecorder: AVAudioRecorder!
     open var queuePlayer: AVQueuePlayer?
@@ -213,6 +215,8 @@ public class HPRecorder: NSObject {
                 let assetToSave = AVURLAsset(url: exportSession?.outputURL ?? URL(fileURLWithPath: ""))
                 self.articleChunks.removeAll()
                 self.articleChunks.append(assetToSave)
+                print("articleCount-->>",self.articleChunks.count)
+                self.usedFileSize = (Double(assetToSave.fileSize ?? 0 )/1024.0 / 1024.0)
                 
                 completion(true)
             case .failed?:

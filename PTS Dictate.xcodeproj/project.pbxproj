@@ -67,6 +67,7 @@
 		4BFCB13CEA7E06C3217E3512 /* Pods_PTS_Dictate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7801E7DB3243DA4B1EF6CD0C /* Pods_PTS_Dictate.framework */; };
 		616E4A43290AB21E0011ABF2 /* F3BarGauge.m in Sources */ = {isa = PBXBuildFile; fileRef = 616E4A41290AB21E0011ABF2 /* F3BarGauge.m */; };
 		616E4A45290AB9550011ABF2 /* Extension+UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616E4A44290AB9550011ABF2 /* Extension+UIColor.swift */; };
+		7FF5DF0C29E538E500C66EC3 /* Extension+AVURLAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FF5DF0B29E538E500C66EC3 /* Extension+AVURLAsset.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -133,6 +134,7 @@
 		616E4A44290AB9550011ABF2 /* Extension+UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+UIColor.swift"; sourceTree = "<group>"; };
 		61736DF3290AA79E006D8065 /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
 		7801E7DB3243DA4B1EF6CD0C /* Pods_PTS_Dictate.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PTS_Dictate.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7FF5DF0B29E538E500C66EC3 /* Extension+AVURLAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+AVURLAsset.swift"; sourceTree = "<group>"; };
 		F2DCF3613E1B667385F2C263 /* Pods-PTS Dictate.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PTS Dictate.release.xcconfig"; path = "Target Support Files/Pods-PTS Dictate/Pods-PTS Dictate.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -164,6 +166,7 @@
 				28A4F5DD28B51D750035137B /* Extension+Navigation.swift */,
 				18DF4BE028BE899D002FC063 /* Extension+UIView.swift */,
 				180EB43828B6A87D00F1A3FB /* Extension+UIViewController.swift */,
+				7FF5DF0B29E538E500C66EC3 /* Extension+AVURLAsset.swift */,
 				18CDDB0E28B7D96C006AB795 /* Storyboard.swift */,
 				616E4A44290AB9550011ABF2 /* Extension+UIColor.swift */,
 				23C89FBF291A948900999929 /* Extension+Date.swift */,
@@ -679,6 +682,7 @@
 				23346E11293CBABB00059A16 /* UploadProgressVC.swift in Sources */,
 				18CDDB0D28B7D683006AB795 /* TabbarVC.swift in Sources */,
 				186765F528C4B803006BABDF /* ExistingFileCell.swift in Sources */,
+				7FF5DF0C29E538E500C66EC3 /* Extension+AVURLAsset.swift in Sources */,
 				186765F928C4C97E006BABDF /* RenameFileVC.swift in Sources */,
 				18E8AAE828F89E0400DF73F4 /* ExistingViewModel.swift in Sources */,
 				182BE0BE28BD4ED000327094 /* NamingFormatVC.swift in Sources */,

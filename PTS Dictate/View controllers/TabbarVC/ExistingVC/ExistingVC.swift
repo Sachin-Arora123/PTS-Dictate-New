@@ -154,6 +154,11 @@ class ExistingVC: BaseViewController {
         super.viewWillAppear(animated)
         setUpUI()
         if totalFiles.count > 0 {
+            let completePathURL       = Constants.documentDir.appendingPathComponent(self.totalFiles[0].filePath ?? "")
+            setupPlayer(url: completePathURL)
+            playingCellIndex = 0
+            self.lblFileName.text = self.totalFiles[0].changedName != "" ? self.totalFiles[0].changedName : self.totalFiles[0].name
+            self.lblTotalTime.text = self.getTimeDuration(filePath: self.totalFiles[0].filePath ?? "")
             self.setUpWave(index: 0)
         }
     }
@@ -549,7 +554,7 @@ class ExistingVC: BaseViewController {
         self.setPushTransitionAnimation(VC)
         VC.hidesBottomBarWhenPushed = true
         let audioFile = getFileInfo(name: audio)
-        let isUploaded = audioFile?.fileInfo?.isUploaded ?? false
+        let isUploaded = audioFile?.fileInfo?.uploadedStatus ?? false
         VC.fromExistingVC = true
         VC.canEditComments = isUploaded ? false : true
         VC.selectedAudio = audio
@@ -723,10 +728,11 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
                 cell.lblFileStatus.text = uploadStatus ? "Uploaded" : "Failed"
                 cell.btnEdit.isUserInteractionEnabled = !uploadStatus
                 cell.btnEdit.setBackgroundImage(UIImage(named: uploadStatus ? "music_edit_disable" : "music_edit_normal"), for: .normal)
+                cell.btnComment.setBackgroundImage(UIImage(named: uploadStatus ? "comments_active" : "comments_normal"), for: .normal)
+
             }
             cell.btnComment.isUserInteractionEnabled = true
             cell.btnComment.isHidden = false
-            cell.btnComment.setBackgroundImage(UIImage(named: "comments_active"), for: .normal)
         } else if file?.fileInfo?.isUploaded ?? true && file?.fileInfo?.comment == nil {
             //This is the case when file is uploaded and it has no comment
             if let uploadStatus = file?.fileInfo?.uploadedStatus{
@@ -759,7 +765,7 @@ extension ExistingVC: UITableViewDelegate, UITableViewDataSource {
         
         
         let fileUrl = Constants.documentDir.appendingPathComponent(self.totalFiles[indexPath.row].filePath ?? "")
-        cell.lblFileSize.text = fileUrl.fileSizeString
+        cell.lblFileSize.text = String(format: "%.2f",Double(fileUrl.fileSize )/1024.0 / 1024.0) + "Mb"
         
         cell.btnSelection.removeTarget(self, action: nil, for: .touchUpInside)
         cell.btnSelection.addTarget(self, action: #selector(btnActCheckBox(_:)), for: .touchUpInside)

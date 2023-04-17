@@ -27,6 +27,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         IQKeyboardManager.shared.shouldShowToolbarPlaceholder = false
         
         FirebaseApp.configure()
+        let paths = NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true)
+        debugPrint("Sandbox path :\(paths)")
         
         return true
     }

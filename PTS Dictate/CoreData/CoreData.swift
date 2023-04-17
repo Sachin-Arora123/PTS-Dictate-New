@@ -39,7 +39,7 @@ class CoreData: NSObject {
     var archiveFile = 1 // 1 - true & 0 - false
     var archiveFileDays = 3 // 3 - day default
     var uploadViaWifi = 0 // 1 - true & 0 - false
-    var sleepModeOverride = 0 // 1 - true & 0 - false
+    var sleepModeOverride = 1 // 1 - true & 0 - false
     var microSensitivityValue : Double = 1.0
     var fileName : String = ""
     var filePath : String = ""
@@ -408,7 +408,7 @@ class CoreData: NSObject {
          archiveFile = 1 // 1 - true & 0 - false
          archiveFileDays = 3 // 3 - day default
          uploadViaWifi = 0 // 1 - true & 0 - false
-         sleepModeOverride = 0 // 1 - true & 0 - false
+         sleepModeOverride = 1 // 1 - true & 0 - false
          microSensitivityValue  = 1.0
          fileName  = ""
          filePath  = ""

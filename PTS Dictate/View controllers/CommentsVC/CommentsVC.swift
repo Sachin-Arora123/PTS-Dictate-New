@@ -44,6 +44,21 @@ class CommentsVC: BaseViewController {
     }
     
     @IBAction func discardTapped(_ sender:UIButton) {
+        if (txtViewComment.text.trimmingCharacters(in: .whitespacesAndNewlines) == "") && isCommentsMandotary{
+            CommonFunctions.alertMessage(view: self, title: "PTS Dictate", msg: "Mandatory Comment Entry required", btnTitle: "OK", completion: nil)
+            return
+        }
+        if !fromExistingVC {
+            AudioFiles.shared.saveNewAudioFile(fileName: self.fileName, filePath: self.filePath, comment: txtViewComment.text, autoSaved: false)
+
+        }else{
+            UpdateAudioFile.autoSaved(false).update(audioName: selectedAudio)
+            if txtViewComment.text.isEmpty == true && txtViewComment.text == comment {
+                UpdateAudioFile.comment(comment).update(audioName: selectedAudio)
+            }
+            
+        }
+
         popToExitingVC()
     }
     
@@ -56,16 +71,19 @@ class CommentsVC: BaseViewController {
             txtViewComment.text = comment
             btnSave.isUserInteractionEnabled = true
             btnDiscard.isUserInteractionEnabled = true
+            lblTitle.text = "Edit Comments"
         } else if fromExistingVC && !canEditComments{
             txtViewComment.isEditable = false
             txtViewComment.text = comment
             btnSave.isHidden = true
             btnDiscard.isHidden = true
+            lblTitle.text = "Edit Comments"
         } else {
             txtViewComment.isEditable = true
             txtViewComment.becomeFirstResponder()
             btnSave.isUserInteractionEnabled = true
             btnDiscard.isUserInteractionEnabled = true
+            lblTitle.text = "Enter Comments"
         }
         
 //        if isCommentsMandotary {
@@ -83,14 +101,17 @@ class CommentsVC: BaseViewController {
             return
         }
         
+        
+        
         if fromExistingVC {
             UpdateAudioFile.comment(txtViewComment.text ?? "").update(audioName: selectedAudio)
+            UpdateAudioFile.autoSaved(false).update(audioName: selectedAudio)
+            
             popToExitingVC()
             return
+        }else{
+            AudioFiles.shared.saveNewAudioFile(fileName: self.fileName, filePath: self.filePath, comment: txtViewComment.text, autoSaved: false)
         }
-//        AudioFiles.shared.saveNewAudioFile(name: fileName, comment: txtViewComment.text)
-        
-        AudioFiles.shared.saveNewAudioFile(fileName: self.fileName, filePath: self.filePath, comment: txtViewComment.text)
         
         let VC = ExistingVC.instantiateFromAppStoryboard(appStoryboard: .Tabbar)
         self.setPushTransitionAnimation(VC)
