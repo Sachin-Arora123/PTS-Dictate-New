@@ -328,66 +328,66 @@ class ApiHandler: NSObject {
         }
     }
     
-    static func uploadMediaFile<T:Codable>(url: String , withParameters parameters: [String: Any], ofType : T.Type, onSuccess:@escaping (T)->(), onFailure: @escaping (Bool, String)->(), method: ApiMethod, fileUrl: URL, headerPresent: Bool) {
-        let kMehod: HTTPMethod = .post
+    static func uploadMediaFile<T:Codable>(url: String , withParameters parameters: [String: Any], ofType : T.Type, onSuccess:@escaping (T)->(), onFailure: @escaping (Bool, String)->(), method: ApiMethod, fileUrl: URL, headerPresent: Bool, fileName: String, description: String, emailNotifications: String) {
+        let kMethod: HTTPMethod = .post
+        let uatURL = "https://uat.etranscriptions.com.au/scripts/web_response.php?Case=UploadFile&Login_Name=\(CoreData.shared.userName)&File_Desc=\(description)&From_User=pts&To_User=pts&Email_Notification=\(emailNotifications)"
+        
+//        let liveURL = "https://www.etranscriptions.com.au/scripts/web_response.php?Case=UploadFile&Login_Name=\(CoreData.shared.userName)&File_Desc=\(description)&From_User=pts&To_User=pts&Email_Notification=\(emailNotifications)"
+        
+        let header : HTTPHeaders = [ : ]
             
-            
-        let header : HTTPHeaders = [
-            :
-        ]
-            
-            AF.upload(multipartFormData: {multipartFormData in
-                multipartFormData.append(fileUrl, withName: "uploaded_file", fileName: "", mimeType: ".m4a")
+        AF.upload(multipartFormData: {multipartFormData in
+            multipartFormData.append(fileUrl, withName: "uploaded_file", fileName: fileName, mimeType: ".m4a")
 //                for (key, value) in parameters {
 //                    multipartFormData.append((value as AnyObject).data(using: String.Encoding.utf8.rawValue)!, withName: key)
 //                }
-                
-            }, to: "https://www.etranscriptions.com.au/scripts/web_response.php?Case=UploadFile&Login_Name=\(CoreData.shared.userName)&From_User=PTS&To_User=PTS&Email_Notification=ON", method: kMehod, headers: header).uploadProgress(queue: .main, closure: { progress in
-                print("Upload Progress: \(progress.fractionCompleted)")
-            }).responseJSON(completionHandler: { data in
-                print("upload finished: \(data)")
-            }).response { (response) in
-                let statusCode = response.response?.statusCode
-                switch response.result {
-                case .success(let resut):
-                    print("upload success result: \(resut ?? Data())")
-                    if (200...299).contains(statusCode ?? 0){
-                        if let data = response.data{
-                            do{
-                                let json = try JSONDecoder().decode(T.self, from: data)
-                                onSuccess(json)
-                            }
-                            catch let error as NSError {
-                                print("Could not save error named - \n\(error)\n\(error.userInfo)\n\(error.userInfo.debugDescription)")
-                                print("\(error.localizedFailureReason ?? "")\n", error.localizedDescription)
-                                onFailure(false, error.userInfo.debugDescription)
-                            }
+            
+        }, to: uatURL, method: kMethod, headers: header).uploadProgress(queue: .main, closure: { progress in
+            print("Upload Progress: \(progress.fractionCompleted)")
+        }).responseJSON(completionHandler: { data in
+            print("upload finished: \(data)")
+        }).response { (response) in
+            let statusCode = response.response?.statusCode
+            switch response.result {
+            case .success(let resut):
+                print("upload success result: \(resut ?? Data())")
+                if (200...299).contains(statusCode ?? 0){
+                    if let data = response.data{
+                        do{
+                            let json = try JSONDecoder().decode(T.self, from: data)
+                            onSuccess(json)
                         }
-                    }else{
-                        let dict = JSON(response.data ?? Data())
-                        if (statusCode == 400 || statusCode == 401 || statusCode == 403 || statusCode == 404){
-                            if dict["error"].stringValue != ""{
-                                print(dict["error"].stringValue,"\n", dict["error_description"].stringValue)
-                                onFailure(false,dict["error_description"].stringValue )
-                            }else{
-                                onFailure(false,dict["error_description"].stringValue)
-                            }
-                        }else if (statusCode == 500 || statusCode == 503){
-                            print("Server Error")
-                            onFailure(false,"Server Error")
-                        }else{
-                            if dict["error"].stringValue != ""{
-                                print(dict["error"].stringValue,"\n", dict["error_description"].stringValue)
-                                onFailure(false,dict["error_description"].stringValue )
-                            }else{
-                                onFailure(false,dict["error_description"].stringValue)
-                            }
+                        catch let error as NSError {
+                            print("Could not save error named - \n\(error)\n\(error.userInfo)\n\(error.userInfo.debugDescription)")
+                            print("\(error.localizedFailureReason ?? "")\n", error.localizedDescription)
+                            onFailure(false, error.userInfo.debugDescription)
                         }
                     }
-                case .failure(let error):
-                    print(error.localizedDescription)
-                    onFailure(false, error.localizedDescription)
+                }else{
+                    let dict = JSON(response.data ?? Data())
+                    if (statusCode == 400 || statusCode == 401 || statusCode == 403 || statusCode == 404){
+                        if dict["error"].stringValue != ""{
+                            print(dict["error"].stringValue,"\n", dict["error_description"].stringValue)
+                            onFailure(false,dict["error_description"].stringValue )
+                        }else{
+                            onFailure(false,dict["error_description"].stringValue)
+                        }
+                    }else if (statusCode == 500 || statusCode == 503){
+                        print("Server Error")
+                        onFailure(false,"Server Error")
+                    }else{
+                        if dict["error"].stringValue != ""{
+                            print(dict["error"].stringValue,"\n", dict["error_description"].stringValue)
+                            onFailure(false,dict["error_description"].stringValue )
+                        }else{
+                            onFailure(false,dict["error_description"].stringValue)
+                        }
+                    }
                 }
+            case .failure(let error):
+                print(error.localizedDescription)
+                onFailure(false, error.localizedDescription)
             }
+        }
     }
 }

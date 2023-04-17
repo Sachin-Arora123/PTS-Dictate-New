@@ -20,14 +20,18 @@ class EntryAttributeWrapper {
 }
 
 class CommonFunctions: iProgressHUDDelegete {
-    static func toster(_ title : String, titleDesc: String, _ showImage:Bool){
+    static func toster(_ title : String, titleDesc: String, _ showImage:Bool, _ showGreenBackground:Bool){
         let attributesWrapper: EntryAttributeWrapper = {
             var attributes = EKAttributes()
             attributes.positionConstraints = .fullWidth
             attributes.hapticFeedbackType = .success
             attributes.positionConstraints.safeArea = .empty(fillSafeArea: false)
+            if showGreenBackground{
+                attributes.entryBackground = EKAttributes.BackgroundStyle.color(color: EKColor(red: 61, green: 126, blue: 37))
+            }else{
+                attributes.entryBackground = .gradient(gradient: .init(colors: [EKColor.init(red: 153, green: 37, blue: 27), EKColor.init(red: 200, green: 69, blue: 49)], startPoint: CGPoint(x: 0, y: 0.5), endPoint: CGPoint(x: 0, y: 0.5)))
+            }
 //            attributes.entryBackground = .visualEffect(style: .dark)
-            attributes.entryBackground = .gradient(gradient: .init(colors: [EKColor.init(red: 153, green: 37, blue: 27), EKColor.init(red: 200, green: 69, blue: 49)], startPoint: CGPoint(x: 0, y: 0.5), endPoint: CGPoint(x: 0, y: 0.5)))
             return EntryAttributeWrapper(with: attributes)
         }()
         let title = EKProperty.LabelContent(
@@ -101,13 +105,13 @@ class CommonFunctions: iProgressHUDDelegete {
             completion(true)
         }))
       }
-    static func alertMessage(view: UIViewController, title: String, msg: String, btnTitle: String) {
+    static func alertMessage(view: UIViewController, title: String, msg: String, btnTitle: String, completion:(() -> Void)?) {
         // Create new Alert
         let alertMessage = UIAlertController(title: title, message: msg, preferredStyle: .alert)
         
         // Create OK button with action handler
         let ok = UIAlertAction(title: btnTitle, style: .default, handler: { (action) -> Void in
-            print("Ok button tapped")
+            completion?()
          })
         
         //Add OK button to a dialog message

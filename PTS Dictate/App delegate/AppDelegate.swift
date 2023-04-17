@@ -8,10 +8,14 @@
 import UIKit
 import IQKeyboardManagerSwift
 import CoreData
+import AVFoundation
+import Firebase
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    
+    static func shared() -> AppDelegate {
+        return UIApplication.shared.delegate as! AppDelegate
+    }
     var window: UIWindow?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -22,16 +26,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         IQKeyboardManager.shared.enableAutoToolbar = false
         IQKeyboardManager.shared.shouldShowToolbarPlaceholder = false
         
-        CoreData.shared.getdata()
-        if CoreData.shared.email != "" {
-            let vc = TabbarVC.instantiateFromAppStoryboard(appStoryboard: AppStoryboard.Tabbar)
-            let navigationController = UINavigationController(rootViewController: vc)
-            if UIApplication.shared.windows.count > 0 {
-                UIApplication.shared.windows[0].rootViewController = navigationController
-                navigationController.setNavigationBarHidden(true, animated: false)
-            }
-        }
-        
+        FirebaseApp.configure()
+        let paths = NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true)
+        debugPrint("Sandbox path :\(paths)")
         
         return true
     }
@@ -121,6 +118,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                           animations: nil,
                           completion: nil)
 
+    }
+    
+    func applicationWillTerminate(_ application: UIApplication) {
+//        print(#function)
+//        print("isRecording == \(isRecording)")
+//        print("audioFileName == \(audioFileName)")
+//        if isRecording{
+//            //increase file count by 1
+//            CoreData.shared.fileCount += 1
+//            AudioFiles.shared.saveNewAudioFile(name: audioFileName, autoSaved: true)
+//            audioFileName = ""
+//        }
     }
     
 }

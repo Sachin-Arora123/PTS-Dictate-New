@@ -77,10 +77,10 @@ class LoginVC: UIViewController {
                 let userName = self.tfUserName.text ?? ""
                 let tfPassword = self.tfPassword.text ?? ""
                 if userName.trimmingCharacters(in: .whitespacesAndNewlines) == "" {
-                    CommonFunctions.toster("PTS Dictate", titleDesc: "User name should not be empty", true)
+                    CommonFunctions.toster("PTS Dictate", titleDesc: "User name should not be empty", true, false)
                     self.tfUserName.shake()
                 }else if tfPassword.trimmingCharacters(in: .whitespacesAndNewlines) == ""{
-                    CommonFunctions.toster("PTS Dictate", titleDesc: "Password should not be empty", true)
+                    CommonFunctions.toster("PTS Dictate", titleDesc: "Password should not be empty", true, false)
                     self.tfPassword.shake()
                 }else {
                     self.loginViewModel.LoginApiHit(userName: userName, password: tfPassword)
@@ -110,7 +110,8 @@ extension LoginVC{
     
     func setViewWillAppearData(){
         self.tfPassword.isSecureTextEntry = true
-        CoreData.shared.getdata()
+//        CoreData.shared.getdata()
+        CoreData.shared.getremembereddata()
         if CoreData.shared.isRemeberMe{
             self.setRemeberMeButton()
             self.tfPassword.text = CoreData.shared.password
@@ -130,8 +131,12 @@ extension LoginVC{
     }
     
     func setUpUI(){
+        let titleLbl = UILabel()
+        titleLbl.text = "PTS Dictate"
+        titleLbl.textColor = .appThemeColor
+        titleLbl.font = UIFont.systemFont(ofSize: 20.0, weight: .bold)
+        self.navigationItem.titleView = titleLbl
         
-        self.title = "PTS Dictate"
         let textAttributes = [NSAttributedString.Key.foregroundColor:UIColor.appThemeColor]
         navigationController?.navigationBar.titleTextAttributes = textAttributes
         

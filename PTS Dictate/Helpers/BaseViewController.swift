@@ -31,6 +31,22 @@ class BaseViewController: UIViewController {
         DispatchQueue.main.async {
             self.navigationController?.addCustomBottomLine(color: UIColor.lightGray, height: 0.5)
         }
+        
+        if #available(iOS 13.0, *) {
+            let appearance = UINavigationBarAppearance()
+            appearance.backgroundColor = .white
+            appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+            appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+            
+            appearance.titleTextAttributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 20), NSAttributedString.Key.foregroundColor:UIColor.appThemeColor]
+
+            navigationController?.navigationBar.tintColor = .white
+            navigationController?.navigationBar.standardAppearance = appearance
+            navigationController?.navigationBar.compactAppearance = appearance
+            navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        } else {
+            // Fallback on earlier versions
+        }
     }
     
     func setTitle(title: String) {
@@ -38,6 +54,8 @@ class BaseViewController: UIViewController {
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 20), NSAttributedString.Key.foregroundColor:UIColor.appThemeColor]
         
         self.navigationController?.navigationBar.clipsToBounds = false
+        
+
     }
     
     func setTitleWithImage(_ title: String, andImage image: UIImage) {
@@ -60,7 +78,12 @@ class BaseViewController: UIViewController {
         let titleView = UIStackView(arrangedSubviews: [titleLbl])
         titleView.axis = .horizontal
         titleView.spacing = 10.0
-        self.tabBarController?.navigationItem.titleView = titleView
+        
+        if self.tabBarController != nil{
+            self.tabBarController?.navigationItem.titleView = titleView
+        }else{
+            self.navigationItem.titleView = titleView
+        }
         
         let leftBarButtonItem = UIBarButtonItem.init(image: UIImage(named: "shared_icon_navigation_back")?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(self.btnBackAction))
         self.tabBarController?.navigationItem.leftBarButtonItem = leftBarButtonItem
@@ -94,8 +117,11 @@ class BaseViewController: UIViewController {
         UIBarButtonItem.appearance()
             .setTitleTextAttributes([NSAttributedString.Key.font: UIFont.systemFont(ofSize: 22, weight: .heavy)], for: .normal)
         rightBarButtonItem.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.appThemeColor], for: .normal)
-        self.tabBarController?.navigationItem.rightBarButtonItem = rightBarButtonItem
-
+        if self.tabBarController != nil{
+            self.tabBarController?.navigationItem.rightBarButtonItem = rightBarButtonItem
+        }else{
+            self.navigationItem.rightBarButtonItem = rightBarButtonItem
+        }
     }
     
     @objc func btnBackAction() {

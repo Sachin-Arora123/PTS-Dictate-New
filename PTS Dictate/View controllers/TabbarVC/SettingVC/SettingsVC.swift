@@ -19,7 +19,7 @@ class SettingsVC: BaseViewController {
                      "Disable Email Notification","Comments Screen",
                      "   Comments Screen - Mandatory","Indexing","Disable Editing Help Screens"]
     let dataTitle2 = ["Profile","File Naming Date Format",
-                      "Archive file after upload","   Archived Days",
+                      "Uploaded file retention period","   File retention Days",
                       "Upload via WiFi only",
                       "Sleep Mode Override","About","Logout"]
     let iconArray = ["settings_profile","settings_edit","settings_upload","settings_archive","settings_wifi","settings_standby","settings_info","settings_logout"]
@@ -81,18 +81,41 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
             cell.btnSwitch.tag = indexPath.row
             cell.lblTitle.text = dataTitle1[indexPath.row]
             cell.btnSwitch.addTarget(self, action: #selector(switchRecordingSection(_:)), for: .valueChanged)
+            cell.imgViewArrow.isHidden = true
+            
             switch indexPath.row{
             case 0,1:
+                //audio quality, microphone senstivity
                 cell.btnSwitch.isHidden = true
+                cell.imgViewArrow.isHidden = false
+            case 2:
+                //voice activation auto pause
+                cell.btnSwitch.isHidden = false
+                cell.btnSwitch.isOn = (CoreData.shared.voiceActivation == 1)
+            case 3:
+                //disable email notification
+                cell.btnSwitch.isHidden = false
+                cell.btnSwitch.isOn = (CoreData.shared.disableEmailNotify == 1)
+            case 4:
+                //comment screen
+                cell.btnSwitch.isHidden = false
+                cell.btnSwitch.isOn = (CoreData.shared.commentScreen == 1)
             case 5:
-                cell.imgViewArrow.isHidden = true
+                //comment mandatory screen
                 if CoreData.shared.commentScreen == 1{
-                    
+                    cell.btnSwitch.isOn = (CoreData.shared.commentScreenMandatory == 1)
                 }else{
                     cell.lblTitle.text = ""
-//                    cell.btnSwitch.isHidden = true
                     cell.imgViewArrow.isHidden = true
                 }
+            case 6:
+                //indexing
+                cell.btnSwitch.isHidden = false
+                cell.btnSwitch.isOn = (CoreData.shared.indexing == 1)
+            case 7:
+                //disable editing alerts
+                cell.btnSwitch.isHidden = false
+                cell.btnSwitch.isOn = (CoreData.shared.disableEditingHelp == 1)
             default:
                 cell.imgViewArrow.isHidden = true
                 break
@@ -106,27 +129,55 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
             cell.btnSwitch.addTarget(self, action: #selector(switchGeneralSection(_:)), for: .valueChanged)
             cell.lblTitle.text = dataTitle2[indexPath.row]
             cell.imgViewIcon.image = UIImage(named: iconArray[indexPath.row])
+            cell.imgViewIcon.isHidden = false
+            
             switch indexPath.row{
             case 0,1:
-                cell.btnSwitch.isHidden = true
-            case 2,4,5:
+                //profile, filename format
+                cell.imgViewArrow.isHidden = false
+                cell.btnSwitch.isHidden =  true
+            case 2:
+                //archive file after upload
+                cell.btnSwitch.isHidden =  false
                 cell.imgViewArrow.isHidden = true
+                cell.btnSwitch.isOn = CoreData.shared.archiveFile == 1 ? true : false
             case 3:
+                //archive days
                 cell.btnSwitch.isHidden = true
                 if CoreData.shared.archiveFile == 1{
                     cell.lblArchiveValue.isHidden = false
-                    cell.lblArchiveValue.text = "\(1)"
+                    cell.lblArchiveValue.text = "\(CoreData.shared.archiveFileDays)"
+                    cell.imgViewIcon.isHidden = false
+                    cell.imgViewArrow.isHidden = false
                 }else{
+                    cell.lblArchiveValue.isHidden = true
                     cell.lblTitle.text = ""
                     cell.btnSwitch.isHidden = true
                     cell.imgViewArrow.isHidden = true
                     cell.imgViewIcon.isHidden = true
                 }
-            case 6,7:
+            case 4:
+                //upload via wifi
+                cell.btnSwitch.isHidden =  false
+                cell.imgViewArrow.isHidden = true
+                cell.btnSwitch.isOn = (CoreData.shared.uploadViaWifi == 1)
+            case 5:
+                //sleep mode ovveride
+                cell.btnSwitch.isHidden =  false
+                cell.imgViewArrow.isHidden = true
+                cell.btnSwitch.isOn = (CoreData.shared.sleepModeOverride == 1)
+            case 6:
+                //about
+                cell.btnSwitch.isHidden = true
+                cell.imgViewArrow.isHidden = false
+            case 7:
+                //logout
                 cell.btnSwitch.isHidden = true
                 cell.imgViewArrow.isHidden = true
             default:
-                break
+                cell.btnSwitch.isHidden = false
+                cell.imgViewArrow.isHidden = false
+                cell.lblArchiveValue.isHidden = false
             }
             return cell
         default:
@@ -145,6 +196,7 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
         view.backgroundColor = .clear
         return view
     }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section{
         case 0:
@@ -167,11 +219,11 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
             case 1:
                 let vc = NamingFormatVC.instantiateFromAppStoryboard(appStoryboard: .Settings)
                 self.navigationController?.pushViewController(vc, animated: true)
-            case 5:
+            case 3:
+                showArchiveAlert()
+            case 6:
                 let vc = AboutVC.instantiateFromAppStoryboard(appStoryboard: .Settings)
                 self.navigationController?.pushViewController(vc, animated: true)
-            case 6:
-                print("About")
             case 7:
                 self.logOutAlert()
             default:
@@ -180,6 +232,39 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
         default:
             break
         }
+    }
+    
+    func showArchiveAlert(){
+        //1. Create the alert controller.
+        let alert = UIAlertController(title: "Enter file retention days", message: nil, preferredStyle: .alert)
+
+        //2. Add the text field. You can configure it however you need.
+        alert.addTextField { (textField) in
+            textField.text = "\(CoreData.shared.archiveFileDays)"
+            textField.delegate = self
+            textField.keyboardType = .phonePad
+        }
+        
+        alert.addAction(UIAlertAction(title: "Cencel", style: .cancel, handler: nil))
+        
+        // 3. Grab the value from the text field, and print it when the user clicks OK.
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
+            let textField = alert?.textFields![0] // Force unwrapping because we know it exists.
+            print("Text field: \(textField?.text ?? "")")
+            let textValue =  ((textField?.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "") as NSString).integerValue
+            if textValue >= 1{
+                CoreData.shared.archiveFileDays = textValue
+                CoreData.shared.dataSave()
+                self.tableView.reloadData()
+            }else{
+                CoreData.shared.archiveFileDays = 1
+                CoreData.shared.dataSave()
+                self.tableView.reloadData()
+            }
+        }))
+
+        // 4. Present the alert.
+        self.present(alert, animated: true, completion: nil)
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -196,6 +281,9 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
                 }else{
                     return 0
                 }
+            case 6 :
+                //hiding index row for now.
+                return 0
             default:
                 break
             }
@@ -237,7 +325,9 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
                 let indexPath = IndexPath(row: 5, section: 0)
                 self.tableView.reloadRows(at: [indexPath], with: UITableView.RowAnimation.bottom)
             }else{
+                //disbale comment mandatory as well if user is disbling comment screen
                 CoreData.shared.commentScreen = 0
+                CoreData.shared.commentScreenMandatory = 0
 //                switchState = false
                 let indexPath = IndexPath(row: 5, section: 0)
                 self.tableView.reloadRows(at: [indexPath], with: UITableView.RowAnimation.top)
@@ -263,17 +353,18 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
             }else{
                 CoreData.shared.disableEditingHelp = 0
             }
-        case 8:
-            if sender.isOn {
-                CoreData.shared.disableEditingHelp = 1
-            }else{
-                CoreData.shared.disableEditingHelp = 0
-            }
+//        case 8:
+//            if sender.isOn {
+//                CoreData.shared.disableEditingHelp = 1
+//            }else{
+//                CoreData.shared.disableEditingHelp = 0
+//            }
         default:
             break
         }
         CoreData.shared.dataSave()
     }
+    
     @objc func switchGeneralSection(_ sender: UISwitch){
         switch sender.tag {
         case 2:
@@ -281,6 +372,8 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
                 CoreData.shared.archiveFile = 1
                 let indexPath = IndexPath(row: 3, section: 1)
                 self.tableView.reloadRows(at: [indexPath], with: UITableView.RowAnimation.bottom)
+                
+                showArchiveAlert()
             }else{
                 CoreData.shared.archiveFile = 0
                 let indexPath = IndexPath(row: 3, section: 1)
@@ -295,13 +388,27 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
         case 5:
             if sender.isOn{
                 CoreData.shared.sleepModeOverride = 1
+                UIApplication.shared.isIdleTimerDisabled = true
             }else{
                 CoreData.shared.sleepModeOverride = 0
+                UIApplication.shared.isIdleTimerDisabled = false
             }
         default:
             break
         }
         CoreData.shared.dataSave()
     }
+    
 }
 
+extension SettingsVC: UITextFieldDelegate{
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let currentText = NSString(string: textField.text!).replacingCharacters(in: range, with: string)
+        if Int(currentText) ?? 1 > 30{
+            return false
+        }else{
+            return true
+        }
+        
+    }
+}

@@ -13,8 +13,7 @@ target 'PTS Dictate' do
   pod 'Toaster'
   pod 'SwiftEntryKit'
   pod 'iProgressHUD', '~> 1.1.1'
-  pod 'FDWaveformView'
   pod "SwiftToast"
-  pod "SoundWave"
-
+#  pod "SoundWave"
+  pod "SCWaveformView"
 end
