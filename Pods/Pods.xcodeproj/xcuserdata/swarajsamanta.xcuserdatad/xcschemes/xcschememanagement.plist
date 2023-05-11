@@ -7,52 +7,92 @@
 		<key>Alamofire.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
+<<<<<<< HEAD
 			<integer>0</integer>
+=======
+			<integer>2</integer>
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
 		</dict>
 		<key>IQKeyboardManagerSwift.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
+<<<<<<< HEAD
 			<integer>5</integer>
+=======
+			<integer>0</integer>
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
 		</dict>
 		<key>Pods-PTS Dictate.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
+<<<<<<< HEAD
 			<integer>1</integer>
+=======
+			<integer>5</integer>
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
 		</dict>
 		<key>SCWaveformView.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
+<<<<<<< HEAD
 			<integer>10</integer>
+=======
+			<integer>7</integer>
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
 		</dict>
 		<key>SwiftEntryKit.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
+<<<<<<< HEAD
 			<integer>3</integer>
+=======
+			<integer>6</integer>
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
 		</dict>
 		<key>SwiftToast-SwiftToast.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
+<<<<<<< HEAD
 			<integer>9</integer>
+=======
+			<integer>8</integer>
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
 		</dict>
 		<key>SwiftToast.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
+<<<<<<< HEAD
 			<integer>6</integer>
+=======
+			<integer>1</integer>
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
 		</dict>
 		<key>SwiftyJSON.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
+<<<<<<< HEAD
 			<integer>2</integer>
+=======
+			<integer>4</integer>
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
 		</dict>
 		<key>Toaster.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
+<<<<<<< HEAD
 			<integer>7</integer>
+=======
+			<integer>9</integer>
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
 		</dict>
 		<key>iProgressHUD.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
+<<<<<<< HEAD
 			<integer>8</integer>
+=======
+			<integer>10</integer>
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
 		</dict>
 	</dict>
 </dict>

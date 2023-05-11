@@ -20,14 +20,22 @@
             landmarkType = "7">
             <Locations>
                <Location
+<<<<<<< HEAD
                   uuid = "66947EFE-F4B4-4D64-B4E8-556D07A490BD - 9705297d687032f8"
+=======
+                  uuid = "66947EFE-F4B4-4D64-B4E8-556D07A490BD - 9f125fc88c4d9888"
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "closure #1 (Swift.Bool) -&gt; () in PTS_Dictate.RecordVC.onTapRecordActivity() -&gt; ()"
                   moduleName = "PTS Dictate"
                   usesParentBreakpointCondition = "Yes"
+<<<<<<< HEAD
                   urlString = "file:///Users/swarajsamanta/Downloads/PTS-Dictate-New/PTS%20Dictate/View%20controllers/TabbarVC/RecordVC/RecordVC.swift"
+=======
+                  urlString = "file:///Users/swarajsamanta/Downloads/PTS%20Dictate/PTS%20Dictate/View%20controllers/TabbarVC/RecordVC/RecordVC.swift"
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "570"
@@ -35,14 +43,22 @@
                   offsetFromSymbolStart = "4312">
                </Location>
                <Location
+<<<<<<< HEAD
                   uuid = "66947EFE-F4B4-4D64-B4E8-556D07A490BD - a8acf8d1ad4663e1"
+=======
+                  uuid = "66947EFE-F4B4-4D64-B4E8-556D07A490BD - a0bb8e64497bc911"
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "closure #1 (Swift.Bool) -&gt; () in closure #1 (Swift.Bool) -&gt; () in PTS_Dictate.RecordVC.onTapRecordActivity() -&gt; ()"
                   moduleName = "PTS Dictate"
                   usesParentBreakpointCondition = "Yes"
+<<<<<<< HEAD
                   urlString = "file:///Users/swarajsamanta/Downloads/PTS-Dictate-New/PTS%20Dictate/View%20controllers/TabbarVC/RecordVC/RecordVC.swift"
+=======
+                  urlString = "file:///Users/swarajsamanta/Downloads/PTS%20Dictate/PTS%20Dictate/View%20controllers/TabbarVC/RecordVC/RecordVC.swift"
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "572"
@@ -88,7 +104,11 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "4FCE9024-0CAB-4898-A0F4-6BEF58164D6D"
+<<<<<<< HEAD
             shouldBeEnabled = "No"
+=======
+            shouldBeEnabled = "Yes"
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
@@ -136,7 +156,11 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "A0B21539-A4C3-4667-AC74-2338AE49ECE1"
+<<<<<<< HEAD
             shouldBeEnabled = "No"
+=======
+            shouldBeEnabled = "Yes"
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
@@ -152,7 +176,11 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "9342EF2B-4226-4DA3-876C-645051A59B63"
+<<<<<<< HEAD
             shouldBeEnabled = "No"
+=======
+            shouldBeEnabled = "Yes"
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
@@ -168,7 +196,11 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "5AEF02C8-0752-4D02-9794-85F4B97DB15B"
+<<<<<<< HEAD
             shouldBeEnabled = "No"
+=======
+            shouldBeEnabled = "Yes"
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
@@ -216,7 +248,11 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "86D7E04E-9063-4F24-8CAA-4E40963447FD"
+<<<<<<< HEAD
             shouldBeEnabled = "No"
+=======
+            shouldBeEnabled = "Yes"
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
@@ -328,7 +364,11 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "79858E66-3D2A-4AD8-A709-42CF717D4D1E"
+<<<<<<< HEAD
             shouldBeEnabled = "No"
+=======
+            shouldBeEnabled = "Yes"
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PTS Dictate/View controllers/TabbarVC/ExistingVC/ExistingVC.swift"
@@ -360,7 +400,11 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "301F3C89-D08C-4736-A182-8746BEF0B9C7"
+<<<<<<< HEAD
             shouldBeEnabled = "No"
+=======
+            shouldBeEnabled = "Yes"
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PTS Dictate/View controllers/TabbarVC/ExistingVC/ExistingVC.swift"
@@ -376,7 +420,11 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "C5266C03-761F-4F68-82DE-6251D3EAFB38"
+<<<<<<< HEAD
             shouldBeEnabled = "No"
+=======
+            shouldBeEnabled = "Yes"
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PTS Dictate/View controllers/TabbarVC/ExistingVC/ExistingVC.swift"
@@ -434,6 +482,7 @@
             endingLineNumber = "1096"
             landmarkName = "proceedAutoSave()"
             landmarkType = "7">
+<<<<<<< HEAD
             <Locations>
                <Location
                   uuid = "79E4B339-B2FD-4F83-A6C2-1D2CD507E2AC - 94fdd3c6f275c43d"
@@ -466,13 +515,19 @@
                   offsetFromSymbolStart = "1520">
                </Location>
             </Locations>
+=======
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "AB5596D4-EA1D-4652-93B2-A1EAAA35CBB9"
+<<<<<<< HEAD
             shouldBeEnabled = "No"
+=======
+            shouldBeEnabled = "Yes"
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PTS Dictate/Helpers/AudioFiles Handler Model/AudioFiles.swift"
@@ -504,7 +559,11 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "7830DF31-E140-4E28-9B92-B6BE8BA3C122"
+<<<<<<< HEAD
             shouldBeEnabled = "No"
+=======
+            shouldBeEnabled = "Yes"
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
@@ -516,29 +575,48 @@
             landmarkType = "7">
             <Locations>
                <Location
+<<<<<<< HEAD
                   uuid = "7830DF31-E140-4E28-9B92-B6BE8BA3C122 - fe10b08fb46bd675"
+=======
+                  uuid = "7830DF31-E140-4E28-9B92-B6BE8BA3C122 - f607c63a50498dc5"
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "PTS_Dictate.RecordVC.onTapStopActivity() -&gt; ()"
                   moduleName = "PTS Dictate"
                   usesParentBreakpointCondition = "Yes"
+<<<<<<< HEAD
                   urlString = "file:///Users/swarajsamanta/Downloads/PTS-Dictate-New/PTS%20Dictate/View%20controllers/TabbarVC/RecordVC/RecordVC.swift"
+=======
+                  urlString = "file:///Users/swarajsamanta/Downloads/PTS%20Dictate/PTS%20Dictate/View%20controllers/TabbarVC/RecordVC/RecordVC.swift"
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "639"
                   endingLineNumber = "639"
+<<<<<<< HEAD
                   offsetFromSymbolStart = "2484">
                </Location>
                <Location
                   uuid = "7830DF31-E140-4E28-9B92-B6BE8BA3C122 - db79f6b2d1bbdfda"
+=======
+                  offsetFromSymbolStart = "2368">
+               </Location>
+               <Location
+                  uuid = "7830DF31-E140-4E28-9B92-B6BE8BA3C122 - d36e80073599856a"
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "closure #1 (Swift.Bool) -&gt; () in PTS_Dictate.RecordVC.onTapStopActivity() -&gt; ()"
                   moduleName = "PTS Dictate"
                   usesParentBreakpointCondition = "Yes"
+<<<<<<< HEAD
                   urlString = "file:///Users/swarajsamanta/Downloads/PTS-Dictate-New/PTS%20Dictate/View%20controllers/TabbarVC/RecordVC/RecordVC.swift"
+=======
+                  urlString = "file:///Users/swarajsamanta/Downloads/PTS%20Dictate/PTS%20Dictate/View%20controllers/TabbarVC/RecordVC/RecordVC.swift"
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "641"
@@ -552,7 +630,11 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "53CF5664-8CA8-4358-87AE-F15C7C7FD4CA"
+<<<<<<< HEAD
             shouldBeEnabled = "No"
+=======
+            shouldBeEnabled = "Yes"
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PTS Dictate/View controllers/TabbarVC/RecordVC/RecordVC.swift"
@@ -564,6 +646,7 @@
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
+<<<<<<< HEAD
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
@@ -724,5 +807,7 @@
             </Locations>
          </BreakpointContent>
       </BreakpointProxy>
+=======
+>>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
    </Breakpoints>
 </Bucket>
