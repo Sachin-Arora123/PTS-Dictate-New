@@ -20,3 +20,10 @@ extension UIDevice {
         }
     }
 }
+
+extension Double {
+    func rounded(toPlaces places:Int) -> Double {
+        let divisor = pow(10.0, Double(places))
+        return floor(self*divisor)/divisor
+    }
+}

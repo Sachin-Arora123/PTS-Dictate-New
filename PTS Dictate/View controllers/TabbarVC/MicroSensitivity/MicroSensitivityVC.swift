@@ -24,10 +24,23 @@ class MicroSensitivityVC: BaseViewController {
         setUpUI()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationItem.hidesBackButton = true
+    }
+    
+    @IBAction func sliderValueChanged(sender: UISlider) {
+        let currentValue = Double(sender.value)
+        print("->>", currentValue )
+        CoreData.shared.microSensitivityValue = currentValue
+        CoreData.shared.dataSave()
+    }
+    
     // MARK: - UISetup
     func setUpUI(){
         hideLeftButton()
         setTitleWithoutImage("Microphone Sensitivity")
+        self.slider.value = Float(CoreData.shared.microSensitivityValue)
     }
 
 

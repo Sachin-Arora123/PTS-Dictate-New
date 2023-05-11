@@ -88,30 +88,30 @@ open class iProgressHUD {
     }
     
     /** Attach the iProgressHUD in views */
-    open func attachProgress(toViews: UIView..., title: String) {
+    open func attachProgress(toViews: UIView...) {
         for view in toViews {
             let reinit = self.copy()
             reinit.view = view
-            reinit.setupProgress(view: view, capTitle: title)
+            reinit.setupProgress(view: view)
             view.iprogressHud = reinit
         }
     }
     
     /** Attach the iProgressHUD in array views */
-    open func attachProgress(toViews: [UIView], title: String) {
+    open func attachProgress(toViews: [UIView]) {
         for view in toViews {
             let reinit = self.copy()
             reinit.view = view
-            reinit.setupProgress(view: view, capTitle: title)
+            reinit.setupProgress(view: view)
             view.iprogressHud = reinit
         }
     }
     
     /** Attach the iProgressHUD in single view */
-    open func attachProgress(toView: UIView, title: String) {
+    open func attachProgress(toView: UIView) {
         let reinit = self.copy()
         reinit.view = toView
-        reinit.setupProgress(view: toView, capTitle: title)
+        reinit.setupProgress(view: toView)
         toView.iprogressHud = reinit
     }
     
@@ -140,10 +140,10 @@ open class iProgressHUD {
         }
     }
     
-    fileprivate func setupProgress(view: UIView,capTitle: String) {
+    fileprivate func setupProgress(view: UIView) {
         self.boxSetting(view: view)
         self.indicatorSetting()
-        self.captionSetting(title: capTitle)
+        self.captionSetting()
         self.modalSetting(view: view)
         
         let boxCenter = CGPoint(x: boxView.bounds.size.width/2, y: boxView.bounds.size.height/2)
@@ -248,8 +248,8 @@ open class iProgressHUD {
         self.boxView.center = boxCenter
     }
     
-    fileprivate func captionSetting(title: String) {
-        self.captionView.text = title
+    fileprivate func captionSetting() {
+        self.captionView.text = "logging In..."
         self.captionView.font = UIFont.boldSystemFont(ofSize: captionSize)
         self.captionView.textColor = captionColor
         self.captionView.textAlignment = .center

@@ -1,10 +1,8 @@
 PODS:
-  - Alamofire (5.6.2)
-  - FDWaveformView (5.0.1)
+  - Alamofire (5.6.4)
   - iProgressHUD (1.1.1)
   - IQKeyboardManagerSwift (6.5.10)
   - SCWaveformView (2.0.6)
-  - SoundWave (0.1.4)
   - SwiftEntryKit (2.0.0)
   - SwiftToast (1.1.3)
   - SwiftyJSON (5.0.1)
@@ -12,11 +10,9 @@ PODS:
 
 DEPENDENCIES:
   - Alamofire
-  - FDWaveformView
   - iProgressHUD (~> 1.1.1)
   - IQKeyboardManagerSwift
   - SCWaveformView
-  - SoundWave
   - SwiftEntryKit
   - SwiftToast
   - SwiftyJSON
@@ -25,28 +21,24 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - Alamofire
-    - FDWaveformView
     - iProgressHUD
     - IQKeyboardManagerSwift
     - SCWaveformView
-    - SoundWave
     - SwiftEntryKit
     - SwiftToast
     - SwiftyJSON
     - Toaster
 
 SPEC CHECKSUMS:
-  Alamofire: d368e1ff8a298e6dde360e35a3e68e6c610e7204
-  FDWaveformView: c188be613947273cc83d6f0056505f60e6c4b9ac
+  Alamofire: 4e95d97098eacb88856099c4fc79b526a299e48c
   iProgressHUD: caa742128253c97f2c2e1ec59e2bbe6cf689df6a
   IQKeyboardManagerSwift: 52962c76ab33532f15ad9f3ff4e5715eda5335bb
   SCWaveformView: 78b3503675aafcdaf9c283d68cb45c9fc735af87
-  SoundWave: d98ffaa863570b29d991da32a09b7ce1b4aaf2d4
   SwiftEntryKit: 61b5fa36f34a97dd8013e48a7345bc4c4720be9a
   SwiftToast: 029cbeda85c04fb3fa5df774ba461b19971bc6c5
   SwiftyJSON: 2f33a42c6fbc52764d96f13368585094bfd8aa5e
   Toaster: c3473963c78e8cabbf6ea6f11ad0fdaae6f54987
 
-PODFILE CHECKSUM: b1354747debbdbdc5759f345809ef0203f620f2f
+PODFILE CHECKSUM: b5ce081d2cfd183510dc7328f6a26f9b492e9c21
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.11.2
