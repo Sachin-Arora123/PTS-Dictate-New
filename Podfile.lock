@@ -4,7 +4,6 @@ PODS:
   - IQKeyboardManagerSwift (6.5.10)
   - SCWaveformView (2.0.6)
   - SwiftEntryKit (2.0.0)
-  - SwiftToast (1.1.3)
   - SwiftyJSON (5.0.1)
   - Toaster (2.3.0)
 
@@ -14,7 +13,6 @@ DEPENDENCIES:
   - IQKeyboardManagerSwift
   - SCWaveformView
   - SwiftEntryKit
-  - SwiftToast
   - SwiftyJSON
   - Toaster
 
@@ -25,7 +23,6 @@ SPEC REPOS:
     - IQKeyboardManagerSwift
     - SCWaveformView
     - SwiftEntryKit
-    - SwiftToast
     - SwiftyJSON
     - Toaster
 
@@ -35,14 +32,9 @@ SPEC CHECKSUMS:
   IQKeyboardManagerSwift: 52962c76ab33532f15ad9f3ff4e5715eda5335bb
   SCWaveformView: 78b3503675aafcdaf9c283d68cb45c9fc735af87
   SwiftEntryKit: 61b5fa36f34a97dd8013e48a7345bc4c4720be9a
-  SwiftToast: 029cbeda85c04fb3fa5df774ba461b19971bc6c5
   SwiftyJSON: 2f33a42c6fbc52764d96f13368585094bfd8aa5e
   Toaster: c3473963c78e8cabbf6ea6f11ad0fdaae6f54987
 
-<<<<<<< HEAD
-PODFILE CHECKSUM: b5ce081d2cfd183510dc7328f6a26f9b492e9c21
-=======
-PODFILE CHECKSUM: 8a0fbefa30b0cefc72e6eef85c90b509e5bb3ca3
->>>>>>> 7923f8a3497f23bf8389f1446dd25cc3a4f4c53e
+PODFILE CHECKSUM: cd1b585466a811194acd2164f700a45ad4430997
 
 COCOAPODS: 1.11.2

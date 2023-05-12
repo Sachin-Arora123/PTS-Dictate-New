@@ -249,7 +249,7 @@ open class iProgressHUD {
     }
     
     fileprivate func captionSetting() {
-        self.captionView.text = "logging In..."
+        self.captionView.text = "loading..."
         self.captionView.font = UIFont.boldSystemFont(ofSize: captionSize)
         self.captionView.textColor = captionColor
         self.captionView.textAlignment = .center

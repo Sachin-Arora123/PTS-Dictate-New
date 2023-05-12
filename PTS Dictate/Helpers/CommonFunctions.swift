@@ -10,7 +10,7 @@ import Toaster
 import SwiftEntryKit
 import iProgressHUD
 import UIKit
-import SwiftToast
+//import SwiftToast
 
 class EntryAttributeWrapper {
     var attributes: EKAttributes

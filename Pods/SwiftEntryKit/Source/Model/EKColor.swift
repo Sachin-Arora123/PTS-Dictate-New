@@ -16,7 +16,6 @@ public struct EKColor: Equatable {
     public private(set) var dark: UIColor
     public private(set) var light: UIColor
     
-    
     // MARK: - Setup
     
     public init(light: UIColor, dark: UIColor) {

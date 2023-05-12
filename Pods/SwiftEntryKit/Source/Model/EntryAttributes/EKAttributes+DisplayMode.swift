@@ -21,6 +21,5 @@ public extension EKAttributes {
         
         /** The display mode is dark */
         case dark
-        
     }
 }

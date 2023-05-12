@@ -194,7 +194,7 @@ open class SwiftToastController {
             }
             
         } else {
-            UIApplication.shared.keyWindow?.windowLevel = UIWindow.Level.normal
+            UIApplication.shared.keyWindow?.windowLevel = UIWindow.Level.statusBar
             UIApplication.shared.statusBarStyle = applicationStatusBarStyle
         }
     }

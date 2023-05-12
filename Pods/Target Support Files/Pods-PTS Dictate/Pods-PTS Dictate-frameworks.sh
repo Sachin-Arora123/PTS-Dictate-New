@@ -41,7 +41,7 @@ install_framework()
 
   if [ -L "${source}" ]; then
     echo "Symlinked..."
-    source="$(readlink "${source}")"
+    source="$(readlink -f "${source}")"
   fi
 
   if [ -d "${source}/${BCSYMBOLMAP_DIR}" ]; then
@@ -180,7 +180,6 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/IQKeyboardManagerSwift/IQKeyboardManagerSwift.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/SCWaveformView/SCWaveformView.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/SwiftEntryKit/SwiftEntryKit.framework"
-  install_framework "${BUILT_PRODUCTS_DIR}/SwiftToast/SwiftToast.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/Toaster/Toaster.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/iProgressHUD/iProgressHUD.framework"
@@ -190,7 +189,6 @@ if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/IQKeyboardManagerSwift/IQKeyboardManagerSwift.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/SCWaveformView/SCWaveformView.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/SwiftEntryKit/SwiftEntryKit.framework"
-  install_framework "${BUILT_PRODUCTS_DIR}/SwiftToast/SwiftToast.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/Toaster/Toaster.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/iProgressHUD/iProgressHUD.framework"

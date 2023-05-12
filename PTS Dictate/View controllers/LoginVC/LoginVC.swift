@@ -7,7 +7,7 @@
 
 import UIKit
 import iProgressHUD
-import SwiftToast
+//import SwiftToast
 
 class LoginVC: UIViewController {
     

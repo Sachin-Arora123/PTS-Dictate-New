@@ -53,6 +53,11 @@
 		23346E11293CBABB00059A16 /* UploadProgressVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23346E10293CBABB00059A16 /* UploadProgressVC.swift */; };
 		23C89FC0291A948900999929 /* Extension+Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C89FBF291A948900999929 /* Extension+Date.swift */; };
 		23DCE102290EA54A00117066 /* UploadListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23DCE101290EA54A00117066 /* UploadListCell.swift */; };
+		2809CD3B2A0D48FC0027AA16 /* UIViewController+SwiftToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2809CD342A0D48FC0027AA16 /* UIViewController+SwiftToast.swift */; };
+		2809CD3D2A0D48FC0027AA16 /* SwiftToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2809CD362A0D48FC0027AA16 /* SwiftToast.swift */; };
+		2809CD3E2A0D48FC0027AA16 /* SwiftToastView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2809CD372A0D48FC0027AA16 /* SwiftToastView.xib */; };
+		2809CD3F2A0D48FC0027AA16 /* SwiftToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2809CD382A0D48FC0027AA16 /* SwiftToastView.swift */; };
+		2809CD402A0D48FC0027AA16 /* .gitkeep in Resources */ = {isa = PBXBuildFile; fileRef = 2809CD3A2A0D48FC0027AA16 /* .gitkeep */; };
 		28A4F5C628B510D90035137B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5C528B510D90035137B /* AppDelegate.swift */; };
 		28A4F5C828B510D90035137B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5C728B510D90035137B /* SceneDelegate.swift */; };
 		28A4F5CA28B510D90035137B /* LoginVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A4F5C928B510D90035137B /* LoginVC.swift */; };
@@ -117,6 +122,11 @@
 		23346E10293CBABB00059A16 /* UploadProgressVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadProgressVC.swift; sourceTree = "<group>"; };
 		23C89FBF291A948900999929 /* Extension+Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+Date.swift"; sourceTree = "<group>"; };
 		23DCE101290EA54A00117066 /* UploadListCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadListCell.swift; sourceTree = "<group>"; };
+		2809CD342A0D48FC0027AA16 /* UIViewController+SwiftToast.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+SwiftToast.swift"; sourceTree = "<group>"; };
+		2809CD362A0D48FC0027AA16 /* SwiftToast.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftToast.swift; sourceTree = "<group>"; };
+		2809CD372A0D48FC0027AA16 /* SwiftToastView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SwiftToastView.xib; sourceTree = "<group>"; };
+		2809CD382A0D48FC0027AA16 /* SwiftToastView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftToastView.swift; sourceTree = "<group>"; };
+		2809CD3A2A0D48FC0027AA16 /* .gitkeep */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitkeep; sourceTree = "<group>"; };
 		28A4F5C228B510D90035137B /* PTS Dictate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PTS Dictate.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		28A4F5C528B510D90035137B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		28A4F5C728B510D90035137B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -403,6 +413,34 @@
 			path = "AudioFiles Handler Model";
 			sourceTree = "<group>";
 		};
+		2809CD322A0D48FC0027AA16 /* SwiftToast */ = {
+			isa = PBXGroup;
+			children = (
+				2809CD332A0D48FC0027AA16 /* Classes */,
+				2809CD392A0D48FC0027AA16 /* Assets */,
+			);
+			path = SwiftToast;
+			sourceTree = "<group>";
+		};
+		2809CD332A0D48FC0027AA16 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				2809CD342A0D48FC0027AA16 /* UIViewController+SwiftToast.swift */,
+				2809CD362A0D48FC0027AA16 /* SwiftToast.swift */,
+				2809CD372A0D48FC0027AA16 /* SwiftToastView.xib */,
+				2809CD382A0D48FC0027AA16 /* SwiftToastView.swift */,
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
+		2809CD392A0D48FC0027AA16 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				2809CD3A2A0D48FC0027AA16 /* .gitkeep */,
+			);
+			path = Assets;
+			sourceTree = "<group>";
+		};
 		28A4F5B928B510D90035137B = {
 			isa = PBXGroup;
 			children = (
@@ -475,6 +513,7 @@
 		28A4F5DC28B51D630035137B /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				2809CD322A0D48FC0027AA16 /* SwiftToast */,
 				2327B8A62907BE8C000BCEDD /* AudioFiles Handler Model */,
 				180EB43428B6A15900F1A3FB /* BaseViewController.swift */,
 				18DF4BDE28BE872F002FC063 /* CommonFunctions.swift */,
@@ -582,7 +621,9 @@
 			files = (
 				18CDDB0A28B7D493006AB795 /* Tabbar.storyboard in Resources */,
 				1837EC0028D790FC0046B4AA /* NoticeView.bundle in Resources */,
+				2809CD402A0D48FC0027AA16 /* .gitkeep in Resources */,
 				28B64254299D0D7A0059A876 /* GoogleService-Info.plist in Resources */,
+				2809CD3E2A0D48FC0027AA16 /* SwiftToastView.xib in Resources */,
 				28A4F5D228B510DE0035137B /* LaunchScreen.storyboard in Resources */,
 				28A4F5CF28B510DE0035137B /* Assets.xcassets in Resources */,
 				182BE0B328BD332300327094 /* Settings.storyboard in Resources */,
@@ -664,11 +705,13 @@
 				2327B8A82907BEB9000BCEDD /* AudioFile.swift in Sources */,
 				18DF4BDF28BE8730002FC063 /* CommonFunctions.swift in Sources */,
 				28A4F5CA28B510D90035137B /* LoginVC.swift in Sources */,
+				2809CD3F2A0D48FC0027AA16 /* SwiftToastView.swift in Sources */,
 				1868EAD628BAB2E200216D62 /* GeneralSettingCell.swift in Sources */,
 				186765FB28C4C994006BABDF /* CommentsVC.swift in Sources */,
 				616E4A43290AB21E0011ABF2 /* F3BarGauge.m in Sources */,
 				18DF4BDD28BE7E30002FC063 /* CoreData.swift in Sources */,
 				18DF4BE128BE899D002FC063 /* Extension+UIView.swift in Sources */,
+				2809CD3B2A0D48FC0027AA16 /* UIViewController+SwiftToast.swift in Sources */,
 				1855435628C36474008AFBC2 /* AboutVC.swift in Sources */,
 				184C5FED28C5239E005A52EB /* RecordVC.swift in Sources */,
 				18DF4BD428BE7B5D002FC063 /* LoginApi.swift in Sources */,
@@ -685,6 +728,7 @@
 				7FF5DF0C29E538E500C66EC3 /* Extension+AVURLAsset.swift in Sources */,
 				186765F928C4C97E006BABDF /* RenameFileVC.swift in Sources */,
 				18E8AAE828F89E0400DF73F4 /* ExistingViewModel.swift in Sources */,
+				2809CD3D2A0D48FC0027AA16 /* SwiftToast.swift in Sources */,
 				182BE0BE28BD4ED000327094 /* NamingFormatVC.swift in Sources */,
 				180EB43928B6A87D00F1A3FB /* Extension+UIViewController.swift in Sources */,
 				18CDDB0F28B7D96C006AB795 /* Storyboard.swift in Sources */,
@@ -858,10 +902,12 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = W34HD83689;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = W34HD83689;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "PTS Dictate/Info.plist";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Using to Record Audio";
@@ -881,6 +927,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.pts.ptsdictate;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = pts_dictate_new_profile;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "PTS Dictate/Helpers/Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -896,10 +943,12 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = W34HD83689;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = W34HD83689;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "PTS Dictate/Info.plist";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Using to Record Audio";
@@ -919,6 +968,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.pts.ptsdictate;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = pts_dictate_new_profile;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "PTS Dictate/Helpers/Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
