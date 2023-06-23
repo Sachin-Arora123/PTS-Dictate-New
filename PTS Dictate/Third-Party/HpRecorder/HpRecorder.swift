@@ -102,9 +102,9 @@ public class HPRecorder: NSObject {
     // End recording
     public func endRecording() {
         audioRecorder?.stop()
-        let assetURL  = self.audioRecorder!.url
+        let assetURL  = self.audioRecorder?.url
         let assetOpts = [AVURLAssetPreferPreciseDurationAndTimingKey: true]
-        let asset     = AVURLAsset(url: assetURL, options: assetOpts)
+        let asset     = AVURLAsset(url: assetURL ?? URL(fileURLWithPath: ""), options: assetOpts)
         self.articleChunks.append(asset)
 //        tempChunks.append(asset)
         isRecording = false
@@ -208,7 +208,7 @@ public class HPRecorder: NSObject {
 
                 for asset in self.articleChunks {
                     if asset.url != exportSession?.outputURL{
-                        try! FileManager.default.removeItem(at: asset.url)
+                        try? FileManager.default.removeItem(at: asset.url)
                     }
                 }
               
@@ -298,6 +298,14 @@ public class HPRecorder: NSObject {
         
         self.queuePlayer?.seek(to: newCurrentTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero, completionHandler: { result in
             print("finished seeking")
+        })
+    }
+    
+    public func moveToNewTiming(time:Float){
+        let targetTime:CMTime = CMTimeMakeWithSeconds(Float64(time), preferredTimescale: CMTimeScale(1000))
+        debugPrint("targetTime \(targetTime ) : \(time)")
+        self.queuePlayer?.seek(to: targetTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero, completionHandler: { result in
+            print("finished slider seeking")
         })
     }
 }

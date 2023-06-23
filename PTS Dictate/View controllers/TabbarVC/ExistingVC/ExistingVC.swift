@@ -34,6 +34,8 @@ class ExistingVC: BaseViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var tableViewTop: NSLayoutConstraint!
     
+    @IBOutlet weak var sliderView: UISlider!
+    
     let existingViewModel = ExistingViewModel.shared
     
     var audioPlayer = AVAudioPlayer()
@@ -352,7 +354,7 @@ class ExistingVC: BaseViewController {
         self.audioTimer = audioPlayer.currentTime
         let cmTime = CMTime(seconds: audioPlayer.currentTime, preferredTimescale: 1000000)
         self.mediaProgressView.waveformView.progressTime = cmTime
-        
+        self.sliderView.value = Float(cmTime.seconds)
         self.lblPlayingTime.text = totalTimeString
         self.audioPlayer.updateMeters()
         
@@ -392,43 +394,124 @@ class ExistingVC: BaseViewController {
         if self.totalFilesSelected.count == 0{
             CommonFunctions.alertMessage(view: self, title: "PTS Dictate", msg: "Please select atleast one file.", btnTitle: "OK", completion: nil)
         }else{
+            
             var alertMessage = ""
-            if self.totalFilesSelected.count == 1{
-                //user selected one file to delete.
-                //first check if the selected file is already uploaded or not.
-                if checkIfAnyFileAlreadyUploaded(){
-                    //already uploaded
-                    alertMessage = "File retention period is set as \(CoreData.shared.archiveFileDays) days. Do you still want to delete this file?"
-                }else{
-                    //not uploaded
-                    alertMessage = "File is not uploaded, Do you still want to delete this file?"
+            
+            if CoreData.shared.archiveFile == 0{
+                if self.totalFilesSelected.count == 1 && checkIfAnyFileAlreadyUploaded(){
+                    self.rerenderUI()
+                    return
                 }
+                else if self.totalFilesSelected.count == 1 && checkIfAnyFileNotAlreadyUploaded(){
+                    alertMessage = "File is not uploaded. Do you still want to delete this file?"
+                }else if checkIfAnyFileNotAlreadyUploaded(){
+                    alertMessage = "A few files are not uploaded. Do you still want to delete these files?"
+                }else{
+                    self.rerenderUI()
+                    return
+                }
+                
             }else{
-                //greater than one.
-                //if any of the file is not uploaded, we need to show file not uploaded message.
-                if checkIfAnyFileNotAlreadyUploaded(){
-                    //Some files are not already uploaded
-                    alertMessage = "Few files are not uploaded, Do you still want to delete these files?"
-                }else{
-                    //no file is uploaded from the selected files
-                    alertMessage = "File retention period is set as \(CoreData.shared.archiveFileDays) days. Do you still want to delete these files?"
+                if self.totalFilesSelected.count == 1 && checkIfAnyFileAlreadyUploaded(){
+                    alertMessage = " File retention period is set to \(CoreData.shared.archiveFileDays). Do you still want to delete this file?"
+
                 }
+                else if self.totalFilesSelected.count == 1 && checkIfAnyFileNotAlreadyUploaded(){
+                    alertMessage = "File is not uploaded. Do you still want to delete this file?"
+                }else if checkIfAnyFileNotAlreadyUploaded(){
+                    alertMessage = "A few files are not uploaded. Do you still want to delete these files?"
+                }else{
+                    alertMessage = " File retention period is set to \(CoreData.shared.archiveFileDays). Do you still want to delete these files?"
+                }
+                
             }
             
+
+//
+//            if self.totalFilesSelected.count == 1{
+//                //user selected one file to delete.
+//                //first check if the selected file is already uploaded or not.
+//                if checkIfAnyFileAlreadyUploaded(){
+//                    //already uploaded
+//                //    alertMessage = "File retention period is set as \(CoreData.shared.archiveFileDays) days. Do you still want to delete this file?"
+//                    self.rerenderUI()
+//                    return
+//                }else{
+//                    //not uploaded
+//                    alertMessage = "File retention period is set as \(CoreData.shared.archiveFileDays) days. Do you still want to delete this file?"//"File is not uploaded, Do you still want to delete this file?"
+//                }
+//            }else{
+//                //greater than one.
+//                //if any of the file is not uploaded, we need to show file not uploaded message.
+//                if checkIfAnyFileNotAlreadyUploaded(){
+//                    //Some files are not already uploaded
+//                    alertMessage = "File retention period is set as \(CoreData.shared.archiveFileDays) days. Do you still want to delete these files?"//"Few files are not uploaded, Do you still want to delete these files?"
+//                }else{
+//                    //no file is uploaded from the selected files
+//                  //  alertMessage = "File retention period is set as \(CoreData.shared.archiveFileDays) days. Do you still want to delete these files?"
+//                    self.rerenderUI()
+//                    return
+//                }
+//            }
+//
             CommonFunctions.showAlert(view: self, title: "PTS Dictate", message: alertMessage, completion: {
                 (success) in
                 if success{
-                    for file in self.totalFilesSelected {
-                        self.removeAudio(itemName: file.name ?? "", fileExtension: "")
-                        AudioFiles.shared.deleteAudio(path: file.filePath ?? "")
-                    }
-                    self.totalFilesSelected.removeAll()
-                    self.totalFiles = self.getSortedAudioList()
-                    self.setRightBarItem()
+                    self.rerenderUI()
                 }
             })
         }
     }
+    func rerenderUI(){
+        for file in self.totalFilesSelected {
+            self.removeAudio(itemName: file.name ?? "", fileExtension: "")
+            AudioFiles.shared.deleteAudio(path: file.filePath ?? "")
+        }
+        self.totalFilesSelected.removeAll()
+        self.totalFiles = self.getSortedAudioList()
+        self.setRightBarItem()
+    }
+    fileprivate func setupSlider(index:Int) {
+      
+        // Setup the slider
+        sliderView.setValue(0.0, animated: true)
+        sliderView.maximumValue = Float(self.totalAsset[index].duration.seconds)
+        sliderView.minimumValue = 0.0
+        sliderView.setThumbImage( UIImage(named: "slider")?.scaled(to: CGSize.init(width: 3, height: 50)) , for: .highlighted)
+        sliderView.setThumbImage(UIImage(named: "slider")?.scaled(to: CGSize.init(width: 3, height: 50)) , for: .normal)
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(sliderTapped(gestureRecognizer:)))
+              self.sliderView.addGestureRecognizer(tapGestureRecognizer)
+    }
+    
+    @objc func sliderTapped(gestureRecognizer: UIGestureRecognizer) {
+
+        let pointTapped: CGPoint = gestureRecognizer.location(in: self.view)
+
+        let positionOfSlider: CGPoint = sliderView.frame.origin
+        let widthOfSlider: CGFloat = sliderView.frame.size.width
+        let newValue = ((pointTapped.x - positionOfSlider.x) * CGFloat(sliderView.maximumValue) / widthOfSlider)
+
+        sliderView.setValue(Float(newValue), animated: true)
+      //  self.recorder.moveToNewTiming(time: Float(newValue))
+        self.moveToNewTiming(time: Float(newValue))
+        debugPrint("sliderview \(newValue)")
+    }
+    
+ 
+    @IBAction func sliderValueChanged(_ sender: UISlider) {
+        debugPrint("sliderview \(sender.value)")
+      //  self.recorder.moveToNewTiming(time: sender.value)
+        self.moveToNewTiming(time: sender.value)
+    }
+    
+    public func moveToNewTiming(time:Float){
+
+        self.audioTimer = TimeInterval(time)
+        audioPlayer.currentTime = TimeInterval(time)
+        sliderView.value = time
+        self.mediaProgressView.waveformView.progressTime = CMTimeMakeWithSeconds(TimeInterval(time), preferredTimescale: 1)
+    }
+
     
     //This function return true if any of the multiple file is already uploaded, else return false
     func checkIfAnyFileAlreadyUploaded() -> Bool {
@@ -497,8 +580,8 @@ class ExistingVC: BaseViewController {
             }
         }
         
-        audioArray.append(contentsOf: unUploadedFiles.reversed())
-        audioArray.append(contentsOf: uploadedFiles.reversed())
+        audioArray.append(contentsOf: unUploadedFiles.reversed().sorted(by: {$0.name ?? "" > $1.name ?? ""}))
+        audioArray.append(contentsOf: uploadedFiles.reversed().sorted(by: {$0.name ?? "" > $1.name ?? ""}))
         return audioArray
     }
     
@@ -547,6 +630,7 @@ class ExistingVC: BaseViewController {
         
         // Add some padding between the channels
         self.mediaProgressView.waveformView.channelsPadding = 10
+        setupSlider(index: index)
     }
     
     fileprivate func pushToComments(selected audio: String, index: Int) {
@@ -1026,6 +1110,7 @@ extension ExistingVC{
         
         //update waves
         self.mediaProgressView.waveformView.progressTime = CMTimeMakeWithSeconds(currentTime, preferredTimescale: 1)
+        self.sliderView.value = Float(self.mediaProgressView.waveformView.progressTime.seconds)
     }
     
     func timeString(from timeInterval: TimeInterval) -> String {
@@ -1061,6 +1146,7 @@ extension ExistingVC{
             
             //update waves
             self.mediaProgressView.waveformView.progressTime = CMTimeMakeWithSeconds(time, preferredTimescale: 1)
+            self.sliderView.value = Float(self.mediaProgressView.waveformView.progressTime.seconds)
         }
     }
 }

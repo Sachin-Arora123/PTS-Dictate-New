@@ -245,7 +245,7 @@ extension SettingsVC: UITableViewDelegate,UITableViewDataSource {
             textField.keyboardType = .phonePad
         }
         
-        alert.addAction(UIAlertAction(title: "Cencel", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         
         // 3. Grab the value from the text field, and print it when the user clicks OK.
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in

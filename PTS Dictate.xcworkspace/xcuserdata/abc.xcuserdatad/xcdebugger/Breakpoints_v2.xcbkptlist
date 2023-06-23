@@ -97,6 +97,36 @@
                   endingLineNumber = "192"
                   offsetFromSymbolStart = "84">
                </Location>
+               <Location
+                  uuid = "A27FEF94-31BE-4F7E-B2E9-FA5B5ED303C5 - a5cdeff69a462610"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "PTS_Dictate.RecordVC.handleInterupption() -&gt; ()"
+                  moduleName = "PTS Dictate"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/abc/Desktop/PTS%20Dictate/PTS%20Dictate/View%20controllers/TabbarVC/RecordVC/RecordVC.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "191"
+                  endingLineNumber = "191"
+                  offsetFromSymbolStart = "2264">
+               </Location>
+               <Location
+                  uuid = "A27FEF94-31BE-4F7E-B2E9-FA5B5ED303C5 - fd84fbfc6203b3ff"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () -&gt; () in PTS_Dictate.RecordVC.handleInterupption() -&gt; ()"
+                  moduleName = "PTS Dictate"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/abc/Desktop/PTS%20Dictate/PTS%20Dictate/View%20controllers/TabbarVC/RecordVC/RecordVC.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "192"
+                  endingLineNumber = "192"
+                  offsetFromSymbolStart = "84">
+               </Location>
             </Locations>
          </BreakpointContent>
       </BreakpointProxy>
@@ -119,22 +149,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "5A0E3214-A834-4DFA-AC8D-48BE4DE4E6FC"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PTS Dictate/Third-Party/HpRecorder/HpRecorder.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "219"
-            endingLineNumber = "219"
-            landmarkName = "concatChunks(filename:completion:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "B4D3E75F-F612-4FE6-891C-5FB88B626181"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -144,8 +158,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "528"
             endingLineNumber = "528"
-            landmarkName = "onTapRecord(_:)"
-            landmarkType = "7">
+            landmarkName = "RecordVC"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy

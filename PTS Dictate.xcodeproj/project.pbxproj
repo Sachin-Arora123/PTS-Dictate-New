@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		180EB43528B6A15900F1A3FB /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 180EB43428B6A15900F1A3FB /* BaseViewController.swift */; };
 		180EB43928B6A87D00F1A3FB /* Extension+UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 180EB43828B6A87D00F1A3FB /* Extension+UIViewController.swift */; };
-		182BE0B128BD29C000327094 /* ExistingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182BE0B028BD29C000327094 /* ExistingVC.swift */; };
 		182BE0B328BD332300327094 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 182BE0B228BD332300327094 /* Settings.storyboard */; };
 		182BE0B628BD3B6000327094 /* MicroSensitivityVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182BE0B528BD3B6000327094 /* MicroSensitivityVC.swift */; };
 		182BE0B928BD459A00327094 /* ProfileVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182BE0B828BD459A00327094 /* ProfileVC.swift */; };
@@ -72,6 +71,9 @@
 		4BFCB13CEA7E06C3217E3512 /* Pods_PTS_Dictate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7801E7DB3243DA4B1EF6CD0C /* Pods_PTS_Dictate.framework */; };
 		616E4A43290AB21E0011ABF2 /* F3BarGauge.m in Sources */ = {isa = PBXBuildFile; fileRef = 616E4A41290AB21E0011ABF2 /* F3BarGauge.m */; };
 		616E4A45290AB9550011ABF2 /* Extension+UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616E4A44290AB9550011ABF2 /* Extension+UIColor.swift */; };
+		7F6A32512A18D51300994042 /* UIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F6A32502A18D51300994042 /* UIImage+Extensions.swift */; };
+		7FA9432A2A30342A00615DD1 /* Float+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA943292A30342A00615DD1 /* Float+Extensions.swift */; };
+		7FF045572A19D57F00DD5BB7 /* ExistingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182BE0B028BD29C000327094 /* ExistingVC.swift */; };
 		7FF5DF0C29E538E500C66EC3 /* Extension+AVURLAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FF5DF0B29E538E500C66EC3 /* Extension+AVURLAsset.swift */; };
 /* End PBXBuildFile section */
 
@@ -144,6 +146,8 @@
 		616E4A44290AB9550011ABF2 /* Extension+UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+UIColor.swift"; sourceTree = "<group>"; };
 		61736DF3290AA79E006D8065 /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
 		7801E7DB3243DA4B1EF6CD0C /* Pods_PTS_Dictate.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PTS_Dictate.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7F6A32502A18D51300994042 /* UIImage+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Extensions.swift"; sourceTree = "<group>"; };
+		7FA943292A30342A00615DD1 /* Float+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Float+Extensions.swift"; sourceTree = "<group>"; };
 		7FF5DF0B29E538E500C66EC3 /* Extension+AVURLAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+AVURLAsset.swift"; sourceTree = "<group>"; };
 		F2DCF3613E1B667385F2C263 /* Pods-PTS Dictate.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PTS Dictate.release.xcconfig"; path = "Target Support Files/Pods-PTS Dictate/Pods-PTS Dictate.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -175,6 +179,8 @@
 			children = (
 				28A4F5DD28B51D750035137B /* Extension+Navigation.swift */,
 				18DF4BE028BE899D002FC063 /* Extension+UIView.swift */,
+				7FA943292A30342A00615DD1 /* Float+Extensions.swift */,
+				7F6A32502A18D51300994042 /* UIImage+Extensions.swift */,
 				180EB43828B6A87D00F1A3FB /* Extension+UIViewController.swift */,
 				7FF5DF0B29E538E500C66EC3 /* Extension+AVURLAsset.swift */,
 				18CDDB0E28B7D96C006AB795 /* Storyboard.swift */,
@@ -709,6 +715,7 @@
 				1868EAD628BAB2E200216D62 /* GeneralSettingCell.swift in Sources */,
 				186765FB28C4C994006BABDF /* CommentsVC.swift in Sources */,
 				616E4A43290AB21E0011ABF2 /* F3BarGauge.m in Sources */,
+				7FF045572A19D57F00DD5BB7 /* ExistingVC.swift in Sources */,
 				18DF4BDD28BE7E30002FC063 /* CoreData.swift in Sources */,
 				18DF4BE128BE899D002FC063 /* Extension+UIView.swift in Sources */,
 				2809CD3B2A0D48FC0027AA16 /* UIViewController+SwiftToast.swift in Sources */,
@@ -729,6 +736,7 @@
 				186765F928C4C97E006BABDF /* RenameFileVC.swift in Sources */,
 				18E8AAE828F89E0400DF73F4 /* ExistingViewModel.swift in Sources */,
 				2809CD3D2A0D48FC0027AA16 /* SwiftToast.swift in Sources */,
+				7FA9432A2A30342A00615DD1 /* Float+Extensions.swift in Sources */,
 				182BE0BE28BD4ED000327094 /* NamingFormatVC.swift in Sources */,
 				180EB43928B6A87D00F1A3FB /* Extension+UIViewController.swift in Sources */,
 				18CDDB0F28B7D96C006AB795 /* Storyboard.swift in Sources */,
@@ -750,7 +758,7 @@
 				28A4F5C828B510D90035137B /* SceneDelegate.swift in Sources */,
 				1868EAD928BAB3BB00216D62 /* RecordingCell.swift in Sources */,
 				184C964628C7C715004639B3 /* CommonElements.swift in Sources */,
-				182BE0B128BD29C000327094 /* ExistingVC.swift in Sources */,
+				7F6A32512A18D51300994042 /* UIImage+Extensions.swift in Sources */,
 				18B321A529255BB60052AD1A /* Stopwatch.swift in Sources */,
 				182BE0C128BD508500327094 /* NamingFormatCell.swift in Sources */,
 			);
@@ -902,12 +910,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = W34HD83689;
+				DEVELOPMENT_TEAM = W34HD83689;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "PTS Dictate/Info.plist";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Using to Record Audio";
@@ -927,7 +933,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.pts.ptsdictate;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = pts_dictate_new_profile;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "PTS Dictate/Helpers/Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -943,12 +948,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = W34HD83689;
+				DEVELOPMENT_TEAM = W34HD83689;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "PTS Dictate/Info.plist";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Using to Record Audio";
@@ -968,7 +971,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.pts.ptsdictate;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = pts_dictate_new_profile;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "PTS Dictate/Helpers/Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -1004,8 +1006,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
 			requirement = {
-				branch = master;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

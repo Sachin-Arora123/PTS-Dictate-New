@@ -36,7 +36,7 @@ class CoreData: NSObject {
     var disableEditingHelp = 0 // 1 - true & 0 - false
     var fileCount: Int = 1
     var dateFormat: String = ""
-    var archiveFile = 1 // 1 - true & 0 - false
+    var archiveFile = 0 // 1 - true & 0 - false
     var archiveFileDays = 3 // 3 - day default
     var uploadViaWifi = 0 // 1 - true & 0 - false
     var sleepModeOverride = 1 // 1 - true & 0 - false
@@ -405,7 +405,7 @@ class CoreData: NSObject {
          disableEditingHelp = 0 // 1 - true & 0 - false
          fileCount = 1
          dateFormat = ""
-         archiveFile = 1 // 1 - true & 0 - false
+         archiveFile = 0 // 1 - true & 0 - false
          archiveFileDays = 3 // 3 - day default
          uploadViaWifi = 0 // 1 - true & 0 - false
          sleepModeOverride = 1 // 1 - true & 0 - false
